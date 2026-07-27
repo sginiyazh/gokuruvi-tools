@@ -1,0 +1,565 @@
+---
+const pageTitle = "Cron Expression Generator";
+const description =
+  "Create and understand Linux cron schedules using a simple visual cron expression generator.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f5f7fb;
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      header {
+        background: #0f172a;
+        padding: 18px 24px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+      }
+
+      main {
+        max-width: 950px;
+        margin: 50px auto;
+        padding: 0 20px;
+      }
+
+      .intro {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .intro h1 {
+        margin-bottom: 12px;
+        font-size: 38px;
+      }
+
+      .intro p {
+        color: #475569;
+        line-height: 1.7;
+      }
+
+      .generator {
+        padding: 30px;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgb(15 23 42 / 8%);
+      }
+
+      .presets {
+        margin-bottom: 28px;
+      }
+
+      .presets label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f172a;
+        font-size: 16px;
+      }
+
+      .cron-fields {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+
+      .field label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .field small {
+        display: block;
+        margin-top: 6px;
+        color: #64748b;
+      }
+
+      .result-section {
+        margin-top: 30px;
+      }
+
+      .result-label {
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .expression-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 20px;
+        border-radius: 10px;
+        background: #0f172a;
+        color: #fff;
+      }
+
+      #cronExpression {
+        font-family: Consolas, monospace;
+        font-size: 27px;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      button {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .copy-button {
+        flex-shrink: 0;
+        background: #2563eb;
+        color: #fff;
+      }
+
+      .description-box,
+      .command-box {
+        margin-top: 18px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      #cronDescription {
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .command-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+      }
+
+      code {
+        font-family: Consolas, monospace;
+      }
+
+      #cronCommand {
+        font-size: 16px;
+        word-break: break-word;
+      }
+
+      .reset-button {
+        margin-top: 20px;
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .information {
+        margin-top: 35px;
+        padding: 28px;
+        border-radius: 14px;
+        background: #fff;
+        line-height: 1.7;
+      }
+
+      .cron-format {
+        overflow-x: auto;
+        padding: 18px;
+        border-radius: 8px;
+        background: #0f172a;
+        color: #fff;
+        font-family: Consolas, monospace;
+        white-space: pre;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+      }
+
+      th {
+        background: #f1f5f9;
+      }
+
+      footer {
+        margin-top: 50px;
+        padding: 24px;
+        background: #0f172a;
+        color: #fff;
+        text-align: center;
+      }
+
+      @media (max-width: 800px) {
+        .cron-fields {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .nav-links {
+          display: none;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .cron-fields {
+          grid-template-columns: 1fr;
+        }
+
+        .expression-box,
+        .command-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .intro h1 {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a class="brand" href="/">Gokuruvi Tools</a>
+
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <h1>Cron Expression Generator</h1>
+
+        <p>
+          Create a Linux cron schedule by selecting a preset or entering values
+          for minute, hour, day, month and weekday.
+        </p>
+      </section>
+
+      <section class="generator">
+        <div class="presets">
+          <label for="preset">Common schedules</label>
+
+          <select id="preset">
+            <option value="custom">Custom schedule</option>
+            <option value="* * * * *">Every minute</option>
+            <option value="*/5 * * * *">Every 5 minutes</option>
+            <option value="*/15 * * * *">Every 15 minutes</option>
+            <option value="0 * * * *">Every hour</option>
+            <option value="0 0 * * *">Every day at midnight</option>
+            <option value="0 6 * * *">Every day at 6:00 AM</option>
+            <option value="0 9 * * 1-5">
+              Weekdays at 9:00 AM
+            </option>
+            <option value="0 0 * * 0">Every Sunday at midnight</option>
+            <option value="0 0 1 * *">First day of every month</option>
+            <option value="0 0 1 1 *">Every year on January 1</option>
+          </select>
+        </div>
+
+        <div class="cron-fields">
+          <div class="field">
+            <label for="minute">Minute</label>
+            <input id="minute" value="*" aria-label="Minute" />
+            <small>0–59</small>
+          </div>
+
+          <div class="field">
+            <label for="hour">Hour</label>
+            <input id="hour" value="*" aria-label="Hour" />
+            <small>0–23</small>
+          </div>
+
+          <div class="field">
+            <label for="day">Day</label>
+            <input id="day" value="*" aria-label="Day of month" />
+            <small>1–31</small>
+          </div>
+
+          <div class="field">
+            <label for="month">Month</label>
+            <input id="month" value="*" aria-label="Month" />
+            <small>1–12</small>
+          </div>
+
+          <div class="field">
+            <label for="weekday">Weekday</label>
+            <input id="weekday" value="*" aria-label="Weekday" />
+            <small>0–7</small>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">Generated cron expression</div>
+
+          <div class="expression-box">
+            <div id="cronExpression">* * * * *</div>
+
+            <button id="copyExpression" class="copy-button" type="button">
+              Copy
+            </button>
+          </div>
+
+          <div class="description-box">
+            <div class="result-label">Schedule description</div>
+            <p id="cronDescription">Runs every minute.</p>
+          </div>
+
+          <div class="command-box">
+            <div class="result-label">Example crontab entry</div>
+
+            <div class="command-row">
+              <code id="cronCommand">
+                * * * * * /path/to/script.sh
+              </code>
+
+              <button id="copyCommand" class="copy-button" type="button">
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <button id="resetButton" class="reset-button" type="button">
+            Reset
+          </button>
+        </div>
+      </section>
+
+      <section class="information">
+        <h2>Linux cron format</h2>
+
+        <div class="cron-format">┌──────── minute (0–59)
+│ ┌────── hour (0–23)
+│ │ ┌──── day of month (1–31)
+│ │ │ ┌── month (1–12)
+│ │ │ │ ┌ day of week (0–7)
+│ │ │ │ │
+* * * * * command</div>
+
+        <h2>Common cron symbols</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Meaning</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td><code>*</code></td>
+              <td>Every allowed value</td>
+              <td><code>* * * * *</code></td>
+            </tr>
+
+            <tr>
+              <td><code>,</code></td>
+              <td>Multiple values</td>
+              <td><code>0,30 * * * *</code></td>
+            </tr>
+
+            <tr>
+              <td><code>-</code></td>
+              <td>Range of values</td>
+              <td><code>0 9 * * 1-5</code></td>
+            </tr>
+
+            <tr>
+              <td><code>/</code></td>
+              <td>Step interval</td>
+              <td><code>*/5 * * * *</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          Always test important cron jobs in a safe environment before using
+          them on production systems.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Gokuruvi Tools. All rights reserved.
+    </footer>
+
+    <script>
+      const preset = document.querySelector("#preset");
+      const minute = document.querySelector("#minute");
+      const hour = document.querySelector("#hour");
+      const day = document.querySelector("#day");
+      const month = document.querySelector("#month");
+      const weekday = document.querySelector("#weekday");
+
+      const cronExpression = document.querySelector("#cronExpression");
+      const cronDescription = document.querySelector("#cronDescription");
+      const cronCommand = document.querySelector("#cronCommand");
+
+      const copyExpression = document.querySelector("#copyExpression");
+      const copyCommand = document.querySelector("#copyCommand");
+      const resetButton = document.querySelector("#resetButton");
+
+      const inputs = [minute, hour, day, month, weekday];
+
+      function getExpression() {
+        return inputs
+          .map((input) => input.value.trim() || "*")
+          .join(" ");
+      }
+
+      function describeExpression(expression) {
+        const descriptions = {
+          "* * * * *": "Runs every minute.",
+          "*/5 * * * *": "Runs every 5 minutes.",
+          "*/15 * * * *": "Runs every 15 minutes.",
+          "0 * * * *": "Runs at the beginning of every hour.",
+          "0 0 * * *": "Runs every day at midnight.",
+          "0 6 * * *": "Runs every day at 6:00 AM.",
+          "0 9 * * 1-5": "Runs Monday through Friday at 9:00 AM.",
+          "0 0 * * 0": "Runs every Sunday at midnight.",
+          "0 0 1 * *": "Runs on the first day of every month.",
+          "0 0 1 1 *": "Runs every year on January 1 at midnight."
+        };
+
+        return descriptions[expression] ??
+          "Custom cron schedule. Verify each value before using it.";
+      }
+
+      function updateResults() {
+        const expression = getExpression();
+
+        cronExpression.textContent = expression;
+        cronDescription.textContent = describeExpression(expression);
+        cronCommand.textContent = `${expression} /path/to/script.sh`;
+
+        const knownPreset = Array.from(preset.options).some(
+          (option) => option.value === expression
+        );
+
+        preset.value = knownPreset ? expression : "custom";
+      }
+
+      preset?.addEventListener("change", () => {
+        if (preset.value === "custom") {
+          return;
+        }
+
+        const parts = preset.value.split(" ");
+
+        inputs.forEach((input, index) => {
+          input.value = parts[index] ?? "*";
+        });
+
+        updateResults();
+      });
+
+      inputs.forEach((input) => {
+        input?.addEventListener("input", updateResults);
+      });
+
+      async function copyText(
+        text,
+        button,
+        defaultLabel
+      ) {
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "Copied";
+
+          setTimeout(() => {
+            button.textContent = defaultLabel;
+          }, 1500);
+        } catch {
+          button.textContent = "Copy failed";
+        }
+      }
+
+      copyExpression?.addEventListener("click", () => {
+        copyText(
+          cronExpression?.textContent ?? "",
+          copyExpression,
+          "Copy"
+        );
+      });
+
+      copyCommand?.addEventListener("click", () => {
+        copyText(
+          cronCommand?.textContent ?? "",
+          copyCommand,
+          "Copy"
+        );
+      });
+
+      resetButton?.addEventListener("click", () => {
+        inputs.forEach((input) => {
+          input.value = "*";
+        });
+
+        preset.value = "custom";
+        updateResults();
+      });
+
+      updateResults();
+    </script>
+  </body>
+</html>

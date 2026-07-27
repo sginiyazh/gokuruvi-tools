@@ -1,0 +1,451 @@
+---
+const pageTitle = "Linux chmod Calculator";
+const description =
+  "Convert Linux read, write and execute permissions into numeric and symbolic chmod values.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Arial,
+          Helvetica,
+          sans-serif;
+        background: #f5f7fb;
+        color: #0f172a;
+      }
+
+      header {
+        background: #0f172a;
+        padding: 18px 24px;
+      }
+
+      nav {
+        max-width: 1100px;
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+      }
+
+      main {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 0 20px;
+      }
+
+      .intro {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .intro h1 {
+        margin-bottom: 12px;
+        font-size: 38px;
+      }
+
+      .intro p {
+        color: #475569;
+        line-height: 1.7;
+      }
+
+      .calculator {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgb(15 23 42 / 8%);
+      }
+
+      .permission-group {
+        display: grid;
+        grid-template-columns: 150px repeat(3, 1fr);
+        gap: 12px;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .permission-group:last-of-type {
+        border-bottom: none;
+      }
+
+      .permission-title {
+        font-weight: 700;
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+      }
+
+      .results {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .result-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 20px;
+      }
+
+      .result-label {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .result-value {
+        font-family: Consolas, monospace;
+        font-size: 28px;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      .command-box {
+        margin-top: 18px;
+        background: #0f172a;
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+      }
+
+      .command-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      code {
+        font-family: Consolas, monospace;
+        font-size: 17px;
+      }
+
+      button {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .copy-button {
+        background: #2563eb;
+        color: white;
+      }
+
+      .reset-button {
+        margin-top: 20px;
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .explanation {
+        margin-top: 35px;
+        background: white;
+        border-radius: 14px;
+        padding: 28px;
+        line-height: 1.7;
+      }
+
+      footer {
+        margin-top: 50px;
+        padding: 24px;
+        text-align: center;
+        background: #0f172a;
+        color: white;
+      }
+
+      @media (max-width: 700px) {
+        .nav-links {
+          display: none;
+        }
+
+        .permission-group {
+          grid-template-columns: 1fr;
+        }
+
+        .permission-title {
+          margin-bottom: 5px;
+        }
+
+        .results {
+          grid-template-columns: 1fr;
+        }
+
+        .command-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .intro h1 {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a class="brand" href="/">Gokuruvi Tools</a>
+
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <h1>Linux chmod Calculator</h1>
+
+        <p>
+          Select read, write and execute permissions for the owner, group and
+          others. The calculator will generate numeric and symbolic chmod
+          values automatically.
+        </p>
+      </section>
+
+      <section class="calculator">
+        <div class="permission-group">
+          <div class="permission-title">Owner</div>
+
+          <label>
+            <input type="checkbox" data-role="owner" data-value="4" />
+            Read
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="owner" data-value="2" />
+            Write
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="owner" data-value="1" />
+            Execute
+          </label>
+        </div>
+
+        <div class="permission-group">
+          <div class="permission-title">Group</div>
+
+          <label>
+            <input type="checkbox" data-role="group" data-value="4" />
+            Read
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="group" data-value="2" />
+            Write
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="group" data-value="1" />
+            Execute
+          </label>
+        </div>
+
+        <div class="permission-group">
+          <div class="permission-title">Others</div>
+
+          <label>
+            <input type="checkbox" data-role="others" data-value="4" />
+            Read
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="others" data-value="2" />
+            Write
+          </label>
+
+          <label>
+            <input type="checkbox" data-role="others" data-value="1" />
+            Execute
+          </label>
+        </div>
+
+        <div class="results">
+          <div class="result-box">
+            <div class="result-label">Numeric permission</div>
+            <div id="numericResult" class="result-value">000</div>
+          </div>
+
+          <div class="result-box">
+            <div class="result-label">Symbolic permission</div>
+            <div id="symbolicResult" class="result-value">---------</div>
+          </div>
+        </div>
+
+        <div class="command-box">
+          <div class="result-label">Generated command</div>
+
+          <div class="command-row">
+            <code id="commandResult">chmod 000 filename</code>
+
+            <button id="copyButton" class="copy-button" type="button">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <button id="resetButton" class="reset-button" type="button">
+          Reset
+        </button>
+      </section>
+
+      <section class="explanation">
+        <h2>How chmod numbers work</h2>
+
+        <p>Each Linux permission has a numeric value:</p>
+
+        <ul>
+          <li><strong>Read:</strong> 4</li>
+          <li><strong>Write:</strong> 2</li>
+          <li><strong>Execute:</strong> 1</li>
+        </ul>
+
+        <p>
+          The values are added for the owner, group and others. For example,
+          <code>chmod 755 filename</code> gives full permissions to the owner
+          and read-and-execute permissions to the group and others.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Gokuruvi Tools. All rights reserved.
+    </footer>
+
+    <script>
+      const checkboxes = document.querySelectorAll(
+        'input[type="checkbox"][data-role]'
+      );
+
+      const numericResult = document.getElementById("numericResult");
+      const symbolicResult = document.getElementById("symbolicResult");
+      const commandResult = document.getElementById("commandResult");
+      const copyButton = document.getElementById("copyButton");
+      const resetButton = document.getElementById("resetButton");
+
+      function calculateRole(role) {
+        const roleCheckboxes = document.querySelectorAll(
+          `input[data-role="${role}"]`
+        );
+
+        let numericValue = 0;
+        let symbolicValue = "";
+
+        roleCheckboxes.forEach((checkbox) => {
+          const value = Number(checkbox.dataset.value);
+
+          if (checkbox.checked) {
+            numericValue += value;
+          }
+
+          if (value === 4) {
+            symbolicValue += checkbox.checked ? "r" : "-";
+          }
+
+          if (value === 2) {
+            symbolicValue += checkbox.checked ? "w" : "-";
+          }
+
+          if (value === 1) {
+            symbolicValue += checkbox.checked ? "x" : "-";
+          }
+        });
+
+        return {
+          numericValue,
+          symbolicValue
+        };
+      }
+
+      function updateResults() {
+        const owner = calculateRole("owner");
+        const group = calculateRole("group");
+        const others = calculateRole("others");
+
+        const numeric =
+          `${owner.numericValue}${group.numericValue}${others.numericValue}`;
+
+        const symbolic =
+          `${owner.symbolicValue}${group.symbolicValue}${others.symbolicValue}`;
+
+        numericResult.textContent = numeric;
+        symbolicResult.textContent = symbolic;
+        commandResult.textContent = `chmod ${numeric} filename`;
+      }
+
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", updateResults);
+      });
+
+      resetButton.addEventListener("click", () => {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+
+        updateResults();
+      });
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(commandResult.textContent ?? "");
+          copyButton.textContent = "Copied";
+
+          setTimeout(() => {
+            copyButton.textContent = "Copy";
+          }, 1500);
+        } catch {
+          copyButton.textContent = "Copy failed";
+        }
+      });
+
+      updateResults();
+    </script>
+  </body>
+</html>
