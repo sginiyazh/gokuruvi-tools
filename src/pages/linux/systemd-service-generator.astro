@@ -1,0 +1,656 @@
+---
+const pageTitle = "systemd Service Generator";
+const description =
+  "Generate a basic Linux systemd service unit file for applications, scripts, and background services.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f5f7fb;
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      header {
+        background: #0f172a;
+        padding: 18px 24px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 0 20px;
+      }
+
+      .intro {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .intro h1 {
+        margin-bottom: 12px;
+        font-size: 38px;
+      }
+
+      .intro p {
+        color: #475569;
+        line-height: 1.7;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel {
+        padding: 28px;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgb(15 23 42 / 8%);
+      }
+
+      .panel h2 {
+        margin-top: 0;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f172a;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      small {
+        display: block;
+        margin-top: 6px;
+        color: #64748b;
+        line-height: 1.5;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .checkbox-row input {
+        width: 18px;
+        height: 18px;
+      }
+
+      .checkbox-row label {
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .output-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 14px;
+      }
+
+      .output-header h2 {
+        margin: 0;
+      }
+
+      button {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .copy-button {
+        background: #2563eb;
+        color: #fff;
+      }
+
+      .reset-button {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .output {
+        min-height: 520px;
+        overflow-x: auto;
+        padding: 20px;
+        border-radius: 10px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: Consolas, monospace;
+        font-size: 15px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .commands {
+        margin-top: 24px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .commands code {
+        display: block;
+        margin-top: 8px;
+        overflow-x: auto;
+        font-family: Consolas, monospace;
+        white-space: nowrap;
+      }
+
+      .information {
+        margin-top: 35px;
+        padding: 28px;
+        border-radius: 14px;
+        background: #fff;
+        line-height: 1.7;
+      }
+
+      .information code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #e2e8f0;
+      }
+
+      footer {
+        margin-top: 50px;
+        padding: 24px;
+        background: #0f172a;
+        color: #fff;
+        text-align: center;
+      }
+
+      @media (max-width: 850px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .output {
+          min-height: 400px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .intro h1 {
+          font-size: 30px;
+        }
+
+        .output-header,
+        .button-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a class="brand" href="/">Gokuruvi Tools</a>
+
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <h1>systemd Service Generator</h1>
+
+        <p>
+          Generate a basic systemd unit file for a Linux application, script,
+          API, web server, or background service.
+        </p>
+      </section>
+
+      <section class="generator-layout">
+        <div class="panel">
+          <h2>Service configuration</h2>
+
+          <div class="form-group">
+            <label for="serviceName">Service name</label>
+            <input
+              id="serviceName"
+              type="text"
+              value="myapp"
+              placeholder="myapp"
+            />
+            <small>
+              Use lowercase letters, numbers, hyphens, and underscores.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input
+              id="description"
+              type="text"
+              value="My Linux application"
+              placeholder="My Linux application"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="after">Start after</label>
+            <input
+              id="after"
+              type="text"
+              value="network.target"
+              placeholder="network.target"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="user">Run as user</label>
+            <input
+              id="user"
+              type="text"
+              value="root"
+              placeholder="root"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="group">Run as group</label>
+            <input
+              id="group"
+              type="text"
+              value="root"
+              placeholder="root"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="workingDirectory">Working directory</label>
+            <input
+              id="workingDirectory"
+              type="text"
+              value="/opt/myapp"
+              placeholder="/opt/myapp"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="execStart">Start command</label>
+            <input
+              id="execStart"
+              type="text"
+              value="/opt/myapp/start.sh"
+              placeholder="/usr/bin/python3 /opt/myapp/app.py"
+            />
+            <small>
+              Use an absolute path. Shell operators such as pipes and
+              redirections require a shell command.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="execStop">Stop command (optional)</label>
+            <input
+              id="execStop"
+              type="text"
+              placeholder="/opt/myapp/stop.sh"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="restart">Restart policy</label>
+
+            <select id="restart">
+              <option value="no">No</option>
+              <option value="on-success">On success</option>
+              <option value="on-failure" selected>On failure</option>
+              <option value="on-abnormal">On abnormal exit</option>
+              <option value="on-abort">On abort</option>
+              <option value="always">Always</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="restartSec">Restart delay</label>
+            <input
+              id="restartSec"
+              type="text"
+              value="5"
+              placeholder="5"
+            />
+            <small>Value is in seconds.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="environment">Environment variables</label>
+            <textarea
+              id="environment"
+              placeholder={'APP_ENV=production\nPORT=8080'}
+            ></textarea>
+            <small>Enter one NAME=value entry per line.</small>
+          </div>
+
+          <div class="form-group checkbox-row">
+            <input id="wantedBy" type="checkbox" checked />
+            <label for="wantedBy">
+              Start automatically during normal system boot
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button id="resetButton" class="reset-button" type="button">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="output-header">
+            <h2>Generated unit file</h2>
+
+            <button id="copyButton" class="copy-button" type="button">
+              Copy
+            </button>
+          </div>
+
+          <pre id="unitOutput" class="output"></pre>
+
+          <div class="commands">
+            <strong>Suggested installation commands</strong>
+
+            <code id="saveCommand">
+              sudo nano /etc/systemd/system/myapp.service
+            </code>
+
+            <code>sudo systemctl daemon-reload</code>
+            <code id="enableCommand">
+              sudo systemctl enable --now myapp.service
+            </code>
+
+            <code id="statusCommand">
+              sudo systemctl status myapp.service
+            </code>
+          </div>
+        </div>
+      </section>
+
+      <section class="information">
+        <h2>How to install the generated service</h2>
+
+        <ol>
+          <li>
+            Save the output as
+            <code>/etc/systemd/system/service-name.service</code>.
+          </li>
+          <li>
+            Reload systemd with <code>systemctl daemon-reload</code>.
+          </li>
+          <li>
+            Enable and start the service using
+            <code>systemctl enable --now service-name</code>.
+          </li>
+          <li>
+            Check its status with
+            <code>systemctl status service-name</code>.
+          </li>
+          <li>
+            Review logs using
+            <code>journalctl -u service-name</code>.
+          </li>
+        </ol>
+
+        <p>
+          Review and test every generated unit file before using it on a
+          production server. Avoid running applications as root unless they
+          genuinely require root privileges.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Gokuruvi Tools. All rights reserved.
+    </footer>
+
+    <script>
+      const serviceName = document.querySelector("#serviceName");
+      const description = document.querySelector("#description");
+      const after = document.querySelector("#after");
+      const user = document.querySelector("#user");
+      const group = document.querySelector("#group");
+      const workingDirectory = document.querySelector("#workingDirectory");
+      const execStart = document.querySelector("#execStart");
+      const execStop = document.querySelector("#execStop");
+      const restart = document.querySelector("#restart");
+      const restartSec = document.querySelector("#restartSec");
+      const environment = document.querySelector("#environment");
+      const wantedBy = document.querySelector("#wantedBy");
+
+      const unitOutput = document.querySelector("#unitOutput");
+      const saveCommand = document.querySelector("#saveCommand");
+      const enableCommand = document.querySelector("#enableCommand");
+      const statusCommand = document.querySelector("#statusCommand");
+
+      const copyButton = document.querySelector("#copyButton");
+      const resetButton = document.querySelector("#resetButton");
+
+      const fields = [
+        serviceName,
+        description,
+        after,
+        user,
+        group,
+        workingDirectory,
+        execStart,
+        execStop,
+        restart,
+        restartSec,
+        environment,
+        wantedBy
+      ];
+
+      function cleanServiceName(value) {
+        const cleaned = value
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
+        return cleaned || "myapp";
+      }
+
+      function escapeEnvironmentValue(value) {
+        return value.replaceAll('"', '\\"');
+      }
+
+      function generateEnvironmentLines() {
+        const lines = environment.value
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        return lines.map((line) => {
+          return `Environment="${escapeEnvironmentValue(line)}"`;
+        });
+      }
+
+      function generateUnit() {
+        const name = cleanServiceName(serviceName.value);
+        const unitLines = [
+          "[Unit]",
+          `Description=${description.value.trim() || "Linux application"}`,
+          `After=${after.value.trim() || "network.target"}`,
+          "",
+          "[Service]",
+          "Type=simple"
+        ];
+
+        if (user.value.trim()) {
+          unitLines.push(`User=${user.value.trim()}`);
+        }
+
+        if (group.value.trim()) {
+          unitLines.push(`Group=${group.value.trim()}`);
+        }
+
+        if (workingDirectory.value.trim()) {
+          unitLines.push(
+            `WorkingDirectory=${workingDirectory.value.trim()}`
+          );
+        }
+
+        generateEnvironmentLines().forEach((line) => {
+          unitLines.push(line);
+        });
+
+        unitLines.push(
+          `ExecStart=${execStart.value.trim() || "/path/to/application"}`
+        );
+
+        if (execStop.value.trim()) {
+          unitLines.push(`ExecStop=${execStop.value.trim()}`);
+        }
+
+        unitLines.push(`Restart=${restart.value}`);
+
+        if (restart.value !== "no" && restartSec.value.trim()) {
+          unitLines.push(`RestartSec=${restartSec.value.trim()}`);
+        }
+
+        if (wantedBy.checked) {
+          unitLines.push(
+            "",
+            "[Install]",
+            "WantedBy=multi-user.target"
+          );
+        }
+
+        unitOutput.textContent = unitLines.join("\n");
+
+        saveCommand.textContent =
+          `sudo nano /etc/systemd/system/${name}.service`;
+
+        enableCommand.textContent =
+          `sudo systemctl enable --now ${name}.service`;
+
+        statusCommand.textContent =
+          `sudo systemctl status ${name}.service`;
+      }
+
+      fields.forEach((field) => {
+        field?.addEventListener("input", generateUnit);
+        field?.addEventListener("change", generateUnit);
+      });
+
+      copyButton?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(
+            unitOutput.textContent ?? ""
+          );
+
+          copyButton.textContent = "Copied";
+
+          setTimeout(() => {
+            copyButton.textContent = "Copy";
+          }, 1500);
+        } catch {
+          copyButton.textContent = "Copy failed";
+        }
+      });
+
+      resetButton?.addEventListener("click", () => {
+        serviceName.value = "myapp";
+        description.value = "My Linux application";
+        after.value = "network.target";
+        user.value = "root";
+        group.value = "root";
+        workingDirectory.value = "/opt/myapp";
+        execStart.value = "/opt/myapp/start.sh";
+        execStop.value = "";
+        restart.value = "on-failure";
+        restartSec.value = "5";
+        environment.value = "";
+        wantedBy.checked = true;
+
+        generateUnit();
+      });
+
+      generateUnit();
+    </script>
+  </body>
+</html>
