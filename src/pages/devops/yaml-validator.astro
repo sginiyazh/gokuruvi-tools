@@ -1,0 +1,710 @@
+---
+const pageTitle = "Online YAML Validator and Formatter";
+const description =
+  "Validate, format and convert YAML to JSON using a free browser-based YAML validator.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="description" content={description} />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/devops/yaml-validator"
+    />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #172033;
+        background: #f5f7fb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      header {
+        padding: 18px 24px;
+        background: #111827;
+        color: white;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1150px;
+        margin: auto;
+      }
+
+      nav a {
+        margin-left: 18px;
+        color: white;
+        text-decoration: none;
+      }
+
+      .brand {
+        margin-left: 0;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      main {
+        max-width: 1150px;
+        margin: auto;
+        padding: 50px 24px;
+      }
+
+      .hero {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin-bottom: 14px;
+        font-size: 40px;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: auto;
+        color: #4b5563;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .validator {
+        padding: 28px;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 10px 30px rgb(15 23 42 / 8%);
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      button {
+        padding: 11px 17px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .primary {
+        background: #2563eb;
+        color: white;
+      }
+
+      .secondary {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .editor-section label {
+        display: block;
+        margin-bottom: 9px;
+        font-weight: 700;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 460px;
+        padding: 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        outline: none;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 15px;
+        line-height: 1.6;
+        resize: vertical;
+        tab-size: 2;
+      }
+
+      textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
+      }
+
+      .status {
+        display: none;
+        margin: 20px 0;
+        padding: 16px 18px;
+        border-radius: 9px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+      }
+
+      .status.success {
+        display: block;
+        border: 1px solid #86efac;
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .status.error {
+        display: block;
+        border: 1px solid #fca5a5;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
+      .status.info {
+        display: block;
+        border: 1px solid #93c5fd;
+        background: #eff6ff;
+        color: #1e40af;
+      }
+
+      .statistics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .stat {
+        min-width: 130px;
+        padding: 13px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .stat-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      .stat-value {
+        font-weight: 700;
+      }
+
+      .information {
+        margin-top: 35px;
+        padding: 28px;
+        border-radius: 14px;
+        background: white;
+        line-height: 1.7;
+      }
+
+      .information code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #e2e8f0;
+      }
+
+      pre {
+        overflow-x: auto;
+        padding: 18px;
+        border-radius: 9px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: Consolas, Monaco, monospace;
+        line-height: 1.6;
+      }
+
+      footer {
+        margin-top: 50px;
+        padding: 28px;
+        background: #111827;
+        color: white;
+        text-align: center;
+      }
+
+      @media (max-width: 850px) {
+        .editor-grid {
+          grid-template-columns: 1fr;
+        }
+
+        nav div {
+          display: none;
+        }
+
+        .hero h1 {
+          font-size: 32px;
+        }
+
+        textarea {
+          min-height: 350px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a class="brand" href="/">Gokuruvi Tools</a>
+
+        <div>
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/about">About</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>YAML Validator and Formatter</h1>
+
+        <p>
+          Validate YAML syntax, identify line errors, format YAML and convert
+          YAML documents into JSON directly in your browser.
+        </p>
+      </section>
+
+      <section class="validator">
+        <div class="toolbar">
+          <button id="validateButton" class="primary" type="button">
+            Validate YAML
+          </button>
+
+          <button id="formatButton" class="secondary" type="button">
+            Format YAML
+          </button>
+
+          <button id="jsonButton" class="secondary" type="button">
+            Convert to JSON
+          </button>
+
+          <button id="sampleButton" class="secondary" type="button">
+            Load sample
+          </button>
+
+          <button id="copyButton" class="secondary" type="button">
+            Copy output
+          </button>
+
+          <button id="downloadButton" class="secondary" type="button">
+            Download YAML
+          </button>
+
+          <button id="clearButton" class="danger" type="button">
+            Clear
+          </button>
+        </div>
+
+        <div id="statusMessage" class="status" role="status"></div>
+
+        <div class="editor-grid">
+          <div class="editor-section">
+            <label for="yamlInput">YAML input</label>
+
+            <textarea
+              id="yamlInput"
+              spellcheck="false"
+              placeholder="Paste your YAML here..."
+            >apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-config
+  namespace: default
+data:
+  environment: production
+  logLevel: info</textarea>
+          </div>
+
+          <div class="editor-section">
+            <label for="output">Formatted YAML or JSON output</label>
+
+            <textarea
+              id="output"
+              spellcheck="false"
+              readonly
+              placeholder="Validated output will appear here..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="statistics">
+          <div class="stat">
+            <span class="stat-label">Lines</span>
+            <span id="lineCount" class="stat-value">0</span>
+          </div>
+
+          <div class="stat">
+            <span class="stat-label">Characters</span>
+            <span id="characterCount" class="stat-value">0</span>
+          </div>
+
+          <div class="stat">
+            <span class="stat-label">Documents</span>
+            <span id="documentCount" class="stat-value">0</span>
+          </div>
+
+          <div class="stat">
+            <span class="stat-label">Status</span>
+            <span id="validationStatus" class="stat-value">
+              Not validated
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="information">
+        <h2>What is YAML?</h2>
+
+        <p>
+          YAML is a human-readable data format commonly used for Kubernetes
+          manifests, Ansible playbooks, Docker Compose files, CI/CD pipelines
+          and application configuration.
+        </p>
+
+        <h2>Example YAML</h2>
+
+        <pre><code>server:
+  host: 0.0.0.0
+  port: 8080
+
+database:
+  host: db.example.com
+  username: appuser
+  enabled: true</code></pre>
+
+        <h2>Common YAML errors</h2>
+
+        <ul>
+          <li>Incorrect indentation.</li>
+          <li>Using tab characters instead of spaces.</li>
+          <li>Missing spaces after colons.</li>
+          <li>Duplicate or incorrectly nested keys.</li>
+          <li>Unclosed quotation marks.</li>
+          <li>Incorrect list indentation.</li>
+        </ul>
+
+        <p>
+          This tool processes the YAML in your browser. Avoid entering
+          passwords, private keys, access tokens or confidential information.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Gokuruvi Tools. All rights reserved.
+    </footer>
+
+    <script>
+      import { loadAll, dump } from "js-yaml";
+
+      const yamlInput = document.querySelector("#yamlInput");
+      const output = document.querySelector("#output");
+      const statusMessage = document.querySelector("#statusMessage");
+
+      const lineCount = document.querySelector("#lineCount");
+      const characterCount = document.querySelector("#characterCount");
+      const documentCount = document.querySelector("#documentCount");
+      const validationStatus = document.querySelector("#validationStatus");
+
+      const validateButton = document.querySelector("#validateButton");
+      const formatButton = document.querySelector("#formatButton");
+      const jsonButton = document.querySelector("#jsonButton");
+      const sampleButton = document.querySelector("#sampleButton");
+      const copyButton = document.querySelector("#copyButton");
+      const downloadButton = document.querySelector("#downloadButton");
+      const clearButton = document.querySelector("#clearButton");
+
+      const sampleYaml = `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80`;
+
+      function setStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = `status ${type}`;
+      }
+
+      function updateStatistics() {
+        const text = yamlInput.value;
+
+        lineCount.textContent = text
+          ? String(text.split(/\r?\n/).length)
+          : "0";
+
+        characterCount.textContent = String(text.length);
+
+        const separators = text
+          .split(/\r?\n/)
+          .filter((line) => line.trim() === "---").length;
+
+        documentCount.textContent = text.trim()
+          ? String(separators + 1)
+          : "0";
+      }
+
+      function parseYaml() {
+        const source = yamlInput.value.trim();
+
+        if (!source) {
+          throw new Error("Please enter YAML content before validating.");
+        }
+
+        if (source.includes("\t")) {
+          throw new Error(
+            "Tab characters were detected. YAML indentation should use spaces."
+          );
+        }
+
+        const documents = [];
+
+        loadAll(source, (document) => {
+          if (document !== undefined) {
+            documents.push(document);
+          }
+        });
+
+        return documents;
+      }
+
+      function formatYamlError(error) {
+        if (error?.mark) {
+          const line = error.mark.line + 1;
+          const column = error.mark.column + 1;
+
+          return `Invalid YAML at line ${line}, column ${column}.\n${error.reason ?? error.message}`;
+        }
+
+        return error instanceof Error
+          ? error.message
+          : "The YAML document is invalid.";
+      }
+
+      function validateYaml() {
+        try {
+          const documents = parseYaml();
+
+          output.value = yamlInput.value;
+          validationStatus.textContent = "Valid";
+          documentCount.textContent = String(documents.length);
+
+          setStatus(
+            `Valid YAML. ${documents.length} document${
+              documents.length === 1 ? "" : "s"
+            } detected.`,
+            "success"
+          );
+
+          return documents;
+        } catch (error) {
+          validationStatus.textContent = "Invalid";
+          output.value = "";
+
+          setStatus(formatYamlError(error), "error");
+
+          return null;
+        }
+      }
+
+      function formatYaml() {
+        try {
+          const documents = parseYaml();
+
+          const formatted = documents
+            .map((document) =>
+              dump(document, {
+                indent: 2,
+                lineWidth: 100,
+                noRefs: true,
+                sortKeys: false,
+              }).trim()
+            )
+            .join("\n---\n");
+
+          yamlInput.value = formatted;
+          output.value = formatted;
+
+          validationStatus.textContent = "Valid";
+          documentCount.textContent = String(documents.length);
+
+          setStatus("YAML formatted successfully.", "success");
+          updateStatistics();
+        } catch (error) {
+          validationStatus.textContent = "Invalid";
+          setStatus(formatYamlError(error), "error");
+        }
+      }
+
+      function convertToJson() {
+        try {
+          const documents = parseYaml();
+
+          const result =
+            documents.length === 1 ? documents[0] : documents;
+
+          output.value = JSON.stringify(result, null, 2);
+
+          validationStatus.textContent = "Valid";
+          documentCount.textContent = String(documents.length);
+
+          setStatus("YAML converted to JSON successfully.", "success");
+        } catch (error) {
+          validationStatus.textContent = "Invalid";
+          output.value = "";
+
+          setStatus(formatYamlError(error), "error");
+        }
+      }
+
+      async function copyOutput() {
+        const text = output.value || yamlInput.value;
+
+        if (!text.trim()) {
+          setStatus("There is no content available to copy.", "error");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+
+          copyButton.textContent = "Copied";
+
+          setTimeout(() => {
+            copyButton.textContent = "Copy output";
+          }, 1500);
+        } catch {
+          setStatus(
+            "The browser could not copy the content automatically.",
+            "error"
+          );
+        }
+      }
+
+      function downloadYaml() {
+        const text = output.value || yamlInput.value;
+
+        if (!text.trim()) {
+          setStatus("There is no YAML available to download.", "error");
+          return;
+        }
+
+        const blob = new Blob([text], {
+          type: "text/yaml;charset=utf-8",
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "validated.yaml";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        setStatus("YAML file prepared successfully.", "success");
+      }
+
+      function insertTab(event) {
+        if (event.key !== "Tab") {
+          return;
+        }
+
+        event.preventDefault();
+
+        const start = yamlInput.selectionStart;
+        const end = yamlInput.selectionEnd;
+
+        yamlInput.value =
+          yamlInput.value.substring(0, start) +
+          "  " +
+          yamlInput.value.substring(end);
+
+        yamlInput.selectionStart = start + 2;
+        yamlInput.selectionEnd = start + 2;
+
+        updateStatistics();
+      }
+
+      validateButton.addEventListener("click", validateYaml);
+      formatButton.addEventListener("click", formatYaml);
+      jsonButton.addEventListener("click", convertToJson);
+      copyButton.addEventListener("click", copyOutput);
+      downloadButton.addEventListener("click", downloadYaml);
+
+      sampleButton.addEventListener("click", () => {
+        yamlInput.value = sampleYaml;
+        output.value = "";
+        validationStatus.textContent = "Not validated";
+
+        setStatus("Sample Kubernetes YAML loaded.", "info");
+        updateStatistics();
+      });
+
+      clearButton.addEventListener("click", () => {
+        yamlInput.value = "";
+        output.value = "";
+        validationStatus.textContent = "Not validated";
+        statusMessage.className = "status";
+        statusMessage.textContent = "";
+
+        updateStatistics();
+        yamlInput.focus();
+      });
+
+      yamlInput.addEventListener("input", () => {
+        validationStatus.textContent = "Not validated";
+        updateStatistics();
+      });
+
+      yamlInput.addEventListener("keydown", insertTab);
+
+      updateStatistics();
+    </script>
+  </body>
+</html>

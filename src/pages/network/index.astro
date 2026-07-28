@@ -1,65 +1,107 @@
 ---
-const pageTitle = "Kubernetes Tools";
+const pageTitle = "Network Tools";
 
 const description =
-  "Free Kubernetes YAML generators and validators for deployments, services, ingress, configuration, storage and Helm.";
+  "Free networking calculators, command generators and utilities for IP addressing, DNS, ports, VLANs and troubleshooting.";
 
 const tools = [
   {
-    icon: "🚀",
-    name: "Deployment Generator",
+    icon: "🧮",
+    name: "Subnet Calculator",
     description:
-      "Generate Kubernetes Deployment YAML with replicas, images and container ports.",
-    link: "/kubernetes/deployment-generator",
-  },
-  {
-    icon: "🔌",
-    name: "Service Generator",
-    description:
-      "Create ClusterIP, NodePort and LoadBalancer Service manifests.",
-    link: "/kubernetes/service-generator",
+      "Calculate network address, broadcast address, subnet mask, usable hosts and IP ranges.",
+    link: "/network/subnet-calculator",
   },
   {
     icon: "🌐",
-    name: "Ingress Generator",
+    name: "IP Calculator",
     description:
-      "Generate Kubernetes Ingress YAML with hosts, paths and TLS settings.",
-    link: "/kubernetes/ingress-generator",
+      "Calculate IPv4 network details, host ranges, subnet masks and address information.",
+    link: "/network/ip-calculator",
   },
   {
-    icon: "🗂️",
-    name: "ConfigMap Generator",
+    icon: "🔢",
+    name: "CIDR Calculator",
     description:
-      "Create Kubernetes ConfigMap manifests for application configuration.",
-    link: "/kubernetes/configmap-generator",
+      "Convert CIDR notation into subnet masks, network ranges and usable host counts.",
+    link: "/network/cidr-calculator",
   },
   {
-    icon: "🔐",
-    name: "Secret Generator",
+    icon: "0️⃣",
+    name: "IPv4 to Binary",
     description:
-      "Generate Kubernetes Secret YAML with Base64-encoded values.",
-    link: "/kubernetes/secret-generator",
+      "Convert an IPv4 address into its binary representation quickly and accurately.",
+    link: "/network/ipv4-to-binary",
   },
   {
-    icon: "📁",
-    name: "Namespace Generator",
+    icon: "1️⃣",
+    name: "Binary to IPv4",
     description:
-      "Create Kubernetes Namespace manifests with labels and annotations.",
-    link: "/kubernetes/namespace-generator",
+      "Convert a 32-bit binary network address into a standard IPv4 address.",
+    link: "/network/binary-to-ipv4",
   },
   {
-    icon: "💾",
-    name: "PVC Generator",
+    icon: "🔌",
+    name: "Port Checker",
     description:
-      "Generate PersistentVolumeClaim YAML for Kubernetes storage.",
-    link: "/kubernetes/pvc-generator",
+      "Check common TCP and UDP port information and identify their associated services.",
+    link: "/network/port-checker",
   },
   {
-    icon: "⚙️",
-    name: "Helm Values Validator",
+    icon: "📡",
+    name: "Ping Command Generator",
     description:
-      "Validate Helm values.yaml files and identify YAML syntax errors.",
-    link: "/kubernetes/helm-values-validator",
+      "Generate ping commands for Linux, Windows and macOS with custom options.",
+    link: "/network/ping-command-generator",
+  },
+  {
+    icon: "🛣️",
+    name: "Traceroute Generator",
+    description:
+      "Build traceroute or tracert commands to troubleshoot network paths and connectivity.",
+    link: "/network/traceroute-command-generator",
+  },
+  {
+    icon: "🔍",
+    name: "NSLookup Generator",
+    description:
+      "Generate nslookup commands to query DNS records and troubleshoot name resolution.",
+    link: "/network/nslookup-generator",
+  },
+  {
+    icon: "🧭",
+    name: "DIG Command Generator",
+    description:
+      "Create dig commands for A, AAAA, MX, NS, TXT, CNAME and reverse DNS lookups.",
+    link: "/network/dig-command-generator",
+  },
+  {
+    icon: "📊",
+    name: "Netstat Command Generator",
+    description:
+      "Generate netstat commands to view connections, ports, routes and network statistics.",
+    link: "/network/netstat-command-generator",
+  },
+  {
+    icon: "🏷️",
+    name: "VLAN Calculator",
+    description:
+      "Validate VLAN IDs and calculate VLAN ranges for network configuration planning.",
+    link: "/network/vlan-calculator",
+  },
+  {
+    icon: "💻",
+    name: "MAC Address Formatter",
+    description:
+      "Format and validate MAC addresses for Linux, Windows, Cisco and other platforms.",
+    link: "/network/mac-address-lookup",
+  },
+  {
+    icon: "🗃️",
+    name: "DNS Record Generator",
+    description:
+      "Generate common DNS records including A, AAAA, CNAME, MX, TXT and PTR.",
+    link: "/network/dns-record-generator",
   },
 ];
 ---
@@ -78,14 +120,14 @@ const tools = [
 
     <meta
       name="keywords"
-      content="Kubernetes tools, YAML generator, Deployment generator, Service generator, Ingress generator, ConfigMap generator, Secret generator, PVC generator, Helm validator"
+      content="network tools, subnet calculator, IP calculator, CIDR calculator, DNS tools, port checker, ping generator, traceroute generator, VLAN calculator, network troubleshooting"
     />
 
     <meta name="author" content="Gokuruvi Tools" />
 
     <meta
       property="og:title"
-      content="Kubernetes Tools | Gokuruvi Tools"
+      content="Network Tools | Gokuruvi Tools"
     />
 
     <meta property="og:description" content={description} />
@@ -94,21 +136,21 @@ const tools = [
 
     <meta
       property="og:url"
-      content="https://www.gokuruvi.com/kubernetes"
+      content="https://www.gokuruvi.com/network"
     />
 
     <link
       rel="canonical"
-      href="https://www.gokuruvi.com/kubernetes"
+      href="https://www.gokuruvi.com/network"
     />
 
     <title>{pageTitle} | Gokuruvi Tools</title>
 
     <style>
       :root {
-        --primary: #326ce5;
-        --primary-dark: #2454b8;
-        --secondary: #38bdf8;
+        --primary: #0f766e;
+        --primary-dark: #115e59;
+        --secondary: #22d3ee;
         --dark: #0f172a;
         --text: #172033;
         --muted: #64748b;
@@ -211,18 +253,18 @@ const tools = [
         background:
           radial-gradient(
             circle at 10% 20%,
-            rgba(56, 189, 248, 0.16),
+            rgba(34, 211, 238, 0.16),
             transparent 30%
           ),
           radial-gradient(
             circle at 90% 30%,
-            rgba(50, 108, 229, 0.15),
+            rgba(15, 118, 110, 0.16),
             transparent 32%
           ),
           linear-gradient(
             145deg,
             #f8fafc,
-            #edf4ff,
+            #ecfeff,
             #f8fafc
           );
       }
@@ -237,7 +279,7 @@ const tools = [
         display: inline-block;
         margin-bottom: 18px;
         padding: 7px 14px;
-        border: 1px solid #bfd4ff;
+        border: 1px solid #99f6e4;
         border-radius: 999px;
         background: #ffffff;
         color: var(--primary-dark);
@@ -308,8 +350,8 @@ const tools = [
 
       .tool-card:hover {
         transform: translateY(-6px);
-        border-color: #9bb9f5;
-        box-shadow: 0 20px 40px rgba(50, 108, 229, 0.12);
+        border-color: #5eead4;
+        box-shadow: 0 20px 40px rgba(15, 118, 110, 0.14);
       }
 
       .tool-icon {
@@ -319,7 +361,7 @@ const tools = [
         place-items: center;
         margin-bottom: 20px;
         border-radius: 14px;
-        background: #edf4ff;
+        background: #ecfeff;
         font-size: 27px;
       }
 
@@ -404,6 +446,12 @@ const tools = [
         }
       }
 
+      @media (max-width: 900px) {
+        .nav-links {
+          gap: 16px;
+        }
+      }
+
       @media (max-width: 800px) {
         .navbar {
           align-items: flex-start;
@@ -453,7 +501,7 @@ const tools = [
       <div class="container">
         <nav class="navbar" aria-label="Main navigation">
           <a class="logo" href="/">
-            <span class="logo-icon">⎈</span>
+            <span class="logo-icon">🌐</span>
             <span>Gokuruvi Tools</span>
           </a>
 
@@ -461,10 +509,9 @@ const tools = [
             <a href="/">Home</a>
             <a href="/linux">Linux</a>
             <a href="/devops">DevOps</a>
-            <a href="/kubernetes" aria-current="page">
-              Kubernetes
-            </a>
+            <a href="/kubernetes">Kubernetes</a>
             <a href="/cloud">Cloud</a>
+            <a href="/network" aria-current="page">Network</a>
             <a href="/about">About</a>
           </div>
         </nav>
@@ -475,10 +522,10 @@ const tools = [
       <section class="hero">
         <div class="container hero-content">
           <span class="badge">
-            Free Kubernetes utilities
+            Free networking utilities
           </span>
 
-          <h1>Kubernetes Tools</h1>
+          <h1>Network Tools</h1>
 
           <p>{description}</p>
         </div>
@@ -487,11 +534,12 @@ const tools = [
       <section class="tools-section">
         <div class="container">
           <div class="section-heading">
-            <h2>Kubernetes YAML generators</h2>
+            <h2>Networking calculators and generators</h2>
 
             <p>
-              Select a tool to generate or validate Kubernetes configuration
-              files directly in your browser.
+              Select a networking tool to calculate IP information,
+              generate commands, create DNS records or troubleshoot
+              connectivity.
             </p>
           </div>
 
@@ -520,13 +568,14 @@ const tools = [
       <section class="information">
         <div class="container">
           <div class="information-box">
-            <h2>Browser-based Kubernetes tools</h2>
+            <h2>Browser-based network tools</h2>
 
             <p>
-              Generate Kubernetes manifests for workloads, networking,
-              configuration, security and persistent storage. Review the
-              generated YAML carefully before applying it to a production
-              Kubernetes cluster.
+              Use these free browser-based networking utilities to calculate
+              subnets, convert IP addresses, generate troubleshooting commands,
+              create DNS records and review common network configuration
+              information. Always validate generated commands before running
+              them in a production environment.
             </p>
           </div>
         </div>

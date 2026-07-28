@@ -12,7 +12,7 @@ const categories = [
     icon: "⚙️",
     title: "DevOps Tools",
     description:
-      "Utilities for Docker, Jenkins, Git, CI/CD pipelines and DevOps automation.",
+      "Utilities for Docker, YAML, JSON, CI/CD pipelines and DevOps automation.",
     link: "/devops",
     button: "Browse DevOps Tools",
   },
@@ -23,6 +23,14 @@ const categories = [
       "Generate Kubernetes YAML files, commands and configuration templates.",
     link: "/kubernetes",
     button: "Browse Kubernetes Tools",
+  },
+  {
+    icon: "🌐",
+    title: "Network Tools",
+    description:
+      "Subnet calculators, IP address tools, DNS utilities and network troubleshooting tools.",
+    link: "/network",
+    button: "Browse Network Tools",
   },
   {
     icon: "☁️",
@@ -50,18 +58,18 @@ const featuredTools = [
     link: "/linux/cron-generator",
   },
   {
-    icon: "⚙️",
-    title: "systemd Service Generator",
+    icon: "🌍",
+    title: "Subnet Calculator",
     description:
-      "Generate a basic systemd service unit for Linux applications.",
-    link: "/linux/systemd-service-generator",
+      "Calculate network address, broadcast address, subnet mask and available hosts.",
+    link: "/network/subnet-calculator",
   },
   {
-    icon: "📁",
-    title: "Ownership Command Generator",
+    icon: "🚀",
+    title: "Kubernetes Deployment Generator",
     description:
-      "Generate Linux chown and chgrp commands for files and directories.",
-    link: "/linux/ownership-command-generator",
+      "Generate Kubernetes Deployment YAML with replicas, images and container ports.",
+    link: "/kubernetes/deployment-generator",
   },
 ];
 
@@ -82,7 +90,7 @@ const benefits = [
     icon: "💯",
     title: "Free to Use",
     description:
-      "Access practical Linux, DevOps, Kubernetes and cloud tools without registration.",
+      "Access practical Linux, DevOps, Kubernetes, network and cloud tools without registration.",
   },
   {
     icon: "📱",
@@ -94,13 +102,13 @@ const benefits = [
     icon: "🧰",
     title: "Built for Engineers",
     description:
-      "Practical utilities created for system administrators and DevOps engineers.",
+      "Practical utilities created for system administrators, network engineers and DevOps professionals.",
   },
   {
     icon: "🚀",
     title: "More Tools Coming",
     description:
-      "New administration, automation and cloud utilities will be added regularly.",
+      "New administration, automation, networking and cloud utilities will be added regularly.",
   },
 ];
 ---
@@ -117,30 +125,41 @@ const benefits = [
 
     <meta
       name="description"
-      content="Free Linux, DevOps, Kubernetes and cloud tools for system administrators, engineers and cloud professionals."
+      content="Free Linux, DevOps, Kubernetes, network and cloud tools for system administrators, engineers and cloud professionals."
     />
 
     <meta
       name="keywords"
-      content="Linux tools, DevOps tools, Kubernetes tools, cloud tools, chmod calculator, cron generator, systemd generator"
+      content="Linux tools, DevOps tools, Kubernetes tools, network tools, cloud tools, chmod calculator, subnet calculator, cron generator"
     />
 
     <meta name="author" content="Gokuruvi Tools" />
 
-    <meta property="og:title" content="Gokuruvi Linux and DevOps Tools" />
+    <meta
+      property="og:title"
+      content="Gokuruvi Linux, DevOps, Network and Cloud Tools"
+    />
 
     <meta
       property="og:description"
-      content="Free online Linux, DevOps, Kubernetes and cloud utilities for administrators and engineers."
+      content="Free online Linux, DevOps, Kubernetes, network and cloud utilities for administrators and engineers."
     />
 
     <meta property="og:type" content="website" />
 
-    <meta property="og:url" content="https://www.gokuruvi.com/" />
+    <meta
+      property="og:url"
+      content="https://www.gokuruvi.com/"
+    />
 
-    <link rel="canonical" href="https://www.gokuruvi.com/" />
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/"
+    />
 
-    <title>Linux, DevOps, Kubernetes and Cloud Tools | Gokuruvi</title>
+    <title>
+      Linux, DevOps, Kubernetes, Network and Cloud Tools | Gokuruvi
+    </title>
 
     <style>
       :root {
@@ -193,7 +212,7 @@ const benefits = [
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: rgba(15, 23, 42, 0.96);
+        background: rgba(15, 23, 42, 0.97);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(12px);
       }
@@ -203,7 +222,7 @@ const benefits = [
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 30px;
+        gap: 28px;
       }
 
       .logo {
@@ -218,8 +237,8 @@ const benefits = [
       }
 
       .logo-icon {
-        width: 38px;
-        height: 38px;
+        width: 39px;
+        height: 39px;
         display: grid;
         place-items: center;
         border-radius: 10px;
@@ -234,7 +253,7 @@ const benefits = [
       .nav-links {
         display: flex;
         align-items: center;
-        gap: 27px;
+        gap: 24px;
       }
 
       .nav-links a {
@@ -280,7 +299,12 @@ const benefits = [
             rgba(37, 99, 235, 0.2),
             transparent 35%
           ),
-          linear-gradient(145deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
       }
 
       .hero::before {
@@ -304,7 +328,7 @@ const benefits = [
 
       .hero-content {
         position: relative;
-        max-width: 900px;
+        max-width: 930px;
         margin: 0 auto;
         text-align: center;
       }
@@ -333,7 +357,7 @@ const benefits = [
       }
 
       .hero h1 {
-        max-width: 900px;
+        max-width: 930px;
         margin: 0 auto 24px;
         color: var(--dark);
         font-size: clamp(42px, 7vw, 72px);
@@ -353,7 +377,7 @@ const benefits = [
       }
 
       .hero-description {
-        max-width: 760px;
+        max-width: 790px;
         margin: 0 auto;
         color: #475569;
         font-size: clamp(18px, 2.5vw, 21px);
@@ -370,10 +394,10 @@ const benefits = [
 
       .button {
         display: inline-flex;
+        min-height: 50px;
         align-items: center;
         justify-content: center;
         gap: 9px;
-        min-height: 50px;
         padding: 0 23px;
         border: 1px solid transparent;
         border-radius: 11px;
@@ -435,7 +459,7 @@ const benefits = [
         font-size: 17px;
       }
 
-      /* General sections */
+      /* Sections */
 
       .section {
         padding: 90px 0;
@@ -446,7 +470,7 @@ const benefits = [
       }
 
       .section-heading {
-        max-width: 750px;
+        max-width: 760px;
         margin: 0 auto 52px;
         text-align: center;
       }
@@ -480,12 +504,15 @@ const benefits = [
 
       .category-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 22px;
       }
 
       .category-card {
         position: relative;
+        display: flex;
+        min-height: 320px;
+        flex-direction: column;
         overflow: hidden;
         padding: 30px;
         border: 1px solid var(--border);
@@ -539,7 +566,7 @@ const benefits = [
       }
 
       .category-card p {
-        min-height: 100px;
+        flex: 1;
         margin: 0 0 22px;
         color: var(--muted);
         line-height: 1.7;
@@ -557,7 +584,7 @@ const benefits = [
 
       .tools-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 22px;
       }
 
@@ -590,7 +617,11 @@ const benefits = [
         display: grid;
         place-items: center;
         border-radius: 13px;
-        background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #e0f2fe
+        );
         font-size: 25px;
       }
 
@@ -620,7 +651,7 @@ const benefits = [
 
       .benefits-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 22px;
       }
 
@@ -654,7 +685,7 @@ const benefits = [
         line-height: 1.7;
       }
 
-      /* Call to action */
+      /* CTA */
 
       .cta {
         padding: 0 0 90px;
@@ -671,21 +702,25 @@ const benefits = [
             rgba(56, 189, 248, 0.25),
             transparent 30%
           ),
-          linear-gradient(135deg, #0f172a, #1e3a8a);
+          linear-gradient(
+            135deg,
+            #0f172a,
+            #1e3a8a
+          );
         color: #ffffff;
         text-align: center;
         box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
       }
 
       .cta-box h2 {
-        max-width: 700px;
+        max-width: 720px;
         margin: 0 auto 15px;
         font-size: clamp(30px, 4vw, 44px);
         line-height: 1.2;
       }
 
       .cta-box p {
-        max-width: 650px;
+        max-width: 680px;
         margin: 0 auto 28px;
         color: #cbd5e1;
         font-size: 18px;
@@ -771,25 +806,25 @@ const benefits = [
 
       /* Responsive */
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1050px) {
+        .nav-links {
+          gap: 18px;
+        }
+
         .category-grid {
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .benefits-grid {
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .footer-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .category-card p {
-          min-height: auto;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
 
-      @media (max-width: 760px) {
+      @media (max-width: 820px) {
         .navbar {
           min-height: auto;
           padding: 17px 0;
@@ -834,10 +869,6 @@ const benefits = [
           width: min(100% - 28px, var(--maximum-width));
         }
 
-        .nav-links {
-          font-size: 14px;
-        }
-
         .hero h1 {
           font-size: 41px;
         }
@@ -863,6 +894,7 @@ const benefits = [
         }
 
         .category-card {
+          min-height: auto;
           padding: 25px;
         }
 
@@ -891,9 +923,16 @@ const benefits = [
             <a href="/linux">Linux</a>
             <a href="/devops">DevOps</a>
             <a href="/kubernetes">Kubernetes</a>
+            <a href="/network">Network</a>
             <a href="/cloud">Cloud</a>
             <a href="/about">About</a>
-            <a class="nav-button" href="#featured-tools">Explore Tools</a>
+
+            <a
+              class="nav-button"
+              href="#featured-tools"
+            >
+              Explore Tools
+            </a>
           </div>
         </nav>
       </div>
@@ -909,23 +948,30 @@ const benefits = [
             </div>
 
             <h1>
-              Linux, DevOps and
+              Linux, DevOps, Network and
               <span>Cloud Tools</span>
             </h1>
 
             <p class="hero-description">
               Free, fast and practical utilities for Linux administrators,
-              DevOps engineers, Kubernetes users and cloud professionals.
+              DevOps engineers, Kubernetes users, network engineers and cloud
+              professionals.
             </p>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="#featured-tools">
+              <a
+                class="button button-primary"
+                href="#featured-tools"
+              >
                 Explore Free Tools
                 <span>→</span>
               </a>
 
-              <a class="button button-secondary" href="/linux">
-                Browse Linux Tools
+              <a
+                class="button button-secondary"
+                href="/network"
+              >
+                Browse Network Tools
               </a>
             </div>
 
@@ -957,21 +1003,29 @@ const benefits = [
       <section class="section section-white">
         <div class="container">
           <div class="section-heading">
-            <span class="section-label">Tool Categories</span>
+            <span class="section-label">
+              Tool Categories
+            </span>
 
             <h2>Everything you need in one place</h2>
 
             <p>
               Browse practical tools created for system administration,
-              automation, containers, Kubernetes and cloud operations.
+              networking, automation, containers, Kubernetes and cloud
+              operations.
             </p>
           </div>
 
           <div class="category-grid">
             {
               categories.map((category) => (
-                <a class="category-card" href={category.link}>
-                  <div class="category-icon">{category.icon}</div>
+                <a
+                  class="category-card"
+                  href={category.link}
+                >
+                  <div class="category-icon">
+                    {category.icon}
+                  </div>
 
                   <h3>{category.title}</h3>
 
@@ -987,31 +1041,43 @@ const benefits = [
         </div>
       </section>
 
-      <section class="section" id="featured-tools">
+      <section
+        class="section"
+        id="featured-tools"
+      >
         <div class="container">
           <div class="section-heading">
-            <span class="section-label">Featured Tools</span>
+            <span class="section-label">
+              Featured Tools
+            </span>
 
-            <h2>Popular Linux administration tools</h2>
+            <h2>Popular administration and engineering tools</h2>
 
             <p>
-              Save time with simple generators and calculators for common
-              Linux administration tasks.
+              Save time with practical generators and calculators for common
+              Linux, network and Kubernetes tasks.
             </p>
           </div>
 
           <div class="tools-grid">
             {
               featuredTools.map((tool) => (
-                <a class="tool-card" href={tool.link}>
-                  <div class="tool-icon">{tool.icon}</div>
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                >
+                  <div class="tool-icon">
+                    {tool.icon}
+                  </div>
 
                   <div class="tool-content">
                     <h3>{tool.title}</h3>
 
                     <p>{tool.description}</p>
 
-                    <span class="open-tool">Open tool →</span>
+                    <span class="open-tool">
+                      Open tool →
+                    </span>
                   </div>
                 </a>
               ))
@@ -1023,7 +1089,9 @@ const benefits = [
       <section class="section section-white">
         <div class="container">
           <div class="section-heading">
-            <span class="section-label">Why Gokuruvi</span>
+            <span class="section-label">
+              Why Gokuruvi
+            </span>
 
             <h2>Designed for administrators and engineers</h2>
 
@@ -1037,7 +1105,9 @@ const benefits = [
             {
               benefits.map((benefit) => (
                 <article class="benefit-card">
-                  <div class="benefit-icon">{benefit.icon}</div>
+                  <div class="benefit-icon">
+                    {benefit.icon}
+                  </div>
 
                   <h3>{benefit.title}</h3>
 
@@ -1052,15 +1122,21 @@ const benefits = [
       <section class="cta">
         <div class="container">
           <div class="cta-box">
-            <h2>Start using free Linux and DevOps tools</h2>
+            <h2>
+              Start using free IT administration tools
+            </h2>
 
             <p>
-              Explore practical utilities for permissions, scheduled jobs,
-              systemd services, ownership commands and server administration.
+              Explore practical utilities for Linux permissions, scheduled
+              jobs, Kubernetes manifests, network calculations and cloud
+              administration.
             </p>
 
-            <a class="button cta-button" href="/linux">
-              Explore Linux Tools
+            <a
+              class="button cta-button"
+              href="/network"
+            >
+              Explore Network Tools
               <span>→</span>
             </a>
           </div>
@@ -1078,33 +1154,45 @@ const benefits = [
             </a>
 
             <p>
-              Free Linux, DevOps, Kubernetes and cloud utilities for system
-              administrators, engineers and IT professionals.
+              Free Linux, DevOps, Kubernetes, network and cloud utilities for
+              system administrators, engineers and IT professionals.
             </p>
           </div>
 
           <div>
-            <h3 class="footer-title">Tool Categories</h3>
+            <h3 class="footer-title">
+              Tool Categories
+            </h3>
 
             <div class="footer-links">
               <a href="/linux">Linux Tools</a>
               <a href="/devops">DevOps Tools</a>
               <a href="/kubernetes">Kubernetes Tools</a>
+              <a href="/network">Network Tools</a>
               <a href="/cloud">Cloud Tools</a>
             </div>
           </div>
 
           <div>
-            <h3 class="footer-title">Popular Tools</h3>
+            <h3 class="footer-title">
+              Popular Tools
+            </h3>
 
             <div class="footer-links">
-              <a href="/linux/chmod-calculator">chmod Calculator</a>
-              <a href="/linux/cron-generator">Cron Generator</a>
-              <a href="/linux/systemd-service-generator">
-                systemd Generator
+              <a href="/linux/chmod-calculator">
+                chmod Calculator
               </a>
-              <a href="/linux/ownership-command-generator">
-                Ownership Generator
+
+              <a href="/linux/cron-generator">
+                Cron Generator
+              </a>
+
+              <a href="/network/subnet-calculator">
+                Subnet Calculator
+              </a>
+
+              <a href="/kubernetes/deployment-generator">
+                Deployment Generator
               </a>
             </div>
           </div>
