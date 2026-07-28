@@ -1,19 +1,106 @@
 ---
-const tools = [
+const categories = [
   {
-    name: "Linux chmod Calculator",
-    description: "Convert Linux read, write and execute permissions into numeric chmod values.",
+    icon: "🐧",
+    title: "Linux Tools",
+    description:
+      "Permission calculators, cron generators, systemd tools and useful Linux administration utilities.",
+    link: "/linux",
+    button: "Browse Linux Tools",
+  },
+  {
+    icon: "⚙️",
+    title: "DevOps Tools",
+    description:
+      "Utilities for Docker, Jenkins, Git, CI/CD pipelines and DevOps automation.",
+    link: "/devops",
+    button: "Browse DevOps Tools",
+  },
+  {
+    icon: "☸️",
+    title: "Kubernetes Tools",
+    description:
+      "Generate Kubernetes YAML files, commands and configuration templates.",
+    link: "/kubernetes",
+    button: "Browse Kubernetes Tools",
+  },
+  {
+    icon: "☁️",
+    title: "Cloud Tools",
+    description:
+      "Practical utilities for AWS, Microsoft Azure, Google Cloud and cloud engineers.",
+    link: "/cloud",
+    button: "Browse Cloud Tools",
+  },
+];
+
+const featuredTools = [
+  {
+    icon: "🔐",
+    title: "Linux chmod Calculator",
+    description:
+      "Convert Linux read, write and execute permissions into numeric chmod values.",
     link: "/linux/chmod-calculator",
   },
   {
-    name: "Cron Expression Generator",
-    description: "Create Linux cron schedules with an easy visual generator.",
+    icon: "⏰",
+    title: "Cron Expression Generator",
+    description:
+      "Create Linux cron schedules using a simple and easy visual generator.",
     link: "/linux/cron-generator",
   },
   {
-    name: "systemd Service Generator",
-    description: "Generate a basic systemd service unit for Linux applications.",
+    icon: "⚙️",
+    title: "systemd Service Generator",
+    description:
+      "Generate a basic systemd service unit for Linux applications.",
     link: "/linux/systemd-service-generator",
+  },
+  {
+    icon: "📁",
+    title: "Ownership Command Generator",
+    description:
+      "Generate Linux chown and chgrp commands for files and directories.",
+    link: "/linux/ownership-command-generator",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast and Simple",
+    description:
+      "Use every tool directly from your browser without complicated configuration.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy Friendly",
+    description:
+      "Our utilities are designed to process your input securely in your browser.",
+  },
+  {
+    icon: "💯",
+    title: "Free to Use",
+    description:
+      "Access practical Linux, DevOps, Kubernetes and cloud tools without registration.",
+  },
+  {
+    icon: "📱",
+    title: "Mobile Friendly",
+    description:
+      "Use Gokuruvi Tools from your desktop, tablet or mobile device.",
+  },
+  {
+    icon: "🧰",
+    title: "Built for Engineers",
+    description:
+      "Practical utilities created for system administrators and DevOps engineers.",
+  },
+  {
+    icon: "🚀",
+    title: "More Tools Coming",
+    description:
+      "New administration, automation and cloud utilities will be added regularly.",
   },
 ];
 ---
@@ -22,156 +109,1031 @@ const tools = [
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
+
     <meta
       name="description"
-      content="Free Linux, DevOps, Cloud and Kubernetes tools for administrators and engineers."
+      content="Free Linux, DevOps, Kubernetes and cloud tools for system administrators, engineers and cloud professionals."
     />
-    <title>Gokuruvi Linux and DevOps Tools</title>
+
+    <meta
+      name="keywords"
+      content="Linux tools, DevOps tools, Kubernetes tools, cloud tools, chmod calculator, cron generator, systemd generator"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+
+    <meta property="og:title" content="Gokuruvi Linux and DevOps Tools" />
+
+    <meta
+      property="og:description"
+      content="Free online Linux, DevOps, Kubernetes and cloud utilities for administrators and engineers."
+    />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:url" content="https://www.gokuruvi.com/" />
+
+    <link rel="canonical" href="https://www.gokuruvi.com/" />
+
+    <title>Linux, DevOps, Kubernetes and Cloud Tools | Gokuruvi</title>
 
     <style>
       :root {
-        font-family: Arial, Helvetica, sans-serif;
-        color: #172033;
-        background: #f6f8fc;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
       }
 
       * {
         box-sizing: border-box;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
       }
 
-      header {
-        background: #111827;
-        color: white;
-        padding: 18px 24px;
+      a {
+        color: inherit;
       }
 
-      nav {
-        max-width: 1100px;
-        margin: auto;
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(15, 23, 42, 0.96);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        min-height: 72px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        gap: 30px;
       }
 
-      nav a {
-        color: white;
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
         text-decoration: none;
-        margin-left: 18px;
+        white-space: nowrap;
       }
 
-      main {
-        max-width: 1100px;
-        margin: auto;
-        padding: 60px 24px;
+      .logo-icon {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
       }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 27px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .nav-links a:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .nav-button:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Hero */
 
       .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 105px 0 95px;
+        background:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(56, 189, 248, 0.18),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 90% 30%,
+            rgba(37, 99, 235, 0.2),
+            transparent 35%
+          ),
+          linear-gradient(145deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        mask-image: linear-gradient(to bottom, black, transparent);
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
         text-align: center;
-        padding: 50px 10px;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 8px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
       }
 
       .hero h1 {
-        font-size: 44px;
-        margin-bottom: 15px;
+        max-width: 900px;
+        margin: 0 auto 24px;
+        color: var(--dark);
+        font-size: clamp(42px, 7vw, 72px);
+        line-height: 1.08;
+        letter-spacing: -2.5px;
       }
 
-      .hero p {
-        max-width: 720px;
-        margin: auto;
-        font-size: 19px;
-        line-height: 1.6;
-        color: #4b5563;
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
       }
 
-      .tools {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 22px;
+      .hero-description {
+        max-width: 760px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: clamp(18px, 2.5vw, 21px);
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 36px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 50px;
+        padding: 0 23px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+      }
+
+      .button-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.32);
+      }
+
+      .button-secondary {
+        border-color: #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      .button-secondary:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+      }
+
+      .hero-features {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 25px;
         margin-top: 40px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
       }
 
-      .card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+      .hero-feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .card h2 {
-        margin-top: 0;
+      .check {
+        color: var(--success);
+        font-size: 17px;
       }
 
-      .card p {
-        color: #4b5563;
-        line-height: 1.6;
+      /* General sections */
+
+      .section {
+        padding: 90px 0;
       }
 
-      .card a {
+      .section-white {
+        background: #ffffff;
+      }
+
+      .section-heading {
+        max-width: 750px;
+        margin: 0 auto 52px;
+        text-align: center;
+      }
+
+      .section-label {
         display: inline-block;
-        margin-top: 10px;
-        color: #1d4ed8;
-        font-weight: bold;
+        margin-bottom: 12px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: clamp(31px, 4vw, 43px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      /* Categories */
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+      }
+
+      .category-card {
+        position: relative;
+        overflow: hidden;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .category-card::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        bottom: -55px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.07);
+        transition: transform 0.3s ease;
+      }
+
+      .category-card:hover {
+        transform: translateY(-7px);
+        border-color: #93c5fd;
+        box-shadow: 0 22px 45px rgba(37, 99, 235, 0.13);
+      }
+
+      .category-card:hover::after {
+        transform: scale(1.25);
+      }
+
+      .category-icon {
+        width: 57px;
+        height: 57px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 23px;
+        border-radius: 15px;
+        background: #eff6ff;
+        font-size: 29px;
+      }
+
+      .category-card h3 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: 22px;
+      }
+
+      .category-card p {
+        min-height: 100px;
+        margin: 0 0 22px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .category-link {
+        position: relative;
+        z-index: 1;
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      /* Featured tools */
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+      }
+
+      .tool-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.045);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .tool-card:hover {
+        transform: translateY(-5px);
+        border-color: #93c5fd;
+        box-shadow: 0 18px 38px rgba(37, 99, 235, 0.11);
+      }
+
+      .tool-icon {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+        font-size: 25px;
+      }
+
+      .tool-content {
+        flex: 1;
+      }
+
+      .tool-content h3 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .tool-content p {
+        margin: 0 0 15px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .open-tool {
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      /* Benefits */
+
+      .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+
+      .benefit-card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .benefit-icon {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 18px;
+        border-radius: 13px;
+        background: #eff6ff;
+        font-size: 23px;
+      }
+
+      .benefit-card h3 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .benefit-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* Call to action */
+
+      .cta {
+        padding: 0 0 90px;
+      }
+
+      .cta-box {
+        position: relative;
+        overflow: hidden;
+        padding: 68px 35px;
+        border-radius: 24px;
+        background:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(56, 189, 248, 0.25),
+            transparent 30%
+          ),
+          linear-gradient(135deg, #0f172a, #1e3a8a);
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
+      }
+
+      .cta-box h2 {
+        max-width: 700px;
+        margin: 0 auto 15px;
+        font-size: clamp(30px, 4vw, 44px);
+        line-height: 1.2;
+      }
+
+      .cta-box p {
+        max-width: 650px;
+        margin: 0 auto 28px;
+        color: #cbd5e1;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .cta-button {
+        background: #ffffff;
+        color: var(--primary-dark);
+      }
+
+      .cta-button:hover {
+        background: #eff6ff;
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+        gap: 55px;
+        padding: 65px 0 45px;
+      }
+
+      .footer-brand p {
+        max-width: 380px;
+        margin: 17px 0 0;
+        color: #94a3b8;
+        line-height: 1.75;
+      }
+
+      .footer-title {
+        margin: 0 0 18px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 24px 0;
+        border-top: 1px solid #334155;
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-bottom-links a {
+        color: #94a3b8;
         text-decoration: none;
       }
 
-      footer {
-        margin-top: 60px;
-        padding: 30px;
-        background: #111827;
-        color: white;
-        text-align: center;
+      .footer-bottom-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1000px) {
+        .category-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .benefits-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .category-card p {
+          min-height: auto;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .navbar {
+          min-height: auto;
+          padding: 17px 0;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .nav-links {
+          width: 100%;
+          gap: 15px 20px;
+          flex-wrap: wrap;
+        }
+
+        .nav-button {
+          padding: 7px 13px;
+        }
+
+        .hero {
+          padding: 75px 0 70px;
+        }
+
+        .hero h1 {
+          letter-spacing: -1.5px;
+        }
+
+        .section {
+          padding: 70px 0;
+        }
+
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-bottom {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .nav-links {
+          font-size: 14px;
+        }
+
+        .hero h1 {
+          font-size: 41px;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero-features {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .category-grid,
+        .benefits-grid,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .category-card {
+          padding: 25px;
+        }
+
+        .tool-card {
+          padding: 23px;
+        }
+
+        .cta-box {
+          padding: 50px 23px;
+        }
       }
     </style>
   </head>
 
   <body>
-    <header>
-      <nav>
-        <strong>Gokuruvi Tools</strong>
+    <header class="site-header">
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/">
+            <span class="logo-icon">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
 
-        <div>
-          <a href="/">Home</a>
-          <a href="/linux">Linux</a>
-          <a href="/devops">DevOps</a>
-          <a href="/kubernetes">Kubernetes</a>
-          <a href="/about">About</a>
-        </div>
-      </nav>
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/cloud">Cloud</a>
+            <a href="/about">About</a>
+            <a class="nav-button" href="#featured-tools">Explore Tools</a>
+          </div>
+        </nav>
+      </div>
     </header>
 
     <main>
       <section class="hero">
-        <h1>Linux and DevOps Tools</h1>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot"></span>
+              Free online tools for IT professionals
+            </div>
 
-        <p>
-          Free, fast and privacy-friendly utilities for Linux administrators,
-          DevOps engineers, cloud professionals and Kubernetes users.
-        </p>
+            <h1>
+              Linux, DevOps and
+              <span>Cloud Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Free, fast and practical utilities for Linux administrators,
+              DevOps engineers, Kubernetes users and cloud professionals.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#featured-tools">
+                Explore Free Tools
+                <span>→</span>
+              </a>
+
+              <a class="button button-secondary" href="/linux">
+                Browse Linux Tools
+              </a>
+            </div>
+
+            <div class="hero-features">
+              <div class="hero-feature">
+                <span class="check">✓</span>
+                No registration
+              </div>
+
+              <div class="hero-feature">
+                <span class="check">✓</span>
+                Free to use
+              </div>
+
+              <div class="hero-feature">
+                <span class="check">✓</span>
+                Privacy friendly
+              </div>
+
+              <div class="hero-feature">
+                <span class="check">✓</span>
+                Mobile responsive
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="tools">
-        {
-          tools.map((tool) => (
-            <article class="card">
-              <h2>{tool.name}</h2>
-              <p>{tool.description}</p>
-              <a href={tool.link}>Open tool →</a>
-            </article>
-          ))
-        }
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Tool Categories</span>
+
+            <h2>Everything you need in one place</h2>
+
+            <p>
+              Browse practical tools created for system administration,
+              automation, containers, Kubernetes and cloud operations.
+            </p>
+          </div>
+
+          <div class="category-grid">
+            {
+              categories.map((category) => (
+                <a class="category-card" href={category.link}>
+                  <div class="category-icon">{category.icon}</div>
+
+                  <h3>{category.title}</h3>
+
+                  <p>{category.description}</p>
+
+                  <span class="category-link">
+                    {category.button} →
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="featured-tools">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Featured Tools</span>
+
+            <h2>Popular Linux administration tools</h2>
+
+            <p>
+              Save time with simple generators and calculators for common
+              Linux administration tasks.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              featuredTools.map((tool) => (
+                <a class="tool-card" href={tool.link}>
+                  <div class="tool-icon">{tool.icon}</div>
+
+                  <div class="tool-content">
+                    <h3>{tool.title}</h3>
+
+                    <p>{tool.description}</p>
+
+                    <span class="open-tool">Open tool →</span>
+                  </div>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+
+            <h2>Designed for administrators and engineers</h2>
+
+            <p>
+              Simple, practical and reliable tools that help you complete
+              everyday technical tasks faster.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div class="benefit-icon">{benefit.icon}</div>
+
+                  <h3>{benefit.title}</h3>
+
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start using free Linux and DevOps tools</h2>
+
+            <p>
+              Explore practical utilities for permissions, scheduled jobs,
+              systemd services, ownership commands and server administration.
+            </p>
+
+            <a class="button cta-button" href="/linux">
+              Explore Linux Tools
+              <span>→</span>
+            </a>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer>
-      © 2026 Gokuruvi Tools. All rights reserved.
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="logo" href="/">
+              <span class="logo-icon">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
+
+            <p>
+              Free Linux, DevOps, Kubernetes and cloud utilities for system
+              administrators, engineers and IT professionals.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Tool Categories</h3>
+
+            <div class="footer-links">
+              <a href="/linux">Linux Tools</a>
+              <a href="/devops">DevOps Tools</a>
+              <a href="/kubernetes">Kubernetes Tools</a>
+              <a href="/cloud">Cloud Tools</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Popular Tools</h3>
+
+            <div class="footer-links">
+              <a href="/linux/chmod-calculator">chmod Calculator</a>
+              <a href="/linux/cron-generator">Cron Generator</a>
+              <a href="/linux/systemd-service-generator">
+                systemd Generator
+              </a>
+              <a href="/linux/ownership-command-generator">
+                Ownership Generator
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Company</h3>
+
+            <div class="footer-links">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy-policy">Privacy Policy</a>
+              <a href="/terms">Terms</a>
+              <a href="/disclaimer">Disclaimer</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
     </footer>
   </body>
 </html>

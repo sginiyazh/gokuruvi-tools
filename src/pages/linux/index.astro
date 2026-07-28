@@ -1,27 +1,224 @@
 ---
-const pageTitle = "Linux Tools";
+const tools = [
+  {
+    name: "Linux chmod Calculator",
+    description:
+      "Convert Linux read, write and execute permissions into numeric chmod values.",
+    link: "/linux/chmod-calculator",
+  },
+  {
+    name: "Cron Expression Generator",
+    description:
+      "Create Linux cron schedules with an easy visual generator.",
+    link: "/linux/cron-generator",
+  },
+  {
+    name: "systemd Service Generator",
+    description:
+      "Generate a basic systemd service unit for Linux applications.",
+    link: "/linux/systemd-service-generator",
+  },
+  {
+    name: "Ownership Command Generator",
+    description:
+      "Generate Linux chown and chgrp commands for files and directories.",
+    link: "/linux/ownership-command-generator",
+  },
+];
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{pageTitle} | Gokuruvi Tools</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta
+      name="description"
+      content="Free Linux administration tools including chmod, cron, systemd and ownership command generators."
+    />
+
+    <title>Linux Tools | Gokuruvi Tools</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #172033;
+        background: #f6f8fc;
+      }
+
+      header {
+        background: #0f172a;
+        color: white;
+      }
+
+      nav {
+        max-width: 1130px;
+        margin: auto;
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover {
+        color: #93c5fd;
+      }
+
+      main {
+        max-width: 1130px;
+        margin: auto;
+        padding: 70px 24px;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 55px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        font-size: clamp(34px, 5vw, 52px);
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.7;
+      }
+
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .tool-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 28px;
+        min-height: 230px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tool-card h2 {
+        margin: 0 0 15px;
+        font-size: 24px;
+      }
+
+      .tool-card p {
+        color: #475569;
+        line-height: 1.7;
+        margin: 0 0 25px;
+      }
+
+      .tool-card a {
+        margin-top: auto;
+        color: #1746e0;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .tool-card a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 850px) {
+        .tool-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        nav {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+
+        .tool-grid {
+          grid-template-columns: 1fr;
+        }
+
+        main {
+          padding-top: 45px;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <header>
+      <nav>
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/about">About</a>
+        </div>
+      </nav>
+    </header>
+
     <main>
-      <h1>Linux Tools</h1>
-      <p>Useful calculators, generators, commands, and guides for Linux administrators.</p>
+      <section class="hero">
+        <h1>Linux Tools</h1>
 
-      <ul>
-        <li><a href="/">chmod Calculator</a></li>
-        <li><a href="/">Cron Expression Generator</a></li>
-        <li><a href="/">systemd Service Generator</a></li>
-      </ul>
+        <p>
+          Free Linux administration tools for permissions, scheduled jobs,
+          systemd services, file ownership and everyday server management.
+        </p>
+      </section>
 
-      <p><a href="/">Return to homepage</a></p>
+      <section class="tool-grid">
+        {
+          tools.map((tool) => (
+            <article class="tool-card">
+              <h2>{tool.name}</h2>
+              <p>{tool.description}</p>
+              <a href={tool.link}>Open tool →</a>
+            </article>
+          ))
+        }
+      </section>
     </main>
   </body>
 </html>

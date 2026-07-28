@@ -1,46 +1,1145 @@
 ---
-const pageTitle = "About Gokuruvi Tools";
-const description =
-  "Learn about Gokuruvi Tools, a collection of free Linux, DevOps, Kubernetes, and cloud utilities.";
+const features = [
+  {
+    icon: "⚡",
+    title: "Fast and Simple",
+    description:
+      "Our tools are designed to be easy to understand and quick to use for everyday technical work.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy Friendly",
+    description:
+      "We aim to keep tools simple and secure without asking users to create unnecessary accounts.",
+  },
+  {
+    icon: "🛠️",
+    title: "Practical Utilities",
+    description:
+      "Every calculator, generator and guide is created to solve real Linux, DevOps, Kubernetes and cloud tasks.",
+  },
+  {
+    icon: "💯",
+    title: "Free to Use",
+    description:
+      "Gokuruvi Tools provides useful online utilities without complicated subscriptions or registration.",
+  },
+];
+
+const audiences = [
+  "Linux administrators",
+  "DevOps engineers",
+  "Cloud professionals",
+  "Kubernetes users",
+  "System engineers",
+  "Students and beginners",
+];
+
+const values = [
+  {
+    title: "Simplicity",
+    description:
+      "Technical tools should make work easier, not more complicated. We focus on clean interfaces and clear results.",
+  },
+  {
+    title: "Reliability",
+    description:
+      "Our goal is to provide dependable utilities that users can confidently use for common administration tasks.",
+  },
+  {
+    title: "Continuous Improvement",
+    description:
+      "We continue improving existing tools and adding new utilities based on practical technology needs.",
+  },
+];
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-    <title>{pageTitle}</title>
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta
+      name="description"
+      content="Learn about Gokuruvi Tools, a free collection of Linux, DevOps, Kubernetes and cloud utilities for administrators, engineers and IT professionals."
+    />
+
+    <meta
+      name="keywords"
+      content="about Gokuruvi Tools, Linux tools, DevOps tools, Kubernetes utilities, cloud tools, system administration tools"
+    />
+
+    <meta name="author" content="Sathish Ramalingam" />
+
+    <meta property="og:title" content="About Gokuruvi Tools" />
+
+    <meta
+      property="og:description"
+      content="Gokuruvi Tools provides free and practical online utilities for Linux administrators, DevOps engineers, Kubernetes users and cloud professionals."
+    />
+
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://www.gokuruvi.com/about"
+    />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/about"
+    />
+
+    <title>About Gokuruvi Tools</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .logo-icon {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .nav-links a:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+
+      .nav-links .active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .nav-button:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Hero */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 105px 0 95px;
+        background:
+          radial-gradient(
+            circle at 15% 20%,
+            rgba(56, 189, 248, 0.18),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 90% 20%,
+            rgba(37, 99, 235, 0.17),
+            transparent 35%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 52%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        mask-image: linear-gradient(to bottom, black, transparent);
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 850px;
+        margin: auto;
+        text-align: center;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 8px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+      }
+
+      .hero h1 {
+        margin: 0 0 24px;
+        color: var(--dark);
+        font-size: clamp(43px, 7vw, 68px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-description {
+        max-width: 760px;
+        margin: auto;
+        color: #475569;
+        font-size: clamp(18px, 2.5vw, 21px);
+        line-height: 1.8;
+      }
+
+      /* General */
+
+      .section {
+        padding: 90px 0;
+      }
+
+      .section-white {
+        background: #ffffff;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 52px;
+        text-align: center;
+      }
+
+      .section-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: clamp(31px, 4vw, 43px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      /* About introduction */
+
+      .about-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+        gap: 65px;
+      }
+
+      .about-content h2 {
+        margin: 0 0 22px;
+        color: var(--dark);
+        font-size: clamp(32px, 4vw, 45px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .about-content p {
+        margin: 0 0 19px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.85;
+      }
+
+      .about-content strong {
+        color: var(--dark);
+      }
+
+      .about-panel {
+        position: relative;
+        overflow: hidden;
+        padding: 35px;
+        border: 1px solid #bfdbfe;
+        border-radius: 22px;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(56, 189, 248, 0.18),
+            transparent 40%
+          ),
+          linear-gradient(145deg, #ffffff, #eff6ff);
+        box-shadow: 0 20px 50px rgba(37, 99, 235, 0.12);
+      }
+
+      .about-panel::after {
+        content: "";
+        position: absolute;
+        right: -60px;
+        bottom: -80px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.08);
+      }
+
+      .panel-icon {
+        width: 70px;
+        height: 70px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 24px;
+        border-radius: 18px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        font-size: 31px;
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.23);
+      }
+
+      .about-panel h3 {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 15px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .about-panel p {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        color: #475569;
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      /* Features */
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+      }
+
+      .feature-card {
+        padding: 29px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-6px);
+        border-color: #93c5fd;
+        box-shadow: 0 19px 40px rgba(37, 99, 235, 0.11);
+      }
+
+      .feature-icon {
+        width: 55px;
+        height: 55px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 21px;
+        border-radius: 15px;
+        background: #eff6ff;
+        font-size: 26px;
+      }
+
+      .feature-card h3 {
+        margin: 0 0 11px;
+        color: var(--dark);
+        font-size: 21px;
+      }
+
+      .feature-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.72;
+      }
+
+      /* Audience */
+
+      .audience-layout {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        align-items: center;
+        gap: 65px;
+      }
+
+      .audience-content h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: clamp(32px, 4vw, 44px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .audience-content p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.8;
+      }
+
+      .audience-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .audience-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 700;
+        box-shadow: 0 7px 20px rgba(15, 23, 42, 0.04);
+      }
+
+      .audience-check {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: #dcfce7;
+        color: var(--success);
+        font-weight: 900;
+      }
+
+      /* Values */
+
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 23px;
+      }
+
+      .value-card {
+        padding: 32px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: #ffffff;
+      }
+
+      .value-number {
+        display: inline-flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .value-card h3 {
+        margin: 0 0 11px;
+        color: var(--dark);
+        font-size: 22px;
+      }
+
+      .value-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      /* Creator */
+
+      .creator {
+        padding: 0 0 90px;
+      }
+
+      .creator-box {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 28px;
+        padding: 42px;
+        border-radius: 22px;
+        background:
+          radial-gradient(
+            circle at 90% 10%,
+            rgba(56, 189, 248, 0.22),
+            transparent 32%
+          ),
+          linear-gradient(135deg, #0f172a, #1e3a8a);
+        color: #ffffff;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
+      }
+
+      .creator-avatar {
+        width: 90px;
+        height: 90px;
+        display: grid;
+        place-items: center;
+        border: 3px solid rgba(255, 255, 255, 0.25);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 34px;
+        font-weight: 900;
+        backdrop-filter: blur(10px);
+      }
+
+      .creator-content h2 {
+        margin: 0 0 9px;
+        font-size: 30px;
+      }
+
+      .creator-content p {
+        max-width: 780px;
+        margin: 0;
+        color: #cbd5e1;
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      /* CTA */
+
+      .cta {
+        padding: 0 0 90px;
+      }
+
+      .cta-box {
+        padding: 64px 32px;
+        border: 1px solid #bfdbfe;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #eff6ff, #ffffff);
+        text-align: center;
+      }
+
+      .cta-box h2 {
+        margin: 0 0 14px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 43px);
+      }
+
+      .cta-box p {
+        max-width: 670px;
+        margin: 0 auto 28px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 50px;
+        padding: 0 23px;
+        border-radius: 11px;
+        background: var(--primary);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.24);
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        background: var(--primary-dark);
+        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.31);
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+        gap: 55px;
+        padding: 65px 0 45px;
+      }
+
+      .footer-brand p {
+        max-width: 380px;
+        margin: 17px 0 0;
+        color: #94a3b8;
+        line-height: 1.75;
+      }
+
+      .footer-title {
+        margin: 0 0 18px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 24px 0;
+        border-top: 1px solid #334155;
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-bottom-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-bottom-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1000px) {
+        .feature-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .about-layout,
+        .audience-layout {
+          grid-template-columns: 1fr;
+          gap: 42px;
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .navbar {
+          min-height: auto;
+          padding: 17px 0;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+
+        .hero {
+          padding: 75px 0 70px;
+        }
+
+        .section {
+          padding: 70px 0;
+        }
+
+        .values-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .creator-box {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .creator-avatar {
+          margin: auto;
+        }
+
+        .footer-bottom {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 41px;
+          letter-spacing: -1.2px;
+        }
+
+        .feature-grid,
+        .audience-list,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .about-panel,
+        .creator-box,
+        .cta-box {
+          padding: 28px;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <header>
-      <nav>
-        <a href="/">Gokuruvi Tools</a>
-        <a href="/linux">Linux</a>
-        <a href="/devops">DevOps</a>
-        <a href="/kubernetes">Kubernetes</a>
-        <a href="/cloud">Cloud</a>
-      </nav>
+    <header class="site-header">
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/">
+            <span class="logo-icon">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
+
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/cloud">Cloud</a>
+            <a class="active" href="/about">About</a>
+            <a class="nav-button" href="/contact">Contact</a>
+          </div>
+        </nav>
+      </div>
     </header>
 
     <main>
-      <h1>About Gokuruvi Tools</h1>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot"></span>
+              Built for IT professionals
+            </div>
 
-      <p>
-        Gokuruvi Tools provides free, fast, and privacy-friendly utilities
-        for Linux administrators, DevOps engineers, cloud professionals,
-        and Kubernetes users.
-      </p>
+            <h1>
+              About
+              <span>Gokuruvi Tools</span>
+            </h1>
 
-      <p>
-        Our goal is to simplify common technical tasks through practical
-        online tools, guides, generators, and calculators.
-      </p>
+            <p class="hero-description">
+              Free, fast and privacy-friendly utilities created to simplify
+              everyday Linux, DevOps, Kubernetes and cloud administration
+              tasks.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="about-layout">
+            <div class="about-content">
+              <span class="section-label">Who We Are</span>
+
+              <h2>Practical tools for modern IT professionals</h2>
+
+              <p>
+                <strong>Gokuruvi Tools</strong> provides free, fast and
+                privacy-friendly utilities for Linux administrators, DevOps
+                engineers, cloud professionals and Kubernetes users.
+              </p>
+
+              <p>
+                Our goal is to simplify common technical tasks through
+                practical online tools, generators, calculators and
+                easy-to-understand guides.
+              </p>
+
+              <p>
+                Instead of spending time remembering long commands or manually
+                creating configuration files, users can quickly generate useful
+                results through simple browser-based tools.
+              </p>
+            </div>
+
+            <aside class="about-panel">
+              <div class="panel-icon">🎯</div>
+
+              <h3>Our Mission</h3>
+
+              <p>
+                To create a reliable collection of simple, useful and
+                accessible technical tools that help IT professionals save
+                time, reduce errors and work more efficiently.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">What We Provide</span>
+
+            <h2>Tools designed around real technical work</h2>
+
+            <p>
+              Gokuruvi Tools focuses on practical utilities that are easy to
+              access, simple to understand and useful in everyday operations.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            {
+              features.map((feature) => (
+                <article class="feature-card">
+                  <div class="feature-icon">{feature.icon}</div>
+
+                  <h3>{feature.title}</h3>
+
+                  <p>{feature.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="audience-layout">
+            <div class="audience-content">
+              <span class="section-label">Who Can Use It</span>
+
+              <h2>Created for professionals and learners</h2>
+
+              <p>
+                Whether you manage production servers, build automated
+                pipelines, work with containers or are learning system
+                administration, Gokuruvi Tools is designed to support your
+                technical journey.
+              </p>
+            </div>
+
+            <div class="audience-list">
+              {
+                audiences.map((audience) => (
+                  <div class="audience-item">
+                    <span class="audience-check">✓</span>
+                    <span>{audience}</span>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Our Values</span>
+
+            <h2>What guides Gokuruvi Tools</h2>
+
+            <p>
+              Every tool and guide is created with simplicity, practical value
+              and continuous improvement in mind.
+            </p>
+          </div>
+
+          <div class="values-grid">
+            {
+              values.map((value, index) => (
+                <article class="value-card">
+                  <span class="value-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  <h3>{value.title}</h3>
+
+                  <p>{value.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="creator">
+        <div class="container">
+          <div class="creator-box">
+            <div class="creator-avatar">SR</div>
+
+            <div class="creator-content">
+              <h2>Created by Sathish Ramalingam</h2>
+
+              <p>
+                Gokuruvi Tools is created and maintained by Sathish Ramalingam
+                with the aim of sharing useful Linux, DevOps, Kubernetes and
+                cloud administration utilities with IT professionals and
+                learners worldwide.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Explore free technical tools</h2>
+
+            <p>
+              Start with our Linux calculators and generators, or browse tools
+              for DevOps, Kubernetes and cloud administration.
+            </p>
+
+            <a class="button" href="/linux">
+              Browse Linux Tools
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer>
-      <p>© 2026 Gokuruvi Tools. All rights reserved.</p>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="logo" href="/">
+              <span class="logo-icon">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
+
+            <p>
+              Free Linux, DevOps, Kubernetes and cloud utilities for
+              administrators, engineers and IT professionals.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Tool Categories</h3>
+
+            <div class="footer-links">
+              <a href="/linux">Linux Tools</a>
+              <a href="/devops">DevOps Tools</a>
+              <a href="/kubernetes">Kubernetes Tools</a>
+              <a href="/cloud">Cloud Tools</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Company</h3>
+
+            <div class="footer-links">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy-policy">Privacy Policy</a>
+              <a href="/terms">Terms</a>
+              <a href="/disclaimer">Disclaimer</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Popular Tools</h3>
+
+            <div class="footer-links">
+              <a href="/linux/chmod-calculator">chmod Calculator</a>
+              <a href="/linux/cron-generator">Cron Generator</a>
+              <a href="/linux/systemd-service-generator">
+                systemd Generator
+              </a>
+              <a href="/linux/ownership-command-generator">
+                Ownership Generator
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Sathish Ramalingam. All rights
+            reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
     </footer>
   </body>
 </html>
