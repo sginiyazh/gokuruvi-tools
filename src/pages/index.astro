@@ -36,7 +36,7 @@ const categories = [
     icon: "☁️",
     title: "Cloud Tools",
     description:
-      "Practical utilities for AWS, Microsoft Azure, Google Cloud and cloud engineers.",
+      "Practical utilities for AWS, Microsoft Azure, Google Cloud, Terraform and cloud engineers.",
     link: "/cloud",
     button: "Browse Cloud Tools",
   },
@@ -49,6 +49,7 @@ const featuredTools = [
     description:
       "Convert Linux read, write and execute permissions into numeric chmod values.",
     link: "/linux/chmod-calculator",
+    category: "Linux",
   },
   {
     icon: "⏰",
@@ -56,6 +57,15 @@ const featuredTools = [
     description:
       "Create Linux cron schedules using a simple and easy visual generator.",
     link: "/linux/cron-generator",
+    category: "Linux",
+  },
+  {
+    icon: "✅",
+    title: "YAML Validator",
+    description:
+      "Validate, format and troubleshoot YAML configuration files directly in your browser.",
+    link: "/devops/yaml-validator",
+    category: "DevOps",
   },
   {
     icon: "🌍",
@@ -63,6 +73,7 @@ const featuredTools = [
     description:
       "Calculate network address, broadcast address, subnet mask and available hosts.",
     link: "/network/subnet-calculator",
+    category: "Network",
   },
   {
     icon: "🚀",
@@ -70,6 +81,15 @@ const featuredTools = [
     description:
       "Generate Kubernetes Deployment YAML with replicas, images and container ports.",
     link: "/kubernetes/deployment-generator",
+    category: "Kubernetes",
+  },
+  {
+    icon: "☁️",
+    title: "Cloud-init Generator",
+    description:
+      "Generate cloud-init YAML configurations for Linux cloud virtual machines.",
+    link: "/cloud/cloud-init-generator",
+    category: "Cloud",
   },
 ];
 
@@ -84,7 +104,7 @@ const benefits = [
     icon: "🔒",
     title: "Privacy Friendly",
     description:
-      "Our utilities are designed to process your input securely in your browser.",
+      "Your input is processed locally in your browser whenever the selected tool supports client-side processing.",
   },
   {
     icon: "💯",
@@ -111,6 +131,12 @@ const benefits = [
       "New administration, automation, networking and cloud utilities will be added regularly.",
   },
 ];
+
+const siteUrl = "https://www.gokuruvi.com/";
+const pageTitle =
+  "Linux, DevOps, Kubernetes, Network and Cloud Tools | Gokuruvi";
+const pageDescription =
+  "Free Linux, DevOps, Kubernetes, network and cloud tools for system administrators, engineers and cloud professionals.";
 ---
 
 <!doctype html>
@@ -123,48 +149,78 @@ const benefits = [
       content="width=device-width, initial-scale=1.0"
     />
 
-    <meta
-      name="description"
-      content="Free Linux, DevOps, Kubernetes, network and cloud tools for system administrators, engineers and cloud professionals."
-    />
+    <meta name="description" content={pageDescription} />
 
     <meta
       name="keywords"
-      content="Linux tools, DevOps tools, Kubernetes tools, network tools, cloud tools, chmod calculator, subnet calculator, cron generator"
+      content="Linux tools, DevOps tools, Kubernetes tools, network tools, cloud tools, chmod calculator, subnet calculator, cron generator, YAML validator, cloud-init generator"
     />
 
     <meta name="author" content="Gokuruvi Tools" />
 
+    <meta name="robots" content="index, follow" />
+
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link
+      rel="apple-touch-icon"
+      href="/apple-touch-icon.png"
+    />
+
     <meta
       property="og:title"
-      content="Gokuruvi Linux, DevOps, Network and Cloud Tools"
+      content="Linux, DevOps, Kubernetes, Network and Cloud Tools"
     />
 
     <meta
       property="og:description"
-      content="Free online Linux, DevOps, Kubernetes, network and cloud utilities for administrators and engineers."
+      content={pageDescription}
     />
 
     <meta property="og:type" content="website" />
 
+    <meta property="og:url" content={siteUrl} />
+
     <meta
-      property="og:url"
-      content="https://www.gokuruvi.com/"
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
     />
 
-    <link
-      rel="canonical"
-      href="https://www.gokuruvi.com/"
+    <meta
+      property="og:image:alt"
+      content="Gokuruvi Tools for Linux, DevOps, Kubernetes, network and cloud engineers"
     />
 
-    <title>
-      Linux, DevOps, Kubernetes, Network and Cloud Tools | Gokuruvi
-    </title>
+    <meta
+      property="og:site_name"
+      content="Gokuruvi Tools"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:title" content={pageTitle} />
+
+    <meta
+      name="twitter:description"
+      content={pageDescription}
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <title>{pageTitle}</title>
 
     <style>
       :root {
         --primary: #2563eb;
         --primary-dark: #1d4ed8;
+        --primary-soft: #eff6ff;
         --secondary: #38bdf8;
         --dark: #0f172a;
         --dark-light: #1e293b;
@@ -197,13 +253,54 @@ const benefits = [
         line-height: 1.6;
       }
 
+      body,
+      button,
+      input,
+      textarea,
+      select {
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+      }
+
       a {
         color: inherit;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
       }
 
       .container {
         width: min(100% - 40px, var(--maximum-width));
         margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.2);
+        transform: translateY(-160%);
+        transition: transform 0.2s ease;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 4px;
+        border-radius: 6px;
       }
 
       /* Header */
@@ -212,14 +309,15 @@ const benefits = [
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: rgba(15, 23, 42, 0.97);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
         backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
 
       .navbar {
-        min-height: 72px;
         display: flex;
+        min-height: 72px;
         align-items: center;
         justify-content: space-between;
         gap: 28px;
@@ -237,9 +335,9 @@ const benefits = [
       }
 
       .logo-icon {
+        display: grid;
         width: 39px;
         height: 39px;
-        display: grid;
         place-items: center;
         border-radius: 10px;
         background: linear-gradient(
@@ -247,6 +345,7 @@ const benefits = [
           var(--primary),
           var(--secondary)
         );
+        color: #ffffff;
         box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
       }
 
@@ -308,9 +407,10 @@ const benefits = [
       }
 
       .hero::before {
-        content: "";
         position: absolute;
         inset: 0;
+        content: "";
+        pointer-events: none;
         background-image:
           linear-gradient(
             rgba(37, 99, 235, 0.04) 1px,
@@ -322,13 +422,21 @@ const benefits = [
             transparent 1px
           );
         background-size: 42px 42px;
-        mask-image: linear-gradient(to bottom, black, transparent);
-        pointer-events: none;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
       }
 
       .hero-content {
         position: relative;
-        max-width: 930px;
+        max-width: 980px;
         margin: 0 auto;
         text-align: center;
       }
@@ -357,7 +465,7 @@ const benefits = [
       }
 
       .hero h1 {
-        max-width: 930px;
+        max-width: 980px;
         margin: 0 auto 24px;
         color: var(--dark);
         font-size: clamp(42px, 7vw, 72px);
@@ -377,7 +485,7 @@ const benefits = [
       }
 
       .hero-description {
-        max-width: 790px;
+        max-width: 820px;
         margin: 0 auto;
         color: #475569;
         font-size: clamp(18px, 2.5vw, 21px);
@@ -407,7 +515,8 @@ const benefits = [
         transition:
           transform 0.2s ease,
           box-shadow 0.2s ease,
-          background 0.2s ease;
+          background 0.2s ease,
+          border-color 0.2s ease;
       }
 
       .button:hover {
@@ -470,7 +579,7 @@ const benefits = [
       }
 
       .section-heading {
-        max-width: 760px;
+        max-width: 780px;
         margin: 0 auto 52px;
         text-align: center;
       }
@@ -527,7 +636,6 @@ const benefits = [
       }
 
       .category-card::after {
-        content: "";
         position: absolute;
         right: -40px;
         bottom: -55px;
@@ -535,13 +643,14 @@ const benefits = [
         height: 130px;
         border-radius: 50%;
         background: rgba(37, 99, 235, 0.07);
+        content: "";
         transition: transform 0.3s ease;
       }
 
       .category-card:hover {
-        transform: translateY(-7px);
         border-color: #93c5fd;
         box-shadow: 0 22px 45px rgba(37, 99, 235, 0.13);
+        transform: translateY(-7px);
       }
 
       .category-card:hover::after {
@@ -549,13 +658,13 @@ const benefits = [
       }
 
       .category-icon {
+        display: grid;
         width: 57px;
         height: 57px;
-        display: grid;
         place-items: center;
         margin-bottom: 23px;
         border-radius: 15px;
-        background: #eff6ff;
+        background: var(--primary-soft);
         font-size: 29px;
       }
 
@@ -605,16 +714,16 @@ const benefits = [
       }
 
       .tool-card:hover {
-        transform: translateY(-5px);
         border-color: #93c5fd;
         box-shadow: 0 18px 38px rgba(37, 99, 235, 0.11);
+        transform: translateY(-5px);
       }
 
       .tool-icon {
+        display: grid;
         width: 52px;
         height: 52px;
         flex: 0 0 52px;
-        display: grid;
         place-items: center;
         border-radius: 13px;
         background: linear-gradient(
@@ -627,6 +736,16 @@ const benefits = [
 
       .tool-content {
         flex: 1;
+      }
+
+      .tool-category {
+        display: inline-flex;
+        margin-bottom: 7px;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
       }
 
       .tool-content h3 {
@@ -663,13 +782,13 @@ const benefits = [
       }
 
       .benefit-icon {
+        display: grid;
         width: 48px;
         height: 48px;
-        display: grid;
         place-items: center;
         margin-bottom: 18px;
         border-radius: 13px;
-        background: #eff6ff;
+        background: var(--primary-soft);
         font-size: 23px;
       }
 
@@ -720,7 +839,7 @@ const benefits = [
       }
 
       .cta-box p {
-        max-width: 680px;
+        max-width: 700px;
         margin: 0 auto 28px;
         color: #cbd5e1;
         font-size: 18px;
@@ -827,15 +946,15 @@ const benefits = [
       @media (max-width: 820px) {
         .navbar {
           min-height: auto;
-          padding: 17px 0;
           align-items: flex-start;
           flex-direction: column;
+          padding: 17px 0;
         }
 
         .nav-links {
           width: 100%;
-          gap: 15px 20px;
           flex-wrap: wrap;
+          gap: 15px 20px;
         }
 
         .nav-button {
@@ -870,7 +989,7 @@ const benefits = [
         }
 
         .hero h1 {
-          font-size: 41px;
+          font-size: 40px;
         }
 
         .hero-actions {
@@ -906,15 +1025,34 @@ const benefits = [
           padding: 50px 23px;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
     </style>
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
     <header class="site-header">
       <div class="container">
         <nav class="navbar" aria-label="Main navigation">
-          <a class="logo" href="/">
-            <span class="logo-icon">G</span>
+          <a class="logo" href="/" aria-label="Gokuruvi Tools home">
+            <span class="logo-icon" aria-hidden="true">G</span>
             <span>Gokuruvi Tools</span>
           </a>
 
@@ -938,18 +1076,18 @@ const benefits = [
       </div>
     </header>
 
-    <main>
+    <main id="main-content">
       <section class="hero">
         <div class="container">
           <div class="hero-content">
             <div class="hero-badge">
-              <span class="badge-dot"></span>
+              <span class="badge-dot" aria-hidden="true"></span>
               Free online tools for IT professionals
             </div>
 
             <h1>
-              Linux, DevOps, Network and
-              <span>Cloud Tools</span>
+              Linux, DevOps, Kubernetes,
+              <span>Network and Cloud Tools</span>
             </h1>
 
             <p class="hero-description">
@@ -964,35 +1102,35 @@ const benefits = [
                 href="#featured-tools"
               >
                 Explore Free Tools
-                <span>→</span>
+                <span aria-hidden="true">→</span>
               </a>
 
               <a
                 class="button button-secondary"
-                href="/network"
+                href="#tool-categories"
               >
-                Browse Network Tools
+                Browse All Categories
               </a>
             </div>
 
             <div class="hero-features">
               <div class="hero-feature">
-                <span class="check">✓</span>
+                <span class="check" aria-hidden="true">✓</span>
                 No registration
               </div>
 
               <div class="hero-feature">
-                <span class="check">✓</span>
+                <span class="check" aria-hidden="true">✓</span>
                 Free to use
               </div>
 
               <div class="hero-feature">
-                <span class="check">✓</span>
+                <span class="check" aria-hidden="true">✓</span>
                 Privacy friendly
               </div>
 
               <div class="hero-feature">
-                <span class="check">✓</span>
+                <span class="check" aria-hidden="true">✓</span>
                 Mobile responsive
               </div>
             </div>
@@ -1000,7 +1138,10 @@ const benefits = [
         </div>
       </section>
 
-      <section class="section section-white">
+      <section
+        class="section section-white"
+        id="tool-categories"
+      >
         <div class="container">
           <div class="section-heading">
             <span class="section-label">
@@ -1022,8 +1163,12 @@ const benefits = [
                 <a
                   class="category-card"
                   href={category.link}
+                  aria-label={category.button}
                 >
-                  <div class="category-icon">
+                  <div
+                    class="category-icon"
+                    aria-hidden="true"
+                  >
                     {category.icon}
                   </div>
 
@@ -1054,8 +1199,8 @@ const benefits = [
             <h2>Popular administration and engineering tools</h2>
 
             <p>
-              Save time with practical generators and calculators for common
-              Linux, network and Kubernetes tasks.
+              Save time with practical generators, validators and calculators
+              for Linux, DevOps, Kubernetes, network and cloud tasks.
             </p>
           </div>
 
@@ -1065,12 +1210,20 @@ const benefits = [
                 <a
                   class="tool-card"
                   href={tool.link}
+                  aria-label={`Open ${tool.title}`}
                 >
-                  <div class="tool-icon">
+                  <div
+                    class="tool-icon"
+                    aria-hidden="true"
+                  >
                     {tool.icon}
                   </div>
 
                   <div class="tool-content">
+                    <span class="tool-category">
+                      {tool.category}
+                    </span>
+
                     <h3>{tool.title}</h3>
 
                     <p>{tool.description}</p>
@@ -1105,7 +1258,10 @@ const benefits = [
             {
               benefits.map((benefit) => (
                 <article class="benefit-card">
-                  <div class="benefit-icon">
+                  <div
+                    class="benefit-icon"
+                    aria-hidden="true"
+                  >
                     {benefit.icon}
                   </div>
 
@@ -1127,17 +1283,17 @@ const benefits = [
             </h2>
 
             <p>
-              Explore practical utilities for Linux permissions, scheduled
-              jobs, Kubernetes manifests, network calculations and cloud
-              administration.
+              Explore practical utilities for Linux permissions, DevOps
+              configuration, Kubernetes manifests, network calculations and
+              cloud administration.
             </p>
 
             <a
               class="button cta-button"
-              href="/network"
+              href="#tool-categories"
             >
-              Explore Network Tools
-              <span>→</span>
+              Explore All Tool Categories
+              <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>
@@ -1149,7 +1305,7 @@ const benefits = [
         <div class="footer-grid">
           <div class="footer-brand">
             <a class="logo" href="/">
-              <span class="logo-icon">G</span>
+              <span class="logo-icon" aria-hidden="true">G</span>
               <span>Gokuruvi Tools</span>
             </a>
 
@@ -1187,12 +1343,16 @@ const benefits = [
                 Cron Generator
               </a>
 
+              <a href="/devops/yaml-validator">
+                YAML Validator
+              </a>
+
               <a href="/network/subnet-calculator">
                 Subnet Calculator
               </a>
 
-              <a href="/kubernetes/deployment-generator">
-                Deployment Generator
+              <a href="/cloud/cloud-init-generator">
+                Cloud-init Generator
               </a>
             </div>
           </div>

@@ -1,38 +1,324 @@
 ---
-const pageTitle = "Disclaimer";
-const description = "Important disclaimer for Gokuruvi Tools.";
+const pageTitle = "Disclaimer | Gokuruvi Tools";
+const description =
+  "Read the disclaimer for Gokuruvi Tools regarding the use of online calculators, generators, scripts, and technical content.";
+const lastUpdated = "30 July 2026";
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
     <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/disclaimer"
+    />
+
+    <style>
+      :root{
+        --primary:#2563eb;
+        --primary-dark:#1d4ed8;
+        --dark:#0f172a;
+        --text:#334155;
+        --muted:#64748b;
+        --bg:#f8fafc;
+        --card:#ffffff;
+        --border:#e2e8f0;
+      }
+
+      *{
+        box-sizing:border-box;
+      }
+
+      body{
+        margin:0;
+        font-family:Inter,Arial,sans-serif;
+        background:var(--bg);
+        color:var(--text);
+        line-height:1.8;
+      }
+
+      a{
+        color:var(--primary);
+      }
+
+      header{
+        background:var(--dark);
+      }
+
+      .header{
+        max-width:1100px;
+        margin:auto;
+        padding:18px 20px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+      }
+
+      .logo{
+        color:#fff;
+        font-size:22px;
+        font-weight:700;
+        text-decoration:none;
+      }
+
+      nav{
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+      }
+
+      nav a{
+        color:#cbd5e1;
+        text-decoration:none;
+        font-size:14px;
+        font-weight:600;
+      }
+
+      nav a:hover{
+        color:#fff;
+      }
+
+      .hero{
+        text-align:center;
+        padding:60px 20px;
+        background:linear-gradient(135deg,#eff6ff,#ffffff);
+      }
+
+      .hero h1{
+        margin:0;
+        font-size:48px;
+        color:var(--dark);
+      }
+
+      .hero p{
+        max-width:650px;
+        margin:15px auto;
+        color:var(--muted);
+      }
+
+      .updated{
+        display:inline-block;
+        margin-top:15px;
+        padding:8px 15px;
+        border-radius:30px;
+        background:#dbeafe;
+        color:#1e40af;
+        font-size:14px;
+        font-weight:600;
+      }
+
+      .container{
+        max-width:900px;
+        margin:40px auto;
+        padding:40px;
+        background:var(--card);
+        border-radius:14px;
+        box-shadow:0 10px 25px rgba(0,0,0,.08);
+      }
+
+      .notice{
+        padding:18px;
+        background:#eff6ff;
+        border-left:4px solid var(--primary);
+        border-radius:8px;
+        margin-bottom:30px;
+      }
+
+      h2{
+        color:var(--dark);
+        margin-top:35px;
+        border-bottom:1px solid var(--border);
+        padding-bottom:8px;
+      }
+
+      ul{
+        padding-left:22px;
+      }
+
+      .buttons{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:40px;
+      }
+
+      .btn{
+        text-decoration:none;
+        padding:12px 20px;
+        border-radius:8px;
+        font-weight:600;
+      }
+
+      .primary{
+        background:var(--primary);
+        color:#fff;
+      }
+
+      .primary:hover{
+        background:var(--primary-dark);
+      }
+
+      .secondary{
+        border:1px solid var(--border);
+        background:#fff;
+        color:var(--dark);
+      }
+
+      footer{
+        text-align:center;
+        padding:30px;
+        color:var(--muted);
+        font-size:14px;
+      }
+
+      footer a{
+        color:var(--primary);
+        text-decoration:none;
+      }
+
+      @media(max-width:768px){
+
+        .container{
+          margin:20px;
+          padding:25px;
+        }
+
+        .hero h1{
+          font-size:36px;
+        }
+
+        .buttons{
+          flex-direction:column;
+        }
+
+        .btn{
+          width:100%;
+          text-align:center;
+        }
+
+      }
+    </style>
+
   </head>
 
   <body>
-    <main>
+
+    <header>
+      <div class="header">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav>
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
       <h1>Disclaimer</h1>
 
       <p>
-        The information, commands, scripts, calculators, and generators on
-        Gokuruvi Tools are provided for general educational purposes.
+        Please read this disclaimer before using the tools, scripts,
+        calculators, and technical content available on Gokuruvi Tools.
       </p>
+
+      <div class="updated">
+        Last Updated: {lastUpdated}
+      </div>
+    </section>
+
+    <main class="container">
+
+      <div class="notice">
+        The content on Gokuruvi Tools is provided for educational and
+        informational purposes only.
+      </div>
+
+      <h2>Educational Purpose</h2>
 
       <p>
-        Always test commands and configuration files in a safe environment
-        before using them on production systems.
+        Commands, scripts, calculators, generators, configuration files,
+        and technical articles are intended to help Linux, DevOps,
+        Cloud, Kubernetes, and IT professionals learn and improve
+        productivity.
       </p>
+
+      <h2>Use at Your Own Risk</h2>
 
       <p>
-        Gokuruvi Tools is not responsible for data loss, service interruption,
-        security issues, or other damages caused by the use of information or
-        tools available on this website.
+        Always review and test commands, scripts, and configuration files
+        in a safe environment before using them on production systems.
       </p>
 
-      <p><a href="/">Return to homepage</a></p>
+      <h2>No Warranty</h2>
+
+      <p>
+        All information and tools are provided on an
+        <strong>"AS IS"</strong> and
+        <strong>"AS AVAILABLE"</strong> basis without any warranty,
+        either express or implied.
+      </p>
+
+      <h2>Limitation of Liability</h2>
+
+      <p>
+        Gokuruvi Tools is not responsible for data loss, downtime,
+        configuration errors, security issues, business interruption,
+        or any direct or indirect damages resulting from the use of this
+        website or its content.
+      </p>
+
+      <h2>External Links</h2>
+
+      <p>
+        This website may contain links to third-party websites.
+        Gokuruvi Tools is not responsible for the content,
+        availability, or privacy practices of external websites.
+      </p>
+
+      <h2>Contact</h2>
+
+      <p>
+        If you have any questions regarding this disclaimer,
+        please visit our
+        <a href="/contact">Contact Page</a>.
+      </p>
+
+      <div class="buttons">
+        <a class="btn primary" href="/">
+          ← Return Home
+        </a>
+
+        <a class="btn secondary" href="/privacy-policy">
+          Privacy Policy
+        </a>
+
+        <a class="btn secondary" href="/terms">
+          Terms & Conditions
+        </a>
+      </div>
+
     </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+    </footer>
+
   </body>
 </html>

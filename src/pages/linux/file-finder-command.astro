@@ -1,0 +1,1826 @@
+---
+const pageTitle = "Linux File Finder Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate Linux find commands to search files and directories by name, type, size, owner, permissions, modification time and other conditions.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/file-finder-command";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+    <meta
+      name="keywords"
+      content="Linux find command generator, file finder command, Linux search files, find by size, find by date, find by permission"
+    />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 770px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.28fr) minmax(330px, 0.82fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input:focus,
+      .field-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-section {
+        margin-top: 26px;
+      }
+
+      .preset-section h3 {
+        margin: 0 0 13px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 80px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <header class="site-header">
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/">
+            <span class="logo-icon">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
+
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a class="active" href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/network">Network</a>
+            <a href="/cloud">Cloud</a>
+            <a class="nav-button" href="/linux">Linux Tools</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span>/</span>
+          <a href="/linux">Linux Tools</a>
+          <span>/</span>
+          <span aria-current="page">File Finder Command</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🔎</div>
+
+            <h1>
+              File Finder Command <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate Linux <code>find</code> commands to locate files and
+              directories by name, type, size, ownership, permissions,
+              modification time, depth and other search conditions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Configure your file search</h2>
+                <p>
+                  Enter the required search conditions. The generated command
+                  updates automatically.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Search location and name
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="search-path">
+                      Search path
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="search-path"
+                      type="text"
+                      value="/var/log"
+                      placeholder="/path/to/search"
+                    />
+
+                    <span class="field-help">
+                      Use <code>.</code> for the current directory.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="file-name">
+                      File or directory name
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="file-name"
+                      type="text"
+                      value="*.log"
+                      placeholder="*.log"
+                    />
+
+                    <span class="field-help">
+                      Wildcards such as <code>*</code> and <code>?</code> are
+                      supported.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="name-mode">
+                      Name matching
+                    </label>
+
+                    <select class="field-select" id="name-mode">
+                      <option value="-name" selected>
+                        Case-sensitive (-name)
+                      </option>
+                      <option value="-iname">
+                        Case-insensitive (-iname)
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="file-type">
+                      Object type
+                    </label>
+
+                    <select class="field-select" id="file-type">
+                      <option value="">Any type</option>
+                      <option value="f" selected>Regular file</option>
+                      <option value="d">Directory</option>
+                      <option value="l">Symbolic link</option>
+                      <option value="b">Block device</option>
+                      <option value="c">Character device</option>
+                      <option value="p">Named pipe</option>
+                      <option value="s">Socket</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Size and date filters
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="size-mode">
+                      File size condition
+                    </label>
+
+                    <select class="field-select" id="size-mode">
+                      <option value="">No size filter</option>
+                      <option value="+">Larger than</option>
+                      <option value="-">Smaller than</option>
+                      <option value="exact">Exactly</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="size-value">
+                      Size
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="size-value"
+                      type="number"
+                      min="0"
+                      placeholder="100"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="size-unit">
+                      Size unit
+                    </label>
+
+                    <select class="field-select" id="size-unit">
+                      <option value="c">Bytes</option>
+                      <option value="k" selected>Kilobytes</option>
+                      <option value="M">Megabytes</option>
+                      <option value="G">Gigabytes</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="time-type">
+                      Time field
+                    </label>
+
+                    <select class="field-select" id="time-type">
+                      <option value="">No time filter</option>
+                      <option value="mtime">Modified days ago</option>
+                      <option value="mmin">Modified minutes ago</option>
+                      <option value="atime">Accessed days ago</option>
+                      <option value="amin">Accessed minutes ago</option>
+                      <option value="ctime">Metadata changed days ago</option>
+                      <option value="cmin">
+                        Metadata changed minutes ago
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="time-mode">
+                      Time condition
+                    </label>
+
+                    <select class="field-select" id="time-mode">
+                      <option value="+">Older than</option>
+                      <option value="-">Newer than</option>
+                      <option value="exact">Exactly</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="time-value">
+                      Time value
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="time-value"
+                      type="number"
+                      min="0"
+                      placeholder="7"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Ownership and permissions
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="owner">
+                      Owner
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="owner"
+                      type="text"
+                      placeholder="root or 0"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="group">
+                      Group
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="group"
+                      type="text"
+                      placeholder="wheel or 10"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="permission">
+                      Permission
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="permission"
+                      type="text"
+                      maxlength="5"
+                      placeholder="755"
+                    />
+
+                    <span class="field-help">
+                      Examples: <code>755</code>, <code>-002</code> or
+                      <code>/4000</code>.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="empty-filter">
+                      Empty objects
+                    </label>
+
+                    <select class="field-select" id="empty-filter">
+                      <option value="">No empty filter</option>
+                      <option value="-empty">
+                        Only empty files or directories
+                      </option>
+                      <option value="not-empty">
+                        Exclude empty files or directories
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Search depth and filesystem options
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="min-depth">
+                      Minimum depth
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="min-depth"
+                      type="number"
+                      min="0"
+                      placeholder="1"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="max-depth">
+                      Maximum depth
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="max-depth"
+                      type="number"
+                      min="0"
+                      placeholder="3"
+                    />
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 18px;">
+                  <label class="checkbox-item">
+                    <input id="same-filesystem" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Same filesystem
+                      </span>
+
+                      <span class="checkbox-description">
+                        Do not search mounted filesystems using
+                        <code>-xdev</code>.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="follow-links" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Follow symbolic links
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-L</code> before the search path.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="ignore-errors" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Hide permission errors
+                      </span>
+
+                      <span class="checkbox-description">
+                        Redirect standard error to
+                        <code>/dev/null</code>.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="use-sudo" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">Include sudo</span>
+
+                      <span class="checkbox-description">
+                        Run the search with administrative privileges.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Result action
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="action">
+                      Action
+                    </label>
+
+                    <select class="field-select" id="action">
+                      <option value="print" selected>
+                        Print matching paths
+                      </option>
+                      <option value="ls">
+                        Show detailed listing
+                      </option>
+                      <option value="delete">
+                        Delete matching objects
+                      </option>
+                      <option value="exec">
+                        Execute a command
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="exec-command">
+                      Execute command
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="exec-command"
+                      type="text"
+                      placeholder="ls -lh {}"
+                      disabled
+                    />
+
+                    <span class="field-help">
+                      Use <code>{}</code> as the matched path placeholder.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preset-section">
+                <h3>Common searches</h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="logs"
+                  >
+                    Log files
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="large"
+                  >
+                    Files over 1 GB
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="old"
+                  >
+                    Files older than 30 days
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="empty"
+                  >
+                    Empty files
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="suid"
+                  >
+                    SUID files
+                  </button>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Find Command
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column">
+              <div class="result-card">
+                <h2>Generated command</h2>
+
+                <span class="result-label">Linux find command</span>
+
+                <div class="result-output">
+                  <span class="result-value" id="command-result">
+                    find '/var/log' -type f -name '*.log' -print 2>/dev/null
+                  </span>
+
+                  <button
+                    class="copy-button"
+                    type="button"
+                    data-copy-target="command-result"
+                  >
+                    Copy
+                  </button>
+                </div>
+
+                <div class="warning-box" id="warning-box">
+                  Review the generated command before running it on a production
+                  server.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Search summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Search path</span>
+                    <strong id="summary-path">/var/log</strong>
+                  </li>
+
+                  <li>
+                    <span>Name pattern</span>
+                    <strong id="summary-name">*.log</strong>
+                  </li>
+
+                  <li>
+                    <span>Object type</span>
+                    <strong id="summary-type">Regular file</strong>
+                  </li>
+
+                  <li>
+                    <span>Result action</span>
+                    <strong id="summary-action">Print</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Linux find command examples</h2>
+
+            <p>
+              The Linux <code>find</code> command searches directory trees using
+              names, types, sizes, dates, permissions and other conditions.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Search by name</h3>
+
+              <ul>
+                <li>
+                  <code>find /var/log -name "*.log"</code>
+                </li>
+                <li>
+                  <code>find /etc -iname "*.conf"</code>
+                </li>
+                <li>
+                  Quote wildcard patterns to prevent shell expansion.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Search by size and time</h3>
+
+              <ul>
+                <li>
+                  <code>find / -type f -size +1G</code>
+                </li>
+                <li>
+                  <code>find /tmp -type f -mtime +30</code>
+                </li>
+                <li>
+                  <code>find /var/log -type f -mmin -60</code>
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Safety recommendations</h3>
+
+              <ul>
+                <li>
+                  Test commands with <code>-print</code> before using
+                  <code>-delete</code>.
+                </li>
+                <li>
+                  Confirm the search path and matching conditions.
+                </li>
+                <li>
+                  Use <code>-xdev</code> to avoid crossing into mounted
+                  filesystems.
+                </li>
+                <li>
+                  Avoid broad searches from <code>/</code> unless required.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-links">
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const fieldIds = [
+        "search-path",
+        "file-name",
+        "name-mode",
+        "file-type",
+        "size-mode",
+        "size-value",
+        "size-unit",
+        "time-type",
+        "time-mode",
+        "time-value",
+        "owner",
+        "group",
+        "permission",
+        "empty-filter",
+        "min-depth",
+        "max-depth",
+        "action",
+        "exec-command",
+      ];
+
+      const checkboxIds = [
+        "same-filesystem",
+        "follow-links",
+        "ignore-errors",
+        "use-sudo",
+      ];
+
+      const commandResult = document.getElementById("command-result");
+      const warningBox = document.getElementById("warning-box");
+      const copyStatus = document.getElementById("copy-status");
+      const actionInput = document.getElementById("action");
+      const execCommandInput = document.getElementById("exec-command");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function shellQuote(value) {
+        const text = value.trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function updateActionField() {
+        execCommandInput.disabled = actionInput.value !== "exec";
+      }
+
+      function getTypeLabel(type) {
+        const labels = {
+          "": "Any type",
+          f: "Regular file",
+          d: "Directory",
+          l: "Symbolic link",
+          b: "Block device",
+          c: "Character device",
+          p: "Named pipe",
+          s: "Socket",
+        };
+
+        return labels[type] || "Any type";
+      }
+
+      function getActionLabel(action) {
+        const labels = {
+          print: "Print",
+          ls: "Detailed listing",
+          delete: "Delete",
+          exec: "Execute command",
+        };
+
+        return labels[action] || "Print";
+      }
+
+      function generateCommand() {
+        const searchPath = getValue("search-path") || ".";
+        const fileName = getValue("file-name");
+        const nameMode = getValue("name-mode") || "-name";
+        const fileType = getValue("file-type");
+
+        const parts = [];
+
+        if (isChecked("use-sudo")) {
+          parts.push("sudo");
+        }
+
+        parts.push("find");
+
+        if (isChecked("follow-links")) {
+          parts.push("-L");
+        }
+
+        parts.push(shellQuote(searchPath));
+
+        const minDepth = getValue("min-depth");
+        const maxDepth = getValue("max-depth");
+
+        if (minDepth) {
+          parts.push("-mindepth", minDepth);
+        }
+
+        if (maxDepth) {
+          parts.push("-maxdepth", maxDepth);
+        }
+
+        if (isChecked("same-filesystem")) {
+          parts.push("-xdev");
+        }
+
+        if (fileType) {
+          parts.push("-type", fileType);
+        }
+
+        if (fileName) {
+          parts.push(nameMode, shellQuote(fileName));
+        }
+
+        const sizeMode = getValue("size-mode");
+        const sizeValue = getValue("size-value");
+        const sizeUnit = getValue("size-unit") || "k";
+
+        if (sizeMode && sizeValue) {
+          const prefix = sizeMode === "exact" ? "" : sizeMode;
+          parts.push("-size", `${prefix}${sizeValue}${sizeUnit}`);
+        }
+
+        const timeType = getValue("time-type");
+        const timeMode = getValue("time-mode");
+        const timeValue = getValue("time-value");
+
+        if (timeType && timeValue) {
+          const prefix = timeMode === "exact" ? "" : timeMode;
+          parts.push(`-${timeType}`, `${prefix}${timeValue}`);
+        }
+
+        const owner = getValue("owner");
+        const group = getValue("group");
+        const permission = getValue("permission");
+
+        if (owner) {
+          parts.push(/^\d+$/.test(owner) ? "-uid" : "-user", owner);
+        }
+
+        if (group) {
+          parts.push(/^\d+$/.test(group) ? "-gid" : "-group", group);
+        }
+
+        if (permission) {
+          parts.push("-perm", permission);
+        }
+
+        const emptyFilter = getValue("empty-filter");
+
+        if (emptyFilter === "-empty") {
+          parts.push("-empty");
+        }
+
+        if (emptyFilter === "not-empty") {
+          parts.push("!", "-empty");
+        }
+
+        const action = getValue("action") || "print";
+
+        if (action === "print") {
+          parts.push("-print");
+        }
+
+        if (action === "ls") {
+          parts.push("-ls");
+        }
+
+        if (action === "delete") {
+          parts.push("-delete");
+        }
+
+        if (action === "exec") {
+          const execCommand =
+            getValue("exec-command") || "ls -lh {}";
+
+          parts.push("-exec", execCommand, "\\;");
+        }
+
+        if (isChecked("ignore-errors")) {
+          parts.push("2>/dev/null");
+        }
+
+        const command = parts.join(" ");
+        commandResult.textContent = command;
+
+        document.getElementById("summary-path").textContent =
+          searchPath;
+
+        document.getElementById("summary-name").textContent =
+          fileName || "Any name";
+
+        document.getElementById("summary-type").textContent =
+          getTypeLabel(fileType);
+
+        document.getElementById("summary-action").textContent =
+          getActionLabel(action);
+
+        if (action === "delete") {
+          warningBox.textContent =
+            "Danger: this command deletes matching files or directories. Test the same search with -print before running it.";
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (searchPath === "/") {
+          warningBox.textContent =
+            "Warning: searching from the root directory may be slow and may scan sensitive or mounted filesystems.";
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else {
+          warningBox.textContent =
+            "Review the generated command before running it on a production server.";
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        }
+      }
+
+      function resetForm() {
+        const values = {
+          "search-path": "/var/log",
+          "file-name": "*.log",
+          "name-mode": "-name",
+          "file-type": "f",
+          "size-mode": "",
+          "size-value": "",
+          "size-unit": "k",
+          "time-type": "",
+          "time-mode": "+",
+          "time-value": "",
+          owner: "",
+          group: "",
+          permission: "",
+          "empty-filter": "",
+          "min-depth": "",
+          "max-depth": "",
+          action: "print",
+          "exec-command": "",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        document.getElementById("same-filesystem").checked = false;
+        document.getElementById("follow-links").checked = false;
+        document.getElementById("ignore-errors").checked = true;
+        document.getElementById("use-sudo").checked = false;
+
+        updateActionField();
+        generateCommand();
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "logs") {
+          document.getElementById("search-path").value = "/var/log";
+          document.getElementById("file-name").value = "*.log";
+          document.getElementById("file-type").value = "f";
+        }
+
+        if (preset === "large") {
+          document.getElementById("search-path").value = "/";
+          document.getElementById("file-name").value = "";
+          document.getElementById("file-type").value = "f";
+          document.getElementById("size-mode").value = "+";
+          document.getElementById("size-value").value = "1";
+          document.getElementById("size-unit").value = "G";
+          document.getElementById("same-filesystem").checked = true;
+          document.getElementById("use-sudo").checked = true;
+        }
+
+        if (preset === "old") {
+          document.getElementById("search-path").value = "/var/log";
+          document.getElementById("file-name").value = "*.log";
+          document.getElementById("file-type").value = "f";
+          document.getElementById("time-type").value = "mtime";
+          document.getElementById("time-mode").value = "+";
+          document.getElementById("time-value").value = "30";
+        }
+
+        if (preset === "empty") {
+          document.getElementById("search-path").value = ".";
+          document.getElementById("file-name").value = "";
+          document.getElementById("file-type").value = "f";
+          document.getElementById("empty-filter").value = "-empty";
+        }
+
+        if (preset === "suid") {
+          document.getElementById("search-path").value = "/";
+          document.getElementById("file-name").value = "";
+          document.getElementById("file-type").value = "f";
+          document.getElementById("permission").value = "/4000";
+          document.getElementById("same-filesystem").checked = true;
+          document.getElementById("use-sudo").checked = true;
+        }
+
+        generateCommand();
+      }
+
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          copyStatus.textContent = "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      fieldIds.forEach((id) => {
+        const element = document.getElementById(id);
+
+        element?.addEventListener("input", generateCommand);
+        element?.addEventListener("change", () => {
+          if (id === "action") {
+            updateActionField();
+          }
+
+          generateCommand();
+        });
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener("change", generateCommand);
+      });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateCommand);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.dataset.copyTarget;
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(target?.textContent?.trim() ?? "");
+          });
+        });
+
+      updateActionField();
+      generateCommand();
+    </script>
+  </body>
+</html>

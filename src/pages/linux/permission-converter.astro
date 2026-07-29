@@ -1,0 +1,2154 @@
+---
+const pageTitle = "Linux Permission Converter | Gokuruvi Tools";
+const pageDescription =
+  "Convert Linux file permissions between numeric, symbolic and chmod command formats. Supports special permissions including setuid, setgid and sticky bit.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/permission-converter";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="Linux permission converter, chmod converter, numeric to symbolic permissions, symbolic to numeric chmod, setuid, setgid, sticky bit"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #d97706;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Hero */
+
+      .hero {
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 770px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      /* Converter */
+
+      .converter-section {
+        padding: 75px 0;
+      }
+
+      .converter-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(330px, 0.8fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .converter-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .converter-card {
+        padding: 30px;
+      }
+
+      .converter-heading {
+        margin-bottom: 27px;
+      }
+
+      .converter-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .converter-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .mode-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .mode-button {
+        min-height: 48px;
+        padding: 0 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .mode-button.active {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+      }
+
+      .input-panel {
+        margin-bottom: 28px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #f8fafc;
+      }
+
+      .input-panel[hidden] {
+        display: none;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input {
+        width: 100%;
+        min-height: 52px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 19px;
+        font-weight: 800;
+      }
+
+      .field-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .validation-message {
+        min-height: 22px;
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .validation-success {
+        color: var(--success);
+      }
+
+      .validation-error {
+        color: var(--danger);
+      }
+
+      /* Permission matrix */
+
+      .permissions-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 17px;
+      }
+
+      .permissions-heading h3 {
+        margin: 0;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .permissions-table-wrapper {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+      }
+
+      .permissions-table {
+        width: 100%;
+        min-width: 620px;
+        border-collapse: collapse;
+        background: #ffffff;
+      }
+
+      .permissions-table th,
+      .permissions-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+      }
+
+      .permissions-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .permissions-table th {
+        background: #f8fafc;
+        color: var(--dark);
+        font-size: 13px;
+      }
+
+      .permissions-table th:first-child,
+      .permissions-table td:first-child {
+        text-align: left;
+      }
+
+      .user-class {
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .permission-checkbox {
+        width: 21px;
+        height: 21px;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+
+      .class-value {
+        display: inline-grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-weight: 900;
+      }
+
+      .special-section {
+        margin-top: 25px;
+      }
+
+      .special-section h3 {
+        margin: 0 0 14px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .special-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .special-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .special-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .special-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .special-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .preset-section {
+        margin-top: 26px;
+      }
+
+      .preset-section h3 {
+        margin: 0 0 13px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 27px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      /* Results */
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-group {
+        margin-bottom: 18px;
+      }
+
+      .result-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 58px;
+        padding: 13px 14px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .numeric-result {
+        color: var(--primary-dark);
+        font-size: 35px;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .file-type-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .file-type-button {
+        flex: 1;
+        min-height: 42px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .file-type-button.active {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      /* Information */
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      .value-list {
+        display: grid;
+        gap: 9px;
+        margin-top: 15px;
+      }
+
+      .value-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+      }
+
+      .value-item strong {
+        color: var(--primary-dark);
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .converter-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .converter-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .mode-tabs,
+        .special-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .result-output {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <header class="site-header">
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/" aria-label="Gokuruvi Tools home">
+            <span class="logo-icon" aria-hidden="true">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
+
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a class="active" href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/network">Network</a>
+            <a href="/cloud">Cloud</a>
+            <a class="nav-button" href="/linux">Linux Tools</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Permission Converter</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🔄</div>
+
+            <h1>
+              Linux Permission <span>Converter</span>
+            </h1>
+
+            <p>
+              Convert Linux permissions between numeric values such as
+              <code>755</code>, symbolic values such as
+              <code>rwxr-xr-x</code>, and complete chmod commands.
+              Special permissions are also supported.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="converter-section">
+        <div class="container">
+          <div class="converter-layout">
+            <div class="converter-card">
+              <div class="converter-heading">
+                <h2>Convert file permissions</h2>
+
+                <p>
+                  Enter a numeric or symbolic permission value, or use the
+                  permission checkboxes.
+                </p>
+              </div>
+
+              <div class="mode-tabs" role="tablist">
+                <button
+                  class="mode-button active"
+                  id="numeric-mode"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                >
+                  Numeric to Symbolic
+                </button>
+
+                <button
+                  class="mode-button"
+                  id="symbolic-mode"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                >
+                  Symbolic to Numeric
+                </button>
+              </div>
+
+              <div class="input-panel" id="numeric-panel">
+                <label class="field-label" for="numeric-input">
+                  Numeric permission
+                </label>
+
+                <input
+                  class="field-input"
+                  id="numeric-input"
+                  type="text"
+                  value="755"
+                  maxlength="4"
+                  inputmode="numeric"
+                  placeholder="755 or 4755"
+                  spellcheck="false"
+                />
+
+                <span class="field-help">
+                  Enter three digits for standard permissions or four digits
+                  when using special permissions.
+                </span>
+
+                <div
+                  class="validation-message validation-success"
+                  id="numeric-validation"
+                  role="status"
+                >
+                  Valid numeric permission.
+                </div>
+              </div>
+
+              <div
+                class="input-panel"
+                id="symbolic-panel"
+                hidden
+              >
+                <label class="field-label" for="symbolic-input">
+                  Symbolic permission
+                </label>
+
+                <input
+                  class="field-input"
+                  id="symbolic-input"
+                  type="text"
+                  value="rwxr-xr-x"
+                  maxlength="10"
+                  placeholder="rwxr-xr-x"
+                  spellcheck="false"
+                />
+
+                <span class="field-help">
+                  Enter nine permission characters. An optional leading file
+                  type character such as <code>-</code> or
+                  <code>d</code> is accepted.
+                </span>
+
+                <div
+                  class="validation-message validation-success"
+                  id="symbolic-validation"
+                  role="status"
+                >
+                  Valid symbolic permission.
+                </div>
+              </div>
+
+              <div class="permissions-heading">
+                <h3>Permission selection</h3>
+              </div>
+
+              <div class="permissions-table-wrapper">
+                <table class="permissions-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">User class</th>
+                      <th scope="col">Read (4)</th>
+                      <th scope="col">Write (2)</th>
+                      <th scope="col">Execute (1)</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td class="user-class">Owner</td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="owner"
+                          data-permission="read"
+                          checked
+                          aria-label="Owner read permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="owner"
+                          data-permission="write"
+                          checked
+                          aria-label="Owner write permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="owner"
+                          data-permission="execute"
+                          checked
+                          aria-label="Owner execute permission"
+                        />
+                      </td>
+
+                      <td>
+                        <span class="class-value" id="owner-value">7</span>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="user-class">Group</td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="group"
+                          data-permission="read"
+                          checked
+                          aria-label="Group read permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="group"
+                          data-permission="write"
+                          aria-label="Group write permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="group"
+                          data-permission="execute"
+                          checked
+                          aria-label="Group execute permission"
+                        />
+                      </td>
+
+                      <td>
+                        <span class="class-value" id="group-value">5</span>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="user-class">Others</td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="others"
+                          data-permission="read"
+                          checked
+                          aria-label="Others read permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="others"
+                          data-permission="write"
+                          aria-label="Others write permission"
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          class="permission-checkbox"
+                          type="checkbox"
+                          data-class="others"
+                          data-permission="execute"
+                          checked
+                          aria-label="Others execute permission"
+                        />
+                      </td>
+
+                      <td>
+                        <span class="class-value" id="others-value">5</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="special-section">
+                <h3>Special permissions</h3>
+
+                <div class="special-grid">
+                  <label class="special-item">
+                    <input id="setuid" type="checkbox" />
+
+                    <span>
+                      <span class="special-title">Setuid (4)</span>
+
+                      <span class="special-description">
+                        Execute with the file owner's privileges.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="special-item">
+                    <input id="setgid" type="checkbox" />
+
+                    <span>
+                      <span class="special-title">Setgid (2)</span>
+
+                      <span class="special-description">
+                        Execute with group privileges or inherit directory
+                        group.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="special-item">
+                    <input id="sticky" type="checkbox" />
+
+                    <span>
+                      <span class="special-title">Sticky bit (1)</span>
+
+                      <span class="special-description">
+                        Restrict deletion inside shared directories.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="preset-section">
+                <h3>Common permissions</h3>
+
+                <div class="preset-list">
+                  <button class="preset-button" type="button" data-mode="755">
+                    755
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="644">
+                    644
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="700">
+                    700
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="600">
+                    600
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="775">
+                    775
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="777">
+                    777
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="1777">
+                    1777
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="4755">
+                    4755
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="2755">
+                    2755
+                  </button>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="convert"
+                  type="button"
+                >
+                  Convert Permission
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="select-all"
+                  type="button"
+                >
+                  Select All
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="clear-all"
+                  type="button"
+                >
+                  Clear All
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Conversion results">
+              <div class="result-card">
+                <h2>Converted permission</h2>
+
+                <div class="result-group">
+                  <span class="result-label">Numeric value</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value numeric-result"
+                      id="numeric-result"
+                    >
+                      755
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="numeric-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">
+                    Symbolic permission
+                  </span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value"
+                      id="symbolic-result"
+                    >
+                      rwxr-xr-x
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="symbolic-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">
+                    Long listing format
+                  </span>
+
+                  <div class="file-type-row">
+                    <button
+                      class="file-type-button active"
+                      type="button"
+                      data-file-type="-"
+                    >
+                      Regular file
+                    </button>
+
+                    <button
+                      class="file-type-button"
+                      type="button"
+                      data-file-type="d"
+                    >
+                      Directory
+                    </button>
+                  </div>
+
+                  <div class="result-output" style="margin-top: 10px;">
+                    <span
+                      class="result-value"
+                      id="long-format-result"
+                    >
+                      -rwxr-xr-x
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="long-format-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">chmod command</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value"
+                      id="command-result"
+                    >
+                      chmod 755 filename
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="command-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Permission summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Owner</span>
+                    <strong id="owner-summary">
+                      Read, Write, Execute
+                    </strong>
+                  </li>
+
+                  <li>
+                    <span>Group</span>
+                    <strong id="group-summary">
+                      Read, Execute
+                    </strong>
+                  </li>
+
+                  <li>
+                    <span>Others</span>
+                    <strong id="others-summary">
+                      Read, Execute
+                    </strong>
+                  </li>
+
+                  <li>
+                    <span>Special permissions</span>
+                    <strong id="special-summary">None</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Understanding Linux permissions</h2>
+
+            <p>
+              Linux permissions define what the owner, group and other users
+              can do with a file or directory.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Numeric values</h3>
+
+              <div class="value-list">
+                <div class="value-item">
+                  <span>Read</span>
+                  <strong>4</strong>
+                </div>
+
+                <div class="value-item">
+                  <span>Write</span>
+                  <strong>2</strong>
+                </div>
+
+                <div class="value-item">
+                  <span>Execute</span>
+                  <strong>1</strong>
+                </div>
+
+                <div class="value-item">
+                  <span>No permission</span>
+                  <strong>0</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="info-card">
+              <h3>Symbolic format</h3>
+
+              <ul>
+                <li><code>r</code> means read permission.</li>
+                <li><code>w</code> means write permission.</li>
+                <li><code>x</code> means execute permission.</li>
+                <li><code>-</code> means permission not granted.</li>
+                <li>
+                  <code>rwxr-xr-x</code> is equivalent to
+                  <code>755</code>.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Special permissions</h3>
+
+              <ul>
+                <li>
+                  <strong>Setuid:</strong> represented by
+                  <code>s</code> or <code>S</code> in the owner execute
+                  position.
+                </li>
+                <li>
+                  <strong>Setgid:</strong> represented by
+                  <code>s</code> or <code>S</code> in the group execute
+                  position.
+                </li>
+                <li>
+                  <strong>Sticky bit:</strong> represented by
+                  <code>t</code> or <code>T</code> in the others execute
+                  position.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-links">
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const userClasses = ["owner", "group", "others"];
+      const permissions = ["read", "write", "execute"];
+
+      const permissionValues = {
+        read: 4,
+        write: 2,
+        execute: 1,
+      };
+
+      const permissionSymbols = {
+        read: "r",
+        write: "w",
+        execute: "x",
+      };
+
+      const permissionLabels = {
+        read: "Read",
+        write: "Write",
+        execute: "Execute",
+      };
+
+      const numericModeButton =
+        document.getElementById("numeric-mode");
+      const symbolicModeButton =
+        document.getElementById("symbolic-mode");
+
+      const numericPanel =
+        document.getElementById("numeric-panel");
+      const symbolicPanel =
+        document.getElementById("symbolic-panel");
+
+      const numericInput =
+        document.getElementById("numeric-input");
+      const symbolicInput =
+        document.getElementById("symbolic-input");
+
+      const numericValidation =
+        document.getElementById("numeric-validation");
+      const symbolicValidation =
+        document.getElementById("symbolic-validation");
+
+      const setuidInput = document.getElementById("setuid");
+      const setgidInput = document.getElementById("setgid");
+      const stickyInput = document.getElementById("sticky");
+
+      const numericResult =
+        document.getElementById("numeric-result");
+      const symbolicResult =
+        document.getElementById("symbolic-result");
+      const longFormatResult =
+        document.getElementById("long-format-result");
+      const commandResult =
+        document.getElementById("command-result");
+
+      const ownerSummary =
+        document.getElementById("owner-summary");
+      const groupSummary =
+        document.getElementById("group-summary");
+      const othersSummary =
+        document.getElementById("others-summary");
+      const specialSummary =
+        document.getElementById("special-summary");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      let activeMode = "numeric";
+      let selectedFileType = "-";
+
+      function getCheckbox(userClass, permission) {
+        return document.querySelector(
+          `[data-class="${userClass}"][data-permission="${permission}"]`
+        );
+      }
+
+      function setMode(mode) {
+        activeMode = mode;
+
+        const numericActive = mode === "numeric";
+
+        numericModeButton.classList.toggle(
+          "active",
+          numericActive
+        );
+
+        symbolicModeButton.classList.toggle(
+          "active",
+          !numericActive
+        );
+
+        numericModeButton.setAttribute(
+          "aria-selected",
+          String(numericActive)
+        );
+
+        symbolicModeButton.setAttribute(
+          "aria-selected",
+          String(!numericActive)
+        );
+
+        numericPanel.hidden = !numericActive;
+        symbolicPanel.hidden = numericActive;
+      }
+
+      function validateNumeric(value) {
+        return /^[0-7]{3,4}$/.test(value);
+      }
+
+      function normalizeSymbolic(value) {
+        const trimmed = value.trim();
+
+        if (
+          trimmed.length === 10 &&
+          /^[\-dlcbps][rwxstST-]{9}$/.test(trimmed)
+        ) {
+          return trimmed.slice(1);
+        }
+
+        return trimmed;
+      }
+
+      function validateSymbolic(value) {
+        const normalized = normalizeSymbolic(value);
+
+        if (normalized.length !== 9) {
+          return false;
+        }
+
+        return (
+          /^[r-][w-][xsS-][r-][w-][xsS-][r-][w-][xtT-]$/.test(
+            normalized
+          )
+        );
+      }
+
+      function renderValidation(element, valid, message) {
+        element.textContent = message;
+        element.classList.toggle(
+          "validation-success",
+          valid
+        );
+        element.classList.toggle(
+          "validation-error",
+          !valid
+        );
+      }
+
+      function applyNumericPermission(value) {
+        if (!validateNumeric(value)) {
+          renderValidation(
+            numericValidation,
+            false,
+            "Enter a valid three-digit or four-digit octal permission."
+          );
+
+          return false;
+        }
+
+        const padded = value.padStart(4, "0");
+        const specialDigit = Number(padded[0]);
+        const standardDigits = padded.slice(1);
+
+        setuidInput.checked = Boolean(specialDigit & 4);
+        setgidInput.checked = Boolean(specialDigit & 2);
+        stickyInput.checked = Boolean(specialDigit & 1);
+
+        userClasses.forEach((userClass, index) => {
+          const digit = Number(standardDigits[index]);
+
+          permissions.forEach((permission) => {
+            const checkbox = getCheckbox(userClass, permission);
+
+            checkbox.checked = Boolean(
+              digit & permissionValues[permission]
+            );
+          });
+        });
+
+        renderValidation(
+          numericValidation,
+          true,
+          "Valid numeric permission."
+        );
+
+        updateResults();
+
+        return true;
+      }
+
+      function applySymbolicPermission(value) {
+        if (!validateSymbolic(value)) {
+          renderValidation(
+            symbolicValidation,
+            false,
+            "Enter a valid symbolic permission such as rwxr-xr-x."
+          );
+
+          return false;
+        }
+
+        const normalized = normalizeSymbolic(value);
+        const characters = normalized.split("");
+
+        const indexes = {
+          owner: 0,
+          group: 3,
+          others: 6,
+        };
+
+        userClasses.forEach((userClass) => {
+          const start = indexes[userClass];
+
+          getCheckbox(userClass, "read").checked =
+            characters[start] === "r";
+
+          getCheckbox(userClass, "write").checked =
+            characters[start + 1] === "w";
+
+          const executeCharacter = characters[start + 2];
+
+          getCheckbox(userClass, "execute").checked =
+            ["x", "s", "t"].includes(
+              executeCharacter.toLowerCase()
+            );
+        });
+
+        setuidInput.checked =
+          characters[2] === "s" || characters[2] === "S";
+
+        setgidInput.checked =
+          characters[5] === "s" || characters[5] === "S";
+
+        stickyInput.checked =
+          characters[8] === "t" || characters[8] === "T";
+
+        renderValidation(
+          symbolicValidation,
+          true,
+          "Valid symbolic permission."
+        );
+
+        updateResults();
+
+        return true;
+      }
+
+      function calculateClassValue(userClass) {
+        return permissions.reduce((total, permission) => {
+          const checkbox = getCheckbox(userClass, permission);
+
+          return checkbox.checked
+            ? total + permissionValues[permission]
+            : total;
+        }, 0);
+      }
+
+      function calculateSpecialValue() {
+        let value = 0;
+
+        if (setuidInput.checked) {
+          value += 4;
+        }
+
+        if (setgidInput.checked) {
+          value += 2;
+        }
+
+        if (stickyInput.checked) {
+          value += 1;
+        }
+
+        return value;
+      }
+
+      function buildSymbolicPermission() {
+        let symbolic = "";
+
+        userClasses.forEach((userClass) => {
+          permissions.forEach((permission) => {
+            const checkbox = getCheckbox(userClass, permission);
+
+            symbolic += checkbox.checked
+              ? permissionSymbols[permission]
+              : "-";
+          });
+        });
+
+        const characters = symbolic.split("");
+
+        if (setuidInput.checked) {
+          characters[2] =
+            characters[2] === "x" ? "s" : "S";
+        }
+
+        if (setgidInput.checked) {
+          characters[5] =
+            characters[5] === "x" ? "s" : "S";
+        }
+
+        if (stickyInput.checked) {
+          characters[8] =
+            characters[8] === "x" ? "t" : "T";
+        }
+
+        return characters.join("");
+      }
+
+      function describeClass(userClass) {
+        const selectedPermissions = permissions
+          .filter(
+            (permission) =>
+              getCheckbox(userClass, permission).checked
+          )
+          .map((permission) => permissionLabels[permission]);
+
+        return selectedPermissions.length > 0
+          ? selectedPermissions.join(", ")
+          : "No permissions";
+      }
+
+      function updateResults() {
+        const ownerValue = calculateClassValue("owner");
+        const groupValue = calculateClassValue("group");
+        const othersValue = calculateClassValue("others");
+        const specialValue = calculateSpecialValue();
+
+        const standardNumeric =
+          `${ownerValue}${groupValue}${othersValue}`;
+
+        const numeric =
+          specialValue > 0
+            ? `${specialValue}${standardNumeric}`
+            : standardNumeric;
+
+        const symbolic = buildSymbolicPermission();
+
+        document.getElementById("owner-value").textContent =
+          String(ownerValue);
+
+        document.getElementById("group-value").textContent =
+          String(groupValue);
+
+        document.getElementById("others-value").textContent =
+          String(othersValue);
+
+        numericResult.textContent = numeric;
+        symbolicResult.textContent = symbolic;
+        longFormatResult.textContent =
+          `${selectedFileType}${symbolic}`;
+        commandResult.textContent =
+          `chmod ${numeric} filename`;
+
+        numericInput.value = numeric;
+        symbolicInput.value = symbolic;
+
+        ownerSummary.textContent = describeClass("owner");
+        groupSummary.textContent = describeClass("group");
+        othersSummary.textContent = describeClass("others");
+
+        const specialPermissions = [];
+
+        if (setuidInput.checked) {
+          specialPermissions.push("Setuid");
+        }
+
+        if (setgidInput.checked) {
+          specialPermissions.push("Setgid");
+        }
+
+        if (stickyInput.checked) {
+          specialPermissions.push("Sticky bit");
+        }
+
+        specialSummary.textContent =
+          specialPermissions.length > 0
+            ? specialPermissions.join(", ")
+            : "None";
+      }
+
+      numericModeButton.addEventListener("click", () => {
+        setMode("numeric");
+      });
+
+      symbolicModeButton.addEventListener("click", () => {
+        setMode("symbolic");
+      });
+
+      numericInput.addEventListener("input", () => {
+        const value = numericInput.value.trim();
+
+        if (validateNumeric(value)) {
+          applyNumericPermission(value);
+        } else {
+          renderValidation(
+            numericValidation,
+            false,
+            "Enter only octal digits from 0 to 7."
+          );
+        }
+      });
+
+      symbolicInput.addEventListener("input", () => {
+        const value = symbolicInput.value.trim();
+
+        if (validateSymbolic(value)) {
+          applySymbolicPermission(value);
+        } else {
+          renderValidation(
+            symbolicValidation,
+            false,
+            "Expected format: rwxr-xr-x or -rwxr-xr-x."
+          );
+        }
+      });
+
+      document
+        .querySelectorAll(".permission-checkbox")
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", updateResults);
+        });
+
+      [setuidInput, setgidInput, stickyInput].forEach(
+        (checkbox) => {
+          checkbox.addEventListener("change", updateResults);
+        }
+      );
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const mode = button.dataset.mode;
+
+            if (mode) {
+              setMode("numeric");
+              numericInput.value = mode;
+              applyNumericPermission(mode);
+            }
+          });
+        });
+
+      document
+        .querySelectorAll(".file-type-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedFileType =
+              button.dataset.fileType || "-";
+
+            document
+              .querySelectorAll(".file-type-button")
+              .forEach((item) => {
+                item.classList.toggle(
+                  "active",
+                  item === button
+                );
+              });
+
+            updateResults();
+          });
+        });
+
+      document
+        .getElementById("convert")
+        ?.addEventListener("click", () => {
+          if (activeMode === "numeric") {
+            applyNumericPermission(
+              numericInput.value.trim()
+            );
+          } else {
+            applySymbolicPermission(
+              symbolicInput.value.trim()
+            );
+          }
+        });
+
+      document
+        .getElementById("select-all")
+        ?.addEventListener("click", () => {
+          document
+            .querySelectorAll(".permission-checkbox")
+            .forEach((checkbox) => {
+              checkbox.checked = true;
+            });
+
+          updateResults();
+        });
+
+      document
+        .getElementById("clear-all")
+        ?.addEventListener("click", () => {
+          document
+            .querySelectorAll(".permission-checkbox")
+            .forEach((checkbox) => {
+              checkbox.checked = false;
+            });
+
+          setuidInput.checked = false;
+          setgidInput.checked = false;
+          stickyInput.checked = false;
+
+          updateResults();
+        });
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", () => {
+          selectedFileType = "-";
+
+          document
+            .querySelectorAll(".file-type-button")
+            .forEach((button) => {
+              button.classList.toggle(
+                "active",
+                button.dataset.fileType === "-"
+              );
+            });
+
+          setMode("numeric");
+          applyNumericPermission("755");
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", async () => {
+            const targetId = button.dataset.copyTarget;
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            const text = target?.textContent?.trim() ?? "";
+
+            if (!text) {
+              return;
+            }
+
+            try {
+              await navigator.clipboard.writeText(text);
+              copyStatus.textContent = `Copied: ${text}`;
+            } catch (error) {
+              copyStatus.textContent =
+                "Copy failed. Please select and copy the value manually.";
+            }
+
+            window.setTimeout(() => {
+              copyStatus.textContent = "";
+            }, 2500);
+          });
+        });
+
+      applyNumericPermission("755");
+    </script>
+  </body>
+</html>

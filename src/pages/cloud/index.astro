@@ -1,262 +1,1119 @@
 ---
 const cloudTools = [
   {
-    title: "CIDR Calculator",
-    description:
-      "Calculate network address, broadcast address, subnet mask, usable IP range, and total hosts from a CIDR block.",
-    href: "/cloud/cidr-calculator",
-    icon: "🌐",
-    badge: "Networking",
-  },
-  {
-    title: "Subnet Calculator",
-    description:
-      "Calculate subnet details, host ranges, broadcast addresses, and available IP addresses.",
-    href: "/cloud/subnet-calculator",
-    icon: "🧮",
-    badge: "Networking",
-  },
-  {
-    title: "IP Address Converter",
-    description:
-      "Convert IPv4 addresses between decimal, binary, hexadecimal, and integer formats.",
-    href: "/cloud/ip-converter",
-    icon: "🔄",
-    badge: "IP Tools",
-  },
-  {
-    title: "AWS ARN Parser",
-    description:
-      "Parse an AWS ARN and identify its partition, service, region, account ID, resource type, and resource name.",
-    href: "/cloud/aws-arn-parser",
     icon: "☁️",
+    title: "Cloud-init Generator",
+    description:
+      "Generate cloud-init YAML configurations for Ubuntu, RHEL, Debian and other Linux cloud virtual machines.",
+    link: "/cloud/cloud-init-generator",
+    badge: "Cloud VM",
+  },
+  {
+    icon: "🏗️",
+    title: "Terraform Provider Generator",
+    description:
+      "Generate Terraform provider blocks for AWS, Azure, Google Cloud, OCI and Huawei Cloud.",
+    link: "/cloud/terraform-provider-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "📦",
+    title: "Terraform Backend Generator",
+    description:
+      "Create remote backend configurations for Amazon S3, Azure Storage, Google Cloud Storage and Terraform Cloud.",
+    link: "/cloud/terraform-backend-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "📝",
+    title: "Terraform Variables Generator",
+    description:
+      "Generate variables.tf and terraform.tfvars content for Terraform infrastructure projects.",
+    link: "/cloud/terraform-variables-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "🔐",
+    title: "AWS IAM Policy Generator",
+    description:
+      "Create AWS IAM policy documents for users, groups, roles and supported AWS services.",
+    link: "/cloud/aws-iam-policy-generator",
     badge: "AWS",
   },
   {
-    title: "Azure Resource ID Parser",
+    icon: "🛡️",
+    title: "AWS Security Group Generator",
     description:
-      "Break down an Azure resource ID into subscription, resource group, provider, resource type, and resource name.",
-    href: "/cloud/azure-resource-id-parser",
-    icon: "🔷",
+      "Generate inbound and outbound AWS Security Group rules for EC2 and cloud workloads.",
+    link: "/cloud/aws-security-group-generator",
+    badge: "AWS",
+  },
+  {
+    icon: "🌐",
+    title: "Azure NSG Generator",
+    description:
+      "Create Azure Network Security Group rules with ports, protocols, priorities and source or destination settings.",
+    link: "/cloud/azure-nsg-generator",
     badge: "Azure",
   },
   {
-    title: "GCP Project ID Validator",
+    icon: "💰",
+    title: "Cloud Cost Calculator",
     description:
-      "Validate Google Cloud project IDs and check whether they follow GCP naming requirements.",
-    href: "/cloud/gcp-project-id-validator",
-    icon: "🔍",
-    badge: "Google Cloud",
+      "Estimate monthly cloud infrastructure costs for compute, storage, bandwidth and additional resources.",
+    link: "/cloud/cloud-cost-calculator",
+    badge: "Cost",
+  },
+  {
+    icon: "🔎",
+    title: "AWS ARN Parser",
+    description:
+      "Parse and validate AWS Amazon Resource Names into partition, service, region, account and resource values.",
+    link: "/cloud/aws-arn-parser",
+    badge: "AWS",
+  },
+  {
+    icon: "📋",
+    title: "Azure Resource ID Parser",
+    description:
+      "Parse Azure Resource IDs into subscription, resource group, provider, resource type and resource name.",
+    link: "/cloud/azure-resource-id-parser",
+    badge: "Azure",
   },
 ];
 
-const featuredTools = cloudTools.slice(0, 3);
+const featuredTools = cloudTools.slice(0, 4);
 
-const pageTitle = "Free Cloud Tools and Calculators | Gokuruvi Tools";
+const pageTitle = "Free Cloud Tools for AWS, Azure and Terraform | Gokuruvi";
 const pageDescription =
-  "Free cloud tools for AWS, Azure, Google Cloud, CIDR calculation, subnetting, IP conversion, ARN parsing, and cloud resource validation.";
+  "Free cloud engineering tools for AWS, Microsoft Azure, Terraform and Linux cloud administrators. Generate cloud-init, IAM policies, security rules and Terraform configuration.";
+const siteUrl = "https://www.gokuruvi.com/cloud";
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
 
-    <title>{pageTitle}</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
     <meta name="description" content={pageDescription} />
+
     <meta
       name="keywords"
-      content="cloud tools, CIDR calculator, subnet calculator, IP converter, AWS ARN parser, Azure resource ID parser, GCP project ID validator"
+      content="cloud tools, AWS tools, Azure tools, Terraform tools, cloud-init generator, IAM policy generator, security group generator, Azure NSG generator, AWS ARN parser, Azure resource ID parser"
     />
+
     <meta name="author" content="Gokuruvi Tools" />
     <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
 
-    <link rel="canonical" href="https://www.gokuruvi.com/cloud" />
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
-    <meta property="og:url" content="https://www.gokuruvi.com/cloud" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
     <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="twitter:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      body,
+      button,
+      input,
+      textarea,
+      select {
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 4px;
+        border-radius: 6px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-links a:hover {
+        transform: translateY(-1px);
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .nav-button:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Hero */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 90px 0 82px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.2),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.19),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        pointer-events: none;
+        background-image:
+          linear-gradient(
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 76px;
+        height: 76px;
+        place-items: center;
+        margin: 0 auto 22px;
+        border: 1px solid #bfdbfe;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 39px;
+        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.15);
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        padding: 7px 15px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.84);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+      }
+
+      .hero h1 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: clamp(42px, 7vw, 68px);
+        line-height: 1.08;
+        letter-spacing: -2.3px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-description {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: clamp(18px, 2.4vw, 21px);
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 34px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 23px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+      }
+
+      .button-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.32);
+      }
+
+      .button-secondary {
+        border-color: #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .button-secondary:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+      }
+
+      .hero-features {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin-top: 35px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .hero-feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .check {
+        color: var(--success);
+        font-size: 17px;
+      }
+
+      /* Sections */
+
+      .section {
+        padding: 88px 0;
+      }
+
+      .section-white {
+        background: #ffffff;
+      }
+
+      .section-heading {
+        max-width: 780px;
+        margin: 0 auto 50px;
+        text-align: center;
+      }
+
+      .section-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: clamp(31px, 4vw, 43px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      /* Featured */
+
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .featured-card {
+        display: flex;
+        min-height: 245px;
+        flex-direction: column;
+        padding: 25px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: #ffffff;
+        text-decoration: none;
+        box-shadow: 0 9px 26px rgba(15, 23, 42, 0.05);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .featured-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 18px 38px rgba(37, 99, 235, 0.12);
+        transform: translateY(-6px);
+      }
+
+      .featured-icon {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        margin-bottom: 18px;
+        border-radius: 14px;
+        background: #eff6ff;
+        font-size: 26px;
+      }
+
+      .featured-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 19px;
+        line-height: 1.35;
+      }
+
+      .featured-card p {
+        flex: 1;
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .featured-link {
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      /* All cloud tools */
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .tool-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 9px 27px rgba(15, 23, 42, 0.045);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .tool-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 19px 40px rgba(37, 99, 235, 0.11);
+        transform: translateY(-5px);
+      }
+
+      .tool-icon {
+        display: grid;
+        width: 57px;
+        height: 57px;
+        flex: 0 0 57px;
+        place-items: center;
+        border-radius: 15px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #e0f2fe
+        );
+        font-size: 28px;
+      }
+
+      .tool-content {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .tool-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .tool-content h3 {
+        margin: 0 0 9px;
+        color: var(--dark);
+        font-size: 21px;
+        line-height: 1.35;
+      }
+
+      .tool-badge {
+        flex: 0 0 auto;
+        padding: 5px 9px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+
+      .tool-content p {
+        margin: 0 0 16px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .open-tool {
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      /* Information section */
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: #ffffff;
+      }
+
+      .info-icon {
+        display: grid;
+        width: 49px;
+        height: 49px;
+        place-items: center;
+        margin-bottom: 18px;
+        border-radius: 13px;
+        background: #eff6ff;
+        font-size: 23px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 9px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* CTA */
+
+      .cta {
+        padding: 0 0 90px;
+      }
+
+      .cta-box {
+        padding: 65px 35px;
+        border-radius: 24px;
+        background:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(56, 189, 248, 0.25),
+            transparent 30%
+          ),
+          linear-gradient(
+            135deg,
+            #0f172a,
+            #1e3a8a
+          );
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
+      }
+
+      .cta-box h2 {
+        max-width: 720px;
+        margin: 0 auto 15px;
+        font-size: clamp(30px, 4vw, 43px);
+        line-height: 1.2;
+      }
+
+      .cta-box p {
+        max-width: 700px;
+        margin: 0 auto 27px;
+        color: #cbd5e1;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .cta-button {
+        background: #ffffff;
+        color: var(--primary-dark);
+      }
+
+      .cta-button:hover {
+        background: #eff6ff;
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+        gap: 55px;
+        padding: 65px 0 45px;
+      }
+
+      .footer-brand p {
+        max-width: 380px;
+        margin: 17px 0 0;
+        color: #94a3b8;
+        line-height: 1.75;
+      }
+
+      .footer-title {
+        margin: 0 0 18px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 24px 0;
+        border-top: 1px solid #334155;
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-bottom-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-bottom-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1050px) {
+        .nav-links {
+          gap: 18px;
+        }
+
+        .featured-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .info-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 820px) {
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+
+        .nav-button {
+          padding: 7px 13px;
+        }
+
+        .hero {
+          padding: 72px 0 68px;
+        }
+
+        .section {
+          padding: 70px 0;
+        }
+
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-bottom {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 42px;
+          letter-spacing: -1.4px;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero-features {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .featured-grid,
+        .info-grid,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-card {
+          padding: 23px;
+        }
+
+        .tool-top {
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .tool-badge {
+          align-self: flex-start;
+        }
+
+        .cta-box {
+          padding: 50px 23px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
     <header class="site-header">
-      <div class="container header-inner">
-        <a href="/" class="logo" aria-label="Gokuruvi Tools home">
-          <span class="logo-icon">G</span>
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/" aria-label="Gokuruvi Tools home">
+            <span class="logo-icon" aria-hidden="true">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
 
-          <span class="logo-text">
-            <strong>Gokuruvi</strong>
-            <small>Tools</small>
-          </span>
-        </a>
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/network">Network</a>
+            <a class="active" href="/cloud" aria-current="page">Cloud</a>
+            <a href="/about">About</a>
 
-        <nav class="main-nav" aria-label="Main navigation">
-          <a href="/">Home</a>
-          <a href="/linux">Linux</a>
-          <a href="/devops">DevOps</a>
-          <a href="/kubernetes">Kubernetes</a>
-          <a href="/cloud" class="active">Cloud</a>
-          <a href="/about">About</a>
+            <a class="nav-button" href="#all-cloud-tools">
+              Explore Tools
+            </a>
+          </div>
         </nav>
       </div>
     </header>
 
-    <main>
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Cloud Tools</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
       <section class="hero">
-        <div class="hero-pattern"></div>
-
-        <div class="container hero-content">
-          <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="/">Home</a>
-            <span>/</span>
-            <span>Cloud Tools</span>
-          </nav>
-
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <span class="eyebrow">Free online cloud utilities</span>
-
-              <h1>Cloud Tools and Calculators</h1>
-
-              <p>
-                Practical tools for cloud engineers, system administrators,
-                DevOps teams, and network professionals working with AWS,
-                Microsoft Azure, Google Cloud, subnets, and IP addresses.
-              </p>
-
-              <div class="hero-actions">
-                <a href="#all-tools" class="primary-button">
-                  Explore Cloud Tools
-                </a>
-
-                <a href="/" class="secondary-button">
-                  View All Categories
-                </a>
-              </div>
-
-              <div class="hero-stats">
-                <div>
-                  <strong>{cloudTools.length}</strong>
-                  <span>Cloud tools</span>
-                </div>
-
-                <div>
-                  <strong>100%</strong>
-                  <span>Free to use</span>
-                </div>
-
-                <div>
-                  <strong>Private</strong>
-                  <span>Runs in browser</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-visual" aria-hidden="true">
-              <div class="cloud-scene">
-                <div class="main-cloud">☁️</div>
-                <div class="provider provider-aws">AWS</div>
-                <div class="provider provider-azure">Azure</div>
-                <div class="provider provider-gcp">GCP</div>
-
-                <div class="connection connection-one"></div>
-                <div class="connection connection-two"></div>
-                <div class="connection connection-three"></div>
-
-                <div class="server-card server-one">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-
-                <div class="server-card server-two">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="features-section">
         <div class="container">
-          <div class="feature-strip">
-            <div class="feature">
-              <span class="feature-icon">⚡</span>
-              <div>
-                <strong>Fast Results</strong>
-                <p>Calculate and validate information instantly.</p>
-              </div>
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">☁️</div>
+
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Free tools for cloud engineers
             </div>
 
-            <div class="feature">
-              <span class="feature-icon">🔒</span>
-              <div>
-                <strong>Privacy Friendly</strong>
-                <p>Your entered information is not stored.</p>
-              </div>
+            <h1>
+              Practical <span>Cloud Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Generate cloud-init configurations, Terraform templates, AWS IAM
+              policies, security rules and Azure resource information using
+              simple browser-based tools.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#all-cloud-tools">
+                Browse Cloud Tools
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a class="button button-secondary" href="/network">
+                Browse Network Tools
+              </a>
             </div>
 
-            <div class="feature">
-              <span class="feature-icon">📱</span>
-              <div>
-                <strong>Responsive</strong>
-                <p>Works on desktop, tablet, and mobile.</p>
+            <div class="hero-features">
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Free to use
               </div>
-            </div>
 
-            <div class="feature">
-              <span class="feature-icon">💯</span>
-              <div>
-                <strong>Completely Free</strong>
-                <p>No registration or subscription required.</p>
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                No registration
+              </div>
+
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Browser based
+              </div>
+
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Mobile responsive
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="featured-section">
+      <section class="section section-white">
         <div class="container">
           <div class="section-heading">
-            <div>
-              <span class="section-label">Popular utilities</span>
-              <h2>Featured Cloud Tools</h2>
-            </div>
+            <span class="section-label">Featured Cloud Tools</span>
 
-            <a href="#all-tools" class="section-link">
-              View all tools <span>→</span>
-            </a>
+            <h2>Popular tools for everyday cloud administration</h2>
+
+            <p>
+              Start with these practical generators for cloud virtual machines
+              and Terraform projects.
+            </p>
           </div>
 
           <div class="featured-grid">
             {
-              featuredTools.map((tool, index) => (
-                <a href={tool.href} class="featured-card">
-                  <div class="card-top">
-                    <div class="tool-icon">{tool.icon}</div>
-                    <span class="tool-number">
-                      0{index + 1}
-                    </span>
+              featuredTools.map((tool) => (
+                <a
+                  class="featured-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.title}`}
+                >
+                  <div class="featured-icon" aria-hidden="true">
+                    {tool.icon}
                   </div>
 
-                  <span class="tool-badge">{tool.badge}</span>
                   <h3>{tool.title}</h3>
                   <p>{tool.description}</p>
 
-                  <span class="open-tool">
-                    Open Tool <span>→</span>
+                  <span class="featured-link">
+                    Open tool →
                   </span>
                 </a>
               ))
@@ -265,1142 +1122,191 @@ const pageDescription =
         </div>
       </section>
 
-      <section class="tools-section" id="all-tools">
+      <section class="section" id="all-cloud-tools">
         <div class="container">
-          <div class="section-heading centered">
-            <div>
-              <span class="section-label">Cloud utilities</span>
-              <h2>All Cloud Tools</h2>
-              <p>
-                Select a tool below to calculate, convert, parse, or validate
-                your cloud and networking information.
-              </p>
-            </div>
+          <div class="section-heading">
+            <span class="section-label">All Cloud Tools</span>
+
+            <h2>Cloud generators, parsers and calculators</h2>
+
+            <p>
+              Select a tool for AWS, Azure, Terraform or Linux cloud
+              administration.
+            </p>
           </div>
 
           <div class="tools-grid">
             {
               cloudTools.map((tool) => (
-                <article class="tool-card">
-                  <div class="tool-card-icon">{tool.icon}</div>
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.title}`}
+                >
+                  <div class="tool-icon" aria-hidden="true">
+                    {tool.icon}
+                  </div>
 
-                  <div class="tool-card-content">
-                    <div class="tool-card-heading">
-                      <span class="tool-badge">{tool.badge}</span>
+                  <div class="tool-content">
+                    <div class="tool-top">
                       <h3>{tool.title}</h3>
+                      <span class="tool-badge">{tool.badge}</span>
                     </div>
 
                     <p>{tool.description}</p>
 
-                    <a href={tool.href} class="tool-button">
-                      Use {tool.title}
-                      <span>→</span>
-                    </a>
+                    <span class="open-tool">
+                      Open tool →
+                    </span>
                   </div>
-                </article>
+                </a>
               ))
             }
           </div>
         </div>
       </section>
 
-      <section class="information-section">
-        <div class="container information-grid">
-          <div class="information-content">
-            <span class="section-label">Built for professionals</span>
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Use These Tools</span>
 
-            <h2>Make cloud administration easier</h2>
+            <h2>Built for practical cloud engineering tasks</h2>
 
             <p>
-              Cloud platforms use many different identifier formats, network
-              structures, and naming rules. Gokuruvi Cloud Tools helps you
-              understand and validate this information without installing
-              additional software.
+              Save time while creating and validating common cloud
+              configurations.
             </p>
-
-            <ul>
-              <li>
-                <span>✓</span>
-                Calculate CIDR and subnet information.
-              </li>
-
-              <li>
-                <span>✓</span>
-                Convert IP addresses into multiple formats.
-              </li>
-
-              <li>
-                <span>✓</span>
-                Parse AWS and Azure resource identifiers.
-              </li>
-
-              <li>
-                <span>✓</span>
-                Validate Google Cloud project names.
-              </li>
-            </ul>
           </div>
 
-          <aside class="category-card">
-            <span class="category-label">Explore more</span>
-            <h3>Other tool categories</h3>
+          <div class="info-grid">
+            <article class="info-card">
+              <div class="info-icon" aria-hidden="true">⚡</div>
+              <h3>Generate Faster</h3>
+              <p>
+                Create reusable cloud and Terraform configurations without
+                writing every line manually.
+              </p>
+            </article>
 
-            <a href="/linux">
-              <span class="category-icon">🐧</span>
-              <span>
-                <strong>Linux Tools</strong>
-                <small>Commands, permissions, and administration</small>
-              </span>
-              <span class="category-arrow">→</span>
-            </a>
+            <article class="info-card">
+              <div class="info-icon" aria-hidden="true">🧰</div>
+              <h3>Practical Outputs</h3>
+              <p>
+                Copy generated YAML, JSON and Terraform configuration into your
+                projects and modify it as required.
+              </p>
+            </article>
 
-            <a href="/devops">
-              <span class="category-icon">⚙️</span>
-              <span>
-                <strong>DevOps Tools</strong>
-                <small>YAML, JSON, Docker, and automation</small>
-              </span>
-              <span class="category-arrow">→</span>
-            </a>
-
-            <a href="/kubernetes">
-              <span class="category-icon">☸️</span>
-              <span>
-                <strong>Kubernetes Tools</strong>
-                <small>Generate and validate Kubernetes resources</small>
-              </span>
-              <span class="category-arrow">→</span>
-            </a>
-          </aside>
+            <article class="info-card">
+              <div class="info-icon" aria-hidden="true">🔒</div>
+              <h3>Privacy Friendly</h3>
+              <p>
+                Tools should process input inside the browser whenever
+                client-side processing is supported.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="cta-section">
+      <section class="cta">
         <div class="container">
           <div class="cta-box">
-            <div>
-              <span class="cta-label">Gokuruvi Tools</span>
-              <h2>Simple tools for everyday technical work</h2>
-              <p>
-                Browse practical Linux, DevOps, Kubernetes, networking, and
-                cloud utilities.
-              </p>
-            </div>
+            <h2>Start building cloud configurations faster</h2>
 
-            <a href="/" class="cta-button">Explore All Tools</a>
+            <p>
+              Use free generators and parsers for AWS, Azure, Terraform and
+              Linux cloud virtual machines.
+            </p>
+
+            <a class="button cta-button" href="#all-cloud-tools">
+              Explore All Cloud Tools
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="container footer-grid">
-        <div class="footer-brand">
-          <a href="/" class="logo footer-logo">
-            <span class="logo-icon">G</span>
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="logo" href="/">
+              <span class="logo-icon" aria-hidden="true">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
 
-            <span class="logo-text">
-              <strong>Gokuruvi</strong>
-              <small>Tools</small>
-            </span>
-          </a>
+            <p>
+              Free Linux, DevOps, Kubernetes, network and cloud utilities for
+              system administrators, engineers and IT professionals.
+            </p>
+          </div>
 
-          <p>
-            Free, fast, and privacy-friendly utilities for Linux, DevOps,
-            Kubernetes, networking, and cloud professionals.
-          </p>
+          <div>
+            <h3 class="footer-title">Tool Categories</h3>
+
+            <div class="footer-links">
+              <a href="/linux">Linux Tools</a>
+              <a href="/devops">DevOps Tools</a>
+              <a href="/kubernetes">Kubernetes Tools</a>
+              <a href="/network">Network Tools</a>
+              <a href="/cloud">Cloud Tools</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Cloud Tools</h3>
+
+            <div class="footer-links">
+              <a href="/cloud/cloud-init-generator">
+                Cloud-init Generator
+              </a>
+
+              <a href="/cloud/terraform-provider-generator">
+                Terraform Provider Generator
+              </a>
+
+              <a href="/cloud/aws-iam-policy-generator">
+                AWS IAM Policy Generator
+              </a>
+
+              <a href="/cloud/azure-nsg-generator">
+                Azure NSG Generator
+              </a>
+
+              <a href="/cloud/aws-arn-parser">
+                AWS ARN Parser
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Company</h3>
+
+            <div class="footer-links">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy-policy">Privacy Policy</a>
+              <a href="/terms">Terms</a>
+              <a href="/disclaimer">Disclaimer</a>
+            </div>
+          </div>
         </div>
 
-        <div class="footer-column">
-          <h3>Categories</h3>
-          <a href="/linux">Linux Tools</a>
-          <a href="/devops">DevOps Tools</a>
-          <a href="/kubernetes">Kubernetes Tools</a>
-          <a href="/cloud">Cloud Tools</a>
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
         </div>
-
-        <div class="footer-column">
-          <h3>Company</h3>
-          <a href="/about">About</a>
-          <a href="/contact">Contact</a>
-          <a href="/privacy-policy">Privacy Policy</a>
-          <a href="/terms">Terms</a>
-        </div>
-
-        <div class="footer-column">
-          <h3>Popular Tools</h3>
-          <a href="/cloud/cidr-calculator">CIDR Calculator</a>
-          <a href="/cloud/subnet-calculator">Subnet Calculator</a>
-          <a href="/cloud/aws-arn-parser">AWS ARN Parser</a>
-          <a href="/cloud/ip-converter">IP Converter</a>
-        </div>
-      </div>
-
-      <div class="container footer-bottom">
-        <p>
-          © {new Date().getFullYear()} Sathish Ramalingam. All rights reserved.
-        </p>
-
-        <p>Built for system administrators and cloud engineers.</p>
       </div>
     </footer>
   </body>
 </html>
-
-<style>
-  :global(*) {
-    box-sizing: border-box;
-  }
-
-  :global(html) {
-    scroll-behavior: smooth;
-  }
-
-  :global(body) {
-    margin: 0;
-    background: #f6f8fc;
-    color: #172033;
-    font-family:
-      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", sans-serif;
-    line-height: 1.6;
-  }
-
-  :global(a) {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .container {
-    width: min(1180px, calc(100% - 40px));
-    margin: 0 auto;
-  }
-
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(18px);
-  }
-
-  .header-inner {
-    min-height: 74px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-  }
-
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-  }
-
-  .logo-icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 13px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    font-size: 21px;
-    font-weight: 800;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.24);
-  }
-
-  .logo-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-  }
-
-  .logo-text strong {
-    color: #111827;
-    font-size: 18px;
-  }
-
-  .logo-text small {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .main-nav {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .main-nav a {
-    padding: 9px 13px;
-    border-radius: 9px;
-    color: #475569;
-    font-size: 14px;
-    font-weight: 600;
-    transition:
-      background 0.2s ease,
-      color 0.2s ease;
-  }
-
-  .main-nav a:hover,
-  .main-nav a.active {
-    background: #eef2ff;
-    color: #4f46e5;
-  }
-
-  .hero {
-    position: relative;
-    overflow: hidden;
-    background:
-      radial-gradient(
-        circle at 85% 20%,
-        rgba(59, 130, 246, 0.28),
-        transparent 28%
-      ),
-      radial-gradient(
-        circle at 20% 80%,
-        rgba(124, 58, 237, 0.2),
-        transparent 35%
-      ),
-      linear-gradient(135deg, #07152e 0%, #102b57 48%, #1e3a8a 100%);
-    color: white;
-  }
-
-  .hero-pattern {
-    position: absolute;
-    inset: 0;
-    opacity: 0.13;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: linear-gradient(to bottom, black, transparent);
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    padding-top: 30px;
-    padding-bottom: 85px;
-  }
-
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 42px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-  }
-
-  .breadcrumb a:hover {
-    color: white;
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
-    align-items: center;
-    gap: 70px;
-  }
-
-  .eyebrow,
-  .section-label,
-  .cta-label,
-  .category-label {
-    display: inline-block;
-    color: #60a5fa;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-
-  .hero h1 {
-    max-width: 720px;
-    margin: 14px 0 20px;
-    font-size: clamp(42px, 6vw, 70px);
-    line-height: 1.05;
-    letter-spacing: -0.045em;
-  }
-
-  .hero-copy > p {
-    max-width: 680px;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 18px;
-    line-height: 1.75;
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 32px;
-  }
-
-  .primary-button,
-  .secondary-button,
-  .cta-button {
-    min-height: 49px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 21px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 750;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-
-  .primary-button {
-    background: white;
-    color: #1d4ed8;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  }
-
-  .secondary-button {
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
-  }
-
-  .primary-button:hover,
-  .secondary-button:hover,
-  .cta-button:hover {
-    transform: translateY(-2px);
-  }
-
-  .hero-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    margin-top: 40px;
-  }
-
-  .hero-stats div {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .hero-stats strong {
-    color: white;
-    font-size: 19px;
-  }
-
-  .hero-stats span {
-    color: rgba(255, 255, 255, 0.58);
-    font-size: 13px;
-  }
-
-  .hero-visual {
-    display: flex;
-    justify-content: center;
-  }
-
-  .cloud-scene {
-    position: relative;
-    width: 410px;
-    height: 360px;
-  }
-
-  .main-cloud {
-    position: absolute;
-    top: 95px;
-    left: 50%;
-    z-index: 3;
-    width: 145px;
-    height: 105px;
-    display: grid;
-    place-items: center;
-    transform: translateX(-50%);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 35px;
-    background: rgba(255, 255, 255, 0.13);
-    font-size: 70px;
-    box-shadow:
-      0 25px 70px rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(15px);
-  }
-
-  .provider {
-    position: absolute;
-    z-index: 4;
-    padding: 10px 15px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
-    backdrop-filter: blur(10px);
-  }
-
-  .provider-aws {
-    top: 28px;
-    left: 18px;
-  }
-
-  .provider-azure {
-    top: 25px;
-    right: 0;
-  }
-
-  .provider-gcp {
-    right: 28px;
-    bottom: 58px;
-  }
-
-  .connection {
-    position: absolute;
-    z-index: 1;
-    height: 1px;
-    background: rgba(147, 197, 253, 0.55);
-    transform-origin: left center;
-  }
-
-  .connection::after {
-    content: "";
-    position: absolute;
-    top: -3px;
-    right: 0;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #60a5fa;
-    box-shadow: 0 0 15px #60a5fa;
-  }
-
-  .connection-one {
-    top: 80px;
-    left: 93px;
-    width: 130px;
-    transform: rotate(28deg);
-  }
-
-  .connection-two {
-    top: 82px;
-    left: 290px;
-    width: 95px;
-    transform: rotate(142deg);
-  }
-
-  .connection-three {
-    top: 192px;
-    left: 255px;
-    width: 120px;
-    transform: rotate(42deg);
-  }
-
-  .server-card {
-    position: absolute;
-    bottom: 35px;
-    width: 92px;
-    padding: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 14px;
-    background: rgba(4, 17, 40, 0.45);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-  }
-
-  .server-one {
-    left: 8px;
-  }
-
-  .server-two {
-    left: 125px;
-    bottom: 5px;
-  }
-
-  .server-card span {
-    display: block;
-    height: 7px;
-    margin: 6px 0;
-    border-radius: 4px;
-    background: linear-gradient(
-      90deg,
-      rgba(96, 165, 250, 0.9),
-      rgba(255, 255, 255, 0.18)
-    );
-  }
-
-  .features-section {
-    position: relative;
-    z-index: 5;
-    margin-top: -35px;
-  }
-
-  .feature-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    overflow: hidden;
-    border: 1px solid #e5eaf2;
-    border-radius: 18px;
-    background: white;
-    box-shadow: 0 18px 55px rgba(20, 35, 70, 0.11);
-  }
-
-  .feature {
-    display: flex;
-    align-items: flex-start;
-    gap: 13px;
-    padding: 24px 20px;
-    border-right: 1px solid #edf0f5;
-  }
-
-  .feature:last-child {
-    border-right: 0;
-  }
-
-  .feature-icon {
-    width: 39px;
-    height: 39px;
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    border-radius: 11px;
-    background: #eef4ff;
-    font-size: 19px;
-  }
-
-  .feature strong {
-    display: block;
-    margin-bottom: 3px;
-    color: #162036;
-    font-size: 14px;
-  }
-
-  .feature p {
-    margin: 0;
-    color: #728096;
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .featured-section,
-  .tools-section,
-  .information-section,
-  .cta-section {
-    padding: 90px 0;
-  }
-
-  .section-heading {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 25px;
-    margin-bottom: 32px;
-  }
-
-  .section-heading.centered {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .section-heading h2,
-  .information-content h2,
-  .cta-box h2 {
-    margin: 8px 0 0;
-    color: #111827;
-    font-size: clamp(30px, 4vw, 43px);
-    line-height: 1.15;
-    letter-spacing: -0.035em;
-  }
-
-  .section-heading p {
-    max-width: 720px;
-    margin: 14px auto 0;
-    color: #64748b;
-    font-size: 16px;
-  }
-
-  .section-link {
-    color: #2563eb;
-    font-size: 14px;
-    font-weight: 750;
-  }
-
-  .featured-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-  }
-
-  .featured-card {
-    position: relative;
-    overflow: hidden;
-    min-height: 350px;
-    padding: 27px;
-    border: 1px solid #e3e8f1;
-    border-radius: 19px;
-    background: white;
-    box-shadow: 0 12px 35px rgba(24, 39, 75, 0.06);
-    transition:
-      transform 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
-  }
-
-  .featured-card::after {
-    content: "";
-    position: absolute;
-    right: -60px;
-    bottom: -80px;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: rgba(37, 99, 235, 0.06);
-  }
-
-  .featured-card:hover {
-    transform: translateY(-7px);
-    border-color: #b9cdfd;
-    box-shadow: 0 22px 55px rgba(31, 57, 112, 0.13);
-  }
-
-  .card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 25px;
-  }
-
-  .tool-icon,
-  .tool-card-icon {
-    width: 58px;
-    height: 58px;
-    display: grid;
-    place-items: center;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #eff6ff, #eef2ff);
-    font-size: 28px;
-  }
-
-  .tool-number {
-    color: #d6deea;
-    font-size: 37px;
-    font-weight: 800;
-  }
-
-  .tool-badge {
-    display: inline-flex;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: #eef4ff;
-    color: #2563eb;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .featured-card h3,
-  .tool-card h3 {
-    margin: 13px 0 10px;
-    color: #172033;
-    font-size: 21px;
-  }
-
-  .featured-card p,
-  .tool-card p {
-    color: #69778c;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
-  .open-tool {
-    position: absolute;
-    bottom: 26px;
-    left: 27px;
-    z-index: 2;
-    color: #2563eb;
-    font-size: 14px;
-    font-weight: 750;
-  }
-
-  .tools-section {
-    background: #eef3f9;
-  }
-
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .tool-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 25px;
-    border: 1px solid #dfe6ef;
-    border-radius: 18px;
-    background: white;
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease;
-  }
-
-  .tool-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 45px rgba(33, 50, 85, 0.1);
-  }
-
-  .tool-card-icon {
-    width: 60px;
-    height: 60px;
-    flex: 0 0 auto;
-  }
-
-  .tool-card-content {
-    flex: 1;
-  }
-
-  .tool-card-heading h3 {
-    margin-top: 8px;
-  }
-
-  .tool-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 7px;
-    color: #2563eb;
-    font-size: 14px;
-    font-weight: 750;
-  }
-
-  .information-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: center;
-    gap: 75px;
-  }
-
-  .information-content > p {
-    max-width: 650px;
-    margin: 20px 0 25px;
-    color: #64748b;
-    font-size: 16px;
-  }
-
-  .information-content ul {
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .information-content li {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    color: #344054;
-    font-size: 15px;
-  }
-
-  .information-content li span {
-    width: 25px;
-    height: 25px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: #dcfce7;
-    color: #15803d;
-    font-weight: 800;
-  }
-
-  .category-card {
-    padding: 28px;
-    border: 1px solid #dfe6ef;
-    border-radius: 20px;
-    background: white;
-    box-shadow: 0 20px 50px rgba(31, 45, 72, 0.08);
-  }
-
-  .category-card h3 {
-    margin: 7px 0 20px;
-    font-size: 23px;
-  }
-
-  .category-card > a {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 13px;
-    padding: 15px 0;
-    border-top: 1px solid #edf0f4;
-  }
-
-  .category-icon {
-    width: 43px;
-    height: 43px;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: #f2f5fa;
-    font-size: 21px;
-  }
-
-  .category-card strong,
-  .category-card small {
-    display: block;
-  }
-
-  .category-card strong {
-    color: #1e293b;
-    font-size: 14px;
-  }
-
-  .category-card small {
-    margin-top: 3px;
-    color: #7a879a;
-    font-size: 11px;
-  }
-
-  .category-arrow {
-    color: #2563eb;
-    font-weight: 800;
-  }
-
-  .cta-section {
-    padding-top: 20px;
-  }
-
-  .cta-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 35px;
-    padding: 45px;
-    border-radius: 24px;
-    background:
-      radial-gradient(
-        circle at 85% 30%,
-        rgba(96, 165, 250, 0.3),
-        transparent 30%
-      ),
-      linear-gradient(135deg, #0f2550, #1d4ed8);
-    color: white;
-    box-shadow: 0 25px 60px rgba(29, 78, 216, 0.2);
-  }
-
-  .cta-box h2 {
-    max-width: 680px;
-    color: white;
-  }
-
-  .cta-box p {
-    margin: 13px 0 0;
-    color: rgba(255, 255, 255, 0.72);
-  }
-
-  .cta-button {
-    flex: 0 0 auto;
-    background: white;
-    color: #1d4ed8;
-  }
-
-  .site-footer {
-    margin-top: 70px;
-    background: #081329;
-    color: white;
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 1.5fr repeat(3, 1fr);
-    gap: 55px;
-    padding-top: 65px;
-    padding-bottom: 50px;
-  }
-
-  .footer-logo .logo-text strong {
-    color: white;
-  }
-
-  .footer-brand p {
-    max-width: 360px;
-    color: #92a0b7;
-    font-size: 14px;
-  }
-
-  .footer-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .footer-column h3 {
-    margin: 0 0 7px;
-    font-size: 14px;
-  }
-
-  .footer-column a {
-    color: #92a0b7;
-    font-size: 13px;
-  }
-
-  .footer-column a:hover {
-    color: white;
-  }
-
-  .footer-bottom {
-    min-height: 74px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: #77869f;
-    font-size: 12px;
-  }
-
-  @media (max-width: 980px) {
-    .main-nav {
-      display: none;
-    }
-
-    .hero-grid,
-    .information-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-visual {
-      display: none;
-    }
-
-    .feature-strip {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .feature:nth-child(2) {
-      border-right: 0;
-    }
-
-    .feature:nth-child(-n + 2) {
-      border-bottom: 1px solid #edf0f5;
-    }
-
-    .featured-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .featured-card {
-      min-height: 310px;
-    }
-
-    .footer-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 720px) {
-    .container {
-      width: min(100% - 28px, 1180px);
-    }
-
-    .hero-content {
-      padding-bottom: 70px;
-    }
-
-    .breadcrumb {
-      margin-bottom: 30px;
-    }
-
-    .hero h1 {
-      font-size: 43px;
-    }
-
-    .hero-copy > p {
-      font-size: 16px;
-    }
-
-    .hero-actions {
-      flex-direction: column;
-    }
-
-    .primary-button,
-    .secondary-button {
-      width: 100%;
-    }
-
-    .hero-stats {
-      gap: 20px;
-    }
-
-    .feature-strip {
-      grid-template-columns: 1fr;
-    }
-
-    .feature {
-      border-right: 0;
-      border-bottom: 1px solid #edf0f5;
-    }
-
-    .feature:last-child {
-      border-bottom: 0;
-    }
-
-    .featured-section,
-    .tools-section,
-    .information-section,
-    .cta-section {
-      padding: 65px 0;
-    }
-
-    .section-heading {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .section-heading.centered {
-      align-items: center;
-    }
-
-    .tools-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .tool-card {
-      flex-direction: column;
-    }
-
-    .cta-box {
-      align-items: flex-start;
-      flex-direction: column;
-      padding: 30px 24px;
-    }
-
-    .cta-button {
-      width: 100%;
-    }
-
-    .footer-grid {
-      grid-template-columns: 1fr;
-      gap: 35px;
-    }
-
-    .footer-bottom {
-      align-items: flex-start;
-      flex-direction: column;
-      justify-content: center;
-      padding: 20px 0;
-    }
-
-    .footer-bottom p {
-      margin: 0;
-    }
-  }
-</style>

@@ -1,0 +1,2156 @@
+---
+const pageTitle = "SSH Command Builder | Gokuruvi Tools";
+const pageDescription =
+  "Generate Linux SSH commands with hostname, username, port, private key, proxy jump, port forwarding, timeout and security options.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/ssh-command-builder";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="SSH command builder, Linux SSH generator, SSH private key command, SSH port forwarding, ProxyJump, bastion host SSH"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      /* Hero */
+
+      .hero {
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 770px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      /* Builder */
+
+      .builder-section {
+        padding: 75px 0;
+      }
+
+      .builder-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .builder-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .builder-card {
+        padding: 30px;
+      }
+
+      .builder-heading {
+        margin-bottom: 28px;
+      }
+
+      .builder-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .builder-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input,
+      .field-select {
+        min-height: 48px;
+        padding: 0 13px;
+      }
+
+      .field-textarea {
+        min-height: 90px;
+        padding: 12px 13px;
+        resize: vertical;
+      }
+
+      .field-input:focus,
+      .field-select:focus,
+      .field-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      /* Results */
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 100px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      /* Information */
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .builder-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .builder-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <header class="site-header">
+      <div class="container">
+        <nav class="navbar" aria-label="Main navigation">
+          <a class="logo" href="/">
+            <span class="logo-icon" aria-hidden="true">G</span>
+            <span>Gokuruvi Tools</span>
+          </a>
+
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a class="active" href="/linux">Linux</a>
+            <a href="/devops">DevOps</a>
+            <a href="/kubernetes">Kubernetes</a>
+            <a href="/network">Network</a>
+            <a href="/cloud">Cloud</a>
+            <a class="nav-button" href="/linux">Linux Tools</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">SSH Command Builder</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🔐</div>
+
+            <h1>SSH Command <span>Builder</span></h1>
+
+            <p>
+              Generate Linux SSH commands with custom ports, private keys,
+              bastion hosts, connection timeouts, remote commands and local,
+              remote or dynamic port forwarding.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="builder-section">
+        <div class="container">
+          <div class="builder-layout">
+            <div class="builder-card">
+              <div class="builder-heading">
+                <h2>Configure your SSH connection</h2>
+
+                <p>
+                  Enter the remote server details and select the required SSH
+                  options.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Connection details
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="hostname">
+                      Hostname or IP address
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="hostname"
+                      type="text"
+                      value="192.168.1.100"
+                      placeholder="server.example.com"
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="username">
+                      Username
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="username"
+                      type="text"
+                      value="linuxadmin"
+                      placeholder="linuxadmin"
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="port">
+                      SSH port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      value="22"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="identity-file">
+                      Private key file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="identity-file"
+                      type="text"
+                      placeholder="~/.ssh/id_rsa"
+                    />
+
+                    <span class="field-help">
+                      Generates the <code>-i</code> option.
+                    </span>
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="remote-command">
+                      Remote command
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="remote-command"
+                      type="text"
+                      placeholder="sudo systemctl status nginx"
+                    />
+
+                    <span class="field-help">
+                      Leave empty to open an interactive SSH session.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Bastion or jump host
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="jump-host">
+                      Jump host
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="jump-host"
+                      type="text"
+                      placeholder="bastion.example.com"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="jump-user">
+                      Jump host user
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="jump-user"
+                      type="text"
+                      placeholder="bastionuser"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="jump-port">
+                      Jump host port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="jump-port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      value="22"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="jump-key">
+                      Jump host private key
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="jump-key"
+                      type="text"
+                      placeholder="~/.ssh/bastion.pem"
+                    />
+
+                    <span class="field-help">
+                      A separate jump-host key requires a ProxyCommand.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Port forwarding
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="forward-type">
+                      Forwarding type
+                    </label>
+
+                    <select class="field-select" id="forward-type">
+                      <option value="">No port forwarding</option>
+                      <option value="local">Local forwarding (-L)</option>
+                      <option value="remote">Remote forwarding (-R)</option>
+                      <option value="dynamic">Dynamic SOCKS proxy (-D)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="bind-address">
+                      Bind address
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="bind-address"
+                      type="text"
+                      value="127.0.0.1"
+                      placeholder="127.0.0.1"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="local-port">
+                      Listening port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="local-port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      placeholder="8080"
+                    />
+                  </div>
+
+                  <div class="form-field" id="destination-host-field">
+                    <label class="field-label" for="destination-host">
+                      Destination host
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="destination-host"
+                      type="text"
+                      placeholder="127.0.0.1"
+                    />
+                  </div>
+
+                  <div class="form-field" id="destination-port-field">
+                    <label class="field-label" for="destination-port">
+                      Destination port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="destination-port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      placeholder="80"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Connection options
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="connect-timeout">
+                      Connection timeout
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="connect-timeout"
+                      type="number"
+                      min="1"
+                      value="10"
+                      placeholder="10"
+                    />
+
+                    <span class="field-help">Timeout in seconds.</span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="keepalive-interval">
+                      Keepalive interval
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="keepalive-interval"
+                      type="number"
+                      min="0"
+                      value="60"
+                      placeholder="60"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="keepalive-count">
+                      Keepalive count
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="keepalive-count"
+                      type="number"
+                      min="1"
+                      value="3"
+                      placeholder="3"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="host-key-checking">
+                      Host key checking
+                    </label>
+
+                    <select class="field-select" id="host-key-checking">
+                      <option value="">System default</option>
+                      <option value="yes">Strict checking</option>
+                      <option value="accept-new" selected>
+                        Accept new hosts
+                      </option>
+                      <option value="no">Disable checking</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="extra-options">
+                      Additional SSH options
+                    </label>
+
+                    <textarea
+                      class="field-textarea"
+                      id="extra-options"
+                      placeholder="Compression=yes&#10;LogLevel=INFO"
+                    ></textarea>
+
+                    <span class="field-help">
+                      Enter one <code>Option=value</code> per line.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Behaviour
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="allocate-tty" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Allocate terminal
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-t</code> for commands requiring a terminal.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="force-tty" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Force terminal
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-tt</code> to force pseudo-terminal allocation.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="background" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Run in background
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-f</code> after authentication.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="no-command" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Do not execute command
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-N</code>, useful for port forwarding.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="agent-forwarding" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Agent forwarding
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-A</code>. Enable only when required.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="x11-forwarding" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        X11 forwarding
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-X</code> for remote graphical applications.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="compression-enabled" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Compression
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-C</code> for SSH compression.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="verbose" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Verbose mode
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-v</code> for connection troubleshooting.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="ipv4-only" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        IPv4 only
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-4</code>.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="ipv6-only" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        IPv6 only
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-6</code>.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">6</span>
+                  Common examples
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="basic"
+                  >
+                    Basic SSH
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="private-key"
+                  >
+                    Private key
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="bastion"
+                  >
+                    Bastion host
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="local-forward"
+                  >
+                    Local tunnel
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="socks"
+                  >
+                    SOCKS proxy
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="debug"
+                  >
+                    Debug connection
+                  </button>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="generate"
+                  type="button"
+                >
+                  Generate SSH Command
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Generated SSH command">
+              <div class="result-card">
+                <h2>Generated SSH command</h2>
+
+                <span class="result-label">Command</span>
+
+                <div class="result-output">
+                  <span class="result-value" id="command-result">
+                    ssh -o ConnectTimeout=10 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=accept-new linuxadmin@192.168.1.100
+                  </span>
+
+                  <button
+                    class="copy-button"
+                    type="button"
+                    data-copy-target="command-result"
+                  >
+                    Copy
+                  </button>
+                </div>
+
+                <div class="warning-box" id="warning-box">
+                  Confirm the hostname, username and private-key permissions
+                  before connecting.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Connection summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Remote host</span>
+                    <strong id="summary-host">
+                      192.168.1.100
+                    </strong>
+                  </li>
+
+                  <li>
+                    <span>Remote user</span>
+                    <strong id="summary-user">
+                      linuxadmin
+                    </strong>
+                  </li>
+
+                  <li>
+                    <span>SSH port</span>
+                    <strong id="summary-port">22</strong>
+                  </li>
+
+                  <li>
+                    <span>Jump host</span>
+                    <strong id="summary-jump">Not configured</strong>
+                  </li>
+
+                  <li>
+                    <span>Port forwarding</span>
+                    <strong id="summary-forwarding">
+                      Not configured
+                    </strong>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="result-card">
+                <h2>Private key permissions</h2>
+
+                <span class="result-label">Recommended command</span>
+
+                <div class="result-output">
+                  <span class="result-value" id="chmod-result">
+                    chmod 600 ~/.ssh/id_rsa
+                  </span>
+
+                  <button
+                    class="copy-button"
+                    type="button"
+                    data-copy-target="chmod-result"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common SSH command options</h2>
+
+            <p>
+              SSH supports identity files, custom ports, jump hosts, tunnels
+              and connection-control options.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Connection options</h3>
+
+              <ul>
+                <li><code>-p 2222</code> uses a custom SSH port.</li>
+                <li><code>-i key.pem</code> uses a private key.</li>
+                <li><code>-v</code> displays troubleshooting details.</li>
+                <li><code>-J host</code> connects through a jump host.</li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Port forwarding</h3>
+
+              <ul>
+                <li>
+                  <code>-L</code> creates local port forwarding.
+                </li>
+                <li>
+                  <code>-R</code> creates remote port forwarding.
+                </li>
+                <li>
+                  <code>-D</code> creates a dynamic SOCKS proxy.
+                </li>
+                <li>
+                  Use <code>-N</code> when only a tunnel is required.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Security recommendations</h3>
+
+              <ul>
+                <li>
+                  Keep private keys protected with
+                  <code>chmod 600</code>.
+                </li>
+                <li>
+                  Avoid disabling host-key checking in production.
+                </li>
+                <li>
+                  Enable agent forwarding only when required.
+                </li>
+                <li>
+                  Use dedicated accounts and keys for automation.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-links">
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const fieldIds = [
+        "hostname",
+        "username",
+        "port",
+        "identity-file",
+        "remote-command",
+        "jump-host",
+        "jump-user",
+        "jump-port",
+        "jump-key",
+        "forward-type",
+        "bind-address",
+        "local-port",
+        "destination-host",
+        "destination-port",
+        "connect-timeout",
+        "keepalive-interval",
+        "keepalive-count",
+        "host-key-checking",
+        "extra-options",
+      ];
+
+      const checkboxIds = [
+        "allocate-tty",
+        "force-tty",
+        "background",
+        "no-command",
+        "agent-forwarding",
+        "x11-forwarding",
+        "compression-enabled",
+        "verbose",
+        "ipv4-only",
+        "ipv6-only",
+      ];
+
+      const commandResult =
+        document.getElementById("command-result");
+
+      const chmodResult =
+        document.getElementById("chmod-result");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      const warningBox =
+        document.getElementById("warning-box");
+
+      const forwardTypeInput =
+        document.getElementById("forward-type");
+
+      const destinationHostField =
+        document.getElementById("destination-host-field");
+
+      const destinationPortField =
+        document.getElementById("destination-port-field");
+
+      const ipv4Input =
+        document.getElementById("ipv4-only");
+
+      const ipv6Input =
+        document.getElementById("ipv6-only");
+
+      const allocateTtyInput =
+        document.getElementById("allocate-tty");
+
+      const forceTtyInput =
+        document.getElementById("force-tty");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function shellQuote(value) {
+        const text = value.trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function buildTarget(user, host) {
+        if (!host) {
+          return "hostname-or-ip";
+        }
+
+        return user ? `${user}@${host}` : host;
+      }
+
+      function updateForwardingFields() {
+        const type = forwardTypeInput.value;
+        const dynamic = type === "dynamic";
+        const disabled = type === "";
+
+        destinationHostField.hidden = disabled || dynamic;
+        destinationPortField.hidden = disabled || dynamic;
+
+        generateCommand();
+      }
+
+      function buildJumpOption() {
+        const jumpHost = getValue("jump-host");
+
+        if (!jumpHost) {
+          return [];
+        }
+
+        const jumpUser = getValue("jump-user");
+        const jumpPort = getValue("jump-port");
+        const jumpKey = getValue("jump-key");
+
+        const jumpTarget = buildTarget(jumpUser, jumpHost);
+
+        if (jumpKey) {
+          const proxyParts = [
+            "ssh",
+            "-W",
+            "%h:%p",
+          ];
+
+          if (jumpPort && jumpPort !== "22") {
+            proxyParts.push("-p", jumpPort);
+          }
+
+          proxyParts.push("-i", shellQuote(jumpKey));
+          proxyParts.push(jumpTarget);
+
+          return [
+            "-o",
+            `ProxyCommand=${shellQuote(proxyParts.join(" "))}`,
+          ];
+        }
+
+        let proxyJump = jumpTarget;
+
+        if (jumpPort && jumpPort !== "22") {
+          proxyJump += `:${jumpPort}`;
+        }
+
+        return ["-J", proxyJump];
+      }
+
+      function buildForwardingOption() {
+        const type = getValue("forward-type");
+        const bindAddress = getValue("bind-address");
+        const localPort = getValue("local-port");
+        const destinationHost = getValue("destination-host");
+        const destinationPort = getValue("destination-port");
+
+        if (!type || !localPort) {
+          return [];
+        }
+
+        const bindPrefix = bindAddress
+          ? `${bindAddress}:`
+          : "";
+
+        if (type === "dynamic") {
+          return ["-D", `${bindPrefix}${localPort}`];
+        }
+
+        if (!destinationHost || !destinationPort) {
+          return [];
+        }
+
+        const value =
+          `${bindPrefix}${localPort}:${destinationHost}:${destinationPort}`;
+
+        return [type === "local" ? "-L" : "-R", value];
+      }
+
+      function getForwardingSummary() {
+        const type = getValue("forward-type");
+
+        const labels = {
+          local: "Local tunnel",
+          remote: "Remote tunnel",
+          dynamic: "SOCKS proxy",
+        };
+
+        return labels[type] || "Not configured";
+      }
+
+      function generateCommand() {
+        const hostname =
+          getValue("hostname") || "hostname-or-ip";
+
+        const username = getValue("username");
+        const port = getValue("port");
+        const identityFile = getValue("identity-file");
+        const remoteCommand = getValue("remote-command");
+
+        const parts = ["ssh"];
+
+        if (isChecked("verbose")) {
+          parts.push("-v");
+        }
+
+        if (isChecked("ipv4-only")) {
+          parts.push("-4");
+        }
+
+        if (isChecked("ipv6-only")) {
+          parts.push("-6");
+        }
+
+        if (isChecked("compression-enabled")) {
+          parts.push("-C");
+        }
+
+        if (isChecked("agent-forwarding")) {
+          parts.push("-A");
+        }
+
+        if (isChecked("x11-forwarding")) {
+          parts.push("-X");
+        }
+
+        if (isChecked("force-tty")) {
+          parts.push("-tt");
+        } else if (isChecked("allocate-tty")) {
+          parts.push("-t");
+        }
+
+        if (isChecked("background")) {
+          parts.push("-f");
+        }
+
+        if (isChecked("no-command")) {
+          parts.push("-N");
+        }
+
+        if (port && port !== "22") {
+          parts.push("-p", port);
+        }
+
+        if (identityFile) {
+          parts.push("-i", shellQuote(identityFile));
+        }
+
+        parts.push(...buildJumpOption());
+        parts.push(...buildForwardingOption());
+
+        const connectTimeout = getValue("connect-timeout");
+
+        if (connectTimeout) {
+          parts.push(
+            "-o",
+            `ConnectTimeout=${connectTimeout}`
+          );
+        }
+
+        const keepaliveInterval =
+          getValue("keepalive-interval");
+
+        if (keepaliveInterval) {
+          parts.push(
+            "-o",
+            `ServerAliveInterval=${keepaliveInterval}`
+          );
+        }
+
+        const keepaliveCount =
+          getValue("keepalive-count");
+
+        if (keepaliveCount) {
+          parts.push(
+            "-o",
+            `ServerAliveCountMax=${keepaliveCount}`
+          );
+        }
+
+        const hostKeyChecking =
+          getValue("host-key-checking");
+
+        if (hostKeyChecking) {
+          parts.push(
+            "-o",
+            `StrictHostKeyChecking=${hostKeyChecking}`
+          );
+        }
+
+        getValue("extra-options")
+          .split(/\r?\n/)
+          .map((option) => option.trim())
+          .filter(Boolean)
+          .forEach((option) => {
+            parts.push("-o", shellQuote(option));
+          });
+
+        parts.push(buildTarget(username, hostname));
+
+        if (remoteCommand && !isChecked("no-command")) {
+          parts.push(shellQuote(remoteCommand));
+        }
+
+        commandResult.textContent = parts.join(" ");
+
+        chmodResult.textContent = identityFile
+          ? `chmod 600 ${shellQuote(identityFile)}`
+          : "chmod 600 ~/.ssh/id_rsa";
+
+        document.getElementById(
+          "summary-host"
+        ).textContent = hostname;
+
+        document.getElementById(
+          "summary-user"
+        ).textContent = username || "Current user";
+
+        document.getElementById(
+          "summary-port"
+        ).textContent = port || "22";
+
+        const jumpHost = getValue("jump-host");
+
+        document.getElementById(
+          "summary-jump"
+        ).textContent = jumpHost || "Not configured";
+
+        document.getElementById(
+          "summary-forwarding"
+        ).textContent = getForwardingSummary();
+
+        if (hostKeyChecking === "no") {
+          warningBox.textContent =
+            "Warning: host-key checking is disabled. This can expose the connection to man-in-the-middle attacks.";
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (isChecked("agent-forwarding")) {
+          warningBox.textContent =
+            "Agent forwarding is enabled. Use it only with trusted remote and jump hosts.";
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else {
+          warningBox.textContent =
+            "Confirm the hostname, username and private-key permissions before connecting.";
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        }
+      }
+
+      function resetForm() {
+        const values = {
+          hostname: "192.168.1.100",
+          username: "linuxadmin",
+          port: "22",
+          "identity-file": "",
+          "remote-command": "",
+          "jump-host": "",
+          "jump-user": "",
+          "jump-port": "22",
+          "jump-key": "",
+          "forward-type": "",
+          "bind-address": "127.0.0.1",
+          "local-port": "",
+          "destination-host": "",
+          "destination-port": "",
+          "connect-timeout": "10",
+          "keepalive-interval": "60",
+          "keepalive-count": "3",
+          "host-key-checking": "accept-new",
+          "extra-options": "",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        checkboxIds.forEach((id) => {
+          document.getElementById(id).checked = false;
+        });
+
+        updateForwardingFields();
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "basic") {
+          document.getElementById("hostname").value =
+            "server.example.com";
+          document.getElementById("username").value =
+            "admin";
+        }
+
+        if (preset === "private-key") {
+          document.getElementById("hostname").value =
+            "10.10.10.20";
+          document.getElementById("username").value =
+            "cloud-user";
+          document.getElementById("identity-file").value =
+            "~/.ssh/server.pem";
+        }
+
+        if (preset === "bastion") {
+          document.getElementById("hostname").value =
+            "192.168.10.20";
+          document.getElementById("username").value =
+            "root";
+          document.getElementById("jump-host").value =
+            "203.0.113.10";
+          document.getElementById("jump-user").value =
+            "bastionuser";
+          document.getElementById("jump-key").value =
+            "~/.ssh/bastion.pem";
+        }
+
+        if (preset === "local-forward") {
+          document.getElementById("hostname").value =
+            "database-server";
+          document.getElementById("username").value =
+            "admin";
+          document.getElementById("forward-type").value =
+            "local";
+          document.getElementById("local-port").value =
+            "15432";
+          document.getElementById(
+            "destination-host"
+          ).value = "127.0.0.1";
+          document.getElementById(
+            "destination-port"
+          ).value = "5432";
+          document.getElementById("no-command").checked =
+            true;
+        }
+
+        if (preset === "socks") {
+          document.getElementById("hostname").value =
+            "gateway.example.com";
+          document.getElementById("username").value =
+            "admin";
+          document.getElementById("forward-type").value =
+            "dynamic";
+          document.getElementById("local-port").value =
+            "1080";
+          document.getElementById("no-command").checked =
+            true;
+        }
+
+        if (preset === "debug") {
+          document.getElementById("hostname").value =
+            "server.example.com";
+          document.getElementById("username").value =
+            "admin";
+          document.getElementById("verbose").checked = true;
+          document.getElementById(
+            "host-key-checking"
+          ).value = "yes";
+        }
+
+        updateForwardingFields();
+      }
+
+      async function copyText(text) {
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copyStatus.textContent =
+            "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      fieldIds.forEach((id) => {
+        const element = document.getElementById(id);
+
+        element?.addEventListener("input", generateCommand);
+
+        element?.addEventListener("change", () => {
+          if (id === "forward-type") {
+            updateForwardingFields();
+          } else {
+            generateCommand();
+          }
+        });
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener("change", generateCommand);
+      });
+
+      ipv4Input.addEventListener("change", () => {
+        if (ipv4Input.checked) {
+          ipv6Input.checked = false;
+        }
+
+        generateCommand();
+      });
+
+      ipv6Input.addEventListener("change", () => {
+        if (ipv6Input.checked) {
+          ipv4Input.checked = false;
+        }
+
+        generateCommand();
+      });
+
+      allocateTtyInput.addEventListener("change", () => {
+        if (allocateTtyInput.checked) {
+          forceTtyInput.checked = false;
+        }
+
+        generateCommand();
+      });
+
+      forceTtyInput.addEventListener("change", () => {
+        if (forceTtyInput.checked) {
+          allocateTtyInput.checked = false;
+        }
+
+        generateCommand();
+      });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateCommand);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.dataset.copyTarget;
+
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(target?.textContent?.trim() ?? "");
+          });
+        });
+
+      updateForwardingFields();
+    </script>
+  </body>
+</html>
