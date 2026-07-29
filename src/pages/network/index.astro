@@ -2,7 +2,7 @@
 const pageTitle = "Network Tools";
 
 const description =
-  "Free networking calculators, command generators and utilities for IP addressing, DNS, ports, VLANs and troubleshooting.";
+  "Free networking calculators, command generators and utilities for IP addressing, DNS, ports, VLANs, SSL certificates and troubleshooting.";
 
 const tools = [
   {
@@ -103,6 +103,13 @@ const tools = [
       "Generate common DNS records including A, AAAA, CNAME, MX, TXT and PTR.",
     link: "/network/dns-record-generator",
   },
+  {
+    icon: "🔐",
+    name: "SSL Certificate Checker",
+    description:
+      "Check SSL certificate installation, validity, trust status and website TLS security configuration.",
+    link: "/network/ssl-checker",
+  },
 ];
 ---
 
@@ -120,7 +127,7 @@ const tools = [
 
     <meta
       name="keywords"
-      content="network tools, subnet calculator, IP calculator, CIDR calculator, DNS tools, port checker, ping generator, traceroute generator, VLAN calculator, network troubleshooting"
+      content="network tools, subnet calculator, IP calculator, CIDR calculator, SSL checker, SSL certificate checker, DNS tools, port checker, ping generator, traceroute generator, VLAN calculator, network troubleshooting"
     />
 
     <meta name="author" content="Gokuruvi Tools" />
@@ -239,6 +246,7 @@ const tools = [
         color: #cbd5e1;
         text-decoration: none;
         font-weight: 600;
+        transition: color 0.2s ease;
       }
 
       .nav-links a:hover,
@@ -352,6 +360,11 @@ const tools = [
         transform: translateY(-6px);
         border-color: #5eead4;
         box-shadow: 0 20px 40px rgba(15, 118, 110, 0.14);
+      }
+
+      .tool-card:focus-visible {
+        outline: 3px solid rgba(34, 211, 238, 0.55);
+        outline-offset: 4px;
       }
 
       .tool-icon {
@@ -501,7 +514,7 @@ const tools = [
       <div class="container">
         <nav class="navbar" aria-label="Main navigation">
           <a class="logo" href="/">
-            <span class="logo-icon">🌐</span>
+            <span class="logo-icon" aria-hidden="true">🌐</span>
             <span>Gokuruvi Tools</span>
           </a>
 
@@ -537,9 +550,9 @@ const tools = [
             <h2>Networking calculators and generators</h2>
 
             <p>
-              Select a networking tool to calculate IP information,
-              generate commands, create DNS records or troubleshoot
-              connectivity.
+              Select a networking tool to calculate IP information, check SSL
+              certificates, generate commands, create DNS records or
+              troubleshoot connectivity.
             </p>
           </div>
 
@@ -547,7 +560,7 @@ const tools = [
             {
               tools.map((tool) => (
                 <a class="tool-card" href={tool.link}>
-                  <div class="tool-icon">
+                  <div class="tool-icon" aria-hidden="true">
                     {tool.icon}
                   </div>
 
@@ -572,10 +585,10 @@ const tools = [
 
             <p>
               Use these free browser-based networking utilities to calculate
-              subnets, convert IP addresses, generate troubleshooting commands,
-              create DNS records and review common network configuration
-              information. Always validate generated commands before running
-              them in a production environment.
+              subnets, convert IP addresses, check SSL certificates, generate
+              troubleshooting commands, create DNS records and review common
+              network configuration information. Always validate generated
+              commands before running them in a production environment.
             </p>
           </div>
         </div>
@@ -589,6 +602,8 @@ const tools = [
         </span>
 
         <div class="footer-links">
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
           <a href="/privacy-policy">Privacy</a>
           <a href="/terms">Terms</a>
           <a href="/disclaimer">Disclaimer</a>

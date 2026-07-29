@@ -1,0 +1,896 @@
+---
+const pageTitle = "Docker Compose Validator";
+const pageDescription =
+  "Validate Docker Compose YAML files, check common configuration issues, and format your Compose configuration.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <link rel="canonical" href="https://www.gokuruvi.com/devops/docker-compose-validator" />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #15803d;
+        --success-bg: #f0fdf4;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --warning: #b45309;
+        --warning-bg: #fffbeb;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #cbd5e1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
+          var(--background);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      .site-header {
+        background: #0f172a;
+        color: white;
+        padding: 18px 24px;
+      }
+
+      .header-inner {
+        width: min(1200px, 100%);
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .header-link {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      .header-link:hover {
+        color: white;
+      }
+
+      main {
+        width: min(1200px, calc(100% - 32px));
+        margin: 42px auto;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .tool-card {
+        background: var(--card);
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .toolbar-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      button,
+      .file-label {
+        border: none;
+        border-radius: 10px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-size: 0.94rem;
+        font-weight: 700;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+
+      button:hover,
+      .file-label:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: white;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button,
+      .file-label {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .danger-button {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      #compose-file {
+        display: none;
+      }
+
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 480px;
+        resize: vertical;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 18px;
+        font-family:
+          "Cascadia Code", "Fira Code", Consolas, Monaco, monospace;
+        font-size: 14px;
+        line-height: 1.65;
+        tab-size: 2;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+      }
+
+      .status-box {
+        display: none;
+        margin-top: 20px;
+        border-radius: 14px;
+        padding: 16px 18px;
+        line-height: 1.6;
+      }
+
+      .status-box.show {
+        display: block;
+      }
+
+      .status-box.success {
+        background: var(--success-bg);
+        border: 1px solid #86efac;
+        color: var(--success);
+      }
+
+      .status-box.error {
+        background: var(--error-bg);
+        border: 1px solid #fca5a5;
+        color: var(--error);
+      }
+
+      .status-box.warning {
+        background: var(--warning-bg);
+        border: 1px solid #fcd34d;
+        color: var(--warning);
+      }
+
+      .status-title {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+
+      .result-list {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .info-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .info-card h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .privacy-note {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        line-height: 1.6;
+      }
+
+      footer {
+        margin-top: 60px;
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--muted);
+        border-top: 1px solid #e2e8f0;
+      }
+
+      @media (max-width: 800px) {
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .button-group {
+          width: 100%;
+        }
+
+        button,
+        .file-label {
+          flex: 1;
+          text-align: center;
+        }
+
+        main {
+          margin-top: 28px;
+        }
+
+        .tool-card {
+          padding: 16px;
+        }
+
+        textarea {
+          min-height: 400px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="logo">Gokuruvi Tools</a>
+        <a href="/devops" class="header-link">DevOps Tools</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="badge">Free DevOps Tool</span>
+
+        <h1>Docker Compose Validator</h1>
+
+        <p>
+          Validate Docker Compose YAML syntax and identify common configuration
+          problems before running your application.
+        </p>
+      </section>
+
+      <section class="tool-card">
+        <div class="toolbar">
+          <div class="toolbar-title">Docker Compose YAML</div>
+
+          <div class="button-group">
+            <label for="compose-file" class="file-label">
+              Upload File
+            </label>
+
+            <input
+              id="compose-file"
+              type="file"
+              accept=".yaml,.yml,text/yaml,application/yaml"
+            />
+
+            <button id="sample-button" class="secondary-button" type="button">
+              Load Sample
+            </button>
+
+            <button id="validate-button" class="primary-button" type="button">
+              Validate
+            </button>
+
+            <button id="copy-button" class="secondary-button" type="button">
+              Copy
+            </button>
+
+            <button id="clear-button" class="danger-button" type="button">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          id="compose-input"
+          spellcheck="false"
+          aria-label="Docker Compose YAML input"
+          placeholder={`services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"`}
+        ></textarea>
+
+        <div id="status-box" class="status-box" role="alert">
+          <h2 id="status-title" class="status-title"></h2>
+          <div id="status-message"></div>
+        </div>
+
+        <div class="privacy-note">
+          <strong>Privacy:</strong> Your Docker Compose configuration is
+          processed only in your browser. It is not uploaded to a server.
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <article class="info-card">
+          <h2>YAML validation</h2>
+          <p>
+            Detects indentation problems, invalid mappings, duplicate keys and
+            malformed YAML syntax.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>Compose checks</h2>
+          <p>
+            Checks for services, images, build configurations, ports, volumes,
+            networks and common Compose mistakes.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>Browser based</h2>
+          <p>
+            The validation runs locally in your browser, helping protect
+            passwords, environment values and private configuration.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Sathish Ramalingam. All rights reserved.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+    <script is:inline>
+      const composeInput = document.getElementById("compose-input");
+      const validateButton = document.getElementById("validate-button");
+      const sampleButton = document.getElementById("sample-button");
+      const copyButton = document.getElementById("copy-button");
+      const clearButton = document.getElementById("clear-button");
+      const fileInput = document.getElementById("compose-file");
+      const statusBox = document.getElementById("status-box");
+      const statusTitle = document.getElementById("status-title");
+      const statusMessage = document.getElementById("status-message");
+
+      const sampleCompose = `services:
+  web:
+    image: nginx:latest
+    container_name: gokuruvi-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+    networks:
+      - app-network
+
+  database:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gokuruvi
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: change-this-password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge
+`;
+
+      function displayStatus(type, title, content) {
+        statusBox.className = `status-box show ${type}`;
+        statusTitle.textContent = title;
+        statusMessage.innerHTML = content;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function isPlainObject(value) {
+        return (
+          value !== null &&
+          typeof value === "object" &&
+          !Array.isArray(value)
+        );
+      }
+
+      function validateCompose(compose) {
+        const errors = [];
+        const warnings = [];
+
+        if (!isPlainObject(compose)) {
+          errors.push("The root YAML value must be an object.");
+          return { errors, warnings };
+        }
+
+        if (!compose.services) {
+          errors.push('Required top-level key "services" is missing.');
+          return { errors, warnings };
+        }
+
+        if (!isPlainObject(compose.services)) {
+          errors.push('"services" must be a YAML mapping.');
+          return { errors, warnings };
+        }
+
+        const serviceNames = Object.keys(compose.services);
+
+        if (serviceNames.length === 0) {
+          errors.push("At least one service must be configured.");
+        }
+
+        if (compose.version) {
+          warnings.push(
+            'The top-level "version" field is obsolete in modern Docker Compose.'
+          );
+        }
+
+        for (const serviceName of serviceNames) {
+          const service = compose.services[serviceName];
+
+          if (!isPlainObject(service)) {
+            errors.push(
+              `Service "${serviceName}" must contain a configuration mapping.`
+            );
+            continue;
+          }
+
+          if (!service.image && !service.build) {
+            warnings.push(
+              `Service "${serviceName}" does not define "image" or "build".`
+            );
+          }
+
+          if (service.image && typeof service.image !== "string") {
+            errors.push(
+              `The "image" value in service "${serviceName}" must be a string.`
+            );
+          }
+
+          if (
+            service.ports &&
+            !Array.isArray(service.ports)
+          ) {
+            errors.push(
+              `The "ports" value in service "${serviceName}" must be a list.`
+            );
+          }
+
+          if (
+            service.volumes &&
+            !Array.isArray(service.volumes)
+          ) {
+            errors.push(
+              `The "volumes" value in service "${serviceName}" must be a list.`
+            );
+          }
+
+          if (
+            service.depends_on &&
+            !Array.isArray(service.depends_on) &&
+            !isPlainObject(service.depends_on)
+          ) {
+            errors.push(
+              `The "depends_on" value in service "${serviceName}" must be a list or mapping.`
+            );
+          }
+
+          if (
+            service.environment &&
+            !Array.isArray(service.environment) &&
+            !isPlainObject(service.environment)
+          ) {
+            errors.push(
+              `The "environment" value in service "${serviceName}" must be a list or mapping.`
+            );
+          }
+
+          if (
+            service.restart &&
+            !["no", "always", "on-failure", "unless-stopped"].includes(
+              String(service.restart)
+            )
+          ) {
+            warnings.push(
+              `Service "${serviceName}" uses an unusual restart policy: "${service.restart}".`
+            );
+          }
+
+          if (
+            service.container_name &&
+            typeof service.container_name !== "string"
+          ) {
+            errors.push(
+              `The "container_name" value in service "${serviceName}" must be a string.`
+            );
+          }
+
+          if (Array.isArray(service.ports)) {
+            service.ports.forEach((port, index) => {
+              if (
+                typeof port !== "string" &&
+                typeof port !== "number" &&
+                !isPlainObject(port)
+              ) {
+                errors.push(
+                  `Port entry ${index + 1} in service "${serviceName}" is invalid.`
+                );
+              }
+            });
+          }
+
+          if (Array.isArray(service.depends_on)) {
+            service.depends_on.forEach((dependency) => {
+              if (!compose.services[dependency]) {
+                errors.push(
+                  `Service "${serviceName}" depends on undefined service "${dependency}".`
+                );
+              }
+            });
+          }
+
+          if (service.networks) {
+            const networks = Array.isArray(service.networks)
+              ? service.networks
+              : Object.keys(service.networks);
+
+            networks.forEach((network) => {
+              if (
+                compose.networks &&
+                !Object.prototype.hasOwnProperty.call(
+                  compose.networks,
+                  network
+                )
+              ) {
+                warnings.push(
+                  `Service "${serviceName}" references network "${network}", but it is not declared in the top-level networks section.`
+                );
+              }
+            });
+          }
+        }
+
+        if (compose.volumes && !isPlainObject(compose.volumes)) {
+          errors.push('The top-level "volumes" value must be a mapping.');
+        }
+
+        if (compose.networks && !isPlainObject(compose.networks)) {
+          errors.push('The top-level "networks" value must be a mapping.');
+        }
+
+        if (compose.configs && !isPlainObject(compose.configs)) {
+          errors.push('The top-level "configs" value must be a mapping.');
+        }
+
+        if (compose.secrets && !isPlainObject(compose.secrets)) {
+          errors.push('The top-level "secrets" value must be a mapping.');
+        }
+
+        return { errors, warnings };
+      }
+
+      validateButton.addEventListener("click", () => {
+        const yamlText = composeInput.value.trim();
+
+        if (!yamlText) {
+          displayStatus(
+            "warning",
+            "No configuration provided",
+            "Paste or upload a Docker Compose YAML file before validating."
+          );
+          return;
+        }
+
+        if (typeof jsyaml === "undefined") {
+          displayStatus(
+            "error",
+            "Validator unavailable",
+            "The YAML parser could not be loaded. Check your internet connection and reload the page."
+          );
+          return;
+        }
+
+        try {
+          const composeObject = jsyaml.load(yamlText, {
+            json: false
+          });
+
+          const result = validateCompose(composeObject);
+
+          if (result.errors.length > 0) {
+            const errorItems = result.errors
+              .map((error) => `<li>${escapeHtml(error)}</li>`)
+              .join("");
+
+            const warningItems = result.warnings
+              .map((warning) => `<li>${escapeHtml(warning)}</li>`)
+              .join("");
+
+            let content = `
+              <strong>${result.errors.length} error(s) found:</strong>
+              <ul class="result-list">${errorItems}</ul>
+            `;
+
+            if (result.warnings.length > 0) {
+              content += `
+                <br>
+                <strong>${result.warnings.length} warning(s):</strong>
+                <ul class="result-list">${warningItems}</ul>
+              `;
+            }
+
+            displayStatus(
+              "error",
+              "Docker Compose configuration is invalid",
+              content
+            );
+
+            return;
+          }
+
+          if (result.warnings.length > 0) {
+            const warningItems = result.warnings
+              .map((warning) => `<li>${escapeHtml(warning)}</li>`)
+              .join("");
+
+            displayStatus(
+              "warning",
+              "Configuration is valid with warnings",
+              `
+                <strong>${result.warnings.length} warning(s) found:</strong>
+                <ul class="result-list">${warningItems}</ul>
+              `
+            );
+
+            return;
+          }
+
+          const serviceCount = Object.keys(
+            composeObject.services || {}
+          ).length;
+
+          displayStatus(
+            "success",
+            "Docker Compose configuration is valid",
+            `YAML syntax is correct and ${serviceCount} service(s) were detected.`
+          );
+        } catch (error) {
+          const reason = error.reason || error.message || "Unknown YAML error";
+          const line =
+            error.mark && Number.isInteger(error.mark.line)
+              ? error.mark.line + 1
+              : null;
+          const column =
+            error.mark && Number.isInteger(error.mark.column)
+              ? error.mark.column + 1
+              : null;
+
+          let location = "";
+
+          if (line !== null && column !== null) {
+            location = `<br><strong>Location:</strong> Line ${line}, column ${column}`;
+          }
+
+          displayStatus(
+            "error",
+            "Invalid YAML syntax",
+            `<strong>Error:</strong> ${escapeHtml(reason)}${location}`
+          );
+        }
+      });
+
+      sampleButton.addEventListener("click", () => {
+        composeInput.value = sampleCompose;
+        statusBox.className = "status-box";
+        composeInput.focus();
+      });
+
+      clearButton.addEventListener("click", () => {
+        composeInput.value = "";
+        statusBox.className = "status-box";
+        composeInput.focus();
+      });
+
+      copyButton.addEventListener("click", async () => {
+        const content = composeInput.value;
+
+        if (!content.trim()) {
+          displayStatus(
+            "warning",
+            "Nothing to copy",
+            "Enter a Docker Compose configuration first."
+          );
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(content);
+
+          displayStatus(
+            "success",
+            "Copied",
+            "Docker Compose YAML copied to the clipboard."
+          );
+        } catch {
+          composeInput.select();
+          document.execCommand("copy");
+
+          displayStatus(
+            "success",
+            "Copied",
+            "Docker Compose YAML copied to the clipboard."
+          );
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        const validExtension =
+          file.name.endsWith(".yaml") || file.name.endsWith(".yml");
+
+        if (!validExtension) {
+          displayStatus(
+            "error",
+            "Unsupported file",
+            "Please select a .yaml or .yml Docker Compose file."
+          );
+
+          fileInput.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          composeInput.value = String(reader.result || "");
+          statusBox.className = "status-box";
+        };
+
+        reader.onerror = () => {
+          displayStatus(
+            "error",
+            "File reading failed",
+            "The selected file could not be read."
+          );
+        };
+
+        reader.readAsText(file);
+        fileInput.value = "";
+      });
+
+      composeInput.addEventListener("keydown", (event) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+
+          const start = composeInput.selectionStart;
+          const end = composeInput.selectionEnd;
+          const value = composeInput.value;
+
+          composeInput.value =
+            value.substring(0, start) + "  " + value.substring(end);
+
+          composeInput.selectionStart = composeInput.selectionEnd = start + 2;
+        }
+
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          validateButton.click();
+        }
+      });
+    </script>
+  </body>
+</html>

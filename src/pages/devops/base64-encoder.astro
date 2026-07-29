@@ -1,0 +1,876 @@
+---
+const pageTitle = "Base64 Encoder and Decoder";
+const pageDescription =
+  "Encode text to Base64 or decode Base64 into readable text securely in your browser.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/devops/base64-encoder"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #15803d;
+        --success-bg: #f0fdf4;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --warning: #b45309;
+        --warning-bg: #fffbeb;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #cbd5e1;
+        --editor: #0f172a;
+        --editor-text: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
+          var(--background);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+
+      .site-header {
+        background: #0f172a;
+        color: white;
+        padding: 18px 24px;
+      }
+
+      .header-inner {
+        width: min(1200px, 100%);
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .header-link {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      .header-link:hover {
+        color: white;
+      }
+
+      main {
+        width: min(1200px, calc(100% - 32px));
+        margin: 42px auto;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .tool-card {
+        background: var(--card);
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .editor-panel {
+        min-width: 0;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .panel-title {
+        font-size: 1rem;
+        font-weight: 800;
+      }
+
+      .character-count {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 400px;
+        resize: vertical;
+        border: 1px solid #334155;
+        border-radius: 14px;
+        background: var(--editor);
+        color: var(--editor-text);
+        padding: 18px;
+        font-family:
+          "Cascadia Code", "Fira Code", Consolas, Monaco, monospace;
+        font-size: 14px;
+        line-height: 1.65;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 22px 0;
+      }
+
+      button,
+      .file-label {
+        border: none;
+        border-radius: 10px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-weight: 750;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+
+      button:hover,
+      .file-label:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: white;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button,
+      .file-label {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .success-button {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .danger-button {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      .options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .option-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .option-item input {
+        width: auto;
+        margin: 0;
+      }
+
+      .option-item span {
+        font-size: 0.9rem;
+        font-weight: 650;
+      }
+
+      .status-box {
+        display: none;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        line-height: 1.55;
+      }
+
+      .status-box.show {
+        display: block;
+      }
+
+      .status-box.success {
+        color: var(--success);
+        background: var(--success-bg);
+        border: 1px solid #86efac;
+      }
+
+      .status-box.error {
+        color: var(--error);
+        background: var(--error-bg);
+        border: 1px solid #fca5a5;
+      }
+
+      .status-box.warning {
+        color: var(--warning);
+        background: var(--warning-bg);
+        border: 1px solid #fcd34d;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .info-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .info-card h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .privacy-note {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        line-height: 1.6;
+      }
+
+      footer {
+        margin-top: 60px;
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--muted);
+        border-top: 1px solid #e2e8f0;
+      }
+
+      @media (max-width: 850px) {
+        .editor-grid {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 300px;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-card {
+          padding: 16px;
+        }
+
+        main {
+          margin-top: 28px;
+        }
+
+        .toolbar button,
+        .file-label {
+          flex: 1;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="logo">Gokuruvi Tools</a>
+        <a href="/devops" class="header-link">DevOps Tools</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="badge">Free Encoding Tool</span>
+
+        <h1>Base64 Encoder and Decoder</h1>
+
+        <p>
+          Convert text to Base64 or decode Base64 into readable text. All
+          processing happens securely inside your browser.
+        </p>
+      </section>
+
+      <section class="tool-card">
+        <div class="options">
+          <label class="option-item">
+            <input id="url-safe-option" type="checkbox" />
+            <span>URL-safe Base64</span>
+          </label>
+
+          <label class="option-item">
+            <input id="remove-padding-option" type="checkbox" />
+            <span>Remove padding</span>
+          </label>
+
+          <label class="option-item">
+            <input id="auto-process-option" type="checkbox" />
+            <span>Auto encode</span>
+          </label>
+        </div>
+
+        <div class="editor-grid">
+          <div class="editor-panel">
+            <div class="panel-header">
+              <div class="panel-title">Input text</div>
+              <div id="input-count" class="character-count">0 characters</div>
+            </div>
+
+            <textarea
+              id="input-text"
+              spellcheck="false"
+              placeholder="Enter text to encode, or paste Base64 text to decode..."
+              aria-label="Input text"
+            ></textarea>
+          </div>
+
+          <div class="editor-panel">
+            <div class="panel-header">
+              <div class="panel-title">Result</div>
+              <div id="output-count" class="character-count">0 characters</div>
+            </div>
+
+            <textarea
+              id="output-text"
+              spellcheck="false"
+              readonly
+              placeholder="The encoded or decoded result will appear here..."
+              aria-label="Base64 result"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button id="encode-button" class="primary-button" type="button">
+            Encode to Base64
+          </button>
+
+          <button id="decode-button" class="success-button" type="button">
+            Decode Base64
+          </button>
+
+          <button id="swap-button" class="secondary-button" type="button">
+            Swap
+          </button>
+
+          <button id="copy-button" class="secondary-button" type="button">
+            Copy Result
+          </button>
+
+          <label for="file-input" class="file-label">
+            Upload Text File
+          </label>
+
+          <input
+            id="file-input"
+            type="file"
+            accept=".txt,.json,.yaml,.yml,.xml,.csv,.log,.conf,text/plain"
+          />
+
+          <button id="download-button" class="secondary-button" type="button">
+            Download Result
+          </button>
+
+          <button id="clear-button" class="danger-button" type="button">
+            Clear
+          </button>
+        </div>
+
+        <div id="status-box" class="status-box" role="status"></div>
+
+        <div class="privacy-note">
+          <strong>Privacy:</strong> Your text is processed only in your browser.
+          No content is sent to a server.
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <article class="info-card">
+          <h2>Unicode support</h2>
+          <p>
+            Correctly encodes and decodes Unicode text, including international
+            characters and emoji.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>URL-safe format</h2>
+          <p>
+            Replace characters that are unsafe in URLs and optionally remove
+            Base64 padding characters.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>Local processing</h2>
+          <p>
+            Data remains inside your browser, making the tool suitable for
+            general configuration and development tasks.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 Sathish Ramalingam. All rights reserved.
+    </footer>
+
+    <script is:inline>
+      const inputText = document.getElementById("input-text");
+      const outputText = document.getElementById("output-text");
+
+      const encodeButton = document.getElementById("encode-button");
+      const decodeButton = document.getElementById("decode-button");
+      const swapButton = document.getElementById("swap-button");
+      const copyButton = document.getElementById("copy-button");
+      const downloadButton = document.getElementById("download-button");
+      const clearButton = document.getElementById("clear-button");
+      const fileInput = document.getElementById("file-input");
+
+      const urlSafeOption = document.getElementById("url-safe-option");
+      const removePaddingOption = document.getElementById(
+        "remove-padding-option"
+      );
+      const autoProcessOption = document.getElementById(
+        "auto-process-option"
+      );
+
+      const inputCount = document.getElementById("input-count");
+      const outputCount = document.getElementById("output-count");
+      const statusBox = document.getElementById("status-box");
+
+      function showStatus(type, message) {
+        statusBox.className = `status-box show ${type}`;
+        statusBox.textContent = message;
+      }
+
+      function hideStatus() {
+        statusBox.className = "status-box";
+        statusBox.textContent = "";
+      }
+
+      function updateCounts() {
+        const inputLength = inputText.value.length;
+        const outputLength = outputText.value.length;
+
+        inputCount.textContent = `${inputLength.toLocaleString()} ${
+          inputLength === 1 ? "character" : "characters"
+        }`;
+
+        outputCount.textContent = `${outputLength.toLocaleString()} ${
+          outputLength === 1 ? "character" : "characters"
+        }`;
+      }
+
+      function textToBase64(text) {
+        const bytes = new TextEncoder().encode(text);
+
+        let binary = "";
+
+        for (let index = 0; index < bytes.length; index += 1) {
+          binary += String.fromCharCode(bytes[index]);
+        }
+
+        return btoa(binary);
+      }
+
+      function base64ToText(base64) {
+        const binary = atob(base64);
+
+        const bytes = Uint8Array.from(binary, (character) =>
+          character.charCodeAt(0)
+        );
+
+        return new TextDecoder("utf-8", {
+          fatal: true
+        }).decode(bytes);
+      }
+
+      function convertToUrlSafe(value) {
+        return value
+          .replaceAll("+", "-")
+          .replaceAll("/", "_");
+      }
+
+      function convertFromUrlSafe(value) {
+        return value
+          .replaceAll("-", "+")
+          .replaceAll("_", "/");
+      }
+
+      function restorePadding(value) {
+        const remainder = value.length % 4;
+
+        if (remainder === 0) {
+          return value;
+        }
+
+        if (remainder === 1) {
+          throw new Error("Invalid Base64 length.");
+        }
+
+        return value.padEnd(value.length + (4 - remainder), "=");
+      }
+
+      function encodeValue() {
+        const value = inputText.value;
+
+        if (!value) {
+          outputText.value = "";
+          updateCounts();
+
+          showStatus(
+            "warning",
+            "Enter text before encoding."
+          );
+
+          return;
+        }
+
+        try {
+          let encoded = textToBase64(value);
+
+          if (urlSafeOption.checked) {
+            encoded = convertToUrlSafe(encoded);
+          }
+
+          if (removePaddingOption.checked) {
+            encoded = encoded.replace(/=+$/g, "");
+          }
+
+          outputText.value = encoded;
+
+          updateCounts();
+
+          showStatus(
+            "success",
+            "Text encoded to Base64 successfully."
+          );
+        } catch (error) {
+          outputText.value = "";
+          updateCounts();
+
+          showStatus(
+            "error",
+            `Encoding failed: ${error.message || "Unknown error"}`
+          );
+        }
+      }
+
+      function decodeValue() {
+        const value = inputText.value.trim();
+
+        if (!value) {
+          outputText.value = "";
+          updateCounts();
+
+          showStatus(
+            "warning",
+            "Enter Base64 text before decoding."
+          );
+
+          return;
+        }
+
+        try {
+          let normalized = value.replace(/\s+/g, "");
+
+          normalized = convertFromUrlSafe(normalized);
+          normalized = restorePadding(normalized);
+
+          if (!/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
+            throw new Error("The input contains invalid Base64 characters.");
+          }
+
+          outputText.value = base64ToText(normalized);
+
+          updateCounts();
+
+          showStatus(
+            "success",
+            "Base64 decoded successfully."
+          );
+        } catch (error) {
+          outputText.value = "";
+          updateCounts();
+
+          showStatus(
+            "error",
+            `Unable to decode Base64: ${
+              error.message || "Invalid Base64 input"
+            }`
+          );
+        }
+      }
+
+      encodeButton.addEventListener("click", encodeValue);
+
+      decodeButton.addEventListener("click", decodeValue);
+
+      swapButton.addEventListener("click", () => {
+        const currentOutput = outputText.value;
+
+        if (!currentOutput) {
+          showStatus(
+            "warning",
+            "There is no result to move into the input field."
+          );
+
+          return;
+        }
+
+        inputText.value = currentOutput;
+        outputText.value = "";
+
+        hideStatus();
+        updateCounts();
+        inputText.focus();
+      });
+
+      copyButton.addEventListener("click", async () => {
+        const value = outputText.value;
+
+        if (!value) {
+          showStatus(
+            "warning",
+            "There is no result to copy."
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(value);
+
+          showStatus(
+            "success",
+            "Result copied to the clipboard."
+          );
+        } catch {
+          outputText.removeAttribute("readonly");
+          outputText.select();
+          document.execCommand("copy");
+          outputText.setAttribute("readonly", "");
+
+          showStatus(
+            "success",
+            "Result copied to the clipboard."
+          );
+        }
+      });
+
+      clearButton.addEventListener("click", () => {
+        inputText.value = "";
+        outputText.value = "";
+
+        hideStatus();
+        updateCounts();
+        inputText.focus();
+      });
+
+      downloadButton.addEventListener("click", () => {
+        const value = outputText.value;
+
+        if (!value) {
+          showStatus(
+            "warning",
+            "There is no result to download."
+          );
+
+          return;
+        }
+
+        const blob = new Blob([value], {
+          type: "text/plain;charset=utf-8"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+
+        anchor.href = url;
+        anchor.download = "base64-result.txt";
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showStatus(
+          "success",
+          "Result downloaded successfully."
+        );
+      });
+
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        const maximumSize = 5 * 1024 * 1024;
+
+        if (file.size > maximumSize) {
+          showStatus(
+            "error",
+            "The selected file is larger than 5 MB."
+          );
+
+          fileInput.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          inputText.value = String(reader.result || "");
+          outputText.value = "";
+
+          hideStatus();
+          updateCounts();
+
+          if (autoProcessOption.checked) {
+            encodeValue();
+          }
+        };
+
+        reader.onerror = () => {
+          showStatus(
+            "error",
+            "The selected file could not be read."
+          );
+        };
+
+        reader.readAsText(file);
+        fileInput.value = "";
+      });
+
+      inputText.addEventListener("input", () => {
+        hideStatus();
+        updateCounts();
+
+        if (autoProcessOption.checked) {
+          encodeValue();
+        }
+      });
+
+      urlSafeOption.addEventListener("change", () => {
+        if (outputText.value && autoProcessOption.checked) {
+          encodeValue();
+        }
+      });
+
+      removePaddingOption.addEventListener("change", () => {
+        if (outputText.value && autoProcessOption.checked) {
+          encodeValue();
+        }
+      });
+
+      inputText.addEventListener("keydown", (event) => {
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          event.key === "Enter"
+        ) {
+          encodeValue();
+        }
+      });
+
+      updateCounts();
+    </script>
+  </body>
+</html>

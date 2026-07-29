@@ -1,0 +1,2642 @@
+---
+const pageTitle = "Docker Run Command Generator | Gokuruvi Tools";
+
+const pageDescription =
+  "Generate Docker run commands with ports, volumes, environment variables, restart policies, networks, resource limits and other common Docker options.";
+
+const canonicalUrl =
+  "https://www.gokuruvi.com/devops/docker-run-generator";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta
+      name="description"
+      content={pageDescription}
+    />
+
+    <meta
+      name="keywords"
+      content="Docker run command generator, Docker command builder, Docker port mapping, Docker volume mapping, Docker environment variables, DevOps tools"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Docker Run Command Generator",
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Any",
+        url: canonicalUrl,
+        description: pageDescription,
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "AED",
+        },
+      })}
+    />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span>Gokuruvi Tools</span>
+        </a>
+
+        <button
+          id="menuButton"
+          class="menu-button"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+
+        <nav id="mainNavigation" class="main-navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops" class="active">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/about">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-section">
+        <div class="hero-container">
+          <div class="tool-badge">
+            <span class="badge-dot"></span>
+            Container Command Builder
+          </div>
+
+          <h1>Docker Run Generator</h1>
+
+          <p>
+            Build a complete Docker run command with port mappings,
+            volumes, environment variables, networks and resource limits.
+          </p>
+
+          <div class="hero-features">
+            <span>✓ Instant command generation</span>
+            <span>✓ Multiple ports and volumes</span>
+            <span>✓ Resource limits</span>
+            <span>✓ Browser-based processing</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="page-container">
+          <div class="generator-grid">
+            <section class="generator-card">
+              <div class="card-heading">
+                <div>
+                  <span class="section-label">Configuration</span>
+                  <h2>Container settings</h2>
+                </div>
+
+                <button
+                  id="loadSampleButton"
+                  class="button button-secondary"
+                  type="button"
+                >
+                  Load sample
+                </button>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="imageName">
+                    Docker image
+                    <span>*</span>
+                  </label>
+
+                  <input
+                    id="imageName"
+                    type="text"
+                    placeholder="Example: nginx:latest"
+                    autocomplete="off"
+                  />
+
+                  <small>
+                    Enter the image name and optional tag.
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <label for="containerName">
+                    Container name
+                  </label>
+
+                  <input
+                    id="containerName"
+                    type="text"
+                    placeholder="Example: web-server"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="hostname">
+                    Container hostname
+                  </label>
+
+                  <input
+                    id="hostname"
+                    type="text"
+                    placeholder="Example: nginx-host"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="restartPolicy">
+                    Restart policy
+                  </label>
+
+                  <select id="restartPolicy">
+                    <option value="">No restart policy</option>
+                    <option value="no">no</option>
+                    <option value="always">always</option>
+                    <option value="unless-stopped">
+                      unless-stopped
+                    </option>
+                    <option value="on-failure">
+                      on-failure
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="networkName">
+                    Docker network
+                  </label>
+
+                  <input
+                    id="networkName"
+                    type="text"
+                    placeholder="Example: application-network"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="workingDirectory">
+                    Working directory
+                  </label>
+
+                  <input
+                    id="workingDirectory"
+                    type="text"
+                    placeholder="Example: /app"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="userName">
+                    User or UID
+                  </label>
+
+                  <input
+                    id="userName"
+                    type="text"
+                    placeholder="Example: 1000:1000"
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+
+              <div class="option-grid">
+                <label class="checkbox-card">
+                  <input
+                    id="detachedMode"
+                    type="checkbox"
+                    checked
+                  />
+
+                  <span>
+                    <strong>Detached mode</strong>
+                    <small>Run the container in the background.</small>
+                  </span>
+                </label>
+
+                <label class="checkbox-card">
+                  <input
+                    id="removeContainer"
+                    type="checkbox"
+                  />
+
+                  <span>
+                    <strong>Auto remove</strong>
+                    <small>Remove the container after it exits.</small>
+                  </span>
+                </label>
+
+                <label class="checkbox-card">
+                  <input
+                    id="interactiveMode"
+                    type="checkbox"
+                  />
+
+                  <span>
+                    <strong>Interactive</strong>
+                    <small>Keep standard input open.</small>
+                  </span>
+                </label>
+
+                <label class="checkbox-card">
+                  <input
+                    id="allocateTty"
+                    type="checkbox"
+                  />
+
+                  <span>
+                    <strong>Allocate TTY</strong>
+                    <small>Allocate a pseudo terminal.</small>
+                  </span>
+                </label>
+
+                <label class="checkbox-card">
+                  <input
+                    id="privilegedMode"
+                    type="checkbox"
+                  />
+
+                  <span>
+                    <strong>Privileged mode</strong>
+                    <small>Give extended permissions to the container.</small>
+                  </span>
+                </label>
+
+                <label class="checkbox-card">
+                  <input
+                    id="readOnlyMode"
+                    type="checkbox"
+                  />
+
+                  <span>
+                    <strong>Read-only filesystem</strong>
+                    <small>Mount the root filesystem as read-only.</small>
+                  </span>
+                </label>
+              </div>
+
+              <div class="dynamic-section">
+                <div class="dynamic-heading">
+                  <div>
+                    <h3>Port mappings</h3>
+                    <p>Map host ports to container ports.</p>
+                  </div>
+
+                  <button
+                    id="addPortButton"
+                    class="add-button"
+                    type="button"
+                  >
+                    + Add port
+                  </button>
+                </div>
+
+                <div id="portRows" class="dynamic-rows"></div>
+              </div>
+
+              <div class="dynamic-section">
+                <div class="dynamic-heading">
+                  <div>
+                    <h3>Volume mappings</h3>
+                    <p>
+                      Mount host directories or named volumes.
+                    </p>
+                  </div>
+
+                  <button
+                    id="addVolumeButton"
+                    class="add-button"
+                    type="button"
+                  >
+                    + Add volume
+                  </button>
+                </div>
+
+                <div id="volumeRows" class="dynamic-rows"></div>
+              </div>
+
+              <div class="dynamic-section">
+                <div class="dynamic-heading">
+                  <div>
+                    <h3>Environment variables</h3>
+                    <p>Add configuration values to the container.</p>
+                  </div>
+
+                  <button
+                    id="addEnvironmentButton"
+                    class="add-button"
+                    type="button"
+                  >
+                    + Add variable
+                  </button>
+                </div>
+
+                <div
+                  id="environmentRows"
+                  class="dynamic-rows"
+                ></div>
+              </div>
+
+              <div class="dynamic-section">
+                <div class="dynamic-heading">
+                  <div>
+                    <h3>Resource limits</h3>
+                    <p>Optionally limit CPU and memory usage.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="cpuLimit">
+                      CPU limit
+                    </label>
+
+                    <input
+                      id="cpuLimit"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      placeholder="Example: 1.5"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="memoryLimit">
+                      Memory limit
+                    </label>
+
+                    <input
+                      id="memoryLimit"
+                      type="text"
+                      placeholder="Example: 512m or 2g"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="memoryReservation">
+                      Memory reservation
+                    </label>
+
+                    <input
+                      id="memoryReservation"
+                      type="text"
+                      placeholder="Example: 256m"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="sharedMemory">
+                      Shared memory
+                    </label>
+
+                    <input
+                      id="sharedMemory"
+                      type="text"
+                      placeholder="Example: 128m"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="dynamic-section">
+                <div class="dynamic-heading">
+                  <div>
+                    <h3>Advanced options</h3>
+                    <p>
+                      Add DNS, entrypoint, labels and additional arguments.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="dnsServer">
+                      DNS server
+                    </label>
+
+                    <input
+                      id="dnsServer"
+                      type="text"
+                      placeholder="Example: 8.8.8.8"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="entrypoint">
+                      Entrypoint
+                    </label>
+
+                    <input
+                      id="entrypoint"
+                      type="text"
+                      placeholder="Example: /docker-entrypoint.sh"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="containerLabel">
+                      Container label
+                    </label>
+
+                    <input
+                      id="containerLabel"
+                      type="text"
+                      placeholder="Example: environment=production"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="platform">
+                      Platform
+                    </label>
+
+                    <select id="platform">
+                      <option value="">Default platform</option>
+                      <option value="linux/amd64">
+                        linux/amd64
+                      </option>
+                      <option value="linux/arm64">
+                        linux/arm64
+                      </option>
+                      <option value="linux/arm/v7">
+                        linux/arm/v7
+                      </option>
+                      <option value="windows/amd64">
+                        windows/amd64
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group full-width">
+                    <label for="additionalOptions">
+                      Additional Docker options
+                    </label>
+
+                    <input
+                      id="additionalOptions"
+                      type="text"
+                      placeholder="Example: --cap-add NET_ADMIN --log-driver json-file"
+                    />
+
+                    <small>
+                      Enter trusted Docker options exactly as they
+                      should appear.
+                    </small>
+                  </div>
+
+                  <div class="form-group full-width">
+                    <label for="containerCommand">
+                      Container command
+                    </label>
+
+                    <input
+                      id="containerCommand"
+                      type="text"
+                      placeholder="Example: nginx -g 'daemon off;'"
+                    />
+
+                    <small>
+                      This command will be added after the image name.
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  id="generateButton"
+                  class="button button-primary large-button"
+                  type="button"
+                >
+                  Generate Docker command
+                </button>
+
+                <button
+                  id="resetButton"
+                  class="button button-danger-outline"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </section>
+
+            <aside class="output-card">
+              <div class="output-heading">
+                <div>
+                  <span class="section-label">Generated result</span>
+                  <h2>Docker command</h2>
+                </div>
+
+                <button
+                  id="copyButton"
+                  class="button button-primary"
+                  type="button"
+                >
+                  Copy command
+                </button>
+              </div>
+
+              <div
+                id="statusBox"
+                class="status-box status-neutral"
+                role="status"
+                aria-live="polite"
+              >
+                <span id="statusIcon" class="status-icon">i</span>
+
+                <div>
+                  <strong id="statusTitle">
+                    Ready to generate
+                  </strong>
+
+                  <p id="statusMessage">
+                    Enter a Docker image and configure the required
+                    options.
+                  </p>
+                </div>
+              </div>
+
+              <div class="terminal">
+                <div class="terminal-topbar">
+                  <div class="terminal-buttons">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+
+                  <span>docker-run.sh</span>
+                </div>
+
+                <pre><code id="commandOutput">docker run nginx:latest</code></pre>
+              </div>
+
+              <div class="output-actions">
+                <button
+                  id="downloadButton"
+                  class="output-action-button"
+                  type="button"
+                >
+                  ↓ Download script
+                </button>
+
+                <button
+                  id="singleLineButton"
+                  class="output-action-button"
+                  type="button"
+                >
+                  Single-line view
+                </button>
+              </div>
+
+              <div class="command-summary">
+                <h3>Selected options</h3>
+
+                <div id="summaryList" class="summary-list">
+                  <div>
+                    <span>Image</span>
+                    <strong>nginx:latest</strong>
+                  </div>
+
+                  <div>
+                    <span>Mode</span>
+                    <strong>Detached</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="security-note">
+                <strong>Security notice</strong>
+
+                <p>
+                  Use privileged mode only when it is necessary.
+                  Avoid placing passwords directly in commands that
+                  may be stored in your shell history.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="information-section">
+        <div class="page-container">
+          <div class="section-heading-centered">
+            <span class="tool-badge">Docker options</span>
+
+            <h2>Build Docker commands without syntax mistakes</h2>
+
+            <p>
+              Configure common Docker run options using a simple
+              form and copy the generated command.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card">
+              <div class="feature-icon">↔</div>
+              <h3>Port mappings</h3>
+
+              <p>
+                Publish one or more container ports on the Docker
+                host.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">▣</div>
+              <h3>Volume mounts</h3>
+
+              <p>
+                Configure persistent storage and read-only volume
+                mappings.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">ENV</div>
+              <h3>Environment variables</h3>
+
+              <p>
+                Add multiple key-value configuration variables.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">CPU</div>
+              <h3>Resource limits</h3>
+
+              <p>
+                Define CPU, memory and shared-memory limits.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-about">
+          <a href="/" class="footer-brand">
+            Gokuruvi Tools
+          </a>
+
+          <p>
+            Free tools for Linux administrators, DevOps engineers,
+            Kubernetes users and cloud professionals.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/terms">Terms</a>
+          <a href="/disclaimer">Disclaimer</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2026 Sathish Ramalingam. All rights reserved.
+      </div>
+    </footer>
+
+    <script>
+      const imageName =
+        document.querySelector<HTMLInputElement>("#imageName");
+
+      const containerName =
+        document.querySelector<HTMLInputElement>("#containerName");
+
+      const hostname =
+        document.querySelector<HTMLInputElement>("#hostname");
+
+      const restartPolicy =
+        document.querySelector<HTMLSelectElement>("#restartPolicy");
+
+      const networkName =
+        document.querySelector<HTMLInputElement>("#networkName");
+
+      const workingDirectory =
+        document.querySelector<HTMLInputElement>(
+          "#workingDirectory"
+        );
+
+      const userName =
+        document.querySelector<HTMLInputElement>("#userName");
+
+      const detachedMode =
+        document.querySelector<HTMLInputElement>("#detachedMode");
+
+      const removeContainer =
+        document.querySelector<HTMLInputElement>(
+          "#removeContainer"
+        );
+
+      const interactiveMode =
+        document.querySelector<HTMLInputElement>(
+          "#interactiveMode"
+        );
+
+      const allocateTty =
+        document.querySelector<HTMLInputElement>("#allocateTty");
+
+      const privilegedMode =
+        document.querySelector<HTMLInputElement>(
+          "#privilegedMode"
+        );
+
+      const readOnlyMode =
+        document.querySelector<HTMLInputElement>("#readOnlyMode");
+
+      const cpuLimit =
+        document.querySelector<HTMLInputElement>("#cpuLimit");
+
+      const memoryLimit =
+        document.querySelector<HTMLInputElement>("#memoryLimit");
+
+      const memoryReservation =
+        document.querySelector<HTMLInputElement>(
+          "#memoryReservation"
+        );
+
+      const sharedMemory =
+        document.querySelector<HTMLInputElement>("#sharedMemory");
+
+      const dnsServer =
+        document.querySelector<HTMLInputElement>("#dnsServer");
+
+      const entrypoint =
+        document.querySelector<HTMLInputElement>("#entrypoint");
+
+      const containerLabel =
+        document.querySelector<HTMLInputElement>(
+          "#containerLabel"
+        );
+
+      const platform =
+        document.querySelector<HTMLSelectElement>("#platform");
+
+      const additionalOptions =
+        document.querySelector<HTMLInputElement>(
+          "#additionalOptions"
+        );
+
+      const containerCommand =
+        document.querySelector<HTMLInputElement>(
+          "#containerCommand"
+        );
+
+      const portRows =
+        document.querySelector<HTMLDivElement>("#portRows");
+
+      const volumeRows =
+        document.querySelector<HTMLDivElement>("#volumeRows");
+
+      const environmentRows =
+        document.querySelector<HTMLDivElement>(
+          "#environmentRows"
+        );
+
+      const commandOutput =
+        document.querySelector<HTMLElement>("#commandOutput");
+
+      const summaryList =
+        document.querySelector<HTMLDivElement>("#summaryList");
+
+      const statusBox =
+        document.querySelector<HTMLDivElement>("#statusBox");
+
+      const statusIcon =
+        document.querySelector<HTMLSpanElement>("#statusIcon");
+
+      const statusTitle =
+        document.querySelector<HTMLElement>("#statusTitle");
+
+      const statusMessage =
+        document.querySelector<HTMLParagraphElement>(
+          "#statusMessage"
+        );
+
+      const generateButton =
+        document.querySelector<HTMLButtonElement>(
+          "#generateButton"
+        );
+
+      const copyButton =
+        document.querySelector<HTMLButtonElement>("#copyButton");
+
+      const resetButton =
+        document.querySelector<HTMLButtonElement>("#resetButton");
+
+      const loadSampleButton =
+        document.querySelector<HTMLButtonElement>(
+          "#loadSampleButton"
+        );
+
+      const addPortButton =
+        document.querySelector<HTMLButtonElement>("#addPortButton");
+
+      const addVolumeButton =
+        document.querySelector<HTMLButtonElement>(
+          "#addVolumeButton"
+        );
+
+      const addEnvironmentButton =
+        document.querySelector<HTMLButtonElement>(
+          "#addEnvironmentButton"
+        );
+
+      const downloadButton =
+        document.querySelector<HTMLButtonElement>(
+          "#downloadButton"
+        );
+
+      const singleLineButton =
+        document.querySelector<HTMLButtonElement>(
+          "#singleLineButton"
+        );
+
+      const menuButton =
+        document.querySelector<HTMLButtonElement>("#menuButton");
+
+      const mainNavigation =
+        document.querySelector<HTMLElement>("#mainNavigation");
+
+      let generatedCommand = "docker run nginx:latest";
+      let multilineMode = true;
+
+      function shellQuote(value: string) {
+        const trimmedValue = value.trim();
+
+        if (!trimmedValue) {
+          return "";
+        }
+
+        if (/^[a-zA-Z0-9_./:@%+=,-]+$/.test(trimmedValue)) {
+          return trimmedValue;
+        }
+
+        return `'${trimmedValue.replace(/'/g, `'\\''`)}'`;
+      }
+
+      function setStatus(
+        type: "neutral" | "success" | "error" | "warning",
+        title: string,
+        message: string
+      ) {
+        if (
+          !statusBox ||
+          !statusIcon ||
+          !statusTitle ||
+          !statusMessage
+        ) {
+          return;
+        }
+
+        const icons = {
+          neutral: "i",
+          success: "✓",
+          error: "×",
+          warning: "!",
+        };
+
+        statusBox.className = `status-box status-${type}`;
+        statusIcon.textContent = icons[type];
+        statusTitle.textContent = title;
+        statusMessage.textContent = message;
+      }
+
+      function createPortRow(
+        hostPort = "",
+        containerPort = "",
+        protocol = "tcp"
+      ) {
+        if (!portRows) {
+          return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "dynamic-row port-row";
+
+        row.innerHTML = `
+          <input
+            class="host-port"
+            type="number"
+            min="1"
+            max="65535"
+            placeholder="Host port"
+            value="${hostPort}"
+          />
+
+          <span class="mapping-arrow">→</span>
+
+          <input
+            class="container-port"
+            type="number"
+            min="1"
+            max="65535"
+            placeholder="Container port"
+            value="${containerPort}"
+          />
+
+          <select class="port-protocol">
+            <option value="tcp" ${
+              protocol === "tcp" ? "selected" : ""
+            }>TCP</option>
+
+            <option value="udp" ${
+              protocol === "udp" ? "selected" : ""
+            }>UDP</option>
+          </select>
+
+          <button
+            class="remove-row-button"
+            type="button"
+            aria-label="Remove port mapping"
+          >
+            ×
+          </button>
+        `;
+
+        row
+          .querySelector(".remove-row-button")
+          ?.addEventListener("click", () => {
+            row.remove();
+            generateCommand(false);
+          });
+
+        row
+          .querySelectorAll("input, select")
+          .forEach((element) => {
+            element.addEventListener("input", () => {
+              generateCommand(false);
+            });
+          });
+
+        portRows.appendChild(row);
+      }
+
+      function createVolumeRow(
+        source = "",
+        destination = "",
+        readOnly = false
+      ) {
+        if (!volumeRows) {
+          return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "dynamic-row volume-row";
+
+        row.innerHTML = `
+          <input
+            class="volume-source"
+            type="text"
+            placeholder="Host path or volume"
+            value="${source}"
+          />
+
+          <span class="mapping-arrow">→</span>
+
+          <input
+            class="volume-destination"
+            type="text"
+            placeholder="Container path"
+            value="${destination}"
+          />
+
+          <label class="small-checkbox">
+            <input
+              class="volume-readonly"
+              type="checkbox"
+              ${readOnly ? "checked" : ""}
+            />
+
+            Read only
+          </label>
+
+          <button
+            class="remove-row-button"
+            type="button"
+            aria-label="Remove volume mapping"
+          >
+            ×
+          </button>
+        `;
+
+        row
+          .querySelector(".remove-row-button")
+          ?.addEventListener("click", () => {
+            row.remove();
+            generateCommand(false);
+          });
+
+        row
+          .querySelectorAll("input")
+          .forEach((element) => {
+            element.addEventListener("input", () => {
+              generateCommand(false);
+            });
+          });
+
+        volumeRows.appendChild(row);
+      }
+
+      function createEnvironmentRow(
+        key = "",
+        value = ""
+      ) {
+        if (!environmentRows) {
+          return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "dynamic-row environment-row";
+
+        row.innerHTML = `
+          <input
+            class="environment-key"
+            type="text"
+            placeholder="Variable name"
+            value="${key}"
+          />
+
+          <span class="mapping-arrow">=</span>
+
+          <input
+            class="environment-value"
+            type="text"
+            placeholder="Variable value"
+            value="${value}"
+          />
+
+          <button
+            class="remove-row-button"
+            type="button"
+            aria-label="Remove environment variable"
+          >
+            ×
+          </button>
+        `;
+
+        row
+          .querySelector(".remove-row-button")
+          ?.addEventListener("click", () => {
+            row.remove();
+            generateCommand(false);
+          });
+
+        row
+          .querySelectorAll("input")
+          .forEach((element) => {
+            element.addEventListener("input", () => {
+              generateCommand(false);
+            });
+          });
+
+        environmentRows.appendChild(row);
+      }
+
+      function collectPortOptions() {
+        const options: string[] = [];
+
+        portRows
+          ?.querySelectorAll<HTMLElement>(".port-row")
+          .forEach((row) => {
+            const hostPort =
+              row.querySelector<HTMLInputElement>(".host-port")
+                ?.value.trim() ?? "";
+
+            const containerPort =
+              row.querySelector<HTMLInputElement>(
+                ".container-port"
+              )?.value.trim() ?? "";
+
+            const protocol =
+              row.querySelector<HTMLSelectElement>(
+                ".port-protocol"
+              )?.value ?? "tcp";
+
+            if (hostPort && containerPort) {
+              const protocolSuffix =
+                protocol === "udp" ? "/udp" : "";
+
+              options.push(
+                `--publish ${hostPort}:${containerPort}${protocolSuffix}`
+              );
+            }
+          });
+
+        return options;
+      }
+
+      function collectVolumeOptions() {
+        const options: string[] = [];
+
+        volumeRows
+          ?.querySelectorAll<HTMLElement>(".volume-row")
+          .forEach((row) => {
+            const source =
+              row.querySelector<HTMLInputElement>(".volume-source")
+                ?.value.trim() ?? "";
+
+            const destination =
+              row.querySelector<HTMLInputElement>(
+                ".volume-destination"
+              )?.value.trim() ?? "";
+
+            const readOnly =
+              row.querySelector<HTMLInputElement>(
+                ".volume-readonly"
+              )?.checked ?? false;
+
+            if (source && destination) {
+              const value =
+                `${source}:${destination}` +
+                (readOnly ? ":ro" : "");
+
+              options.push(`--volume ${shellQuote(value)}`);
+            }
+          });
+
+        return options;
+      }
+
+      function collectEnvironmentOptions() {
+        const options: string[] = [];
+
+        environmentRows
+          ?.querySelectorAll<HTMLElement>(".environment-row")
+          .forEach((row) => {
+            const key =
+              row.querySelector<HTMLInputElement>(
+                ".environment-key"
+              )?.value.trim() ?? "";
+
+            const value =
+              row.querySelector<HTMLInputElement>(
+                ".environment-value"
+              )?.value ?? "";
+
+            if (key) {
+              options.push(
+                `--env ${shellQuote(`${key}=${value}`)}`
+              );
+            }
+          });
+
+        return options;
+      }
+
+      function buildSummary(
+        image: string,
+        optionCount: number
+      ) {
+        if (!summaryList) {
+          return;
+        }
+
+        const summary: Array<[string, string]> = [
+          ["Image", image],
+          [
+            "Mode",
+            detachedMode?.checked
+              ? "Detached"
+              : "Foreground",
+          ],
+          ["Options", String(optionCount)],
+          [
+            "Ports",
+            String(
+              collectPortOptions().length
+            ),
+          ],
+          [
+            "Volumes",
+            String(
+              collectVolumeOptions().length
+            ),
+          ],
+          [
+            "Environment variables",
+            String(
+              collectEnvironmentOptions().length
+            ),
+          ],
+        ];
+
+        summaryList.innerHTML = summary
+          .map(
+            ([label, value]) => `
+              <div>
+                <span>${label}</span>
+                <strong>${value}</strong>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function generateCommand(showStatus = true) {
+        const image =
+          imageName?.value.trim() || "nginx:latest";
+
+        const options: string[] = [];
+
+        if (detachedMode?.checked) {
+          options.push("--detach");
+        }
+
+        if (removeContainer?.checked) {
+          options.push("--rm");
+        }
+
+        if (interactiveMode?.checked) {
+          options.push("--interactive");
+        }
+
+        if (allocateTty?.checked) {
+          options.push("--tty");
+        }
+
+        if (privilegedMode?.checked) {
+          options.push("--privileged");
+        }
+
+        if (readOnlyMode?.checked) {
+          options.push("--read-only");
+        }
+
+        if (containerName?.value.trim()) {
+          options.push(
+            `--name ${shellQuote(containerName.value)}`
+          );
+        }
+
+        if (hostname?.value.trim()) {
+          options.push(
+            `--hostname ${shellQuote(hostname.value)}`
+          );
+        }
+
+        if (restartPolicy?.value) {
+          options.push(
+            `--restart ${restartPolicy.value}`
+          );
+        }
+
+        if (networkName?.value.trim()) {
+          options.push(
+            `--network ${shellQuote(networkName.value)}`
+          );
+        }
+
+        if (workingDirectory?.value.trim()) {
+          options.push(
+            `--workdir ${shellQuote(workingDirectory.value)}`
+          );
+        }
+
+        if (userName?.value.trim()) {
+          options.push(
+            `--user ${shellQuote(userName.value)}`
+          );
+        }
+
+        options.push(...collectPortOptions());
+        options.push(...collectVolumeOptions());
+        options.push(...collectEnvironmentOptions());
+
+        if (cpuLimit?.value.trim()) {
+          options.push(
+            `--cpus ${shellQuote(cpuLimit.value)}`
+          );
+        }
+
+        if (memoryLimit?.value.trim()) {
+          options.push(
+            `--memory ${shellQuote(memoryLimit.value)}`
+          );
+        }
+
+        if (memoryReservation?.value.trim()) {
+          options.push(
+            `--memory-reservation ${shellQuote(
+              memoryReservation.value
+            )}`
+          );
+        }
+
+        if (sharedMemory?.value.trim()) {
+          options.push(
+            `--shm-size ${shellQuote(sharedMemory.value)}`
+          );
+        }
+
+        if (dnsServer?.value.trim()) {
+          options.push(
+            `--dns ${shellQuote(dnsServer.value)}`
+          );
+        }
+
+        if (entrypoint?.value.trim()) {
+          options.push(
+            `--entrypoint ${shellQuote(entrypoint.value)}`
+          );
+        }
+
+        if (containerLabel?.value.trim()) {
+          options.push(
+            `--label ${shellQuote(containerLabel.value)}`
+          );
+        }
+
+        if (platform?.value) {
+          options.push(
+            `--platform ${platform.value}`
+          );
+        }
+
+        if (additionalOptions?.value.trim()) {
+          options.push(additionalOptions.value.trim());
+        }
+
+        const imagePart = shellQuote(image);
+
+        const commandPart =
+          containerCommand?.value.trim()
+            ? ` ${containerCommand.value.trim()}`
+            : "";
+
+        const singleLineCommand = [
+          "docker run",
+          ...options,
+          imagePart,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .concat(commandPart);
+
+        const multilineCommand =
+          options.length > 0
+            ? [
+                "docker run \\",
+                ...options.map(
+                  (option) => `  ${option} \\`
+                ),
+                `  ${imagePart}${commandPart}`,
+              ].join("\n")
+            : `docker run ${imagePart}${commandPart}`;
+
+        generatedCommand =
+          multilineMode
+            ? multilineCommand
+            : singleLineCommand;
+
+        if (commandOutput) {
+          commandOutput.textContent = generatedCommand;
+        }
+
+        buildSummary(image, options.length);
+
+        if (showStatus) {
+          setStatus(
+            "success",
+            "Docker command generated",
+            "Review the command before running it on your Docker host."
+          );
+        }
+      }
+
+      async function copyCommand() {
+        try {
+          await navigator.clipboard.writeText(
+            generatedCommand
+          );
+
+          setStatus(
+            "success",
+            "Command copied",
+            "The Docker run command has been copied to your clipboard."
+          );
+        } catch {
+          const temporaryTextarea =
+            document.createElement("textarea");
+
+          temporaryTextarea.value = generatedCommand;
+          temporaryTextarea.style.position = "fixed";
+          temporaryTextarea.style.opacity = "0";
+
+          document.body.appendChild(
+            temporaryTextarea
+          );
+
+          temporaryTextarea.select();
+          document.execCommand("copy");
+          temporaryTextarea.remove();
+
+          setStatus(
+            "success",
+            "Command copied",
+            "The Docker run command has been copied to your clipboard."
+          );
+        }
+      }
+
+      function downloadScript() {
+        const scriptContent =
+          `#!/usr/bin/env bash\n\nset -e\n\n${generatedCommand}\n`;
+
+        const blob = new Blob([scriptContent], {
+          type: "text/x-shellscript;charset=utf-8",
+        });
+
+        const objectUrl =
+          URL.createObjectURL(blob);
+
+        const link =
+          document.createElement("a");
+
+        link.href = objectUrl;
+        link.download = "docker-run.sh";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(objectUrl);
+
+        setStatus(
+          "success",
+          "Script downloaded",
+          "The Docker command has been saved as docker-run.sh."
+        );
+      }
+
+      function resetForm() {
+        document
+          .querySelectorAll<
+            HTMLInputElement | HTMLSelectElement
+          >(
+            ".generator-card input, .generator-card select"
+          )
+          .forEach((element) => {
+            if (element instanceof HTMLInputElement) {
+              if (element.type === "checkbox") {
+                element.checked =
+                  element.id === "detachedMode";
+              } else {
+                element.value = "";
+              }
+            } else {
+              element.selectedIndex = 0;
+            }
+          });
+
+        if (portRows) {
+          portRows.innerHTML = "";
+        }
+
+        if (volumeRows) {
+          volumeRows.innerHTML = "";
+        }
+
+        if (environmentRows) {
+          environmentRows.innerHTML = "";
+        }
+
+        imageName!.value = "nginx:latest";
+
+        createPortRow();
+        createVolumeRow();
+        createEnvironmentRow();
+
+        multilineMode = true;
+
+        if (singleLineButton) {
+          singleLineButton.textContent =
+            "Single-line view";
+        }
+
+        generateCommand(false);
+
+        setStatus(
+          "neutral",
+          "Form reset",
+          "Configure the Docker options and generate a new command."
+        );
+      }
+
+      function loadSample() {
+        if (
+          !imageName ||
+          !containerName ||
+          !restartPolicy ||
+          !networkName ||
+          !memoryLimit ||
+          !cpuLimit
+        ) {
+          return;
+        }
+
+        imageName.value = "nginx:latest";
+        containerName.value = "gokuruvi-web";
+        restartPolicy.value = "unless-stopped";
+        networkName.value = "web-network";
+        memoryLimit.value = "512m";
+        cpuLimit.value = "1";
+
+        if (detachedMode) {
+          detachedMode.checked = true;
+        }
+
+        if (portRows) {
+          portRows.innerHTML = "";
+        }
+
+        if (volumeRows) {
+          volumeRows.innerHTML = "";
+        }
+
+        if (environmentRows) {
+          environmentRows.innerHTML = "";
+        }
+
+        createPortRow("8080", "80", "tcp");
+
+        createVolumeRow(
+          "/opt/gokuruvi/html",
+          "/usr/share/nginx/html",
+          true
+        );
+
+        createEnvironmentRow(
+          "NGINX_HOST",
+          "www.gokuruvi.com"
+        );
+
+        createEnvironmentRow(
+          "APP_ENV",
+          "production"
+        );
+
+        generateCommand();
+
+        setStatus(
+          "success",
+          "Sample configuration loaded",
+          "The sample Nginx Docker command is ready."
+        );
+      }
+
+      addPortButton?.addEventListener(
+        "click",
+        () => createPortRow()
+      );
+
+      addVolumeButton?.addEventListener(
+        "click",
+        () => createVolumeRow()
+      );
+
+      addEnvironmentButton?.addEventListener(
+        "click",
+        () => createEnvironmentRow()
+      );
+
+      generateButton?.addEventListener(
+        "click",
+        () => {
+          if (!imageName?.value.trim()) {
+            setStatus(
+              "warning",
+              "Docker image required",
+              "Enter a Docker image such as nginx:latest."
+            );
+
+            imageName?.focus();
+            return;
+          }
+
+          generateCommand();
+        }
+      );
+
+      copyButton?.addEventListener(
+        "click",
+        copyCommand
+      );
+
+      downloadButton?.addEventListener(
+        "click",
+        downloadScript
+      );
+
+      resetButton?.addEventListener(
+        "click",
+        resetForm
+      );
+
+      loadSampleButton?.addEventListener(
+        "click",
+        loadSample
+      );
+
+      singleLineButton?.addEventListener(
+        "click",
+        () => {
+          multilineMode = !multilineMode;
+
+          singleLineButton.textContent =
+            multilineMode
+              ? "Single-line view"
+              : "Multi-line view";
+
+          generateCommand(false);
+        }
+      );
+
+      document
+        .querySelectorAll<
+          HTMLInputElement | HTMLSelectElement
+        >(
+          ".generator-card input, .generator-card select"
+        )
+        .forEach((element) => {
+          element.addEventListener("input", () => {
+            generateCommand(false);
+          });
+
+          element.addEventListener("change", () => {
+            generateCommand(false);
+          });
+        });
+
+      menuButton?.addEventListener(
+        "click",
+        () => {
+          if (
+            !mainNavigation ||
+            !menuButton
+          ) {
+            return;
+          }
+
+          const isOpen =
+            mainNavigation.classList.toggle("open");
+
+          menuButton.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+          );
+
+          menuButton.textContent =
+            isOpen ? "✕" : "☰";
+        }
+      );
+
+      if (imageName) {
+        imageName.value = "nginx:latest";
+      }
+
+      createPortRow();
+      createVolumeRow();
+      createEnvironmentRow();
+      generateCommand(false);
+    </script>
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f7f9fc;
+    color: #172033;
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+
+  :global(button),
+  :global(input),
+  :global(select) {
+    font: inherit;
+  }
+
+  :global(button) {
+    cursor: pointer;
+  }
+
+  .page-container {
+    width: min(1220px, calc(100% - 40px));
+    margin-inline: auto;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid #e4e9f2;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-container {
+    width: min(1240px, calc(100% - 40px));
+    min-height: 72px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #111c32;
+    font-size: 1.15rem;
+    font-weight: 850;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #175ee8, #397ff7);
+    color: white;
+    font-size: 0.82rem;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+  }
+
+  .main-navigation {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .main-navigation a {
+    padding: 9px 13px;
+    border-radius: 9px;
+    color: #4d5b72;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .main-navigation a:hover,
+  .main-navigation a.active {
+    background: #edf4ff;
+    color: #165ddd;
+  }
+
+  .menu-button {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #dce4ef;
+    border-radius: 10px;
+    background: white;
+    color: #172033;
+    font-size: 1.25rem;
+  }
+
+  .hero-section {
+    padding: 72px 20px 64px;
+    background:
+      radial-gradient(
+        circle at 8% 20%,
+        rgba(14, 165, 233, 0.09),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 90% 0%,
+        rgba(37, 99, 235, 0.12),
+        transparent 36%
+      ),
+      linear-gradient(120deg, #f3fbff, #f0f5ff);
+    text-align: center;
+  }
+
+  .hero-container {
+    width: min(900px, 100%);
+    margin-inline: auto;
+  }
+
+  .tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 15px;
+    border: 1px solid #bdd6ff;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    color: #185ce0;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  }
+
+  .hero-section h1 {
+    margin: 18px 0 10px;
+    color: #162033;
+    font-size: clamp(2.7rem, 7vw, 4.15rem);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+  }
+
+  .hero-section p {
+    max-width: 790px;
+    margin: 0 auto;
+    color: #42526b;
+    font-size: clamp(1rem, 2vw, 1.16rem);
+  }
+
+  .hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 11px 24px;
+    margin-top: 25px;
+    color: #3f4d63;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .generator-section {
+    padding: 54px 0 76px;
+  }
+
+  .generator-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.75fr);
+    gap: 25px;
+    align-items: start;
+  }
+
+  .generator-card,
+  .output-card {
+    padding: 28px;
+    border: 1px solid #dfe6f0;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.055);
+  }
+
+  .output-card {
+    position: sticky;
+    top: 96px;
+  }
+
+  .card-heading,
+  .output-heading,
+  .dynamic-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .card-heading {
+    margin-bottom: 26px;
+  }
+
+  .section-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #2563eb;
+    font-size: 0.74rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .card-heading h2,
+  .output-heading h2 {
+    margin: 0;
+    color: #111c32;
+    font-size: 1.55rem;
+  }
+
+  .button {
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-1px);
+  }
+
+  .button-primary {
+    background: linear-gradient(135deg, #1e62e9, #2f6ff0);
+    color: white;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+  }
+
+  .button-secondary {
+    background: #e8edf5;
+    color: #13213a;
+  }
+
+  .button-danger-outline {
+    border: 1px solid #f2bebe;
+    background: #fff3f3;
+    color: #b42318;
+  }
+
+  .large-button {
+    min-height: 48px;
+    padding-inline: 24px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .form-group label {
+    color: #26344a;
+    font-size: 0.86rem;
+    font-weight: 800;
+  }
+
+  .form-group label span {
+    color: #dc2626;
+  }
+
+  .form-group input,
+  .form-group select,
+  .dynamic-row input,
+  .dynamic-row select {
+    width: 100%;
+    min-height: 45px;
+    border: 1px solid #d6deea;
+    border-radius: 9px;
+    outline: none;
+    background: white;
+    color: #172033;
+    padding: 10px 12px;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .dynamic-row input:focus,
+  .dynamic-row select:focus {
+    border-color: #6aa0f8;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.11);
+  }
+
+  .form-group small {
+    color: #7c889b;
+    font-size: 0.76rem;
+  }
+
+  .option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .checkbox-card {
+    display: flex;
+    gap: 11px;
+    padding: 14px;
+    border: 1px solid #e0e6ef;
+    border-radius: 11px;
+    background: #fbfcfe;
+    cursor: pointer;
+  }
+
+  .checkbox-card input {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    accent-color: #2563eb;
+  }
+
+  .checkbox-card strong,
+  .checkbox-card small {
+    display: block;
+  }
+
+  .checkbox-card strong {
+    color: #25334a;
+    font-size: 0.86rem;
+  }
+
+  .checkbox-card small {
+    margin-top: 2px;
+    color: #758195;
+    font-size: 0.74rem;
+  }
+
+  .dynamic-section {
+    margin-top: 28px;
+    padding-top: 26px;
+    border-top: 1px solid #e5eaf2;
+  }
+
+  .dynamic-heading h3 {
+    margin: 0;
+    color: #172033;
+    font-size: 1.06rem;
+  }
+
+  .dynamic-heading p {
+    margin: 3px 0 0;
+    color: #7a8699;
+    font-size: 0.8rem;
+  }
+
+  .add-button {
+    padding: 8px 12px;
+    border: 1px solid #bcd2f9;
+    border-radius: 8px;
+    background: #edf5ff;
+    color: #175fdc;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .dynamic-rows {
+    display: grid;
+    gap: 11px;
+    margin-top: 15px;
+  }
+
+  .dynamic-row {
+    display: grid;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .port-row {
+    grid-template-columns: 1fr auto 1fr 90px 40px;
+  }
+
+  .volume-row {
+    grid-template-columns: 1fr auto 1fr auto 40px;
+  }
+
+  .environment-row {
+    grid-template-columns: 1fr auto 1fr 40px;
+  }
+
+  .mapping-arrow {
+    color: #8491a5;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .small-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #526077;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .small-checkbox input {
+    width: 16px;
+    min-height: auto;
+    height: 16px;
+    accent-color: #2563eb;
+  }
+
+  .remove-row-button {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 8px;
+    background: #ffeaea;
+    color: #c52626;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .output-heading {
+    margin-bottom: 18px;
+  }
+
+  .status-box {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid;
+    border-radius: 11px;
+  }
+
+  .status-icon {
+    display: grid;
+    flex: 0 0 auto;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 900;
+  }
+
+  .status-box strong {
+    display: block;
+    font-size: 0.86rem;
+  }
+
+  .status-box p {
+    margin: 2px 0 0;
+    font-size: 0.77rem;
+  }
+
+  .status-neutral {
+    border-color: #cfe0f8;
+    background: #f1f7ff;
+    color: #31547d;
+  }
+
+  .status-neutral .status-icon {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .status-success {
+    border-color: #b9e7cf;
+    background: #effcf5;
+    color: #17623b;
+  }
+
+  .status-success .status-icon {
+    background: #c9f2dc;
+    color: #087443;
+  }
+
+  .status-error {
+    border-color: #f6c3c3;
+    background: #fff2f2;
+    color: #9f2727;
+  }
+
+  .status-error .status-icon {
+    background: #ffd9d9;
+    color: #b91c1c;
+  }
+
+  .status-warning {
+    border-color: #f2d38e;
+    background: #fff9e9;
+    color: #795313;
+  }
+
+  .status-warning .status-icon {
+    background: #fee9a8;
+    color: #92400e;
+  }
+
+  .terminal {
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0f172a;
+  }
+
+  .terminal-topbar {
+    min-height: 42px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #9ba8bc;
+    font-size: 0.73rem;
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 7px;
+  }
+
+  .terminal-buttons span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+
+  .terminal-buttons span:first-child {
+    background: #ff6b6b;
+  }
+
+  .terminal-buttons span:nth-child(2) {
+    background: #fbbf24;
+  }
+
+  .terminal-buttons span:nth-child(3) {
+    background: #34d399;
+  }
+
+  .terminal pre {
+    min-height: 290px;
+    max-height: 520px;
+    margin: 0;
+    overflow: auto;
+    padding: 22px;
+    color: #dce8f7;
+    font-family:
+      "Cascadia Code", "Fira Code", Consolas, monospace;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 9px;
+    margin-top: 13px;
+  }
+
+  .output-action-button {
+    padding: 8px 11px;
+    border: 1px solid #dce3ed;
+    border-radius: 8px;
+    background: white;
+    color: #425168;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .command-summary {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid #e5eaf2;
+  }
+
+  .command-summary h3 {
+    margin: 0 0 13px;
+    color: #18243a;
+    font-size: 0.98rem;
+  }
+
+  .summary-list {
+    display: grid;
+    gap: 9px;
+  }
+
+  .summary-list div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-bottom: 9px;
+    border-bottom: 1px dashed #e1e6ee;
+    font-size: 0.78rem;
+  }
+
+  .summary-list span {
+    color: #778398;
+  }
+
+  .summary-list strong {
+    max-width: 190px;
+    color: #2c3a50;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  .security-note {
+    margin-top: 19px;
+    padding: 14px;
+    border: 1px solid #f2d38e;
+    border-radius: 10px;
+    background: #fff9e9;
+    color: #795313;
+  }
+
+  .security-note strong {
+    font-size: 0.82rem;
+  }
+
+  .security-note p {
+    margin: 4px 0 0;
+    font-size: 0.75rem;
+  }
+
+  .information-section {
+    padding: 76px 0;
+    background: white;
+  }
+
+  .section-heading-centered {
+    max-width: 750px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+
+  .section-heading-centered h2 {
+    margin: 15px 0 8px;
+    color: #111c32;
+    font-size: clamp(1.9rem, 4vw, 2.5rem);
+    letter-spacing: -0.03em;
+  }
+
+  .section-heading-centered p {
+    margin: 0;
+    color: #667389;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .feature-card {
+    padding: 25px;
+    border: 1px solid #e1e7f0;
+    border-radius: 15px;
+    background: #fbfcfe;
+  }
+
+  .feature-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    margin-bottom: 16px;
+    place-items: center;
+    border-radius: 12px;
+    background: #e9f2ff;
+    color: #2563eb;
+    font-size: 0.74rem;
+    font-weight: 900;
+  }
+
+  .feature-card h3 {
+    margin: 0 0 7px;
+    color: #172033;
+    font-size: 1.02rem;
+  }
+
+  .feature-card p {
+    margin: 0;
+    color: #657188;
+    font-size: 0.87rem;
+  }
+
+  .site-footer {
+    background: #10182a;
+    color: #b7c1d1;
+  }
+
+  .footer-container {
+    width: min(1180px, calc(100% - 40px));
+    margin-inline: auto;
+    padding: 46px 0 38px;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .footer-about {
+    max-width: 460px;
+  }
+
+  .footer-brand {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 850;
+    text-decoration: none;
+  }
+
+  .footer-about p {
+    margin: 10px 0 0;
+    color: #8f9bb0;
+    font-size: 0.9rem;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-end;
+    gap: 12px 20px;
+  }
+
+  .footer-links a {
+    color: #b7c1d1;
+    font-size: 0.86rem;
+    text-decoration: none;
+  }
+
+  .footer-bottom {
+    padding: 18px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #8995a9;
+    font-size: 0.82rem;
+    text-align: center;
+  }
+
+  @media (max-width: 1050px) {
+    .generator-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .output-card {
+      position: static;
+    }
+
+    .feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 820px) {
+    .main-navigation {
+      position: absolute;
+      top: 72px;
+      right: 20px;
+      left: 20px;
+      display: none;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 13px;
+      background: white;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.13);
+    }
+
+    .main-navigation.open {
+      display: grid;
+    }
+
+    .menu-button {
+      display: block;
+    }
+
+    .port-row,
+    .volume-row,
+    .environment-row {
+      grid-template-columns: 1fr 40px;
+    }
+
+    .dynamic-row .mapping-arrow {
+      display: none;
+    }
+
+    .port-row .container-port,
+    .port-row .port-protocol,
+    .volume-row .volume-destination,
+    .volume-row .small-checkbox,
+    .environment-row .environment-value {
+      grid-column: 1;
+    }
+
+    .remove-row-button {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
+  @media (max-width: 650px) {
+    .page-container,
+    .header-container,
+    .footer-container {
+      width: min(100% - 24px, 1220px);
+    }
+
+    .hero-section {
+      padding: 55px 16px 48px;
+    }
+
+    .hero-features {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .generator-section {
+      padding: 30px 0 54px;
+    }
+
+    .generator-card,
+    .output-card {
+      padding: 18px;
+      border-radius: 14px;
+    }
+
+    .form-grid,
+    .option-grid,
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .full-width {
+      grid-column: auto;
+    }
+
+    .card-heading,
+    .output-heading,
+    .dynamic-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .form-actions,
+    .output-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .button,
+    .output-actions button {
+      width: 100%;
+    }
+
+    .footer-container {
+      flex-direction: column;
+    }
+
+    .footer-links {
+      justify-content: flex-start;
+    }
+  }
+</style>

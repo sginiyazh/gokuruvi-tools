@@ -9,10 +9,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.1.6",
     "astro": "^7.1.4",
-    "js-yaml": "^5.2.2"
+    "js-yaml": "^5.2.2",
+    "wrangler": "^4.115.0"
   }
 }
