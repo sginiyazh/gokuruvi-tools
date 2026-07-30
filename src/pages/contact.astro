@@ -1,39 +1,275 @@
 ---
 const pageTitle = "Contact Gokuruvi Tools";
 const description =
-  "Contact Gokuruvi Tools for questions, feedback, corrections, and business enquiries.";
+  "Contact Gokuruvi Tools for technical support, feedback, bug reports, business enquiries, and feature requests.";
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
     <title>{pageTitle}</title>
+
+    <style>
+      *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+      }
+
+      body{
+        font-family:Arial,Helvetica,sans-serif;
+        background:#f8fafc;
+        color:#334155;
+        line-height:1.7;
+      }
+
+      .hero{
+        background:linear-gradient(135deg,#2563eb,#1d4ed8);
+        color:#fff;
+        text-align:center;
+        padding:80px 20px;
+      }
+
+      .hero h1{
+        font-size:48px;
+        margin-bottom:15px;
+      }
+
+      .hero p{
+        max-width:700px;
+        margin:auto;
+        font-size:18px;
+        opacity:.95;
+      }
+
+      .container{
+        max-width:1100px;
+        margin:auto;
+        padding:60px 20px;
+      }
+
+      .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:25px;
+      }
+
+      .card{
+        background:#fff;
+        border-radius:12px;
+        padding:30px;
+        box-shadow:0 5px 20px rgba(0,0,0,.08);
+        transition:.3s;
+      }
+
+      .card:hover{
+        transform:translateY(-6px);
+      }
+
+      .icon{
+        font-size:42px;
+        margin-bottom:15px;
+      }
+
+      .card h2{
+        margin-bottom:15px;
+        color:#0f172a;
+      }
+
+      .card p{
+        color:#64748b;
+      }
+
+      .card a{
+        color:#2563eb;
+        text-decoration:none;
+        font-weight:bold;
+      }
+
+      .section{
+        margin-top:60px;
+        background:#fff;
+        padding:40px;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,.08);
+      }
+
+      .section h2{
+        margin-bottom:20px;
+        color:#0f172a;
+      }
+
+      ul{
+        padding-left:20px;
+      }
+
+      li{
+        margin-bottom:10px;
+      }
+
+      .footer-btn{
+        margin-top:40px;
+        text-align:center;
+      }
+
+      .btn{
+        display:inline-block;
+        padding:14px 28px;
+        background:#2563eb;
+        color:#fff;
+        text-decoration:none;
+        border-radius:8px;
+        font-weight:bold;
+      }
+
+      .btn:hover{
+        background:#1d4ed8;
+      }
+
+      footer{
+        text-align:center;
+        padding:30px;
+        background:#0f172a;
+        color:#cbd5e1;
+        margin-top:60px;
+      }
+
+      @media(max-width:768px){
+        .hero h1{
+          font-size:36px;
+        }
+      }
+    </style>
+
   </head>
 
   <body>
-    <main>
-      <h1>Contact Us</h1>
+
+    <section class="hero">
+      <h1>Contact Gokuruvi Tools</h1>
 
       <p>
-        For questions, feedback, corrections, or business enquiries,
-        contact us using the email address below.
+        We'd love to hear from you. Whether you have a question,
+        found an issue, want to suggest a new tool, or have a business enquiry,
+        feel free to contact us.
       </p>
+    </section>
 
-      <p>
-        Email:
-        <a href="mailto:contact@gokuruvi.com">
-          contact@gokuruvi.com
+    <div class="container">
+
+      <div class="grid">
+
+        <div class="card">
+          <div class="icon">📧</div>
+
+          <h2>Email</h2>
+
+          <p>
+            General enquiries, feedback and support.
+          </p>
+
+          <br>
+
+          <a href="mailto:gokuruvisathish@gmail.com">
+            gokuruvisathish@gmail.com
+          </a>
+        </div>
+
+        <div class="card">
+          <div class="icon">💼</div>
+
+          <h2>Business</h2>
+
+          <p>
+            Partnership opportunities, sponsorships,
+            advertisements and collaboration requests.
+          </p>
+
+          <br>
+
+          <a href="mailto:contact@gokuruvi.com">
+            Business Enquiries
+          </a>
+        </div>
+
+        <div class="card">
+          <div class="icon">🐞</div>
+
+          <h2>Bug Reports</h2>
+
+          <p>
+            Found a bug or incorrect output from one of our tools?
+            Let us know so we can improve it.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <h2>What can you contact us about?</h2>
+
+        <ul>
+          <li>Linux Tools support</li>
+          <li>Cloud & Kubernetes tool issues</li>
+          <li>Feature requests</li>
+          <li>Website improvements</li>
+          <li>Incorrect tool output</li>
+          <li>Technical questions</li>
+          <li>Advertising & partnerships</li>
+          <li>Security vulnerability reports</li>
+        </ul>
+
+      </div>
+
+      <div class="section">
+
+        <h2>Response Time</h2>
+
+        <p>
+          We aim to respond to all enquiries within
+          <strong>24–48 business hours.</strong>
+          Complex technical questions may require additional time.
+        </p>
+
+      </div>
+
+      <div class="section">
+
+        <h2>About Gokuruvi Tools</h2>
+
+        <p>
+          Gokuruvi Tools provides free online utilities for
+          Linux Administrators, DevOps Engineers,
+          Cloud Professionals and Kubernetes Administrators.
+
+          Our goal is to simplify day-to-day infrastructure,
+          networking, cloud and automation tasks through fast,
+          reliable and privacy-friendly web tools.
+        </p>
+
+      </div>
+
+      <div class="footer-btn">
+        <a href="/" class="btn">
+          ← Back to Home
         </a>
-      </p>
+      </div>
 
-      <p>
-        We will try to respond as soon as possible.
-      </p>
+    </div>
 
-      <p><a href="/">Return to homepage</a></p>
-    </main>
+    <footer>
+
+      © {new Date().getFullYear()} Gokuruvi Tools<br>
+
+      Helping Linux, DevOps & Cloud Professionals Every Day
+
+    </footer>
+
   </body>
 </html>
