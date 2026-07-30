@@ -1,0 +1,2875 @@
+---
+const pageTitle =
+  "Kubernetes Ingress Generator | Gokuruvi Tools";
+
+const description =
+  "Generate Kubernetes Ingress YAML with host rules, paths, services, TLS, ingress classes, annotations and SSL redirect options.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/ingress-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #f8fafc
+        );
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(36px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 860px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 50px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1200px;
+        margin: 0 auto;
+        grid-template-columns:
+          minmax(0, 0.95fr)
+          minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow:
+          0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .input-row.three {
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+        font-family:
+          Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow:
+          0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      input:disabled,
+      select:disabled,
+      textarea:disabled {
+        cursor: not-allowed;
+        background: #f1f5f9;
+        color: #94a3b8;
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .conditional-section {
+        display: none;
+        margin-top: 14px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .path-card {
+        margin-bottom: 14px;
+        padding: 17px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .path-header {
+        display: flex;
+        margin-bottom: 14px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .path-title {
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .remove-path-button {
+        padding: 6px 10px;
+        border: 1px solid #fecaca;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #b91c1c;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .remove-path-button:hover {
+        background: #fef2f2;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 620px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .summary-box {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid var(--info-border);
+        border-radius: 11px;
+        background: var(--info-bg);
+      }
+
+      .summary-box h3 {
+        margin: 0 0 10px;
+        color: var(--info-text);
+        font-size: 17px;
+      }
+
+      .summary-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--info-text);
+      }
+
+      .summary-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1200px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .info-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .input-row.three,
+        .checkbox-grid,
+        .result-grid,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">
+          Gokuruvi Tools
+        </a>
+
+        <nav
+          class="navigation"
+          aria-label="Main navigation"
+        >
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+
+          <a
+            class="active"
+            href="/kubernetes"
+          >
+            Kubernetes
+          </a>
+
+          <a href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Kubernetes Ingress Generator</h1>
+
+        <p>
+          Generate Kubernetes Ingress YAML with
+          host-based routing, multiple paths, TLS,
+          ingress classes, SSL redirects, annotations,
+          rewrite rules and backend services.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Ingress Configuration</h2>
+
+            <p class="card-description">
+              Configure your hostname, backend services,
+              paths, TLS certificate and ingress controller
+              settings.
+            </p>
+
+            <div class="preset-buttons">
+              <button
+                type="button"
+                class="preset"
+                data-preset="nginx"
+              >
+                NGINX Ingress
+              </button>
+
+              <button
+                type="button"
+                class="preset"
+                data-preset="traefik"
+              >
+                Traefik
+              </button>
+
+              <button
+                type="button"
+                class="preset"
+                data-preset="https"
+              >
+                HTTPS Ingress
+              </button>
+
+              <button
+                type="button"
+                class="preset"
+                data-preset="api"
+              >
+                API Routing
+              </button>
+            </div>
+
+            <h3 class="section-title">
+              Basic Settings
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="ingressNameInput">
+                  Ingress name
+                </label>
+
+                <input
+                  id="ingressNameInput"
+                  type="text"
+                  value="nginx-ingress"
+                  maxlength="63"
+                  placeholder="Example: nginx-ingress"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="namespaceInput">
+                  Namespace
+                </label>
+
+                <input
+                  id="namespaceInput"
+                  type="text"
+                  value="default"
+                  maxlength="63"
+                  placeholder="Example: default"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="ingressClassInput">
+                  Ingress class name
+                </label>
+
+                <input
+                  id="ingressClassInput"
+                  type="text"
+                  value="nginx"
+                  placeholder="Example: nginx"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="hostInput">
+                  Hostname
+                </label>
+
+                <input
+                  id="hostInput"
+                  type="text"
+                  value="app.example.com"
+                  placeholder="Example: app.example.com"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Routing Paths
+            </h3>
+
+            <div id="pathsContainer"></div>
+
+            <button
+              id="addPathButton"
+              type="button"
+              class="button secondary-button"
+            >
+              Add Another Path
+            </button>
+
+            <h3 class="section-title">
+              TLS and HTTPS
+            </h3>
+
+            <div class="checkbox-grid">
+              <div class="checkbox-item">
+                <input
+                  id="tlsEnabledInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="tlsEnabledInput">
+                  Enable TLS
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="sslRedirectInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="sslRedirectInput">
+                  Redirect HTTP to HTTPS
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="forceSslRedirectInput"
+                  type="checkbox"
+                />
+
+                <label for="forceSslRedirectInput">
+                  Force SSL redirect
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="certManagerInput"
+                  type="checkbox"
+                />
+
+                <label for="certManagerInput">
+                  Add cert-manager issuer
+                </label>
+              </div>
+            </div>
+
+            <div
+              id="tlsSection"
+              class="conditional-section active"
+            >
+              <div class="form-group">
+                <label for="tlsSecretInput">
+                  TLS secret name
+                </label>
+
+                <input
+                  id="tlsSecretInput"
+                  type="text"
+                  value="app-tls-secret"
+                  placeholder="Example: app-tls-secret"
+                />
+              </div>
+            </div>
+
+            <div
+              id="certManagerSection"
+              class="conditional-section"
+            >
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="issuerTypeSelect">
+                    Issuer type
+                  </label>
+
+                  <select id="issuerTypeSelect">
+                    <option
+                      value="cluster"
+                      selected
+                    >
+                      ClusterIssuer
+                    </option>
+
+                    <option value="namespace">
+                      Issuer
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="issuerNameInput">
+                    Issuer name
+                  </label>
+
+                  <input
+                    id="issuerNameInput"
+                    type="text"
+                    value="letsencrypt-prod"
+                    placeholder="Example: letsencrypt-prod"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              NGINX Controller Options
+            </h3>
+
+            <div class="checkbox-grid">
+              <div class="checkbox-item">
+                <input
+                  id="rewriteEnabledInput"
+                  type="checkbox"
+                />
+
+                <label for="rewriteEnabledInput">
+                  Enable rewrite target
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="regexEnabledInput"
+                  type="checkbox"
+                />
+
+                <label for="regexEnabledInput">
+                  Enable regular expression paths
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="websocketEnabledInput"
+                  type="checkbox"
+                />
+
+                <label for="websocketEnabledInput">
+                  Enable WebSocket service
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="corsEnabledInput"
+                  type="checkbox"
+                />
+
+                <label for="corsEnabledInput">
+                  Enable CORS
+                </label>
+              </div>
+            </div>
+
+            <div
+              id="rewriteSection"
+              class="conditional-section"
+            >
+              <div class="form-group">
+                <label for="rewriteTargetInput">
+                  Rewrite target
+                </label>
+
+                <input
+                  id="rewriteTargetInput"
+                  type="text"
+                  value="/"
+                  placeholder="Example: / or /$2"
+                />
+              </div>
+            </div>
+
+            <div
+              id="websocketSection"
+              class="conditional-section"
+            >
+              <div class="form-group">
+                <label for="websocketServiceInput">
+                  WebSocket service name
+                </label>
+
+                <input
+                  id="websocketServiceInput"
+                  type="text"
+                  placeholder="Example: websocket-service"
+                />
+              </div>
+            </div>
+
+            <div
+              id="corsSection"
+              class="conditional-section"
+            >
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="corsOriginsInput">
+                    Allowed origins
+                  </label>
+
+                  <input
+                    id="corsOriginsInput"
+                    type="text"
+                    value="*"
+                    placeholder="Example: https://example.com"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="corsMethodsInput">
+                    Allowed methods
+                  </label>
+
+                  <input
+                    id="corsMethodsInput"
+                    type="text"
+                    value="GET, POST, PUT, DELETE, OPTIONS"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="corsHeadersInput">
+                  Allowed headers
+                </label>
+
+                <input
+                  id="corsHeadersInput"
+                  type="text"
+                  value="Authorization, Content-Type"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Proxy Settings
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="proxyBodySizeInput">
+                  Proxy body size
+                </label>
+
+                <input
+                  id="proxyBodySizeInput"
+                  type="text"
+                  value="10m"
+                  placeholder="Example: 10m"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="proxyReadTimeoutInput">
+                  Proxy read timeout
+                </label>
+
+                <input
+                  id="proxyReadTimeoutInput"
+                  type="number"
+                  value="60"
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="proxySendTimeoutInput">
+                  Proxy send timeout
+                </label>
+
+                <input
+                  id="proxySendTimeoutInput"
+                  type="number"
+                  value="60"
+                  min="1"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="backendProtocolSelect">
+                  Backend protocol
+                </label>
+
+                <select id="backendProtocolSelect">
+                  <option
+                    value="HTTP"
+                    selected
+                  >
+                    HTTP
+                  </option>
+
+                  <option value="HTTPS">
+                    HTTPS
+                  </option>
+
+                  <option value="GRPC">
+                    GRPC
+                  </option>
+
+                  <option value="GRPCS">
+                    GRPCS
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Labels and Custom Annotations
+            </h3>
+
+            <div class="form-group">
+              <label for="labelsInput">
+                Additional labels
+              </label>
+
+              <textarea
+                id="labelsInput"
+                placeholder="team=platform&#10;environment=production"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value label per line.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="annotationsInput">
+                Custom annotations
+              </label>
+
+              <textarea
+                id="annotationsInput"
+                placeholder="nginx.ingress.kubernetes.io/custom-http-errors=404,500"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value annotation per line.
+              </p>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Ingress
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated ingress.yaml</h2>
+
+            <p class="card-description">
+              Review the manifest before applying it to your
+              Kubernetes cluster.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">
+                Kubernetes Ingress YAML
+              </span>
+
+              <pre
+                id="yamlOutput"
+                class="yaml-output"
+              ></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download YAML
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">
+                  Ingress name
+                </span>
+
+                <span
+                  id="resultName"
+                  class="result-value"
+                >
+                  nginx-ingress
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Namespace
+                </span>
+
+                <span
+                  id="resultNamespace"
+                  class="result-value"
+                >
+                  default
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Ingress class
+                </span>
+
+                <span
+                  id="resultClass"
+                  class="result-value"
+                >
+                  nginx
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  TLS
+                </span>
+
+                <span
+                  id="resultTls"
+                  class="result-value"
+                >
+                  Enabled
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">
+                  Hostname
+                </span>
+
+                <span
+                  id="resultHost"
+                  class="result-value"
+                >
+                  app.example.com
+                </span>
+              </div>
+            </div>
+
+            <div class="summary-box">
+              <h3>Manifest summary</h3>
+
+              <ul
+                id="summaryList"
+                class="summary-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              An Ingress resource requires a working Ingress
+              controller such as NGINX Ingress, Traefik,
+              HAProxy, Istio Gateway or a cloud-specific
+              controller. Creating the YAML alone does not
+              expose the application.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Apply and Verify the Ingress</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Command</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Validate the manifest</td>
+
+                <td>
+                  <code>
+                    kubectl apply --dry-run=client -f ingress.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Apply the Ingress</td>
+
+                <td>
+                  <code>
+                    kubectl apply -f ingress.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>List Ingress resources</td>
+
+                <td>
+                  <code>
+                    kubectl get ingress -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Describe the Ingress</td>
+
+                <td>
+                  <code>
+                    kubectl describe ingress nginx-ingress -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Check Ingress classes</td>
+
+                <td>
+                  <code>
+                    kubectl get ingressclass
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Check backend Service</td>
+
+                <td>
+                  <code>
+                    kubectl get svc nginx-service -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Check Service endpoints</td>
+
+                <td>
+                  <code>
+                    kubectl get endpoints nginx-service -n default
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>Kubernetes Ingress Guidelines</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <strong>Install a Controller</strong>
+
+              <p>
+                Kubernetes requires an Ingress controller to
+                process and implement Ingress resources.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Verify DNS</strong>
+
+              <p>
+                Point the hostname to the external IP or load
+                balancer address of your Ingress controller.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Match Service Ports</strong>
+
+              <p>
+                The backend service name and service port must
+                already exist in the same namespace.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use TLS</strong>
+
+              <p>
+                Store the certificate and private key in a
+                Kubernetes TLS Secret or use cert-manager.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Review Annotations</strong>
+
+              <p>
+                Annotation support differs between NGINX,
+                Traefik and cloud-provider Ingress
+                controllers.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Test Routing</strong>
+
+              <p>
+                Test each hostname and path after deployment
+                and confirm that all backend endpoints are
+                healthy.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools.
+      All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const fields = {
+        ingressName:
+          document.getElementById(
+            "ingressNameInput",
+          ),
+
+        namespace:
+          document.getElementById(
+            "namespaceInput",
+          ),
+
+        ingressClass:
+          document.getElementById(
+            "ingressClassInput",
+          ),
+
+        host:
+          document.getElementById(
+            "hostInput",
+          ),
+
+        tlsEnabled:
+          document.getElementById(
+            "tlsEnabledInput",
+          ),
+
+        tlsSecret:
+          document.getElementById(
+            "tlsSecretInput",
+          ),
+
+        sslRedirect:
+          document.getElementById(
+            "sslRedirectInput",
+          ),
+
+        forceSslRedirect:
+          document.getElementById(
+            "forceSslRedirectInput",
+          ),
+
+        certManager:
+          document.getElementById(
+            "certManagerInput",
+          ),
+
+        issuerType:
+          document.getElementById(
+            "issuerTypeSelect",
+          ),
+
+        issuerName:
+          document.getElementById(
+            "issuerNameInput",
+          ),
+
+        rewriteEnabled:
+          document.getElementById(
+            "rewriteEnabledInput",
+          ),
+
+        rewriteTarget:
+          document.getElementById(
+            "rewriteTargetInput",
+          ),
+
+        regexEnabled:
+          document.getElementById(
+            "regexEnabledInput",
+          ),
+
+        websocketEnabled:
+          document.getElementById(
+            "websocketEnabledInput",
+          ),
+
+        websocketService:
+          document.getElementById(
+            "websocketServiceInput",
+          ),
+
+        corsEnabled:
+          document.getElementById(
+            "corsEnabledInput",
+          ),
+
+        corsOrigins:
+          document.getElementById(
+            "corsOriginsInput",
+          ),
+
+        corsMethods:
+          document.getElementById(
+            "corsMethodsInput",
+          ),
+
+        corsHeaders:
+          document.getElementById(
+            "corsHeadersInput",
+          ),
+
+        proxyBodySize:
+          document.getElementById(
+            "proxyBodySizeInput",
+          ),
+
+        proxyReadTimeout:
+          document.getElementById(
+            "proxyReadTimeoutInput",
+          ),
+
+        proxySendTimeout:
+          document.getElementById(
+            "proxySendTimeoutInput",
+          ),
+
+        backendProtocol:
+          document.getElementById(
+            "backendProtocolSelect",
+          ),
+
+        labels:
+          document.getElementById(
+            "labelsInput",
+          ),
+
+        annotations:
+          document.getElementById(
+            "annotationsInput",
+          ),
+      };
+
+      const pathsContainer =
+        document.getElementById(
+          "pathsContainer",
+        );
+
+      const yamlOutput =
+        document.getElementById(
+          "yamlOutput",
+        );
+
+      const message =
+        document.getElementById(
+          "message",
+        );
+
+      const summaryList =
+        document.getElementById(
+          "summaryList",
+        );
+
+      const copyButton =
+        document.getElementById(
+          "copyButton",
+        );
+
+      let currentYaml = "";
+
+      let paths = [
+        {
+          path: "/",
+          pathType: "Prefix",
+          serviceName: "nginx-service",
+          servicePort: "80",
+        },
+      ];
+
+      function escapeYamlString(value) {
+        const text = String(value);
+
+        if (
+          text === "" ||
+          /[:#{}[\],&*?|>'"%@`]/.test(text) ||
+          /^\s|\s$/.test(text) ||
+          [
+            "true",
+            "false",
+            "null",
+            "yes",
+            "no",
+            "on",
+            "off",
+          ].includes(text.toLowerCase())
+        ) {
+          return `"${text
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"')}"`;
+        }
+
+        return text;
+      }
+
+      function parseKeyValueLines(value) {
+        const result = {};
+
+        value
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .forEach((line) => {
+            const index = line.indexOf("=");
+
+            if (index <= 0) {
+              return;
+            }
+
+            const key = line
+              .slice(0, index)
+              .trim();
+
+            const itemValue = line
+              .slice(index + 1)
+              .trim();
+
+            if (key) {
+              result[key] = itemValue;
+            }
+          });
+
+        return result;
+      }
+
+      function isValidKubernetesName(value) {
+        return (
+          value.length >= 1 &&
+          value.length <= 63 &&
+          /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(
+            value,
+          )
+        );
+      }
+
+      function isValidHostname(value) {
+        if (
+          !value ||
+          value.length > 253 ||
+          value.includes("/") ||
+          value.includes(":") ||
+          /\s/.test(value)
+        ) {
+          return false;
+        }
+
+        return value
+          .split(".")
+          .every((label) => {
+            return (
+              label.length >= 1 &&
+              label.length <= 63 &&
+              /^[a-z0-9-]+$/i.test(label) &&
+              !label.startsWith("-") &&
+              !label.endsWith("-")
+            );
+          });
+      }
+
+      function isValidServicePort(value) {
+        if (/^\d+$/.test(value)) {
+          const port = Number(value);
+
+          return (
+            Number.isInteger(port) &&
+            port >= 1 &&
+            port <= 65535
+          );
+        }
+
+        return isValidKubernetesName(value);
+      }
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className =
+          `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function addObjectLines(
+        lines,
+        object,
+        indent,
+      ) {
+        const spacing = " ".repeat(indent);
+
+        Object.entries(object).forEach(
+          ([key, value]) => {
+            lines.push(
+              `${spacing}${key}: ${escapeYamlString(
+                value,
+              )}`,
+            );
+          },
+        );
+      }
+
+      function createPathCard(
+        pathItem,
+        index,
+      ) {
+        const wrapper =
+          document.createElement("div");
+
+        wrapper.className = "path-card";
+
+        wrapper.innerHTML = `
+          <div class="path-header">
+            <span class="path-title">
+              Path ${index + 1}
+            </span>
+
+            <button
+              type="button"
+              class="remove-path-button"
+              data-index="${index}"
+              ${paths.length === 1 ? "disabled" : ""}
+            >
+              Remove
+            </button>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label for="path-${index}">
+                URL path
+              </label>
+
+              <input
+                id="path-${index}"
+                class="path-value"
+                data-index="${index}"
+                type="text"
+                value="${pathItem.path}"
+                placeholder="Example: /"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="path-type-${index}">
+                Path type
+              </label>
+
+              <select
+                id="path-type-${index}"
+                class="path-type-value"
+                data-index="${index}"
+              >
+                <option
+                  value="Prefix"
+                  ${
+                    pathItem.pathType ===
+                    "Prefix"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Prefix
+                </option>
+
+                <option
+                  value="Exact"
+                  ${
+                    pathItem.pathType ===
+                    "Exact"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Exact
+                </option>
+
+                <option
+                  value="ImplementationSpecific"
+                  ${
+                    pathItem.pathType ===
+                    "ImplementationSpecific"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  ImplementationSpecific
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label for="service-name-${index}">
+                Backend service
+              </label>
+
+              <input
+                id="service-name-${index}"
+                class="service-name-value"
+                data-index="${index}"
+                type="text"
+                value="${pathItem.serviceName}"
+                placeholder="Example: nginx-service"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="service-port-${index}">
+                Service port
+              </label>
+
+              <input
+                id="service-port-${index}"
+                class="service-port-value"
+                data-index="${index}"
+                type="text"
+                value="${pathItem.servicePort}"
+                placeholder="Example: 80 or http"
+              />
+            </div>
+          </div>
+        `;
+
+        return wrapper;
+      }
+
+      function renderPaths() {
+        pathsContainer.innerHTML = "";
+
+        paths.forEach((pathItem, index) => {
+          pathsContainer.appendChild(
+            createPathCard(
+              pathItem,
+              index,
+            ),
+          );
+        });
+
+        document
+          .querySelectorAll(".path-value")
+          .forEach((input) => {
+            input.addEventListener(
+              "input",
+              (event) => {
+                const index = Number(
+                  event.target.dataset.index,
+                );
+
+                paths[index].path =
+                  event.target.value;
+
+                generateYaml();
+              },
+            );
+          });
+
+        document
+          .querySelectorAll(
+            ".path-type-value",
+          )
+          .forEach((select) => {
+            select.addEventListener(
+              "change",
+              (event) => {
+                const index = Number(
+                  event.target.dataset.index,
+                );
+
+                paths[index].pathType =
+                  event.target.value;
+
+                generateYaml();
+              },
+            );
+          });
+
+        document
+          .querySelectorAll(
+            ".service-name-value",
+          )
+          .forEach((input) => {
+            input.addEventListener(
+              "input",
+              (event) => {
+                const index = Number(
+                  event.target.dataset.index,
+                );
+
+                paths[index].serviceName =
+                  event.target.value;
+
+                generateYaml();
+              },
+            );
+          });
+
+        document
+          .querySelectorAll(
+            ".service-port-value",
+          )
+          .forEach((input) => {
+            input.addEventListener(
+              "input",
+              (event) => {
+                const index = Number(
+                  event.target.dataset.index,
+                );
+
+                paths[index].servicePort =
+                  event.target.value;
+
+                generateYaml();
+              },
+            );
+          });
+
+        document
+          .querySelectorAll(
+            ".remove-path-button",
+          )
+          .forEach((button) => {
+            button.addEventListener(
+              "click",
+              () => {
+                const index = Number(
+                  button.dataset.index,
+                );
+
+                if (paths.length > 1) {
+                  paths.splice(index, 1);
+                  renderPaths();
+                  generateYaml();
+                }
+              },
+            );
+          });
+      }
+
+      function validateForm() {
+        const ingressName =
+          fields.ingressName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        const ingressClass =
+          fields.ingressClass.value.trim();
+
+        const host =
+          fields.host.value.trim();
+
+        if (
+          !isValidKubernetesName(
+            ingressName,
+          )
+        ) {
+          return "Ingress name must use lowercase letters, numbers and hyphens only.";
+        }
+
+        if (
+          !isValidKubernetesName(
+            namespace,
+          )
+        ) {
+          return "Namespace must use lowercase letters, numbers and hyphens only.";
+        }
+
+        if (
+          ingressClass &&
+          !isValidKubernetesName(
+            ingressClass,
+          )
+        ) {
+          return "Ingress class name must be a valid Kubernetes name.";
+        }
+
+        if (!isValidHostname(host)) {
+          return "Enter a valid hostname such as app.example.com.";
+        }
+
+        if (
+          fields.tlsEnabled.checked &&
+          !isValidKubernetesName(
+            fields.tlsSecret.value.trim(),
+          )
+        ) {
+          return "Enter a valid TLS secret name.";
+        }
+
+        if (
+          fields.certManager.checked &&
+          !fields.issuerName.value.trim()
+        ) {
+          return "Enter the cert-manager issuer name.";
+        }
+
+        for (
+          let index = 0;
+          index < paths.length;
+          index += 1
+        ) {
+          const pathItem = paths[index];
+
+          if (
+            !pathItem.path.trim().startsWith(
+              "/",
+            )
+          ) {
+            return `Path ${index + 1} must start with /.`;
+          }
+
+          if (
+            !isValidKubernetesName(
+              pathItem.serviceName.trim(),
+            )
+          ) {
+            return `Path ${index + 1} has an invalid backend service name.`;
+          }
+
+          if (
+            !isValidServicePort(
+              pathItem.servicePort.trim(),
+            )
+          ) {
+            return `Path ${index + 1} has an invalid service port.`;
+          }
+        }
+
+        return "";
+      }
+
+      function generateYaml() {
+        clearMessage();
+
+        const validationError =
+          validateForm();
+
+        if (validationError) {
+          currentYaml = "";
+          yamlOutput.textContent =
+            validationError;
+
+          summaryList.innerHTML = "";
+
+          showMessage(
+            validationError,
+            "error",
+          );
+
+          return;
+        }
+
+        const ingressName =
+          fields.ingressName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        const ingressClass =
+          fields.ingressClass.value.trim();
+
+        const host =
+          fields.host.value.trim();
+
+        const labels = {
+          app: ingressName,
+          ...parseKeyValueLines(
+            fields.labels.value,
+          ),
+        };
+
+        const customAnnotations =
+          parseKeyValueLines(
+            fields.annotations.value,
+          );
+
+        const annotations = {
+          ...customAnnotations,
+        };
+
+        if (fields.sslRedirect.checked) {
+          annotations[
+            "nginx.ingress.kubernetes.io/ssl-redirect"
+          ] = "true";
+        }
+
+        if (
+          fields.forceSslRedirect.checked
+        ) {
+          annotations[
+            "nginx.ingress.kubernetes.io/force-ssl-redirect"
+          ] = "true";
+        }
+
+        if (
+          fields.rewriteEnabled.checked
+        ) {
+          annotations[
+            "nginx.ingress.kubernetes.io/rewrite-target"
+          ] =
+            fields.rewriteTarget.value.trim() ||
+            "/";
+        }
+
+        if (fields.regexEnabled.checked) {
+          annotations[
+            "nginx.ingress.kubernetes.io/use-regex"
+          ] = "true";
+        }
+
+        if (
+          fields.websocketEnabled.checked &&
+          fields.websocketService.value.trim()
+        ) {
+          annotations[
+            "nginx.org/websocket-services"
+          ] =
+            fields.websocketService.value.trim();
+        }
+
+        if (fields.corsEnabled.checked) {
+          annotations[
+            "nginx.ingress.kubernetes.io/enable-cors"
+          ] = "true";
+
+          annotations[
+            "nginx.ingress.kubernetes.io/cors-allow-origin"
+          ] =
+            fields.corsOrigins.value.trim() ||
+            "*";
+
+          annotations[
+            "nginx.ingress.kubernetes.io/cors-allow-methods"
+          ] =
+            fields.corsMethods.value.trim();
+
+          annotations[
+            "nginx.ingress.kubernetes.io/cors-allow-headers"
+          ] =
+            fields.corsHeaders.value.trim();
+        }
+
+        if (
+          fields.proxyBodySize.value.trim()
+        ) {
+          annotations[
+            "nginx.ingress.kubernetes.io/proxy-body-size"
+          ] =
+            fields.proxyBodySize.value.trim();
+        }
+
+        annotations[
+          "nginx.ingress.kubernetes.io/proxy-read-timeout"
+        ] = String(
+          Number(
+            fields.proxyReadTimeout.value,
+          ),
+        );
+
+        annotations[
+          "nginx.ingress.kubernetes.io/proxy-send-timeout"
+        ] = String(
+          Number(
+            fields.proxySendTimeout.value,
+          ),
+        );
+
+        annotations[
+          "nginx.ingress.kubernetes.io/backend-protocol"
+        ] = fields.backendProtocol.value;
+
+        if (fields.certManager.checked) {
+          const annotationKey =
+            fields.issuerType.value ===
+            "cluster"
+              ? "cert-manager.io/cluster-issuer"
+              : "cert-manager.io/issuer";
+
+          annotations[annotationKey] =
+            fields.issuerName.value.trim();
+        }
+
+        const lines = [];
+
+        lines.push(
+          "apiVersion: networking.k8s.io/v1",
+        );
+
+        lines.push("kind: Ingress");
+        lines.push("metadata:");
+        lines.push(`  name: ${ingressName}`);
+        lines.push(`  namespace: ${namespace}`);
+        lines.push("  labels:");
+
+        addObjectLines(lines, labels, 4);
+
+        if (
+          Object.keys(annotations).length >
+          0
+        ) {
+          lines.push("  annotations:");
+
+          addObjectLines(
+            lines,
+            annotations,
+            4,
+          );
+        }
+
+        lines.push("spec:");
+
+        if (ingressClass) {
+          lines.push(
+            `  ingressClassName: ${ingressClass}`,
+          );
+        }
+
+        if (fields.tlsEnabled.checked) {
+          lines.push("  tls:");
+          lines.push("    - hosts:");
+          lines.push(
+            `        - ${host}`,
+          );
+
+          lines.push(
+            `      secretName: ${fields.tlsSecret.value.trim()}`,
+          );
+        }
+
+        lines.push("  rules:");
+        lines.push(`    - host: ${host}`);
+        lines.push("      http:");
+        lines.push("        paths:");
+
+        paths.forEach((pathItem) => {
+          lines.push(
+            `          - path: ${escapeYamlString(
+              pathItem.path.trim(),
+            )}`,
+          );
+
+          lines.push(
+            `            pathType: ${pathItem.pathType}`,
+          );
+
+          lines.push(
+            "            backend:",
+          );
+
+          lines.push(
+            "              service:",
+          );
+
+          lines.push(
+            `                name: ${pathItem.serviceName.trim()}`,
+          );
+
+          lines.push(
+            "                port:",
+          );
+
+          const servicePort =
+            pathItem.servicePort.trim();
+
+          if (/^\d+$/.test(servicePort)) {
+            lines.push(
+              `                  number: ${Number(
+                servicePort,
+              )}`,
+            );
+          } else {
+            lines.push(
+              `                  name: ${servicePort}`,
+            );
+          }
+        });
+
+        currentYaml = lines.join("\n");
+
+        yamlOutput.textContent =
+          currentYaml;
+
+        document.getElementById(
+          "resultName",
+        ).textContent = ingressName;
+
+        document.getElementById(
+          "resultNamespace",
+        ).textContent = namespace;
+
+        document.getElementById(
+          "resultClass",
+        ).textContent =
+          ingressClass || "Default";
+
+        document.getElementById(
+          "resultTls",
+        ).textContent =
+          fields.tlsEnabled.checked
+            ? "Enabled"
+            : "Disabled";
+
+        document.getElementById(
+          "resultHost",
+        ).textContent = host;
+
+        summaryList.innerHTML = "";
+
+        const summary = [
+          `Creates Ingress ${ingressName} in namespace ${namespace}.`,
+          `Routes traffic for hostname ${host}.`,
+          `Uses ${ingressClass || "the default"} Ingress class.`,
+          `Includes ${paths.length} routing path${paths.length === 1 ? "" : "s"}.`,
+        ];
+
+        if (fields.tlsEnabled.checked) {
+          summary.push(
+            `TLS uses secret ${fields.tlsSecret.value.trim()}.`,
+          );
+        }
+
+        if (fields.sslRedirect.checked) {
+          summary.push(
+            "HTTP requests are redirected to HTTPS.",
+          );
+        }
+
+        if (fields.certManager.checked) {
+          summary.push(
+            `Uses cert-manager issuer ${fields.issuerName.value.trim()}.`,
+          );
+        }
+
+        summary.forEach((text) => {
+          const item =
+            document.createElement("li");
+
+          item.textContent = text;
+          summaryList.appendChild(item);
+        });
+      }
+
+      function updateConditionalSections() {
+        document
+          .getElementById("tlsSection")
+          .classList.toggle(
+            "active",
+            fields.tlsEnabled.checked,
+          );
+
+        document
+          .getElementById(
+            "certManagerSection",
+          )
+          .classList.toggle(
+            "active",
+            fields.certManager.checked,
+          );
+
+        document
+          .getElementById(
+            "rewriteSection",
+          )
+          .classList.toggle(
+            "active",
+            fields.rewriteEnabled.checked,
+          );
+
+        document
+          .getElementById(
+            "websocketSection",
+          )
+          .classList.toggle(
+            "active",
+            fields.websocketEnabled.checked,
+          );
+
+        document
+          .getElementById("corsSection")
+          .classList.toggle(
+            "active",
+            fields.corsEnabled.checked,
+          );
+
+        fields.tlsSecret.disabled =
+          !fields.tlsEnabled.checked;
+
+        fields.rewriteTarget.disabled =
+          !fields.rewriteEnabled.checked;
+
+        fields.websocketService.disabled =
+          !fields.websocketEnabled.checked;
+
+        generateYaml();
+      }
+
+      function addPath() {
+        paths.push({
+          path: "/api",
+          pathType: "Prefix",
+          serviceName: "api-service",
+          servicePort: "8080",
+        });
+
+        renderPaths();
+        generateYaml();
+      }
+
+      function applyPreset(preset) {
+        if (preset === "nginx") {
+          fields.ingressName.value =
+            "nginx-ingress";
+
+          fields.ingressClass.value =
+            "nginx";
+
+          fields.host.value =
+            "app.example.com";
+
+          fields.tlsEnabled.checked =
+            false;
+
+          fields.sslRedirect.checked =
+            false;
+
+          fields.certManager.checked =
+            false;
+
+          fields.rewriteEnabled.checked =
+            false;
+
+          fields.backendProtocol.value =
+            "HTTP";
+
+          paths = [
+            {
+              path: "/",
+              pathType: "Prefix",
+              serviceName:
+                "nginx-service",
+              servicePort: "80",
+            },
+          ];
+        }
+
+        if (preset === "traefik") {
+          fields.ingressName.value =
+            "traefik-ingress";
+
+          fields.ingressClass.value =
+            "traefik";
+
+          fields.host.value =
+            "app.example.com";
+
+          fields.tlsEnabled.checked =
+            false;
+
+          fields.sslRedirect.checked =
+            false;
+
+          fields.certManager.checked =
+            false;
+
+          fields.rewriteEnabled.checked =
+            false;
+
+          fields.backendProtocol.value =
+            "HTTP";
+
+          fields.annotations.value = "";
+
+          paths = [
+            {
+              path: "/",
+              pathType: "Prefix",
+              serviceName:
+                "application-service",
+              servicePort: "80",
+            },
+          ];
+        }
+
+        if (preset === "https") {
+          fields.ingressName.value =
+            "secure-app-ingress";
+
+          fields.ingressClass.value =
+            "nginx";
+
+          fields.host.value =
+            "secure.example.com";
+
+          fields.tlsEnabled.checked =
+            true;
+
+          fields.tlsSecret.value =
+            "secure-app-tls";
+
+          fields.sslRedirect.checked =
+            true;
+
+          fields.forceSslRedirect.checked =
+            true;
+
+          fields.certManager.checked =
+            true;
+
+          fields.issuerName.value =
+            "letsencrypt-prod";
+
+          fields.backendProtocol.value =
+            "HTTP";
+
+          paths = [
+            {
+              path: "/",
+              pathType: "Prefix",
+              serviceName:
+                "secure-app-service",
+              servicePort: "80",
+            },
+          ];
+        }
+
+        if (preset === "api") {
+          fields.ingressName.value =
+            "api-ingress";
+
+          fields.ingressClass.value =
+            "nginx";
+
+          fields.host.value =
+            "api.example.com";
+
+          fields.tlsEnabled.checked =
+            true;
+
+          fields.tlsSecret.value =
+            "api-tls-secret";
+
+          fields.sslRedirect.checked =
+            true;
+
+          fields.rewriteEnabled.checked =
+            false;
+
+          fields.backendProtocol.value =
+            "HTTP";
+
+          paths = [
+            {
+              path: "/api",
+              pathType: "Prefix",
+              serviceName:
+                "api-service",
+              servicePort: "8080",
+            },
+            {
+              path: "/health",
+              pathType: "Exact",
+              serviceName:
+                "api-service",
+              servicePort: "8080",
+            },
+          ];
+        }
+
+        renderPaths();
+        updateConditionalSections();
+      }
+
+      function resetGenerator() {
+        fields.ingressName.value =
+          "nginx-ingress";
+
+        fields.namespace.value =
+          "default";
+
+        fields.ingressClass.value =
+          "nginx";
+
+        fields.host.value =
+          "app.example.com";
+
+        fields.tlsEnabled.checked =
+          true;
+
+        fields.tlsSecret.value =
+          "app-tls-secret";
+
+        fields.sslRedirect.checked =
+          true;
+
+        fields.forceSslRedirect.checked =
+          false;
+
+        fields.certManager.checked =
+          false;
+
+        fields.issuerType.value =
+          "cluster";
+
+        fields.issuerName.value =
+          "letsencrypt-prod";
+
+        fields.rewriteEnabled.checked =
+          false;
+
+        fields.rewriteTarget.value =
+          "/";
+
+        fields.regexEnabled.checked =
+          false;
+
+        fields.websocketEnabled.checked =
+          false;
+
+        fields.websocketService.value =
+          "";
+
+        fields.corsEnabled.checked =
+          false;
+
+        fields.corsOrigins.value =
+          "*";
+
+        fields.corsMethods.value =
+          "GET, POST, PUT, DELETE, OPTIONS";
+
+        fields.corsHeaders.value =
+          "Authorization, Content-Type";
+
+        fields.proxyBodySize.value =
+          "10m";
+
+        fields.proxyReadTimeout.value =
+          "60";
+
+        fields.proxySendTimeout.value =
+          "60";
+
+        fields.backendProtocol.value =
+          "HTTP";
+
+        fields.labels.value = "";
+        fields.annotations.value = "";
+
+        paths = [
+          {
+            path: "/",
+            pathType: "Prefix",
+            serviceName:
+              "nginx-service",
+            servicePort: "80",
+          },
+        ];
+
+        clearMessage();
+        renderPaths();
+        updateConditionalSections();
+
+        fields.ingressName.focus();
+      }
+
+      async function copyYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate valid Ingress YAML before copying.",
+            "error",
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentYaml,
+          );
+
+          const originalText =
+            copyButton.textContent;
+
+          copyButton.textContent =
+            "Copied!";
+
+          showMessage(
+            "Ingress YAML copied successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            copyButton.textContent =
+              originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Copy the YAML manually.",
+            "error",
+          );
+        }
+      }
+
+      function downloadYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate valid Ingress YAML before downloading.",
+            "error",
+          );
+
+          return;
+        }
+
+        const blob = new Blob(
+          [currentYaml],
+          {
+            type: "application/yaml;charset=utf-8",
+          },
+        );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const anchor =
+          document.createElement("a");
+
+        anchor.href = url;
+
+        anchor.download =
+          `${fields.ingressName.value.trim() || "ingress"}.yaml`;
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showMessage(
+          "Ingress YAML downloaded successfully.",
+          "success",
+        );
+      }
+
+      document
+        .getElementById(
+          "addPathButton",
+        )
+        .addEventListener(
+          "click",
+          addPath,
+        );
+
+      document
+        .getElementById(
+          "generateButton",
+        )
+        .addEventListener(
+          "click",
+          generateYaml,
+        );
+
+      document
+        .getElementById("resetButton")
+        .addEventListener(
+          "click",
+          resetGenerator,
+        );
+
+      copyButton.addEventListener(
+        "click",
+        copyYaml,
+      );
+
+      document
+        .getElementById(
+          "downloadButton",
+        )
+        .addEventListener(
+          "click",
+          downloadYaml,
+        );
+
+      Object.values(fields).forEach(
+        (field) => {
+          field.addEventListener(
+            "input",
+            generateYaml,
+          );
+
+          field.addEventListener(
+            "change",
+            updateConditionalSections,
+          );
+        },
+      );
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              applyPreset(
+                button.dataset.preset ||
+                  "",
+              );
+            },
+          );
+        });
+
+      renderPaths();
+      updateConditionalSections();
+    </script>
+  </body>
+</html>

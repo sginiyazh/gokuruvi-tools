@@ -1,0 +1,1885 @@
+---
+const pageTitle = "AWS Security Group Generator | Gokuruvi Tools";
+const description =
+  "Generate AWS security group rules and Terraform aws_security_group configuration with ingress, egress, CIDR, protocol, ports, descriptions, presets, copy, and download options.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/aws-security-group-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #ea580c;
+        --primary-dark: #c2410c;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #fff7ed, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #fff7ed;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .tab-button {
+        padding: 9px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .tab-button.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .code-box {
+        margin-top: 14px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 650px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/network">Network</a>
+          <a class="active" href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>AWS Security Group Generator</h1>
+        <p>
+          Generate AWS security group ingress and egress rules in Terraform HCL
+          and AWS CLI format with ports, protocols, CIDR blocks, descriptions,
+          presets, copy, and download options.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Security Group Configuration</h2>
+            <p class="card-description">
+              Configure a security group and generate Terraform plus AWS CLI
+              commands.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="web">
+                Web Server
+              </button>
+              <button class="preset" type="button" data-preset="ssh">
+                SSH Access
+              </button>
+              <button class="preset" type="button" data-preset="database">
+                Database
+              </button>
+              <button class="preset" type="button" data-preset="kubernetes">
+                Kubernetes Node
+              </button>
+              <button class="preset" type="button" data-preset="internal">
+                Internal Only
+              </button>
+            </div>
+
+            <h3 class="section-title">Security Group Details</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="nameInput">Security group name</label>
+                <input
+                  id="nameInput"
+                  type="text"
+                  value="web-server-sg"
+                  placeholder="Example: web-server-sg"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="terraformNameInput">Terraform resource name</label>
+                <input
+                  id="terraformNameInput"
+                  type="text"
+                  value="web_server"
+                  placeholder="Example: web_server"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="descriptionInput">Description</label>
+              <textarea id="descriptionInput">Security group for a public web server.</textarea>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="vpcIdInput">VPC ID</label>
+                <input
+                  id="vpcIdInput"
+                  type="text"
+                  value="vpc-0123456789abcdef0"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="regionInput">AWS region</label>
+                <input
+                  id="regionInput"
+                  type="text"
+                  value="me-central-1"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">Ingress Rule</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="ingressProtocolSelect">Protocol</label>
+                <select id="ingressProtocolSelect">
+                  <option value="tcp" selected>TCP</option>
+                  <option value="udp">UDP</option>
+                  <option value="icmp">ICMP</option>
+                  <option value="-1">All traffic</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ingressSourceTypeSelect">Source type</label>
+                <select id="ingressSourceTypeSelect">
+                  <option value="cidr" selected>IPv4 CIDR</option>
+                  <option value="ipv6">IPv6 CIDR</option>
+                  <option value="security-group">Security group ID</option>
+                  <option value="prefix-list">Prefix list ID</option>
+                  <option value="self">Self</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="ingressPortsSection" class="conditional-section active">
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="ingressFromPortInput">From port</label>
+                  <input
+                    id="ingressFromPortInput"
+                    type="number"
+                    min="-1"
+                    max="65535"
+                    value="80"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="ingressToPortInput">To port</label>
+                  <input
+                    id="ingressToPortInput"
+                    type="number"
+                    min="-1"
+                    max="65535"
+                    value="80"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div id="ingressSourceSection" class="conditional-section active">
+              <div class="form-group">
+                <label for="ingressSourcesInput">Source values</label>
+                <textarea
+                  id="ingressSourcesInput"
+                  placeholder="0.0.0.0/0"
+                >0.0.0.0/0</textarea>
+                <p>Enter one CIDR, security group ID, or prefix list ID per line.</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ingressDescriptionInput">Ingress description</label>
+              <input
+                id="ingressDescriptionInput"
+                type="text"
+                value="Allow HTTP from the internet"
+              />
+            </div>
+
+            <h3 class="section-title">Additional Common Ingress Rules</h3>
+
+            <div class="checkbox-item">
+              <input id="httpsEnabledInput" type="checkbox" checked />
+              <label for="httpsEnabledInput">Add HTTPS on TCP 443</label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="sshEnabledInput" type="checkbox" />
+              <label for="sshEnabledInput">Add SSH on TCP 22</label>
+            </div>
+
+            <div id="sshSourceSection" class="conditional-section">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="sshSourceInput">SSH source CIDR</label>
+                <input
+                  id="sshSourceInput"
+                  type="text"
+                  value="203.0.113.10/32"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="icmpEnabledInput" type="checkbox" />
+              <label for="icmpEnabledInput">Allow ICMP from source CIDR</label>
+            </div>
+
+            <div id="icmpSourceSection" class="conditional-section">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="icmpSourceInput">ICMP source CIDR</label>
+                <input
+                  id="icmpSourceInput"
+                  type="text"
+                  value="10.0.0.0/8"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">Egress Rule</h3>
+
+            <div class="checkbox-item">
+              <input id="egressEnabledInput" type="checkbox" checked />
+              <label for="egressEnabledInput">Add an egress rule</label>
+            </div>
+
+            <div id="egressSection" class="conditional-section active">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="egressProtocolSelect">Protocol</label>
+                  <select id="egressProtocolSelect">
+                    <option value="-1" selected>All traffic</option>
+                    <option value="tcp">TCP</option>
+                    <option value="udp">UDP</option>
+                    <option value="icmp">ICMP</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="egressDestinationTypeSelect">
+                    Destination type
+                  </label>
+                  <select id="egressDestinationTypeSelect">
+                    <option value="cidr" selected>IPv4 CIDR</option>
+                    <option value="ipv6">IPv6 CIDR</option>
+                    <option value="security-group">Security group ID</option>
+                    <option value="prefix-list">Prefix list ID</option>
+                    <option value="self">Self</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="egressPortsSection" class="conditional-section">
+                <div class="input-row">
+                  <div class="form-group">
+                    <label for="egressFromPortInput">From port</label>
+                    <input
+                      id="egressFromPortInput"
+                      type="number"
+                      min="-1"
+                      max="65535"
+                      value="443"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="egressToPortInput">To port</label>
+                    <input
+                      id="egressToPortInput"
+                      type="number"
+                      min="-1"
+                      max="65535"
+                      value="443"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div id="egressDestinationSection" class="conditional-section active">
+                <div class="form-group">
+                  <label for="egressDestinationsInput">
+                    Destination values
+                  </label>
+                  <textarea id="egressDestinationsInput">0.0.0.0/0</textarea>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="egressDescriptionInput">Egress description</label>
+                <input
+                  id="egressDescriptionInput"
+                  type="text"
+                  value="Allow all outbound traffic"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">Tags and Output</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="environmentInput">Environment tag</label>
+                <input
+                  id="environmentInput"
+                  type="text"
+                  value="production"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="ownerInput">Owner tag</label>
+                <input
+                  id="ownerInput"
+                  type="text"
+                  value="platform-team"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="revokeInput" type="checkbox" />
+              <label for="revokeInput">
+                Revoke rules on delete
+              </label>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Security Group
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated Configuration</h2>
+            <p class="card-description">
+              Switch between Terraform and AWS CLI output.
+            </p>
+
+            <div class="tabs">
+              <button
+                class="tab-button active"
+                type="button"
+                data-tab="terraform"
+              >
+                Terraform HCL
+              </button>
+              <button
+                class="tab-button"
+                type="button"
+                data-tab="cli"
+              >
+                AWS CLI
+              </button>
+            </div>
+
+            <div class="code-box">
+              <span id="codeLabel" class="code-label">security-group.tf</span>
+              <pre id="codeOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Current
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download Current
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Security group</span>
+                <span id="resultName" class="result-value">web-server-sg</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">VPC</span>
+                <span id="resultVpc" class="result-value">
+                  vpc-0123456789abcdef0
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Ingress rules</span>
+                <span id="resultIngress" class="result-value">2</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Egress rules</span>
+                <span id="resultEgress" class="result-value">1</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Avoid opening administrative ports such as SSH or database ports
+              to 0.0.0.0/0. Restrict access to trusted networks, bastion hosts,
+              VPN ranges, security groups, or prefix lists.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>AWS Security Group Commands</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Create a security group</th>
+                <td>
+                  <code>aws ec2 create-security-group --group-name NAME --description "DESCRIPTION" --vpc-id VPC_ID</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Add an ingress rule</th>
+                <td>
+                  <code>aws ec2 authorize-security-group-ingress --group-id SG_ID --protocol tcp --port 443 --cidr 0.0.0.0/0</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Add an egress rule</th>
+                <td>
+                  <code>aws ec2 authorize-security-group-egress --group-id SG_ID --ip-permissions file://egress.json</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Describe security groups</th>
+                <td><code>aws ec2 describe-security-groups</code></td>
+              </tr>
+              <tr>
+                <th>Describe security group rules</th>
+                <td><code>aws ec2 describe-security-group-rules</code></td>
+              </tr>
+              <tr>
+                <th>Validate Terraform</th>
+                <td><code>terraform fmt && terraform validate</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          name: document.getElementById("nameInput"),
+          terraformName: document.getElementById("terraformNameInput"),
+          description: document.getElementById("descriptionInput"),
+          vpcId: document.getElementById("vpcIdInput"),
+          region: document.getElementById("regionInput"),
+          ingressProtocol: document.getElementById(
+            "ingressProtocolSelect"
+          ),
+          ingressSourceType: document.getElementById(
+            "ingressSourceTypeSelect"
+          ),
+          ingressFromPort: document.getElementById(
+            "ingressFromPortInput"
+          ),
+          ingressToPort: document.getElementById("ingressToPortInput"),
+          ingressSources: document.getElementById("ingressSourcesInput"),
+          ingressDescription: document.getElementById(
+            "ingressDescriptionInput"
+          ),
+          httpsEnabled: document.getElementById("httpsEnabledInput"),
+          sshEnabled: document.getElementById("sshEnabledInput"),
+          sshSource: document.getElementById("sshSourceInput"),
+          icmpEnabled: document.getElementById("icmpEnabledInput"),
+          icmpSource: document.getElementById("icmpSourceInput"),
+          egressEnabled: document.getElementById("egressEnabledInput"),
+          egressProtocol: document.getElementById("egressProtocolSelect"),
+          egressDestinationType: document.getElementById(
+            "egressDestinationTypeSelect"
+          ),
+          egressFromPort: document.getElementById("egressFromPortInput"),
+          egressToPort: document.getElementById("egressToPortInput"),
+          egressDestinations: document.getElementById(
+            "egressDestinationsInput"
+          ),
+          egressDescription: document.getElementById(
+            "egressDescriptionInput"
+          ),
+          environment: document.getElementById("environmentInput"),
+          owner: document.getElementById("ownerInput"),
+          revoke: document.getElementById("revokeInput")
+        };
+
+        var ingressPortsSection = document.getElementById(
+          "ingressPortsSection"
+        );
+        var ingressSourceSection = document.getElementById(
+          "ingressSourceSection"
+        );
+        var sshSourceSection = document.getElementById("sshSourceSection");
+        var icmpSourceSection = document.getElementById(
+          "icmpSourceSection"
+        );
+        var egressSection = document.getElementById("egressSection");
+        var egressPortsSection = document.getElementById(
+          "egressPortsSection"
+        );
+        var egressDestinationSection = document.getElementById(
+          "egressDestinationSection"
+        );
+
+        var codeOutput = document.getElementById("codeOutput");
+        var codeLabel = document.getElementById("codeLabel");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+
+        var activeTab = "terraform";
+        var outputs = {
+          terraform: "",
+          cli: ""
+        };
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function splitLines(value) {
+          return String(value)
+            .split(/\r?\n/)
+            .map(function (line) {
+              return line.trim();
+            })
+            .filter(function (line) {
+              return line.length > 0;
+            });
+        }
+
+        function quoteHcl(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function shellQuote(value) {
+          return "'" + String(value).replace(/'/g, "'\\''") + "'";
+        }
+
+        function isValidTerraformName(value) {
+          return /^[A-Za-z_][A-Za-z0-9_]*$/.test(value);
+        }
+
+        function isValidPort(value) {
+          var number = Number(value);
+          return Number.isInteger(number) && number >= -1 && number <= 65535;
+        }
+
+        function isValidIpv4Cidr(value) {
+          var parts = value.split("/");
+          var octets;
+
+          if (parts.length !== 2) {
+            return false;
+          }
+
+          octets = parts[0].split(".");
+
+          if (octets.length !== 4) {
+            return false;
+          }
+
+          if (
+            !octets.every(function (octet) {
+              return (
+                /^\d+$/.test(octet) &&
+                Number(octet) >= 0 &&
+                Number(octet) <= 255
+              );
+            })
+          ) {
+            return false;
+          }
+
+          return (
+            /^\d+$/.test(parts[1]) &&
+            Number(parts[1]) >= 0 &&
+            Number(parts[1]) <= 32
+          );
+        }
+
+        function isValidSourceValue(type, value) {
+          if (type === "cidr") {
+            return isValidIpv4Cidr(value);
+          }
+
+          if (type === "ipv6") {
+            return value.indexOf(":") !== -1 && value.indexOf("/") !== -1;
+          }
+
+          if (type === "security-group") {
+            return /^sg-[A-Za-z0-9]+$/.test(value);
+          }
+
+          if (type === "prefix-list") {
+            return /^pl-[A-Za-z0-9]+$/.test(value);
+          }
+
+          return true;
+        }
+
+        function validateForm() {
+          var ingressSources = splitLines(fields.ingressSources.value);
+          var egressDestinations = splitLines(
+            fields.egressDestinations.value
+          );
+          var invalidIngress;
+          var invalidEgress;
+
+          if (!fields.name.value.trim()) {
+            return "Security group name is required.";
+          }
+
+          if (!isValidTerraformName(fields.terraformName.value.trim())) {
+            return "Terraform resource name must use letters, numbers, and underscores.";
+          }
+
+          if (!/^vpc-[A-Za-z0-9]+$/.test(fields.vpcId.value.trim())) {
+            return "Enter a valid VPC ID.";
+          }
+
+          if (
+            fields.ingressProtocol.value !== "-1" &&
+            (!isValidPort(fields.ingressFromPort.value) ||
+              !isValidPort(fields.ingressToPort.value))
+          ) {
+            return "Ingress ports must be between -1 and 65535.";
+          }
+
+          if (
+            fields.ingressProtocol.value !== "-1" &&
+            Number(fields.ingressFromPort.value) >
+              Number(fields.ingressToPort.value)
+          ) {
+            return "Ingress from port cannot be greater than to port.";
+          }
+
+          if (
+            fields.ingressSourceType.value !== "self" &&
+            ingressSources.length === 0
+          ) {
+            return "Enter at least one ingress source.";
+          }
+
+          invalidIngress = ingressSources.find(function (source) {
+            return !isValidSourceValue(
+              fields.ingressSourceType.value,
+              source
+            );
+          });
+
+          if (invalidIngress) {
+            return "Invalid ingress source: " + invalidIngress;
+          }
+
+          if (fields.sshEnabled.checked && !isValidIpv4Cidr(fields.sshSource.value.trim())) {
+            return "SSH source must be a valid IPv4 CIDR.";
+          }
+
+          if (fields.icmpEnabled.checked && !isValidIpv4Cidr(fields.icmpSource.value.trim())) {
+            return "ICMP source must be a valid IPv4 CIDR.";
+          }
+
+          if (
+            fields.egressEnabled.checked &&
+            fields.egressProtocol.value !== "-1" &&
+            (!isValidPort(fields.egressFromPort.value) ||
+              !isValidPort(fields.egressToPort.value))
+          ) {
+            return "Egress ports must be between -1 and 65535.";
+          }
+
+          if (
+            fields.egressEnabled.checked &&
+            fields.egressProtocol.value !== "-1" &&
+            Number(fields.egressFromPort.value) >
+              Number(fields.egressToPort.value)
+          ) {
+            return "Egress from port cannot be greater than to port.";
+          }
+
+          if (
+            fields.egressEnabled.checked &&
+            fields.egressDestinationType.value !== "self" &&
+            egressDestinations.length === 0
+          ) {
+            return "Enter at least one egress destination.";
+          }
+
+          invalidEgress = egressDestinations.find(function (destination) {
+            return !isValidSourceValue(
+              fields.egressDestinationType.value,
+              destination
+            );
+          });
+
+          if (fields.egressEnabled.checked && invalidEgress) {
+            return "Invalid egress destination: " + invalidEgress;
+          }
+
+          return "";
+        }
+
+        function sourceAttribute(type) {
+          if (type === "cidr") {
+            return "cidr_blocks";
+          }
+
+          if (type === "ipv6") {
+            return "ipv6_cidr_blocks";
+          }
+
+          if (type === "security-group") {
+            return "security_groups";
+          }
+
+          if (type === "prefix-list") {
+            return "prefix_list_ids";
+          }
+
+          return "self";
+        }
+
+        function terraformList(values) {
+          return (
+            "[" +
+            values
+              .map(function (value) {
+                return quoteHcl(value);
+              })
+              .join(", ") +
+            "]"
+          );
+        }
+
+        function addTerraformRule(lines, direction, rule) {
+          lines.push("  " + direction + " {");
+          lines.push("    description = " + quoteHcl(rule.description));
+          lines.push("    from_port   = " + rule.fromPort);
+          lines.push("    to_port     = " + rule.toPort);
+          lines.push("    protocol    = " + quoteHcl(rule.protocol));
+
+          if (rule.sourceType === "self") {
+            lines.push("    self        = true");
+          } else {
+            lines.push(
+              "    " +
+                sourceAttribute(rule.sourceType) +
+                " = " +
+                terraformList(rule.sources)
+            );
+          }
+
+          lines.push("  }");
+        }
+
+        function buildRules() {
+          var ingressRules = [];
+          var egressRules = [];
+          var ingressProtocol = fields.ingressProtocol.value;
+          var ingressFrom =
+            ingressProtocol === "-1"
+              ? 0
+              : Number(fields.ingressFromPort.value);
+          var ingressTo =
+            ingressProtocol === "-1"
+              ? 0
+              : Number(fields.ingressToPort.value);
+
+          ingressRules.push({
+            protocol: ingressProtocol,
+            fromPort: ingressFrom,
+            toPort: ingressTo,
+            sourceType: fields.ingressSourceType.value,
+            sources:
+              fields.ingressSourceType.value === "self"
+                ? []
+                : splitLines(fields.ingressSources.value),
+            description:
+              fields.ingressDescription.value.trim() ||
+              "Custom ingress rule"
+          });
+
+          if (fields.httpsEnabled.checked) {
+            ingressRules.push({
+              protocol: "tcp",
+              fromPort: 443,
+              toPort: 443,
+              sourceType: "cidr",
+              sources: ["0.0.0.0/0"],
+              description: "Allow HTTPS from the internet"
+            });
+          }
+
+          if (fields.sshEnabled.checked) {
+            ingressRules.push({
+              protocol: "tcp",
+              fromPort: 22,
+              toPort: 22,
+              sourceType: "cidr",
+              sources: [fields.sshSource.value.trim()],
+              description: "Allow SSH from trusted source"
+            });
+          }
+
+          if (fields.icmpEnabled.checked) {
+            ingressRules.push({
+              protocol: "icmp",
+              fromPort: -1,
+              toPort: -1,
+              sourceType: "cidr",
+              sources: [fields.icmpSource.value.trim()],
+              description: "Allow ICMP from trusted network"
+            });
+          }
+
+          if (fields.egressEnabled.checked) {
+            var egressProtocol = fields.egressProtocol.value;
+            egressRules.push({
+              protocol: egressProtocol,
+              fromPort:
+                egressProtocol === "-1"
+                  ? 0
+                  : Number(fields.egressFromPort.value),
+              toPort:
+                egressProtocol === "-1"
+                  ? 0
+                  : Number(fields.egressToPort.value),
+              sourceType: fields.egressDestinationType.value,
+              sources:
+                fields.egressDestinationType.value === "self"
+                  ? []
+                  : splitLines(fields.egressDestinations.value),
+              description:
+                fields.egressDescription.value.trim() ||
+                "Custom egress rule"
+            });
+          }
+
+          return {
+            ingress: ingressRules,
+            egress: egressRules
+          };
+        }
+
+        function buildTerraform(rules) {
+          var resourceName = fields.terraformName.value.trim();
+          var lines = [];
+
+          lines.push('resource "aws_security_group" "' + resourceName + '" {');
+          lines.push("  name        = " + quoteHcl(fields.name.value.trim()));
+          lines.push(
+            "  description = " + quoteHcl(fields.description.value.trim())
+          );
+          lines.push("  vpc_id      = " + quoteHcl(fields.vpcId.value.trim()));
+          lines.push(
+            "  revoke_rules_on_delete = " +
+              (fields.revoke.checked ? "true" : "false")
+          );
+
+          rules.ingress.forEach(function (rule) {
+            lines.push("");
+            addTerraformRule(lines, "ingress", rule);
+          });
+
+          rules.egress.forEach(function (rule) {
+            lines.push("");
+            addTerraformRule(lines, "egress", rule);
+          });
+
+          lines.push("");
+          lines.push("  tags = {");
+          lines.push("    Name        = " + quoteHcl(fields.name.value.trim()));
+
+          if (fields.environment.value.trim()) {
+            lines.push(
+              "    Environment = " +
+                quoteHcl(fields.environment.value.trim())
+            );
+          }
+
+          if (fields.owner.value.trim()) {
+            lines.push(
+              "    Owner       = " + quoteHcl(fields.owner.value.trim())
+            );
+          }
+
+          lines.push("    ManagedBy   = \"terraform\"");
+          lines.push("  }");
+          lines.push("}");
+
+          lines.push("");
+          lines.push('output "security_group_id" {');
+          lines.push(
+            "  value = aws_security_group." + resourceName + ".id"
+          );
+          lines.push("}");
+
+          return lines.join("\n") + "\n";
+        }
+
+        function cliPermission(rule) {
+          var permission = {
+            IpProtocol: rule.protocol,
+            FromPort: rule.fromPort,
+            ToPort: rule.toPort
+          };
+
+          if (rule.sourceType === "cidr") {
+            permission.IpRanges = rule.sources.map(function (source) {
+              return {
+                CidrIp: source,
+                Description: rule.description
+              };
+            });
+          } else if (rule.sourceType === "ipv6") {
+            permission.Ipv6Ranges = rule.sources.map(function (source) {
+              return {
+                CidrIpv6: source,
+                Description: rule.description
+              };
+            });
+          } else if (rule.sourceType === "security-group") {
+            permission.UserIdGroupPairs = rule.sources.map(function (source) {
+              return {
+                GroupId: source,
+                Description: rule.description
+              };
+            });
+          } else if (rule.sourceType === "prefix-list") {
+            permission.PrefixListIds = rule.sources.map(function (source) {
+              return {
+                PrefixListId: source,
+                Description: rule.description
+              };
+            });
+          } else if (rule.sourceType === "self") {
+            permission.UserIdGroupPairs = [
+              {
+                GroupId: "REPLACE_WITH_CREATED_SECURITY_GROUP_ID",
+                Description: rule.description
+              }
+            ];
+          }
+
+          return permission;
+        }
+
+        function buildCli(rules) {
+          var region = fields.region.value.trim();
+          var lines = [];
+          var ingressPermissions = rules.ingress.map(cliPermission);
+          var egressPermissions = rules.egress.map(cliPermission);
+
+          lines.push("# Create the security group");
+          lines.push(
+            "SECURITY_GROUP_ID=$(aws ec2 create-security-group \\\n" +
+              "  --group-name " +
+              shellQuote(fields.name.value.trim()) +
+              " \\\n" +
+              "  --description " +
+              shellQuote(fields.description.value.trim()) +
+              " \\\n" +
+              "  --vpc-id " +
+              shellQuote(fields.vpcId.value.trim()) +
+              " \\\n" +
+              (region
+                ? "  --region " + shellQuote(region) + " \\\n"
+                : "") +
+              "  --query GroupId \\\n" +
+              "  --output text)"
+          );
+
+          lines.push("");
+          lines.push('echo "Created security group: $SECURITY_GROUP_ID"');
+
+          if (ingressPermissions.length > 0) {
+            lines.push("");
+            lines.push("# Add ingress rules");
+            lines.push(
+              "aws ec2 authorize-security-group-ingress \\\n" +
+                '  --group-id "$SECURITY_GROUP_ID" \\\n' +
+                "  --ip-permissions " +
+                shellQuote(JSON.stringify(ingressPermissions)) +
+                (region ? " \\\n  --region " + shellQuote(region) : "")
+            );
+          }
+
+          if (egressPermissions.length > 0) {
+            lines.push("");
+            lines.push("# Replace or add the required egress rules");
+            lines.push(
+              "aws ec2 authorize-security-group-egress \\\n" +
+                '  --group-id "$SECURITY_GROUP_ID" \\\n' +
+                "  --ip-permissions " +
+                shellQuote(JSON.stringify(egressPermissions)) +
+                (region ? " \\\n  --region " + shellQuote(region) : "")
+            );
+          }
+
+          lines.push("");
+          lines.push("# Add tags");
+          lines.push(
+            "aws ec2 create-tags \\\n" +
+              '  --resources "$SECURITY_GROUP_ID" \\\n' +
+              "  --tags " +
+              shellQuote(
+                "Key=Name,Value=" +
+                  fields.name.value.trim() +
+                  " Key=Environment,Value=" +
+                  fields.environment.value.trim() +
+                  " Key=Owner,Value=" +
+                  fields.owner.value.trim()
+              ) +
+              (region ? " \\\n  --region " + shellQuote(region) : "")
+          );
+
+          return lines.join("\n") + "\n";
+        }
+
+        function renderActiveTab() {
+          codeLabel.textContent =
+            activeTab === "terraform"
+              ? "security-group.tf"
+              : "create-security-group.sh";
+          codeOutput.textContent = outputs[activeTab];
+        }
+
+        function generateCode(showError) {
+          var error = validateForm();
+          var rules;
+
+          clearMessage();
+
+          if (error) {
+            outputs.terraform = error;
+            outputs.cli = error;
+            renderActiveTab();
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          rules = buildRules();
+          outputs.terraform = buildTerraform(rules);
+          outputs.cli = buildCli(rules);
+
+          renderActiveTab();
+
+          document.getElementById("resultName").textContent =
+            fields.name.value.trim();
+          document.getElementById("resultVpc").textContent =
+            fields.vpcId.value.trim();
+          document.getElementById("resultIngress").textContent =
+            String(rules.ingress.length);
+          document.getElementById("resultEgress").textContent =
+            String(rules.egress.length);
+        }
+
+        function updateSections() {
+          ingressPortsSection.classList.toggle(
+            "active",
+            fields.ingressProtocol.value !== "-1"
+          );
+
+          ingressSourceSection.classList.toggle(
+            "active",
+            fields.ingressSourceType.value !== "self"
+          );
+
+          sshSourceSection.classList.toggle(
+            "active",
+            fields.sshEnabled.checked
+          );
+
+          icmpSourceSection.classList.toggle(
+            "active",
+            fields.icmpEnabled.checked
+          );
+
+          egressSection.classList.toggle(
+            "active",
+            fields.egressEnabled.checked
+          );
+
+          egressPortsSection.classList.toggle(
+            "active",
+            fields.egressEnabled.checked &&
+              fields.egressProtocol.value !== "-1"
+          );
+
+          egressDestinationSection.classList.toggle(
+            "active",
+            fields.egressEnabled.checked &&
+              fields.egressDestinationType.value !== "self"
+          );
+
+          generateCode(false);
+        }
+
+        function applyPreset(preset) {
+          fields.httpsEnabled.checked = false;
+          fields.sshEnabled.checked = false;
+          fields.icmpEnabled.checked = false;
+          fields.egressEnabled.checked = true;
+          fields.egressProtocol.value = "-1";
+          fields.egressDestinationType.value = "cidr";
+          fields.egressDestinations.value = "0.0.0.0/0";
+          fields.egressDescription.value = "Allow all outbound traffic";
+
+          if (preset === "web") {
+            fields.name.value = "web-server-sg";
+            fields.terraformName.value = "web_server";
+            fields.description.value =
+              "Security group for a public web server.";
+            fields.ingressProtocol.value = "tcp";
+            fields.ingressFromPort.value = "80";
+            fields.ingressToPort.value = "80";
+            fields.ingressSourceType.value = "cidr";
+            fields.ingressSources.value = "0.0.0.0/0";
+            fields.ingressDescription.value =
+              "Allow HTTP from the internet";
+            fields.httpsEnabled.checked = true;
+          } else if (preset === "ssh") {
+            fields.name.value = "ssh-access-sg";
+            fields.terraformName.value = "ssh_access";
+            fields.description.value =
+              "Security group for restricted SSH administration.";
+            fields.ingressProtocol.value = "tcp";
+            fields.ingressFromPort.value = "22";
+            fields.ingressToPort.value = "22";
+            fields.ingressSourceType.value = "cidr";
+            fields.ingressSources.value = "203.0.113.10/32";
+            fields.ingressDescription.value =
+              "Allow SSH from administrator IP";
+          } else if (preset === "database") {
+            fields.name.value = "database-sg";
+            fields.terraformName.value = "database";
+            fields.description.value =
+              "Security group for an internal PostgreSQL database.";
+            fields.ingressProtocol.value = "tcp";
+            fields.ingressFromPort.value = "5432";
+            fields.ingressToPort.value = "5432";
+            fields.ingressSourceType.value = "security-group";
+            fields.ingressSources.value = "sg-0123456789abcdef0";
+            fields.ingressDescription.value =
+              "Allow PostgreSQL from application security group";
+          } else if (preset === "kubernetes") {
+            fields.name.value = "kubernetes-node-sg";
+            fields.terraformName.value = "kubernetes_node";
+            fields.description.value =
+              "Security group for Kubernetes worker nodes.";
+            fields.ingressProtocol.value = "tcp";
+            fields.ingressFromPort.value = "30000";
+            fields.ingressToPort.value = "32767";
+            fields.ingressSourceType.value = "cidr";
+            fields.ingressSources.value = "10.0.0.0/8";
+            fields.ingressDescription.value =
+              "Allow Kubernetes NodePort traffic from internal networks";
+            fields.icmpEnabled.checked = true;
+          } else if (preset === "internal") {
+            fields.name.value = "internal-services-sg";
+            fields.terraformName.value = "internal_services";
+            fields.description.value =
+              "Security group for internal services.";
+            fields.ingressProtocol.value = "-1";
+            fields.ingressSourceType.value = "cidr";
+            fields.ingressSources.value = "10.0.0.0/8";
+            fields.ingressDescription.value =
+              "Allow internal network traffic";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.name.value = "web-server-sg";
+          fields.terraformName.value = "web_server";
+          fields.description.value =
+            "Security group for a public web server.";
+          fields.vpcId.value = "vpc-0123456789abcdef0";
+          fields.region.value = "me-central-1";
+          fields.ingressProtocol.value = "tcp";
+          fields.ingressSourceType.value = "cidr";
+          fields.ingressFromPort.value = "80";
+          fields.ingressToPort.value = "80";
+          fields.ingressSources.value = "0.0.0.0/0";
+          fields.ingressDescription.value =
+            "Allow HTTP from the internet";
+          fields.httpsEnabled.checked = true;
+          fields.sshEnabled.checked = false;
+          fields.sshSource.value = "203.0.113.10/32";
+          fields.icmpEnabled.checked = false;
+          fields.icmpSource.value = "10.0.0.0/8";
+          fields.egressEnabled.checked = true;
+          fields.egressProtocol.value = "-1";
+          fields.egressDestinationType.value = "cidr";
+          fields.egressFromPort.value = "443";
+          fields.egressToPort.value = "443";
+          fields.egressDestinations.value = "0.0.0.0/0";
+          fields.egressDescription.value =
+            "Allow all outbound traffic";
+          fields.environment.value = "production";
+          fields.owner.value = "platform-team";
+          fields.revoke.checked = false;
+
+          activeTab = "terraform";
+
+          document.querySelectorAll(".tab-button").forEach(function (button) {
+            button.classList.toggle(
+              "active",
+              button.getAttribute("data-tab") === activeTab
+            );
+          });
+
+          updateSections();
+          fields.name.focus();
+        }
+
+        function copyCurrent() {
+          var current = outputs[activeTab];
+
+          if (!current) {
+            showMessage(
+              "Generate a valid security group configuration first.",
+              "error"
+            );
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(current)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage(
+                "Security group configuration copied successfully.",
+                "success"
+              );
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the configuration manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadCurrent() {
+          var filename =
+            activeTab === "terraform"
+              ? "security-group.tf"
+              : "create-security-group.sh";
+          var current = outputs[activeTab];
+          var blob;
+          var url;
+          var anchor;
+
+          if (!current) {
+            showMessage(
+              "Generate a valid security group configuration first.",
+              "error"
+            );
+            return;
+          }
+
+          blob = new Blob([current], {
+            type: "text/plain;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filename;
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage(filename + " downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateCode(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyCurrent);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadCurrent);
+
+        [
+          fields.ingressProtocol,
+          fields.ingressSourceType,
+          fields.httpsEnabled,
+          fields.sshEnabled,
+          fields.icmpEnabled,
+          fields.egressEnabled,
+          fields.egressProtocol,
+          fields.egressDestinationType
+        ].forEach(function (field) {
+          field.addEventListener("change", updateSections);
+        });
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateCode(false);
+          });
+
+          field.addEventListener("change", function () {
+            generateCode(false);
+          });
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "web");
+          });
+        });
+
+        document.querySelectorAll(".tab-button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            activeTab = button.getAttribute("data-tab") || "terraform";
+
+            document
+              .querySelectorAll(".tab-button")
+              .forEach(function (tabButton) {
+                tabButton.classList.toggle(
+                  "active",
+                  tabButton === button
+                );
+              });
+
+            renderActiveTab();
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

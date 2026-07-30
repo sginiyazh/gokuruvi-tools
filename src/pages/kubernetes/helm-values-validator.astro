@@ -1,0 +1,1243 @@
+---
+const pageTitle = "Helm Values Validator | Gokuruvi Tools";
+const description =
+  "Validate Helm values.yaml syntax, inspect parsed values, detect duplicate keys, and download corrected YAML.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/helm-values-validator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 850px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .toolbar,
+      .button-row,
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .editor-label {
+        display: flex;
+        margin: 22px 0 8px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      .line-count {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 400;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 580px;
+        padding: 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+        resize: vertical;
+        tab-size: 2;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .button-row {
+        margin-top: 20px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        font-weight: 700;
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.warning {
+        display: block;
+        border: 1px solid var(--warning-border);
+        background: var(--warning-bg);
+        color: var(--warning-text);
+      }
+
+      .status-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .status-item {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .status-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .status-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .output-box {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .output-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .output {
+        min-height: 330px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .issue-list {
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .issue-list li {
+        margin-bottom: 10px;
+        padding: 12px 14px;
+        border: 1px solid var(--warning-border);
+        border-radius: 9px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+      }
+
+      .info-box {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--info-border);
+        border-radius: 10px;
+        background: var(--info-bg);
+        color: var(--info-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a class="active" href="/kubernetes">Kubernetes</a>
+          <a href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Helm Values Validator</h1>
+        <p>
+          Validate values.yaml syntax, detect common Helm configuration
+          mistakes, inspect parsed values, and download formatted YAML.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>values.yaml Input</h2>
+            <p class="card-description">
+              Paste Helm values YAML below. Validation runs locally in your
+              browser.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="basic">
+                Basic Chart
+              </button>
+              <button class="preset" type="button" data-preset="deployment">
+                Deployment
+              </button>
+              <button class="preset" type="button" data-preset="ingress">
+                Ingress
+              </button>
+              <button class="preset" type="button" data-preset="invalid">
+                Invalid Example
+              </button>
+            </div>
+
+            <div class="editor-label">
+              <span>Helm values YAML</span>
+              <span id="lineCount" class="line-count">0 lines</span>
+            </div>
+
+            <textarea
+              id="yamlInput"
+              spellcheck="false"
+              aria-label="Helm values YAML input"
+            >replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.27"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi</textarea>
+
+            <div class="button-row">
+              <button
+                id="validateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Validate YAML
+              </button>
+
+              <button
+                id="formatButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Format YAML
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Validation Result</h2>
+            <p class="card-description">
+              Syntax errors and common Helm values issues appear here.
+            </p>
+
+            <div class="status-grid">
+              <div class="status-item">
+                <span class="status-label">Status</span>
+                <span id="resultStatus" class="status-value">Not checked</span>
+              </div>
+
+              <div class="status-item">
+                <span class="status-label">Root type</span>
+                <span id="resultType" class="status-value">Unknown</span>
+              </div>
+
+              <div class="status-item">
+                <span class="status-label">Top-level keys</span>
+                <span id="resultKeys" class="status-value">0</span>
+              </div>
+
+              <div class="status-item">
+                <span class="status-label">Warnings</span>
+                <span id="resultWarnings" class="status-value">0</span>
+              </div>
+            </div>
+
+            <ul id="issueList" class="issue-list"></ul>
+
+            <div class="output-box">
+              <span class="output-label">Parsed values preview</span>
+              <pre id="parsedOutput" class="output">Validate YAML to view parsed values.</pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download values.yaml
+              </button>
+            </div>
+
+            <div class="info-box">
+              This tool validates YAML structure and common values.yaml
+              patterns. It does not render Helm templates or validate a chart's
+              values.schema.json file.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Helm Validation Commands</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Lint a chart</th>
+                <td><code>helm lint ./my-chart -f values.yaml</code></td>
+              </tr>
+              <tr>
+                <th>Render templates</th>
+                <td>
+                  <code>
+                    helm template my-release ./my-chart -f values.yaml
+                  </code>
+                </td>
+              </tr>
+              <tr>
+                <th>Dry-run installation</th>
+                <td>
+                  <code>
+                    helm install my-release ./my-chart -f values.yaml --dry-run
+                    --debug
+                  </code>
+                </td>
+              </tr>
+              <tr>
+                <th>Show chart defaults</th>
+                <td><code>helm show values ./my-chart</code></td>
+              </tr>
+              <tr>
+                <th>Get deployed values</th>
+                <td>
+                  <code>
+                    helm get values my-release -n default --all
+                  </code>
+                </td>
+              </tr>
+              <tr>
+                <th>Upgrade with values</th>
+                <td>
+                  <code>
+                    helm upgrade --install my-release ./my-chart -f values.yaml
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>Common values.yaml Issues</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Unquoted version numbers</td>
+                <td>
+                  Quote image tags and versions such as <code>"1.27"</code> to
+                  prevent unintended numeric conversion.
+                </td>
+              </tr>
+              <tr>
+                <td>Tabs used for indentation</td>
+                <td>Use spaces only. YAML indentation with tabs is invalid.</td>
+              </tr>
+              <tr>
+                <td>Duplicate keys</td>
+                <td>
+                  Keep every mapping key unique. Later values may overwrite
+                  earlier values in permissive parsers.
+                </td>
+              </tr>
+              <tr>
+                <td>Boolean-like strings</td>
+                <td>
+                  Quote values such as <code>"yes"</code>, <code>"no"</code>,
+                  <code>"on"</code>, and <code>"off"</code> when strings are
+                  intended.
+                </td>
+              </tr>
+              <tr>
+                <td>Missing resource requests</td>
+                <td>
+                  Define CPU and memory requests and limits for production
+                  workloads.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"
+      defer
+    ></script>
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var yamlInput = document.getElementById("yamlInput");
+        var validateButton = document.getElementById("validateButton");
+        var formatButton = document.getElementById("formatButton");
+        var resetButton = document.getElementById("resetButton");
+        var copyButton = document.getElementById("copyButton");
+        var downloadButton = document.getElementById("downloadButton");
+        var message = document.getElementById("message");
+        var resultStatus = document.getElementById("resultStatus");
+        var resultType = document.getElementById("resultType");
+        var resultKeys = document.getElementById("resultKeys");
+        var resultWarnings = document.getElementById("resultWarnings");
+        var parsedOutput = document.getElementById("parsedOutput");
+        var issueList = document.getElementById("issueList");
+        var lineCount = document.getElementById("lineCount");
+        var currentValidYaml = "";
+
+        var defaultYaml =
+          'replicaCount: 2\n\n' +
+          'image:\n' +
+          '  repository: nginx\n' +
+          '  tag: "1.27"\n' +
+          '  pullPolicy: IfNotPresent\n\n' +
+          'service:\n' +
+          '  type: ClusterIP\n' +
+          '  port: 80\n\n' +
+          'resources:\n' +
+          '  requests:\n' +
+          '    cpu: 100m\n' +
+          '    memory: 128Mi\n' +
+          '  limits:\n' +
+          '    cpu: 500m\n' +
+          '    memory: 512Mi\n';
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function updateLineCount() {
+          var text = yamlInput.value;
+          var count = text ? text.split(/\r?\n/).length : 0;
+          lineCount.textContent = count + (count === 1 ? " line" : " lines");
+        }
+
+        function getRootType(value) {
+          if (Array.isArray(value)) {
+            return "Array";
+          }
+
+          if (value === null) {
+            return "Null";
+          }
+
+          if (typeof value === "object") {
+            return "Object";
+          }
+
+          return typeof value;
+        }
+
+        function detectDuplicateKeys(text) {
+          var warnings = [];
+          var stack = [];
+          var lines = text.split(/\r?\n/);
+          var seenByPath = {};
+
+          lines.forEach(function (rawLine, index) {
+            var match;
+            var indent;
+            var key;
+            var path;
+            var parentPath;
+
+            if (!rawLine.trim() || rawLine.trim().charAt(0) === "#") {
+              return;
+            }
+
+            match = rawLine.match(/^(\s*)([^#][^:]*):(?:\s|$)/);
+
+            if (!match) {
+              return;
+            }
+
+            indent = match[1].replace(/\t/g, "    ").length;
+            key = match[2].trim().replace(/^["']|["']$/g, "");
+
+            while (
+              stack.length > 0 &&
+              stack[stack.length - 1].indent >= indent
+            ) {
+              stack.pop();
+            }
+
+            parentPath = stack
+              .map(function (item) {
+                return item.key;
+              })
+              .join(".");
+
+            path = parentPath ? parentPath + "." + key : key;
+
+            if (seenByPath[path]) {
+              warnings.push(
+                "Possible duplicate key '" +
+                  key +
+                  "' at line " +
+                  (index + 1) +
+                  "."
+              );
+            }
+
+            seenByPath[path] = true;
+            stack.push({
+              indent: indent,
+              key: key
+            });
+          });
+
+          return warnings;
+        }
+
+        function collectWarnings(text, parsed) {
+          var warnings = [];
+          var lines = text.split(/\r?\n/);
+
+          if (text.indexOf("\t") !== -1) {
+            warnings.push("Tabs were detected. Use spaces for YAML indentation.");
+          }
+
+          warnings = warnings.concat(detectDuplicateKeys(text));
+
+          lines.forEach(function (line, index) {
+            var tagMatch = line.match(/^\s*tag:\s*([0-9]+(?:\.[0-9]+)+)\s*$/);
+            var booleanLike = line.match(
+              /^\s*[^#][^:]+:\s*(yes|no|on|off)\s*$/i
+            );
+
+            if (tagMatch) {
+              warnings.push(
+                "Image tag at line " +
+                  (index + 1) +
+                  " looks numeric. Quote it to preserve the exact value."
+              );
+            }
+
+            if (booleanLike) {
+              warnings.push(
+                "Value '" +
+                  booleanLike[1] +
+                  "' at line " +
+                  (index + 1) +
+                  " may be interpreted as a boolean by YAML 1.1 tools."
+              );
+            }
+          });
+
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            if (parsed.image && parsed.image.tag !== undefined) {
+              if (typeof parsed.image.tag !== "string") {
+                warnings.push(
+                  "image.tag is not a string. Quote the image tag in values.yaml."
+                );
+              }
+            }
+
+            if (
+              parsed.resources &&
+              typeof parsed.resources === "object" &&
+              (!parsed.resources.requests || !parsed.resources.limits)
+            ) {
+              warnings.push(
+                "resources is present but requests or limits are missing."
+              );
+            }
+
+            if (
+              parsed.ingress &&
+              parsed.ingress.enabled === true &&
+              !parsed.ingress.hosts
+            ) {
+              warnings.push(
+                "Ingress is enabled but ingress.hosts is not defined."
+              );
+            }
+          }
+
+          return warnings.filter(function (warning, index, array) {
+            return array.indexOf(warning) === index;
+          });
+        }
+
+        function renderWarnings(warnings) {
+          issueList.innerHTML = "";
+
+          warnings.forEach(function (warning) {
+            var item = document.createElement("li");
+            item.textContent = warning;
+            issueList.appendChild(item);
+          });
+        }
+
+        function validateYaml(showSuccess) {
+          var yamlLibrary = window.jsyaml;
+          var text = yamlInput.value;
+          var parsed;
+          var warnings;
+          var rootType;
+          var keyCount;
+
+          clearMessage();
+          renderWarnings([]);
+
+          if (!text.trim()) {
+            currentValidYaml = "";
+            resultStatus.textContent = "Invalid";
+            resultType.textContent = "Empty";
+            resultKeys.textContent = "0";
+            resultWarnings.textContent = "0";
+            parsedOutput.textContent = "No YAML content was provided.";
+            showMessage("Paste values.yaml content before validating.", "error");
+            return false;
+          }
+
+          if (!yamlLibrary) {
+            currentValidYaml = "";
+            resultStatus.textContent = "Unavailable";
+            parsedOutput.textContent =
+              "The YAML parser could not be loaded. Check your internet connection.";
+            showMessage(
+              "YAML parser failed to load from the CDN.",
+              "error"
+            );
+            return false;
+          }
+
+          try {
+            parsed = yamlLibrary.load(text, {
+              json: false
+            });
+
+            rootType = getRootType(parsed);
+            keyCount =
+              parsed &&
+              typeof parsed === "object" &&
+              !Array.isArray(parsed)
+                ? Object.keys(parsed).length
+                : 0;
+
+            warnings = collectWarnings(text, parsed);
+            currentValidYaml = text;
+
+            resultStatus.textContent =
+              warnings.length > 0 ? "Valid with warnings" : "Valid";
+            resultType.textContent = rootType;
+            resultKeys.textContent = String(keyCount);
+            resultWarnings.textContent = String(warnings.length);
+
+            parsedOutput.textContent = JSON.stringify(parsed, null, 2);
+            renderWarnings(warnings);
+
+            if (showSuccess) {
+              if (warnings.length > 0) {
+                showMessage(
+                  "YAML syntax is valid, but review the warnings.",
+                  "warning"
+                );
+              } else {
+                showMessage("Helm values YAML is valid.", "success");
+              }
+            }
+
+            return true;
+          } catch (error) {
+            currentValidYaml = "";
+            resultStatus.textContent = "Invalid";
+            resultType.textContent = "Unknown";
+            resultKeys.textContent = "0";
+            resultWarnings.textContent = "0";
+
+            var reason = error.reason || error.message || "Invalid YAML.";
+            var line = "";
+            var column = "";
+
+            if (error.mark) {
+              line = String(error.mark.line + 1);
+              column = String(error.mark.column + 1);
+            }
+
+            parsedOutput.textContent =
+              "Error: " +
+              reason +
+              (line ? "\nLine: " + line : "") +
+              (column ? "\nColumn: " + column : "");
+
+            showMessage(
+              "Invalid YAML" +
+                (line ? " at line " + line + ", column " + column : "") +
+                ": " +
+                reason,
+              "error"
+            );
+
+            return false;
+          }
+        }
+
+        function formatYaml() {
+          var yamlLibrary = window.jsyaml;
+          var parsed;
+
+          if (!yamlLibrary) {
+            showMessage("YAML parser is not available.", "error");
+            return;
+          }
+
+          try {
+            parsed = yamlLibrary.load(yamlInput.value);
+
+            yamlInput.value = yamlLibrary.dump(parsed, {
+              indent: 2,
+              lineWidth: 100,
+              noRefs: true,
+              sortKeys: false,
+              quotingType: '"',
+              forceQuotes: false
+            });
+
+            updateLineCount();
+            validateYaml(false);
+            showMessage("YAML formatted successfully.", "success");
+          } catch (error) {
+            validateYaml(true);
+          }
+        }
+
+        function applyPreset(preset) {
+          if (preset === "basic") {
+            yamlInput.value = defaultYaml;
+          } else if (preset === "deployment") {
+            yamlInput.value =
+              'replicaCount: 3\n\n' +
+              'image:\n' +
+              '  repository: nginx\n' +
+              '  tag: "1.27"\n' +
+              '  pullPolicy: IfNotPresent\n\n' +
+              'serviceAccount:\n' +
+              '  create: true\n' +
+              '  name: ""\n\n' +
+              'service:\n' +
+              '  type: ClusterIP\n' +
+              '  port: 80\n\n' +
+              'resources:\n' +
+              '  requests:\n' +
+              '    cpu: 100m\n' +
+              '    memory: 128Mi\n' +
+              '  limits:\n' +
+              '    cpu: 500m\n' +
+              '    memory: 512Mi\n\n' +
+              'nodeSelector: {}\n' +
+              'tolerations: []\n' +
+              'affinity: {}\n';
+          } else if (preset === "ingress") {
+            yamlInput.value =
+              'ingress:\n' +
+              '  enabled: true\n' +
+              '  className: nginx\n' +
+              '  annotations:\n' +
+              '    nginx.ingress.kubernetes.io/ssl-redirect: "true"\n' +
+              '  hosts:\n' +
+              '    - host: app.example.com\n' +
+              '      paths:\n' +
+              '        - path: /\n' +
+              '          pathType: Prefix\n' +
+              '  tls:\n' +
+              '    - secretName: app-tls\n' +
+              '      hosts:\n' +
+              '        - app.example.com\n';
+          } else if (preset === "invalid") {
+            yamlInput.value =
+              'replicaCount: 2\n' +
+              'image:\n' +
+              '  repository: nginx\n' +
+              '  tag: 1.27\n' +
+              'service:\n' +
+              '   type: ClusterIP\n' +
+              '  port: 80\n' +
+              'enabled: yes\n';
+          }
+
+          updateLineCount();
+          validateYaml(false);
+        }
+
+        function resetValidator() {
+          yamlInput.value = defaultYaml;
+          currentValidYaml = "";
+          resultStatus.textContent = "Not checked";
+          resultType.textContent = "Unknown";
+          resultKeys.textContent = "0";
+          resultWarnings.textContent = "0";
+          parsedOutput.textContent = "Validate YAML to view parsed values.";
+          renderWarnings([]);
+          clearMessage();
+          updateLineCount();
+          yamlInput.focus();
+        }
+
+        function copyYaml() {
+          var text = currentValidYaml || yamlInput.value;
+
+          if (!text.trim()) {
+            showMessage("There is no YAML to copy.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(text)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("YAML copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the YAML manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadYaml() {
+          var text = currentValidYaml || yamlInput.value;
+          var blob;
+          var url;
+          var anchor;
+
+          if (!text.trim()) {
+            showMessage("There is no YAML to download.", "error");
+            return;
+          }
+
+          blob = new Blob([text], {
+            type: "application/yaml;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "values.yaml";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("values.yaml downloaded successfully.", "success");
+        }
+
+        yamlInput.addEventListener("input", function () {
+          updateLineCount();
+          currentValidYaml = "";
+        });
+
+        yamlInput.addEventListener("keydown", function (event) {
+          if (event.key === "Tab") {
+            event.preventDefault();
+
+            var start = yamlInput.selectionStart;
+            var end = yamlInput.selectionEnd;
+            var value = yamlInput.value;
+
+            yamlInput.value =
+              value.substring(0, start) + "  " + value.substring(end);
+
+            yamlInput.selectionStart = start + 2;
+            yamlInput.selectionEnd = start + 2;
+            updateLineCount();
+          }
+        });
+
+        validateButton.addEventListener("click", function () {
+          validateYaml(true);
+        });
+
+        formatButton.addEventListener("click", formatYaml);
+        resetButton.addEventListener("click", resetValidator);
+        copyButton.addEventListener("click", copyYaml);
+        downloadButton.addEventListener("click", downloadYaml);
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "");
+          });
+        });
+
+        updateLineCount();
+
+        window.setTimeout(function () {
+          validateYaml(false);
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

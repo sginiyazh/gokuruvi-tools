@@ -1,0 +1,1891 @@
+---
+const pageTitle = "Terraform Backend Generator | Gokuruvi Tools";
+const description =
+  "Generate Terraform backend configuration for S3, AzureRM, Google Cloud Storage, Consul, Kubernetes, HTTP, local, and remote backends.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/terraform-backend-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #6d28d9;
+        --primary-dark: #5b21b6;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #f5f3ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #f5f3ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .code-box {
+        margin-top: 18px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 650px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/network">Network</a>
+          <a class="active" href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Terraform Backend Generator</h1>
+        <p>
+          Generate Terraform backend blocks for AWS S3, Azure Storage, Google
+          Cloud Storage, Consul, Kubernetes, HTTP, Terraform Cloud, and local
+          state.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Backend Configuration</h2>
+            <p class="card-description">
+              Select a backend and configure remote state storage, locking,
+              encryption, workspace, and authentication options.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-backend="s3">
+                AWS S3
+              </button>
+              <button class="preset" type="button" data-backend="azurerm">
+                AzureRM
+              </button>
+              <button class="preset" type="button" data-backend="gcs">
+                Google GCS
+              </button>
+              <button class="preset" type="button" data-backend="kubernetes">
+                Kubernetes
+              </button>
+              <button class="preset" type="button" data-backend="remote">
+                Terraform Cloud
+              </button>
+              <button class="preset" type="button" data-backend="local">
+                Local
+              </button>
+            </div>
+
+            <h3 class="section-title">General Settings</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="backendTypeSelect">Backend type</label>
+                <select id="backendTypeSelect">
+                  <option value="s3" selected>AWS S3</option>
+                  <option value="azurerm">AzureRM</option>
+                  <option value="gcs">Google Cloud Storage</option>
+                  <option value="consul">Consul</option>
+                  <option value="kubernetes">Kubernetes Secret</option>
+                  <option value="http">HTTP</option>
+                  <option value="remote">Terraform Cloud / Remote</option>
+                  <option value="local">Local</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="terraformVersionInput">
+                  Required Terraform version
+                </label>
+                <input
+                  id="terraformVersionInput"
+                  type="text"
+                  value=">= 1.6.0"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="includeVersionInput" type="checkbox" checked />
+              <label for="includeVersionInput">
+                Include required Terraform version
+              </label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="includeCommentsInput" type="checkbox" checked />
+              <label for="includeCommentsInput">
+                Include explanatory comments
+              </label>
+            </div>
+
+            <div id="s3Section" class="conditional-section active">
+              <h3 class="section-title">AWS S3 Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="s3BucketInput">S3 bucket</label>
+                  <input
+                    id="s3BucketInput"
+                    type="text"
+                    value="my-terraform-state"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="s3KeyInput">State key</label>
+                  <input
+                    id="s3KeyInput"
+                    type="text"
+                    value="production/terraform.tfstate"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="s3RegionInput">Region</label>
+                  <input
+                    id="s3RegionInput"
+                    type="text"
+                    value="me-central-1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="s3ProfileInput">AWS profile</label>
+                  <input
+                    id="s3ProfileInput"
+                    type="text"
+                    placeholder="Example: production"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="s3DynamoInput">DynamoDB lock table</label>
+                  <input
+                    id="s3DynamoInput"
+                    type="text"
+                    value="terraform-locks"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="s3KmsInput">KMS key ID</label>
+                  <input
+                    id="s3KmsInput"
+                    type="text"
+                    placeholder="Optional KMS key ARN or ID"
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input id="s3EncryptInput" type="checkbox" checked />
+                <label for="s3EncryptInput">
+                  Enable server-side encryption
+                </label>
+              </div>
+
+              <div class="checkbox-item" style="margin-top: 10px;">
+                <input id="s3UseLockfileInput" type="checkbox" />
+                <label for="s3UseLockfileInput">
+                  Enable S3 native lockfile
+                </label>
+              </div>
+            </div>
+
+            <div id="azurermSection" class="conditional-section">
+              <h3 class="section-title">AzureRM Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="azureResourceGroupInput">Resource group</label>
+                  <input
+                    id="azureResourceGroupInput"
+                    type="text"
+                    value="rg-terraform-state"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="azureStorageAccountInput">
+                    Storage account
+                  </label>
+                  <input
+                    id="azureStorageAccountInput"
+                    type="text"
+                    value="tfstateaccount"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="azureContainerInput">Container name</label>
+                  <input
+                    id="azureContainerInput"
+                    type="text"
+                    value="tfstate"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="azureKeyInput">State key</label>
+                  <input
+                    id="azureKeyInput"
+                    type="text"
+                    value="production.terraform.tfstate"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="azureSubscriptionInput">
+                    Subscription ID
+                  </label>
+                  <input
+                    id="azureSubscriptionInput"
+                    type="text"
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="azureTenantInput">Tenant ID</label>
+                  <input
+                    id="azureTenantInput"
+                    type="text"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input id="azureUseOidcInput" type="checkbox" />
+                <label for="azureUseOidcInput">
+                  Use Microsoft Entra ID / OIDC authentication
+                </label>
+              </div>
+            </div>
+
+            <div id="gcsSection" class="conditional-section">
+              <h3 class="section-title">Google Cloud Storage Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="gcsBucketInput">GCS bucket</label>
+                  <input
+                    id="gcsBucketInput"
+                    type="text"
+                    value="my-terraform-state"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="gcsPrefixInput">State prefix</label>
+                  <input
+                    id="gcsPrefixInput"
+                    type="text"
+                    value="production"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="gcsProjectInput">Project</label>
+                  <input
+                    id="gcsProjectInput"
+                    type="text"
+                    placeholder="Optional project ID"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="gcsImpersonateInput">
+                    Impersonate service account
+                  </label>
+                  <input
+                    id="gcsImpersonateInput"
+                    type="text"
+                    placeholder="Optional service account email"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div id="consulSection" class="conditional-section">
+              <h3 class="section-title">Consul Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="consulAddressInput">Consul address</label>
+                  <input
+                    id="consulAddressInput"
+                    type="text"
+                    value="consul.example.com:8500"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="consulPathInput">State path</label>
+                  <input
+                    id="consulPathInput"
+                    type="text"
+                    value="terraform/production"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="consulSchemeSelect">Scheme</label>
+                  <select id="consulSchemeSelect">
+                    <option value="https" selected>HTTPS</option>
+                    <option value="http">HTTP</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="consulDatacenterInput">Datacenter</label>
+                  <input
+                    id="consulDatacenterInput"
+                    type="text"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input id="consulLockInput" type="checkbox" checked />
+                <label for="consulLockInput">Enable state locking</label>
+              </div>
+            </div>
+
+            <div id="kubernetesSection" class="conditional-section">
+              <h3 class="section-title">Kubernetes Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="kubernetesNamespaceInput">Namespace</label>
+                  <input
+                    id="kubernetesNamespaceInput"
+                    type="text"
+                    value="terraform-state"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="kubernetesSecretSuffixInput">
+                    Secret suffix
+                  </label>
+                  <input
+                    id="kubernetesSecretSuffixInput"
+                    type="text"
+                    value="production"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="kubernetesConfigPathInput">
+                    Kubeconfig path
+                  </label>
+                  <input
+                    id="kubernetesConfigPathInput"
+                    type="text"
+                    value="~/.kube/config"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="kubernetesContextInput">
+                    Config context
+                  </label>
+                  <input
+                    id="kubernetesContextInput"
+                    type="text"
+                    placeholder="Optional context"
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input id="kubernetesInClusterInput" type="checkbox" />
+                <label for="kubernetesInClusterInput">
+                  Use in-cluster configuration
+                </label>
+              </div>
+            </div>
+
+            <div id="httpSection" class="conditional-section">
+              <h3 class="section-title">HTTP Backend</h3>
+
+              <div class="form-group">
+                <label for="httpAddressInput">State address</label>
+                <input
+                  id="httpAddressInput"
+                  type="url"
+                  value="https://state.example.com/terraform"
+                />
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="httpLockAddressInput">Lock address</label>
+                  <input
+                    id="httpLockAddressInput"
+                    type="url"
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="httpUnlockAddressInput">
+                    Unlock address
+                  </label>
+                  <input
+                    id="httpUnlockAddressInput"
+                    type="url"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="httpUsernameInput">Username</label>
+                  <input
+                    id="httpUsernameInput"
+                    type="text"
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="httpMethodSelect">Update method</label>
+                  <select id="httpMethodSelect">
+                    <option value="POST" selected>POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div id="remoteSection" class="conditional-section">
+              <h3 class="section-title">Terraform Cloud / Remote Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="remoteHostnameInput">Hostname</label>
+                  <input
+                    id="remoteHostnameInput"
+                    type="text"
+                    value="app.terraform.io"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="remoteOrganizationInput">Organization</label>
+                  <input
+                    id="remoteOrganizationInput"
+                    type="text"
+                    value="my-organization"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="remoteWorkspaceInput">Workspace name</label>
+                  <input
+                    id="remoteWorkspaceInput"
+                    type="text"
+                    value="production"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="remoteWorkspacePrefixInput">
+                    Workspace prefix
+                  </label>
+                  <input
+                    id="remoteWorkspacePrefixInput"
+                    type="text"
+                    placeholder="Use name or prefix, not both"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div id="localSection" class="conditional-section">
+              <h3 class="section-title">Local Backend</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="localPathInput">State file path</label>
+                  <input
+                    id="localPathInput"
+                    type="text"
+                    value="terraform.tfstate"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="localWorkspaceDirInput">
+                    Workspace directory
+                  </label>
+                  <input
+                    id="localWorkspaceDirInput"
+                    type="text"
+                    value="terraform.tfstate.d"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title">Additional Backend Arguments</h3>
+
+            <div class="form-group">
+              <label for="customArgumentsInput">Custom HCL arguments</label>
+              <textarea
+                id="customArgumentsInput"
+                placeholder='skip_credentials_validation = true&#10;skip_region_validation = true'
+              ></textarea>
+              <p>Enter valid backend arguments. They are inserted as-is.</p>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Backend
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated backend.tf</h2>
+            <p class="card-description">
+              Review the backend before running terraform init.
+            </p>
+
+            <div class="code-box">
+              <span class="code-label">Terraform HCL</span>
+              <pre id="codeOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy HCL
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download backend.tf
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Backend</span>
+                <span id="resultBackend" class="result-value">s3</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Remote state</span>
+                <span id="resultRemote" class="result-value">Enabled</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">State locking</span>
+                <span id="resultLocking" class="result-value">Enabled</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Encryption</span>
+                <span id="resultEncryption" class="result-value">Enabled</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Backend blocks cannot use input variables, locals, or data
+              sources. Avoid putting credentials directly in backend.tf. Use
+              environment variables, workload identity, CLI configuration, or
+              partial backend configuration.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Terraform Backend Commands</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Initialize backend</th>
+                <td><code>terraform init</code></td>
+              </tr>
+              <tr>
+                <th>Reconfigure backend</th>
+                <td><code>terraform init -reconfigure</code></td>
+              </tr>
+              <tr>
+                <th>Migrate existing state</th>
+                <td><code>terraform init -migrate-state</code></td>
+              </tr>
+              <tr>
+                <th>Use a backend config file</th>
+                <td>
+                  <code>terraform init -backend-config=backend.hcl</code>
+                </td>
+              </tr>
+              <tr>
+                <th>List state resources</th>
+                <td><code>terraform state list</code></td>
+              </tr>
+              <tr>
+                <th>Pull remote state</th>
+                <td><code>terraform state pull</code></td>
+              </tr>
+              <tr>
+                <th>Force unlock state</th>
+                <td><code>terraform force-unlock LOCK_ID</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          backendType: document.getElementById("backendTypeSelect"),
+          terraformVersion: document.getElementById(
+            "terraformVersionInput"
+          ),
+          includeVersion: document.getElementById("includeVersionInput"),
+          includeComments: document.getElementById("includeCommentsInput"),
+
+          s3Bucket: document.getElementById("s3BucketInput"),
+          s3Key: document.getElementById("s3KeyInput"),
+          s3Region: document.getElementById("s3RegionInput"),
+          s3Profile: document.getElementById("s3ProfileInput"),
+          s3Dynamo: document.getElementById("s3DynamoInput"),
+          s3Kms: document.getElementById("s3KmsInput"),
+          s3Encrypt: document.getElementById("s3EncryptInput"),
+          s3UseLockfile: document.getElementById("s3UseLockfileInput"),
+
+          azureResourceGroup: document.getElementById(
+            "azureResourceGroupInput"
+          ),
+          azureStorageAccount: document.getElementById(
+            "azureStorageAccountInput"
+          ),
+          azureContainer: document.getElementById("azureContainerInput"),
+          azureKey: document.getElementById("azureKeyInput"),
+          azureSubscription: document.getElementById(
+            "azureSubscriptionInput"
+          ),
+          azureTenant: document.getElementById("azureTenantInput"),
+          azureUseOidc: document.getElementById("azureUseOidcInput"),
+
+          gcsBucket: document.getElementById("gcsBucketInput"),
+          gcsPrefix: document.getElementById("gcsPrefixInput"),
+          gcsProject: document.getElementById("gcsProjectInput"),
+          gcsImpersonate: document.getElementById("gcsImpersonateInput"),
+
+          consulAddress: document.getElementById("consulAddressInput"),
+          consulPath: document.getElementById("consulPathInput"),
+          consulScheme: document.getElementById("consulSchemeSelect"),
+          consulDatacenter: document.getElementById(
+            "consulDatacenterInput"
+          ),
+          consulLock: document.getElementById("consulLockInput"),
+
+          kubernetesNamespace: document.getElementById(
+            "kubernetesNamespaceInput"
+          ),
+          kubernetesSecretSuffix: document.getElementById(
+            "kubernetesSecretSuffixInput"
+          ),
+          kubernetesConfigPath: document.getElementById(
+            "kubernetesConfigPathInput"
+          ),
+          kubernetesContext: document.getElementById(
+            "kubernetesContextInput"
+          ),
+          kubernetesInCluster: document.getElementById(
+            "kubernetesInClusterInput"
+          ),
+
+          httpAddress: document.getElementById("httpAddressInput"),
+          httpLockAddress: document.getElementById("httpLockAddressInput"),
+          httpUnlockAddress: document.getElementById(
+            "httpUnlockAddressInput"
+          ),
+          httpUsername: document.getElementById("httpUsernameInput"),
+          httpMethod: document.getElementById("httpMethodSelect"),
+
+          remoteHostname: document.getElementById("remoteHostnameInput"),
+          remoteOrganization: document.getElementById(
+            "remoteOrganizationInput"
+          ),
+          remoteWorkspace: document.getElementById("remoteWorkspaceInput"),
+          remoteWorkspacePrefix: document.getElementById(
+            "remoteWorkspacePrefixInput"
+          ),
+
+          localPath: document.getElementById("localPathInput"),
+          localWorkspaceDir: document.getElementById(
+            "localWorkspaceDirInput"
+          ),
+
+          customArguments: document.getElementById(
+            "customArgumentsInput"
+          )
+        };
+
+        var sections = {
+          s3: document.getElementById("s3Section"),
+          azurerm: document.getElementById("azurermSection"),
+          gcs: document.getElementById("gcsSection"),
+          consul: document.getElementById("consulSection"),
+          kubernetes: document.getElementById("kubernetesSection"),
+          http: document.getElementById("httpSection"),
+          remote: document.getElementById("remoteSection"),
+          local: document.getElementById("localSection")
+        };
+
+        var codeOutput = document.getElementById("codeOutput");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+        var currentCode = "";
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function quoteHcl(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function addArgument(lines, name, value) {
+          if (String(value).trim()) {
+            lines.push(
+              "    " + name.padEnd(22, " ") + " = " + quoteHcl(value)
+            );
+          }
+        }
+
+        function validateForm() {
+          var type = fields.backendType.value;
+
+          if (fields.includeVersion.checked && !fields.terraformVersion.value.trim()) {
+            return "Required Terraform version cannot be empty.";
+          }
+
+          if (type === "s3") {
+            if (!fields.s3Bucket.value.trim()) {
+              return "S3 bucket name is required.";
+            }
+
+            if (!fields.s3Key.value.trim()) {
+              return "S3 state key is required.";
+            }
+
+            if (!fields.s3Region.value.trim()) {
+              return "S3 region is required.";
+            }
+          }
+
+          if (type === "azurerm") {
+            if (!fields.azureResourceGroup.value.trim()) {
+              return "Azure resource group is required.";
+            }
+
+            if (!fields.azureStorageAccount.value.trim()) {
+              return "Azure storage account is required.";
+            }
+
+            if (!fields.azureContainer.value.trim()) {
+              return "Azure container name is required.";
+            }
+
+            if (!fields.azureKey.value.trim()) {
+              return "Azure state key is required.";
+            }
+          }
+
+          if (type === "gcs" && !fields.gcsBucket.value.trim()) {
+            return "GCS bucket name is required.";
+          }
+
+          if (type === "consul") {
+            if (!fields.consulAddress.value.trim()) {
+              return "Consul address is required.";
+            }
+
+            if (!fields.consulPath.value.trim()) {
+              return "Consul state path is required.";
+            }
+          }
+
+          if (type === "kubernetes") {
+            if (!fields.kubernetesNamespace.value.trim()) {
+              return "Kubernetes namespace is required.";
+            }
+
+            if (!fields.kubernetesSecretSuffix.value.trim()) {
+              return "Kubernetes secret suffix is required.";
+            }
+          }
+
+          if (
+            type === "http" &&
+            !/^https?:\/\//i.test(fields.httpAddress.value.trim())
+          ) {
+            return "HTTP backend address must start with http:// or https://.";
+          }
+
+          if (type === "remote") {
+            if (!fields.remoteOrganization.value.trim()) {
+              return "Terraform Cloud organization is required.";
+            }
+
+            if (
+              !fields.remoteWorkspace.value.trim() &&
+              !fields.remoteWorkspacePrefix.value.trim()
+            ) {
+              return "Enter a workspace name or workspace prefix.";
+            }
+
+            if (
+              fields.remoteWorkspace.value.trim() &&
+              fields.remoteWorkspacePrefix.value.trim()
+            ) {
+              return "Use either workspace name or workspace prefix, not both.";
+            }
+          }
+
+          if (type === "local" && !fields.localPath.value.trim()) {
+            return "Local state path is required.";
+          }
+
+          return "";
+        }
+
+        function addCustomArguments(lines) {
+          if (!fields.customArguments.value.trim()) {
+            return;
+          }
+
+          fields.customArguments.value
+            .split(/\r?\n/)
+            .forEach(function (line) {
+              lines.push("    " + line);
+            });
+        }
+
+        function buildBackendArguments(lines, type) {
+          if (type === "s3") {
+            addArgument(lines, "bucket", fields.s3Bucket.value.trim());
+            addArgument(lines, "key", fields.s3Key.value.trim());
+            addArgument(lines, "region", fields.s3Region.value.trim());
+            addArgument(lines, "profile", fields.s3Profile.value.trim());
+
+            if (fields.s3Dynamo.value.trim()) {
+              addArgument(
+                lines,
+                "dynamodb_table",
+                fields.s3Dynamo.value.trim()
+              );
+            }
+
+            lines.push(
+              "    " +
+                "encrypt".padEnd(22, " ") +
+                " = " +
+                (fields.s3Encrypt.checked ? "true" : "false")
+            );
+
+            if (fields.s3UseLockfile.checked) {
+              lines.push(
+                "    " + "use_lockfile".padEnd(22, " ") + " = true"
+              );
+            }
+
+            addArgument(lines, "kms_key_id", fields.s3Kms.value.trim());
+          } else if (type === "azurerm") {
+            addArgument(
+              lines,
+              "resource_group_name",
+              fields.azureResourceGroup.value.trim()
+            );
+            addArgument(
+              lines,
+              "storage_account_name",
+              fields.azureStorageAccount.value.trim()
+            );
+            addArgument(
+              lines,
+              "container_name",
+              fields.azureContainer.value.trim()
+            );
+            addArgument(lines, "key", fields.azureKey.value.trim());
+            addArgument(
+              lines,
+              "subscription_id",
+              fields.azureSubscription.value.trim()
+            );
+            addArgument(
+              lines,
+              "tenant_id",
+              fields.azureTenant.value.trim()
+            );
+
+            if (fields.azureUseOidc.checked) {
+              lines.push(
+                "    " + "use_oidc".padEnd(22, " ") + " = true"
+              );
+              lines.push(
+                "    " + "use_azuread_auth".padEnd(22, " ") + " = true"
+              );
+            }
+          } else if (type === "gcs") {
+            addArgument(lines, "bucket", fields.gcsBucket.value.trim());
+            addArgument(lines, "prefix", fields.gcsPrefix.value.trim());
+            addArgument(lines, "project", fields.gcsProject.value.trim());
+            addArgument(
+              lines,
+              "impersonate_service_account",
+              fields.gcsImpersonate.value.trim()
+            );
+          } else if (type === "consul") {
+            addArgument(
+              lines,
+              "address",
+              fields.consulAddress.value.trim()
+            );
+            addArgument(lines, "path", fields.consulPath.value.trim());
+            addArgument(
+              lines,
+              "scheme",
+              fields.consulScheme.value.trim()
+            );
+            addArgument(
+              lines,
+              "datacenter",
+              fields.consulDatacenter.value.trim()
+            );
+            lines.push(
+              "    " +
+                "lock".padEnd(22, " ") +
+                " = " +
+                (fields.consulLock.checked ? "true" : "false")
+            );
+          } else if (type === "kubernetes") {
+            addArgument(
+              lines,
+              "namespace",
+              fields.kubernetesNamespace.value.trim()
+            );
+            addArgument(
+              lines,
+              "secret_suffix",
+              fields.kubernetesSecretSuffix.value.trim()
+            );
+
+            if (fields.kubernetesInCluster.checked) {
+              lines.push(
+                "    " +
+                  "in_cluster_config".padEnd(22, " ") +
+                  " = true"
+              );
+            } else {
+              addArgument(
+                lines,
+                "config_path",
+                fields.kubernetesConfigPath.value.trim()
+              );
+              addArgument(
+                lines,
+                "config_context",
+                fields.kubernetesContext.value.trim()
+              );
+            }
+          } else if (type === "http") {
+            addArgument(
+              lines,
+              "address",
+              fields.httpAddress.value.trim()
+            );
+            addArgument(
+              lines,
+              "lock_address",
+              fields.httpLockAddress.value.trim()
+            );
+            addArgument(
+              lines,
+              "unlock_address",
+              fields.httpUnlockAddress.value.trim()
+            );
+            addArgument(
+              lines,
+              "username",
+              fields.httpUsername.value.trim()
+            );
+            addArgument(
+              lines,
+              "update_method",
+              fields.httpMethod.value.trim()
+            );
+
+            if (fields.httpLockAddress.value.trim()) {
+              addArgument(lines, "lock_method", "LOCK");
+            }
+
+            if (fields.httpUnlockAddress.value.trim()) {
+              addArgument(lines, "unlock_method", "UNLOCK");
+            }
+          } else if (type === "remote") {
+            addArgument(
+              lines,
+              "hostname",
+              fields.remoteHostname.value.trim()
+            );
+            addArgument(
+              lines,
+              "organization",
+              fields.remoteOrganization.value.trim()
+            );
+            lines.push("    workspaces {");
+
+            if (fields.remoteWorkspace.value.trim()) {
+              lines.push(
+                "      name = " +
+                  quoteHcl(fields.remoteWorkspace.value.trim())
+              );
+            } else {
+              lines.push(
+                "      prefix = " +
+                  quoteHcl(fields.remoteWorkspacePrefix.value.trim())
+              );
+            }
+
+            lines.push("    }");
+          } else if (type === "local") {
+            addArgument(lines, "path", fields.localPath.value.trim());
+            addArgument(
+              lines,
+              "workspace_dir",
+              fields.localWorkspaceDir.value.trim()
+            );
+          }
+
+          addCustomArguments(lines);
+        }
+
+        function getStatus(type) {
+          var remote = type === "local" ? "Disabled" : "Enabled";
+          var locking = "Depends on backend";
+          var encryption = "Depends on backend";
+
+          if (type === "s3") {
+            locking =
+              fields.s3Dynamo.value.trim() ||
+              fields.s3UseLockfile.checked
+                ? "Enabled"
+                : "Disabled";
+            encryption = fields.s3Encrypt.checked ? "Enabled" : "Disabled";
+          } else if (type === "azurerm") {
+            locking = "Enabled";
+            encryption = "Enabled";
+          } else if (type === "gcs") {
+            locking = "Enabled";
+            encryption = "Enabled";
+          } else if (type === "consul") {
+            locking = fields.consulLock.checked ? "Enabled" : "Disabled";
+            encryption =
+              fields.consulScheme.value === "https"
+                ? "TLS transport"
+                : "Not configured";
+          } else if (type === "kubernetes") {
+            locking = "Enabled";
+            encryption = "Cluster dependent";
+          } else if (type === "http") {
+            locking = fields.httpLockAddress.value.trim()
+              ? "Configured"
+              : "Not configured";
+            encryption = /^https:\/\//i.test(
+              fields.httpAddress.value.trim()
+            )
+              ? "TLS transport"
+              : "Not configured";
+          } else if (type === "remote") {
+            locking = "Enabled";
+            encryption = "Enabled";
+          } else if (type === "local") {
+            locking = "Local process";
+            encryption = "Disabled";
+          }
+
+          return {
+            remote: remote,
+            locking: locking,
+            encryption: encryption
+          };
+        }
+
+        function generateCode(showError) {
+          var error = validateForm();
+          var type = fields.backendType.value;
+          var lines = [];
+          var status;
+
+          clearMessage();
+
+          if (error) {
+            currentCode = "";
+            codeOutput.textContent = error;
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          if (fields.includeComments.checked) {
+            lines.push("# Terraform backend configuration");
+            lines.push(
+              "# Run terraform init -reconfigure after changing this block."
+            );
+          }
+
+          lines.push("terraform {");
+
+          if (fields.includeVersion.checked) {
+            lines.push(
+              "  required_version = " +
+                quoteHcl(fields.terraformVersion.value.trim())
+            );
+            lines.push("");
+          }
+
+          lines.push('  backend "' + type + '" {');
+          buildBackendArguments(lines, type);
+          lines.push("  }");
+          lines.push("}");
+
+          currentCode = lines.join("\n") + "\n";
+          codeOutput.textContent = currentCode;
+
+          status = getStatus(type);
+
+          document.getElementById("resultBackend").textContent = type;
+          document.getElementById("resultRemote").textContent =
+            status.remote;
+          document.getElementById("resultLocking").textContent =
+            status.locking;
+          document.getElementById("resultEncryption").textContent =
+            status.encryption;
+        }
+
+        function updateSections() {
+          var selected = fields.backendType.value;
+
+          Object.keys(sections).forEach(function (key) {
+            sections[key].classList.toggle("active", key === selected);
+          });
+
+          generateCode(false);
+        }
+
+        function applyPreset(type) {
+          fields.backendType.value = type;
+
+          if (type === "s3") {
+            fields.s3Bucket.value = "my-terraform-state";
+            fields.s3Key.value = "production/terraform.tfstate";
+            fields.s3Region.value = "me-central-1";
+            fields.s3Dynamo.value = "terraform-locks";
+            fields.s3Encrypt.checked = true;
+          } else if (type === "azurerm") {
+            fields.azureResourceGroup.value = "rg-terraform-state";
+            fields.azureStorageAccount.value = "tfstateaccount";
+            fields.azureContainer.value = "tfstate";
+            fields.azureKey.value = "production.terraform.tfstate";
+          } else if (type === "gcs") {
+            fields.gcsBucket.value = "my-terraform-state";
+            fields.gcsPrefix.value = "production";
+          } else if (type === "kubernetes") {
+            fields.kubernetesNamespace.value = "terraform-state";
+            fields.kubernetesSecretSuffix.value = "production";
+          } else if (type === "remote") {
+            fields.remoteHostname.value = "app.terraform.io";
+            fields.remoteOrganization.value = "my-organization";
+            fields.remoteWorkspace.value = "production";
+            fields.remoteWorkspacePrefix.value = "";
+          } else if (type === "local") {
+            fields.localPath.value = "terraform.tfstate";
+            fields.localWorkspaceDir.value = "terraform.tfstate.d";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.backendType.value = "s3";
+          fields.terraformVersion.value = ">= 1.6.0";
+          fields.includeVersion.checked = true;
+          fields.includeComments.checked = true;
+
+          fields.s3Bucket.value = "my-terraform-state";
+          fields.s3Key.value = "production/terraform.tfstate";
+          fields.s3Region.value = "me-central-1";
+          fields.s3Profile.value = "";
+          fields.s3Dynamo.value = "terraform-locks";
+          fields.s3Kms.value = "";
+          fields.s3Encrypt.checked = true;
+          fields.s3UseLockfile.checked = false;
+
+          fields.azureResourceGroup.value = "rg-terraform-state";
+          fields.azureStorageAccount.value = "tfstateaccount";
+          fields.azureContainer.value = "tfstate";
+          fields.azureKey.value = "production.terraform.tfstate";
+          fields.azureSubscription.value = "";
+          fields.azureTenant.value = "";
+          fields.azureUseOidc.checked = false;
+
+          fields.gcsBucket.value = "my-terraform-state";
+          fields.gcsPrefix.value = "production";
+          fields.gcsProject.value = "";
+          fields.gcsImpersonate.value = "";
+
+          fields.consulAddress.value = "consul.example.com:8500";
+          fields.consulPath.value = "terraform/production";
+          fields.consulScheme.value = "https";
+          fields.consulDatacenter.value = "";
+          fields.consulLock.checked = true;
+
+          fields.kubernetesNamespace.value = "terraform-state";
+          fields.kubernetesSecretSuffix.value = "production";
+          fields.kubernetesConfigPath.value = "~/.kube/config";
+          fields.kubernetesContext.value = "";
+          fields.kubernetesInCluster.checked = false;
+
+          fields.httpAddress.value =
+            "https://state.example.com/terraform";
+          fields.httpLockAddress.value = "";
+          fields.httpUnlockAddress.value = "";
+          fields.httpUsername.value = "";
+          fields.httpMethod.value = "POST";
+
+          fields.remoteHostname.value = "app.terraform.io";
+          fields.remoteOrganization.value = "my-organization";
+          fields.remoteWorkspace.value = "production";
+          fields.remoteWorkspacePrefix.value = "";
+
+          fields.localPath.value = "terraform.tfstate";
+          fields.localWorkspaceDir.value = "terraform.tfstate.d";
+
+          fields.customArguments.value = "";
+
+          updateSections();
+          fields.backendType.focus();
+        }
+
+        function copyCode() {
+          if (!currentCode) {
+            showMessage("Generate valid Terraform code first.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(currentCode)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("Terraform backend copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the code manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadCode() {
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentCode) {
+            showMessage("Generate valid Terraform code first.", "error");
+            return;
+          }
+
+          blob = new Blob([currentCode], {
+            type: "text/plain;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "backend.tf";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("backend.tf downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateCode(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyCode);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadCode);
+
+        fields.backendType.addEventListener("change", updateSections);
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateCode(false);
+          });
+
+          if (key !== "backendType") {
+            field.addEventListener("change", function () {
+              generateCode(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-backend") || "s3");
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

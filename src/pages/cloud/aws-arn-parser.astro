@@ -1,0 +1,919 @@
+---
+const pageTitle = "AWS ARN Parser | Gokuruvi Tools";
+const description =
+  "Parse and validate AWS Amazon Resource Names into partition, service, region, account ID, resource type, resource ID, and resource path components.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/aws-arn-parser"
+    />
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #ea580c;
+        --primary-dark: #c2410c;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1180px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #fff7ed, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1180px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      textarea,
+      input {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      textarea:focus,
+      input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.13);
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #fff7ed;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 22px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .status {
+        display: inline-flex;
+        margin-bottom: 18px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .status.valid {
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .status.invalid {
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .code-box {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 290px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .warning {
+        margin-top: 20px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1180px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 900px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/network">Network</a>
+          <a class="active" href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>AWS ARN Parser</h1>
+        <p>
+          Parse an Amazon Resource Name into partition, service, region,
+          account ID, resource type, resource ID, resource path, and JSON.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Enter an AWS ARN</h2>
+            <p class="card-description">
+              Paste a complete ARN or choose one of the sample resources.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-arn="arn:aws:iam::123456789012:role/application-role">
+                IAM Role
+              </button>
+              <button class="preset" type="button" data-arn="arn:aws:s3:::example-bucket">
+                S3 Bucket
+              </button>
+              <button class="preset" type="button" data-arn="arn:aws:ec2:me-central-1:123456789012:instance/i-0123456789abcdef0">
+                EC2 Instance
+              </button>
+              <button class="preset" type="button" data-arn="arn:aws:lambda:me-central-1:123456789012:function:process-orders">
+                Lambda
+              </button>
+              <button class="preset" type="button" data-arn="arn:aws:rds:me-central-1:123456789012:db:production-db">
+                RDS
+              </button>
+              <button class="preset" type="button" data-arn="arn:aws:logs:me-central-1:123456789012:log-group:/aws/lambda/process-orders:*">
+                CloudWatch Logs
+              </button>
+            </div>
+
+            <div class="form-group" style="margin-top: 22px;">
+              <label for="arnInput">Amazon Resource Name</label>
+              <textarea
+                id="arnInput"
+                spellcheck="false"
+                placeholder="arn:partition:service:region:account-id:resource"
+              >arn:aws:ec2:me-central-1:123456789012:instance/i-0123456789abcdef0</textarea>
+            </div>
+
+            <div class="button-row">
+              <button id="parseButton" class="button primary-button" type="button">
+                Parse ARN
+              </button>
+
+              <button id="copyArnButton" class="button secondary-button" type="button">
+                Copy ARN
+              </button>
+
+              <button id="clearButton" class="button secondary-button" type="button">
+                Clear
+              </button>
+            </div>
+
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <div class="warning">
+              ARN formats vary by AWS service. Some services leave the region or
+              account ID empty, and resource components may use a slash, colon,
+              or service-specific path.
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Parsed ARN</h2>
+            <p class="card-description">
+              The parser separates the six standard ARN sections and then
+              analyzes the service-specific resource section.
+            </p>
+
+            <span id="statusBadge" class="status valid">Valid ARN</span>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Prefix</span>
+                <span id="prefixResult" class="result-value">arn</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Partition</span>
+                <span id="partitionResult" class="result-value">aws</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Service</span>
+                <span id="serviceResult" class="result-value">ec2</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Region</span>
+                <span id="regionResult" class="result-value">me-central-1</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Account ID</span>
+                <span id="accountResult" class="result-value">123456789012</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource type</span>
+                <span id="resourceTypeResult" class="result-value">instance</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource ID</span>
+                <span id="resourceIdResult" class="result-value">i-0123456789abcdef0</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Separator</span>
+                <span id="separatorResult" class="result-value">/</span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Resource</span>
+                <span id="resourceResult" class="result-value">instance/i-0123456789abcdef0</span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Resource path</span>
+                <span id="resourcePathResult" class="result-value">i-0123456789abcdef0</span>
+              </div>
+            </div>
+
+            <div class="code-box">
+              <span class="code-label">Parsed JSON</span>
+              <pre id="jsonOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button id="copyJsonButton" class="button primary-button" type="button">
+                Copy JSON
+              </button>
+
+              <button id="downloadButton" class="button secondary-button" type="button">
+                Download JSON
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>AWS ARN Structure</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Standard format</th>
+                <td><code>arn:partition:service:region:account-id:resource</code></td>
+              </tr>
+              <tr>
+                <th>Resource with slash</th>
+                <td><code>arn:aws:ec2:region:account-id:instance/resource-id</code></td>
+              </tr>
+              <tr>
+                <th>Resource with colon</th>
+                <td><code>arn:aws:lambda:region:account-id:function:function-name</code></td>
+              </tr>
+              <tr>
+                <th>Global service example</th>
+                <td><code>arn:aws:iam::account-id:role/role-name</code></td>
+              </tr>
+              <tr>
+                <th>S3 example</th>
+                <td><code>arn:aws:s3:::bucket-name</code></td>
+              </tr>
+              <tr>
+                <th>Common partitions</th>
+                <td><code>aws</code>, <code>aws-cn</code>, <code>aws-us-gov</code>, <code>aws-iso</code>, <code>aws-iso-b</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var arnInput = document.getElementById("arnInput");
+        var message = document.getElementById("message");
+        var jsonOutput = document.getElementById("jsonOutput");
+        var statusBadge = document.getElementById("statusBadge");
+        var currentResult = null;
+
+        var resultFields = {
+          prefix: document.getElementById("prefixResult"),
+          partition: document.getElementById("partitionResult"),
+          service: document.getElementById("serviceResult"),
+          region: document.getElementById("regionResult"),
+          accountId: document.getElementById("accountResult"),
+          resourceType: document.getElementById("resourceTypeResult"),
+          resourceId: document.getElementById("resourceIdResult"),
+          separator: document.getElementById("separatorResult"),
+          resource: document.getElementById("resourceResult"),
+          resourcePath: document.getElementById("resourcePathResult")
+        };
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function findResourceParts(resource) {
+          var slashIndex = resource.indexOf("/");
+          var colonIndex = resource.indexOf(":");
+          var separatorIndex = -1;
+          var separator = "";
+
+          if (slashIndex >= 0 && colonIndex >= 0) {
+            separatorIndex = Math.min(slashIndex, colonIndex);
+            separator = resource.charAt(separatorIndex);
+          } else if (slashIndex >= 0) {
+            separatorIndex = slashIndex;
+            separator = "/";
+          } else if (colonIndex >= 0) {
+            separatorIndex = colonIndex;
+            separator = ":";
+          }
+
+          if (separatorIndex < 0) {
+            return {
+              resourceType: "",
+              resourceId: resource,
+              resourcePath: resource,
+              separator: ""
+            };
+          }
+
+          return {
+            resourceType: resource.slice(0, separatorIndex),
+            resourceId: resource.slice(separatorIndex + 1),
+            resourcePath: resource.slice(separatorIndex + 1),
+            separator: separator
+          };
+        }
+
+        function validateArn(value) {
+          if (!value) {
+            return "Enter an AWS ARN.";
+          }
+
+          if (!value.startsWith("arn:")) {
+            return 'ARN must start with "arn:".';
+          }
+
+          var parts = value.split(":");
+
+          if (parts.length < 6) {
+            return "ARN must contain at least six colon-separated sections.";
+          }
+
+          if (parts[0] !== "arn") {
+            return 'The ARN prefix must be "arn".';
+          }
+
+          if (!parts[1]) {
+            return "Partition is missing.";
+          }
+
+          if (!parts[2]) {
+            return "Service is missing.";
+          }
+
+          if (!parts.slice(5).join(":")) {
+            return "Resource section is missing.";
+          }
+
+          if (parts[4] && !/^\d{12}$/.test(parts[4])) {
+            return "Account ID must be empty or contain exactly 12 digits.";
+          }
+
+          return "";
+        }
+
+        function parseArn(showSuccess) {
+          var value = arnInput.value.trim();
+          var error = validateArn(value);
+          var parts;
+          var resource;
+          var resourceParts;
+
+          clearMessage();
+
+          if (error) {
+            currentResult = null;
+            statusBadge.textContent = "Invalid ARN";
+            statusBadge.className = "status invalid";
+
+            Object.keys(resultFields).forEach(function (key) {
+              resultFields[key].textContent = "—";
+            });
+
+            jsonOutput.textContent = error;
+
+            if (showSuccess) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          parts = value.split(":");
+          resource = parts.slice(5).join(":");
+          resourceParts = findResourceParts(resource);
+
+          currentResult = {
+            arn: value,
+            prefix: parts[0],
+            partition: parts[1],
+            service: parts[2],
+            region: parts[3] || "",
+            accountId: parts[4] || "",
+            resource: resource,
+            resourceType: resourceParts.resourceType,
+            resourceId: resourceParts.resourceId,
+            resourcePath: resourceParts.resourcePath,
+            separator: resourceParts.separator,
+            isGlobalResource: parts[3] === "",
+            hasAccountId: parts[4] !== ""
+          };
+
+          statusBadge.textContent = "Valid ARN";
+          statusBadge.className = "status valid";
+
+          resultFields.prefix.textContent = currentResult.prefix;
+          resultFields.partition.textContent = currentResult.partition;
+          resultFields.service.textContent = currentResult.service;
+          resultFields.region.textContent = currentResult.region || "(global / empty)";
+          resultFields.accountId.textContent =
+            currentResult.accountId || "(not included)";
+          resultFields.resourceType.textContent =
+            currentResult.resourceType || "(not separated)";
+          resultFields.resourceId.textContent =
+            currentResult.resourceId || "(empty)";
+          resultFields.separator.textContent =
+            currentResult.separator || "(none)";
+          resultFields.resource.textContent = currentResult.resource;
+          resultFields.resourcePath.textContent =
+            currentResult.resourcePath || "(empty)";
+
+          jsonOutput.textContent = JSON.stringify(currentResult, null, 2);
+
+          if (showSuccess) {
+            showMessage("ARN parsed successfully.", "success");
+          }
+        }
+
+        function copyText(text, successMessage) {
+          if (!text) {
+            showMessage("There is no content to copy.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(text)
+            .then(function () {
+              showMessage(successMessage, "success");
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the content manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadJson() {
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentResult) {
+            showMessage("Parse a valid ARN before downloading.", "error");
+            return;
+          }
+
+          blob = new Blob(
+            [JSON.stringify(currentResult, null, 2) + "\n"],
+            { type: "application/json;charset=utf-8" }
+          );
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "parsed-aws-arn.json";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("Parsed ARN JSON downloaded.", "success");
+        }
+
+        document
+          .getElementById("parseButton")
+          .addEventListener("click", function () {
+            parseArn(true);
+          });
+
+        document
+          .getElementById("copyArnButton")
+          .addEventListener("click", function () {
+            copyText(arnInput.value.trim(), "ARN copied successfully.");
+          });
+
+        document
+          .getElementById("copyJsonButton")
+          .addEventListener("click", function () {
+            copyText(
+              currentResult ? JSON.stringify(currentResult, null, 2) : "",
+              "Parsed JSON copied successfully."
+            );
+          });
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadJson);
+
+        document
+          .getElementById("clearButton")
+          .addEventListener("click", function () {
+            arnInput.value = "";
+            parseArn(false);
+            arnInput.focus();
+          });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            arnInput.value = button.getAttribute("data-arn") || "";
+            parseArn(true);
+          });
+        });
+
+        arnInput.addEventListener("input", function () {
+          parseArn(false);
+        });
+
+        parseArn(false);
+      });
+    </script>
+  </body>
+</html>

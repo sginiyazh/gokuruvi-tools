@@ -1,0 +1,1294 @@
+---
+const pageTitle = "AWS IAM Policy Generator | Gokuruvi Tools";
+const description =
+  "Generate AWS IAM policy JSON with effects, actions, resources, conditions, principals, Sid values, validation, copy, and download options.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/aws-iam-policy-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #ea580c;
+        --primary-dark: #c2410c;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #fff7ed, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #fff7ed;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .code-box {
+        margin-top: 18px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 650px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/network">Network</a>
+          <a class="active" href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>AWS IAM Policy Generator</h1>
+        <p>
+          Generate AWS IAM policy JSON with actions, resources, effects,
+          conditions, principals, Sid values, presets, validation, copy, and
+          download options.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Policy Configuration</h2>
+            <p class="card-description">
+              Configure one IAM policy statement and generate a complete JSON
+              policy document.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="s3-read">
+                S3 Read Only
+              </button>
+              <button class="preset" type="button" data-preset="s3-full">
+                S3 Bucket Access
+              </button>
+              <button class="preset" type="button" data-preset="ec2-read">
+                EC2 Read Only
+              </button>
+              <button class="preset" type="button" data-preset="cloudwatch">
+                CloudWatch Logs
+              </button>
+              <button class="preset" type="button" data-preset="secrets">
+                Secrets Manager
+              </button>
+              <button class="preset" type="button" data-preset="deny-region">
+                Deny Other Regions
+              </button>
+            </div>
+
+            <h3 class="section-title">Policy Details</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="versionSelect">Policy version</label>
+                <select id="versionSelect">
+                  <option value="2012-10-17" selected>2012-10-17</option>
+                  <option value="2008-10-17">2008-10-17</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sidInput">Statement ID (Sid)</label>
+                <input
+                  id="sidInput"
+                  type="text"
+                  value="AllowS3ReadOnly"
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="effectSelect">Effect</label>
+                <select id="effectSelect">
+                  <option value="Allow" selected>Allow</option>
+                  <option value="Deny">Deny</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="policyTypeSelect">Policy type</label>
+                <select id="policyTypeSelect">
+                  <option value="identity" selected>
+                    Identity-based policy
+                  </option>
+                  <option value="resource">Resource-based policy</option>
+                  <option value="trust">Role trust policy</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="section-title">Actions and Resources</h3>
+
+            <div class="form-group">
+              <label for="actionsInput">Actions</label>
+              <textarea
+                id="actionsInput"
+                placeholder="s3:GetObject&#10;s3:ListBucket"
+              >s3:GetObject
+s3:ListBucket</textarea>
+              <p>Enter one AWS action per line.</p>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="notActionInput" type="checkbox" />
+              <label for="notActionInput">Use NotAction</label>
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+              <label for="resourcesInput">Resources</label>
+              <textarea
+                id="resourcesInput"
+                placeholder="arn:aws:s3:::example-bucket&#10;arn:aws:s3:::example-bucket/*"
+              >arn:aws:s3:::example-bucket
+arn:aws:s3:::example-bucket/*</textarea>
+              <p>Enter one ARN or wildcard resource per line.</p>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="notResourceInput" type="checkbox" />
+              <label for="notResourceInput">Use NotResource</label>
+            </div>
+
+            <div id="principalSection" class="conditional-section">
+              <h3 class="section-title">Principal</h3>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="principalTypeSelect">Principal type</label>
+                  <select id="principalTypeSelect">
+                    <option value="AWS" selected>AWS</option>
+                    <option value="Service">Service</option>
+                    <option value="Federated">Federated</option>
+                    <option value="CanonicalUser">CanonicalUser</option>
+                    <option value="*">Everyone (*)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="principalValuesInput">Principal values</label>
+                  <textarea
+                    id="principalValuesInput"
+                    placeholder="arn:aws:iam::123456789012:root"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input id="notPrincipalInput" type="checkbox" />
+                <label for="notPrincipalInput">Use NotPrincipal</label>
+              </div>
+            </div>
+
+            <h3 class="section-title">Condition</h3>
+
+            <div class="checkbox-item">
+              <input id="conditionEnabledInput" type="checkbox" />
+              <label for="conditionEnabledInput">
+                Add a condition block
+              </label>
+            </div>
+
+            <div id="conditionSection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="conditionOperatorInput">
+                    Condition operator
+                  </label>
+                  <input
+                    id="conditionOperatorInput"
+                    type="text"
+                    value="StringEquals"
+                    placeholder="Example: StringEquals"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="conditionKeyInput">Condition key</label>
+                  <input
+                    id="conditionKeyInput"
+                    type="text"
+                    value="aws:RequestedRegion"
+                    placeholder="Example: aws:RequestedRegion"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="conditionValuesInput">Condition values</label>
+                <textarea
+                  id="conditionValuesInput"
+                  placeholder="me-central-1"
+                >me-central-1</textarea>
+                <p>Enter one condition value per line.</p>
+              </div>
+            </div>
+
+            <h3 class="section-title">Output Options</h3>
+
+            <div class="checkbox-item">
+              <input id="minifyInput" type="checkbox" />
+              <label for="minifyInput">Generate minified JSON</label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="includePolicyNameInput" type="checkbox" />
+              <label for="includePolicyNameInput">
+                Include policy name in download filename
+              </label>
+            </div>
+
+            <div id="policyNameSection" class="conditional-section">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="policyNameInput">Policy name</label>
+                <input
+                  id="policyNameInput"
+                  type="text"
+                  value="S3ReadOnlyPolicy"
+                />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Policy
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated IAM Policy</h2>
+            <p class="card-description">
+              Review permissions carefully before attaching the policy.
+            </p>
+
+            <div class="code-box">
+              <span class="code-label">AWS IAM Policy JSON</span>
+              <pre id="codeOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy JSON
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download Policy
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Effect</span>
+                <span id="resultEffect" class="result-value">Allow</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Policy type</span>
+                <span id="resultPolicyType" class="result-value">
+                  Identity
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Actions</span>
+                <span id="resultActions" class="result-value">2</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resources</span>
+                <span id="resultResources" class="result-value">2</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Follow least-privilege principles. Avoid wildcard actions and
+              wildcard resources unless they are required and carefully
+              reviewed.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>AWS IAM Policy Reference</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Validate policy syntax</th>
+                <td>
+                  <code>aws accessanalyzer validate-policy --policy-document file://policy.json --policy-type IDENTITY_POLICY</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Create a customer-managed policy</th>
+                <td>
+                  <code>aws iam create-policy --policy-name MyPolicy --policy-document file://policy.json</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Create a new policy version</th>
+                <td>
+                  <code>aws iam create-policy-version --policy-arn POLICY_ARN --policy-document file://policy.json --set-as-default</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Simulate a principal policy</th>
+                <td>
+                  <code>aws iam simulate-principal-policy --policy-source-arn PRINCIPAL_ARN --action-names s3:GetObject</code>
+                </td>
+              </tr>
+              <tr>
+                <th>List attached role policies</th>
+                <td>
+                  <code>aws iam list-attached-role-policies --role-name ROLE_NAME</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          version: document.getElementById("versionSelect"),
+          sid: document.getElementById("sidInput"),
+          effect: document.getElementById("effectSelect"),
+          policyType: document.getElementById("policyTypeSelect"),
+          actions: document.getElementById("actionsInput"),
+          notAction: document.getElementById("notActionInput"),
+          resources: document.getElementById("resourcesInput"),
+          notResource: document.getElementById("notResourceInput"),
+          principalType: document.getElementById("principalTypeSelect"),
+          principalValues: document.getElementById(
+            "principalValuesInput"
+          ),
+          notPrincipal: document.getElementById("notPrincipalInput"),
+          conditionEnabled: document.getElementById(
+            "conditionEnabledInput"
+          ),
+          conditionOperator: document.getElementById(
+            "conditionOperatorInput"
+          ),
+          conditionKey: document.getElementById("conditionKeyInput"),
+          conditionValues: document.getElementById(
+            "conditionValuesInput"
+          ),
+          minify: document.getElementById("minifyInput"),
+          includePolicyName: document.getElementById(
+            "includePolicyNameInput"
+          ),
+          policyName: document.getElementById("policyNameInput")
+        };
+
+        var principalSection = document.getElementById("principalSection");
+        var conditionSection = document.getElementById("conditionSection");
+        var policyNameSection = document.getElementById(
+          "policyNameSection"
+        );
+        var codeOutput = document.getElementById("codeOutput");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+        var currentJson = "";
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function splitLines(value) {
+          return String(value)
+            .split(/\r?\n/)
+            .map(function (line) {
+              return line.trim();
+            })
+            .filter(function (line) {
+              return line.length > 0;
+            });
+        }
+
+        function valueOrArray(values) {
+          return values.length === 1 ? values[0] : values;
+        }
+
+        function isValidSid(value) {
+          return !value || /^[A-Za-z0-9]+$/.test(value);
+        }
+
+        function validateForm() {
+          var actions = splitLines(fields.actions.value);
+          var resources = splitLines(fields.resources.value);
+          var principals = splitLines(fields.principalValues.value);
+          var conditionValues = splitLines(fields.conditionValues.value);
+          var needsPrincipal =
+            fields.policyType.value === "resource" ||
+            fields.policyType.value === "trust";
+
+          if (!isValidSid(fields.sid.value.trim())) {
+            return "Sid can contain only letters and numbers.";
+          }
+
+          if (actions.length === 0) {
+            return "Enter at least one AWS action.";
+          }
+
+          if (
+            fields.policyType.value !== "trust" &&
+            resources.length === 0
+          ) {
+            return "Enter at least one resource ARN or wildcard.";
+          }
+
+          if (needsPrincipal && principals.length === 0) {
+            return "Enter at least one principal.";
+          }
+
+          if (
+            fields.conditionEnabled.checked &&
+            !fields.conditionOperator.value.trim()
+          ) {
+            return "Condition operator is required.";
+          }
+
+          if (
+            fields.conditionEnabled.checked &&
+            !fields.conditionKey.value.trim()
+          ) {
+            return "Condition key is required.";
+          }
+
+          if (
+            fields.conditionEnabled.checked &&
+            conditionValues.length === 0
+          ) {
+            return "Enter at least one condition value.";
+          }
+
+          if (
+            fields.includePolicyName.checked &&
+            !fields.policyName.value.trim()
+          ) {
+            return "Policy name is required.";
+          }
+
+          return "";
+        }
+
+        function buildPrincipal() {
+          var type = fields.principalType.value;
+          var values = splitLines(fields.principalValues.value);
+
+          if (type === "*") {
+            return "*";
+          }
+
+          var principal = {};
+          principal[type] = valueOrArray(values);
+          return principal;
+        }
+
+        function buildPolicy() {
+          var actions = splitLines(fields.actions.value);
+          var resources = splitLines(fields.resources.value);
+          var conditionValues = splitLines(fields.conditionValues.value);
+          var statement = {};
+          var actionKey = fields.notAction.checked
+            ? "NotAction"
+            : "Action";
+          var resourceKey = fields.notResource.checked
+            ? "NotResource"
+            : "Resource";
+          var principalKey = fields.notPrincipal.checked
+            ? "NotPrincipal"
+            : "Principal";
+          var needsPrincipal =
+            fields.policyType.value === "resource" ||
+            fields.policyType.value === "trust";
+
+          if (fields.sid.value.trim()) {
+            statement.Sid = fields.sid.value.trim();
+          }
+
+          statement.Effect = fields.effect.value;
+          statement[actionKey] = valueOrArray(actions);
+
+          if (fields.policyType.value !== "trust") {
+            statement[resourceKey] = valueOrArray(resources);
+          }
+
+          if (needsPrincipal) {
+            statement[principalKey] = buildPrincipal();
+          }
+
+          if (fields.conditionEnabled.checked) {
+            statement.Condition = {};
+            statement.Condition[fields.conditionOperator.value.trim()] = {};
+            statement.Condition[fields.conditionOperator.value.trim()][
+              fields.conditionKey.value.trim()
+            ] = valueOrArray(conditionValues);
+          }
+
+          return {
+            Version: fields.version.value,
+            Statement: [statement]
+          };
+        }
+
+        function generatePolicy(showError) {
+          var error = validateForm();
+          var policy;
+          var actions;
+          var resources;
+          var labels = {
+            identity: "Identity",
+            resource: "Resource",
+            trust: "Trust"
+          };
+
+          clearMessage();
+
+          if (error) {
+            currentJson = "";
+            codeOutput.textContent = error;
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          policy = buildPolicy();
+          currentJson = fields.minify.checked
+            ? JSON.stringify(policy)
+            : JSON.stringify(policy, null, 2);
+
+          currentJson += "\n";
+          codeOutput.textContent = currentJson;
+
+          actions = splitLines(fields.actions.value);
+          resources = splitLines(fields.resources.value);
+
+          document.getElementById("resultEffect").textContent =
+            fields.effect.value;
+          document.getElementById("resultPolicyType").textContent =
+            labels[fields.policyType.value];
+          document.getElementById("resultActions").textContent =
+            String(actions.length);
+          document.getElementById("resultResources").textContent =
+            fields.policyType.value === "trust"
+              ? "Not required"
+              : String(resources.length);
+        }
+
+        function updateSections() {
+          var needsPrincipal =
+            fields.policyType.value === "resource" ||
+            fields.policyType.value === "trust";
+
+          principalSection.classList.toggle("active", needsPrincipal);
+          conditionSection.classList.toggle(
+            "active",
+            fields.conditionEnabled.checked
+          );
+          policyNameSection.classList.toggle(
+            "active",
+            fields.includePolicyName.checked
+          );
+
+          if (fields.policyType.value === "trust") {
+            fields.resources.disabled = true;
+            fields.notResource.disabled = true;
+          } else {
+            fields.resources.disabled = false;
+            fields.notResource.disabled = false;
+          }
+
+          generatePolicy(false);
+        }
+
+        function applyPreset(preset) {
+          fields.version.value = "2012-10-17";
+          fields.policyType.value = "identity";
+          fields.effect.value = "Allow";
+          fields.notAction.checked = false;
+          fields.notResource.checked = false;
+          fields.notPrincipal.checked = false;
+          fields.conditionEnabled.checked = false;
+          fields.principalValues.value = "";
+
+          if (preset === "s3-read") {
+            fields.sid.value = "AllowS3ReadOnly";
+            fields.actions.value = "s3:GetObject\ns3:ListBucket";
+            fields.resources.value =
+              "arn:aws:s3:::example-bucket\n" +
+              "arn:aws:s3:::example-bucket/*";
+            fields.policyName.value = "S3ReadOnlyPolicy";
+          } else if (preset === "s3-full") {
+            fields.sid.value = "AllowS3BucketAccess";
+            fields.actions.value =
+              "s3:GetObject\n" +
+              "s3:PutObject\n" +
+              "s3:DeleteObject\n" +
+              "s3:ListBucket";
+            fields.resources.value =
+              "arn:aws:s3:::example-bucket\n" +
+              "arn:aws:s3:::example-bucket/*";
+            fields.policyName.value = "S3BucketAccessPolicy";
+          } else if (preset === "ec2-read") {
+            fields.sid.value = "AllowEC2ReadOnly";
+            fields.actions.value =
+              "ec2:DescribeInstances\n" +
+              "ec2:DescribeImages\n" +
+              "ec2:DescribeVolumes\n" +
+              "ec2:DescribeSnapshots";
+            fields.resources.value = "*";
+            fields.policyName.value = "EC2ReadOnlyPolicy";
+          } else if (preset === "cloudwatch") {
+            fields.sid.value = "AllowCloudWatchLogs";
+            fields.actions.value =
+              "logs:CreateLogGroup\n" +
+              "logs:CreateLogStream\n" +
+              "logs:PutLogEvents";
+            fields.resources.value =
+              "arn:aws:logs:me-central-1:123456789012:log-group:/aws/example:*";
+            fields.policyName.value = "CloudWatchLogsPolicy";
+          } else if (preset === "secrets") {
+            fields.sid.value = "AllowReadSecret";
+            fields.actions.value =
+              "secretsmanager:GetSecretValue\n" +
+              "secretsmanager:DescribeSecret";
+            fields.resources.value =
+              "arn:aws:secretsmanager:me-central-1:123456789012:secret:example-*";
+            fields.policyName.value = "SecretsManagerReadPolicy";
+          } else if (preset === "deny-region") {
+            fields.sid.value = "DenyOutsideApprovedRegion";
+            fields.effect.value = "Deny";
+            fields.actions.value = "*";
+            fields.resources.value = "*";
+            fields.conditionEnabled.checked = true;
+            fields.conditionOperator.value = "StringNotEquals";
+            fields.conditionKey.value = "aws:RequestedRegion";
+            fields.conditionValues.value = "me-central-1";
+            fields.policyName.value = "RegionRestrictionPolicy";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.version.value = "2012-10-17";
+          fields.sid.value = "AllowS3ReadOnly";
+          fields.effect.value = "Allow";
+          fields.policyType.value = "identity";
+          fields.actions.value = "s3:GetObject\ns3:ListBucket";
+          fields.notAction.checked = false;
+          fields.resources.value =
+            "arn:aws:s3:::example-bucket\n" +
+            "arn:aws:s3:::example-bucket/*";
+          fields.notResource.checked = false;
+          fields.principalType.value = "AWS";
+          fields.principalValues.value = "";
+          fields.notPrincipal.checked = false;
+          fields.conditionEnabled.checked = false;
+          fields.conditionOperator.value = "StringEquals";
+          fields.conditionKey.value = "aws:RequestedRegion";
+          fields.conditionValues.value = "me-central-1";
+          fields.minify.checked = false;
+          fields.includePolicyName.checked = false;
+          fields.policyName.value = "S3ReadOnlyPolicy";
+
+          updateSections();
+          fields.sid.focus();
+        }
+
+        function copyPolicy() {
+          if (!currentJson) {
+            showMessage("Generate a valid IAM policy first.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(currentJson)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("IAM policy copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the JSON manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadPolicy() {
+          var filename = "iam-policy.json";
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentJson) {
+            showMessage("Generate a valid IAM policy first.", "error");
+            return;
+          }
+
+          if (fields.includePolicyName.checked) {
+            filename =
+              fields.policyName.value
+                .trim()
+                .replace(/[^A-Za-z0-9._-]+/g, "-") +
+              ".json";
+          }
+
+          blob = new Blob([currentJson], {
+            type: "application/json;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filename;
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage(filename + " downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generatePolicy(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyPolicy);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadPolicy);
+
+        fields.policyType.addEventListener("change", updateSections);
+        fields.conditionEnabled.addEventListener("change", updateSections);
+        fields.includePolicyName.addEventListener("change", updateSections);
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generatePolicy(false);
+          });
+
+          if (
+            key !== "policyType" &&
+            key !== "conditionEnabled" &&
+            key !== "includePolicyName"
+          ) {
+            field.addEventListener("change", function () {
+              generatePolicy(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "s3-read");
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>
