@@ -1,0 +1,1273 @@
+---
+const pageTitle = "Binary to IPv4 Converter | Gokuruvi Tools";
+const description =
+  "Free binary to IPv4 converter to convert a valid 32-bit binary address into dotted-decimal IPv4, hexadecimal, and decimal formats.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/binary-to-ipv4"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1120px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1080px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 135px;
+        padding: 14px;
+        resize: vertical;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.7;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .input-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .character-count.valid {
+        color: var(--success-text);
+        font-weight: 700;
+      }
+
+      .character-count.invalid {
+        color: var(--error-text);
+        font-weight: 700;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .option-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .option-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+      }
+
+      .option-row label {
+        margin: 0;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .result-placeholder {
+        padding: 45px 20px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .result-placeholder span {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 48px;
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results.active {
+        display: block;
+      }
+
+      .result-summary {
+        margin-bottom: 18px;
+        padding: 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #1e3a8a;
+      }
+
+      .result-summary strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .ip-output {
+        padding: 20px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+        text-align: center;
+      }
+
+      .ip-output-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .ip-output-value {
+        display: block;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: clamp(25px, 5vw, 34px);
+        font-weight: 800;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .octet-section {
+        margin-top: 20px;
+      }
+
+      .octet-section h3 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .octet-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .octet-table th,
+      .octet-table td {
+        padding: 11px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .octet-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+        font-size: 13px;
+      }
+
+      .octet-table td {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+      }
+
+      .copy-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .info-section {
+        max-width: 1080px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .info-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .example-box {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .example-box code {
+        display: inline-block;
+        margin-top: 4px;
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 850px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .info-section {
+          padding: 22px;
+        }
+
+        .button-row,
+        .copy-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .octet-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .input-meta {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Binary to IPv4 Converter</h1>
+
+        <p>
+          Convert a 32-bit binary value into a dotted-decimal IPv4 address and
+          view its decimal, hexadecimal, address class, and IP type.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Enter Binary Address</h2>
+
+            <p class="card-description">
+              Enter four 8-bit binary octets or one continuous 32-bit binary
+              value.
+            </p>
+
+            <div class="form-group">
+              <label for="binaryInput">Binary IPv4 Address</label>
+
+              <textarea
+                id="binaryInput"
+                placeholder="Example: 11000000.10101000.00000001.00001010"
+                autocomplete="off"
+                spellcheck="false"
+              >11000000.10101000.00000001.00001010</textarea>
+
+              <div class="input-meta">
+                <span>
+                  Dots and spaces are accepted and removed automatically.
+                </span>
+
+                <span id="characterCount" class="character-count">
+                  32 / 32 bits
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <p class="preset-title">Quick examples</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset"
+                  type="button"
+                  data-binary="11000000.10101000.00000001.00001010"
+                >
+                  192.168.1.10
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-binary="00001010.00000000.00000000.00000001"
+                >
+                  10.0.0.1
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-binary="01111111.00000000.00000000.00000001"
+                >
+                  127.0.0.1
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-binary="00001000.00001000.00001000.00001000"
+                >
+                  8.8.8.8
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-binary="11111111.11111111.11111111.11111111"
+                >
+                  255.255.255.255
+                </button>
+              </div>
+            </div>
+
+            <div class="option-row">
+              <input
+                id="formatInput"
+                type="checkbox"
+                checked
+              />
+
+              <label for="formatInput">
+                Format binary into four octets automatically
+              </label>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="convertButton"
+                class="button primary-button"
+                type="button"
+              >
+                Convert to IPv4
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Conversion Result</h2>
+
+            <div id="resultPlaceholder" class="result-placeholder">
+              <span aria-hidden="true">🌐</span>
+
+              Enter a 32-bit binary address and click
+              <strong>Convert to IPv4</strong>.
+            </div>
+
+            <div id="results" class="results">
+              <div id="resultSummary" class="result-summary"></div>
+
+              <div class="ip-output">
+                <span class="ip-output-label">
+                  IPv4 Address
+                </span>
+
+                <span
+                  id="resultIp"
+                  class="ip-output-value"
+                >
+                  -
+                </span>
+              </div>
+
+              <div class="result-grid">
+                <div class="result-item full">
+                  <span class="result-label">
+                    Formatted Binary
+                  </span>
+
+                  <span
+                    id="resultBinary"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">
+                    Continuous 32-bit Binary
+                  </span>
+
+                  <span
+                    id="resultBinaryFull"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Unsigned Decimal
+                  </span>
+
+                  <span
+                    id="resultDecimal"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Hexadecimal
+                  </span>
+
+                  <span
+                    id="resultHex"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">IP Type</span>
+
+                  <span
+                    id="resultType"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">IP Class</span>
+
+                  <span
+                    id="resultClass"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">
+                    Reverse DNS Format
+                  </span>
+
+                  <span
+                    id="resultReverseDns"
+                    class="result-value"
+                  >
+                    -
+                  </span>
+                </div>
+              </div>
+
+              <div class="octet-section">
+                <h3>Binary Octet Details</h3>
+
+                <table class="octet-table">
+                  <thead>
+                    <tr>
+                      <th>Octet</th>
+                      <th>Binary</th>
+                      <th>Decimal</th>
+                      <th>Hex</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="octetTableBody"></tbody>
+                </table>
+              </div>
+
+              <div class="copy-row">
+                <button
+                  id="copyIpButton"
+                  class="button primary-button"
+                  type="button"
+                >
+                  Copy IPv4
+                </button>
+
+                <button
+                  id="copyResultButton"
+                  class="button secondary-button"
+                  type="button"
+                >
+                  Copy Full Result
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="info-section">
+          <h2>How Binary to IPv4 Conversion Works</h2>
+
+          <p>
+            A binary IPv4 address contains 32 bits divided into four 8-bit
+            octets. Each binary octet is converted into a decimal number from
+            0 to 255.
+          </p>
+
+          <div class="example-box">
+            <p>
+              Binary:
+              <code>
+                11000000.10101000.00000001.00001010
+              </code>
+            </p>
+
+            <p>
+              IPv4:
+              <code>192.168.1.10</code>
+            </p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const binaryInput = document.getElementById("binaryInput");
+      const formatInput = document.getElementById("formatInput");
+      const characterCount =
+        document.getElementById("characterCount");
+
+      const convertButton =
+        document.getElementById("convertButton");
+      const resetButton =
+        document.getElementById("resetButton");
+      const copyIpButton =
+        document.getElementById("copyIpButton");
+      const copyResultButton =
+        document.getElementById("copyResultButton");
+
+      const message = document.getElementById("message");
+      const results = document.getElementById("results");
+      const resultPlaceholder =
+        document.getElementById("resultPlaceholder");
+
+      let currentIp = "";
+      let currentResult = "";
+
+      function cleanBinary(value) {
+        return value.replace(/[\s._-]/g, "");
+      }
+
+      function formatBinary(value) {
+        return value.match(/.{1,8}/g)?.join(".") || value;
+      }
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function updateCharacterCount() {
+        const cleaned = cleanBinary(binaryInput.value);
+        const bitCount = cleaned.length;
+
+        characterCount.textContent = `${bitCount} / 32 bits`;
+
+        if (
+          bitCount === 32 &&
+          /^[01]+$/.test(cleaned)
+        ) {
+          characterCount.className =
+            "character-count valid";
+        } else {
+          characterCount.className =
+            "character-count invalid";
+        }
+      }
+
+      function getIpClass(firstOctet) {
+        if (firstOctet >= 1 && firstOctet <= 126) {
+          return "Class A";
+        }
+
+        if (firstOctet === 127) {
+          return "Loopback";
+        }
+
+        if (firstOctet >= 128 && firstOctet <= 191) {
+          return "Class B";
+        }
+
+        if (firstOctet >= 192 && firstOctet <= 223) {
+          return "Class C";
+        }
+
+        if (firstOctet >= 224 && firstOctet <= 239) {
+          return "Class D";
+        }
+
+        if (firstOctet >= 240 && firstOctet <= 255) {
+          return "Class E";
+        }
+
+        return "Reserved";
+      }
+
+      function getIpType(parts) {
+        const [first, second, third, fourth] = parts;
+
+        if (
+          first === 255 &&
+          second === 255 &&
+          third === 255 &&
+          fourth === 255
+        ) {
+          return "Limited Broadcast";
+        }
+
+        if (first === 0) {
+          return "Current Network / Reserved";
+        }
+
+        if (first === 10) {
+          return "Private";
+        }
+
+        if (
+          first === 100 &&
+          second >= 64 &&
+          second <= 127
+        ) {
+          return "Carrier-Grade NAT";
+        }
+
+        if (first === 127) {
+          return "Loopback";
+        }
+
+        if (first === 169 && second === 254) {
+          return "Link-local";
+        }
+
+        if (
+          first === 172 &&
+          second >= 16 &&
+          second <= 31
+        ) {
+          return "Private";
+        }
+
+        if (first === 192 && second === 168) {
+          return "Private";
+        }
+
+        if (
+          first === 192 &&
+          second === 0 &&
+          third === 2
+        ) {
+          return "Documentation Range";
+        }
+
+        if (
+          first === 198 &&
+          second === 51 &&
+          third === 100
+        ) {
+          return "Documentation Range";
+        }
+
+        if (
+          first === 203 &&
+          second === 0 &&
+          third === 113
+        ) {
+          return "Documentation Range";
+        }
+
+        if (first >= 224 && first <= 239) {
+          return "Multicast";
+        }
+
+        if (first >= 240) {
+          return "Reserved";
+        }
+
+        return "Public";
+      }
+
+      function convertBinary() {
+        clearMessage();
+
+        const cleaned = cleanBinary(binaryInput.value.trim());
+
+        if (!cleaned) {
+          showMessage(
+            "Enter a 32-bit binary IPv4 address.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (!/^[01]+$/.test(cleaned)) {
+          results.classList.remove("active");
+          resultPlaceholder.style.display = "block";
+
+          showMessage(
+            "Binary input may contain only 0 and 1. Dots and spaces are optional.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (cleaned.length !== 32) {
+          results.classList.remove("active");
+          resultPlaceholder.style.display = "block";
+
+          showMessage(
+            `A binary IPv4 address must contain exactly 32 bits. Your input contains ${cleaned.length} bits.`,
+            "error"
+          );
+
+          return;
+        }
+
+        const binaryOctets = cleaned.match(/.{8}/g);
+        const decimalOctets = binaryOctets.map((octet) =>
+          parseInt(octet, 2)
+        );
+
+        const hexOctets = decimalOctets.map((octet) =>
+          octet.toString(16).padStart(2, "0").toUpperCase()
+        );
+
+        const formattedBinary = binaryOctets.join(".");
+        const ipAddress = decimalOctets.join(".");
+
+        const unsignedDecimal =
+          decimalOctets[0] * 16777216 +
+          decimalOctets[1] * 65536 +
+          decimalOctets[2] * 256 +
+          decimalOctets[3];
+
+        const hexadecimal = `0x${hexOctets.join("")}`;
+
+        const ipType = getIpType(decimalOctets);
+        const ipClass = getIpClass(decimalOctets[0]);
+
+        const reverseDns =
+          `${decimalOctets.slice().reverse().join(".")}.in-addr.arpa`;
+
+        document.getElementById("resultIp").textContent =
+          ipAddress;
+
+        document.getElementById("resultBinary").textContent =
+          formattedBinary;
+
+        document.getElementById("resultBinaryFull").textContent =
+          cleaned;
+
+        document.getElementById("resultDecimal").textContent =
+          unsignedDecimal.toLocaleString("en-US");
+
+        document.getElementById("resultHex").textContent =
+          hexadecimal;
+
+        document.getElementById("resultType").textContent =
+          ipType;
+
+        document.getElementById("resultClass").textContent =
+          ipClass;
+
+        document.getElementById(
+          "resultReverseDns"
+        ).textContent = reverseDns;
+
+        document.getElementById("resultSummary").innerHTML = `
+          <strong>${formattedBinary}</strong>
+          The binary address converts to
+          <strong>${ipAddress}</strong>.
+        `;
+
+        const tableBody =
+          document.getElementById("octetTableBody");
+
+        tableBody.innerHTML = "";
+
+        binaryOctets.forEach((binaryOctet, index) => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${binaryOctet}</td>
+            <td>${decimalOctets[index]}</td>
+            <td>${hexOctets[index]}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+
+        if (formatInput.checked) {
+          binaryInput.value = formattedBinary;
+        }
+
+        currentIp = ipAddress;
+
+        currentResult = [
+          "Binary to IPv4 Conversion",
+          "-------------------------",
+          `Binary: ${formattedBinary}`,
+          `32-bit Binary: ${cleaned}`,
+          `IPv4 Address: ${ipAddress}`,
+          `Unsigned Decimal: ${unsignedDecimal}`,
+          `Hexadecimal: ${hexadecimal}`,
+          `IP Type: ${ipType}`,
+          `IP Class: ${ipClass}`,
+          `Reverse DNS: ${reverseDns}`,
+        ].join("\n");
+
+        resultPlaceholder.style.display = "none";
+        results.classList.add("active");
+
+        updateCharacterCount();
+
+        showMessage(
+          "Binary address converted successfully.",
+          "success"
+        );
+      }
+
+      function resetConverter() {
+        binaryInput.value =
+          "11000000.10101000.00000001.00001010";
+
+        formatInput.checked = true;
+
+        currentIp = "";
+        currentResult = "";
+
+        clearMessage();
+
+        results.classList.remove("active");
+        resultPlaceholder.style.display = "block";
+
+        updateCharacterCount();
+        binaryInput.focus();
+      }
+
+      async function copyText(text, button) {
+        if (!text) {
+          showMessage(
+            "Convert a binary address before copying.",
+            "error"
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+
+          const originalText = button.textContent;
+          button.textContent = "Copied!";
+
+          setTimeout(() => {
+            button.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the result manually.",
+            "error"
+          );
+        }
+      }
+
+      convertButton.addEventListener(
+        "click",
+        convertBinary
+      );
+
+      resetButton.addEventListener(
+        "click",
+        resetConverter
+      );
+
+      copyIpButton.addEventListener("click", () => {
+        copyText(currentIp, copyIpButton);
+      });
+
+      copyResultButton.addEventListener("click", () => {
+        copyText(currentResult, copyResultButton);
+      });
+
+      binaryInput.addEventListener(
+        "input",
+        updateCharacterCount
+      );
+
+      binaryInput.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          (event.ctrlKey || event.metaKey)
+        ) {
+          convertBinary();
+        }
+      });
+
+      document.querySelectorAll(".preset").forEach((button) => {
+        button.addEventListener("click", () => {
+          binaryInput.value = button.dataset.binary;
+          updateCharacterCount();
+          convertBinary();
+        });
+      });
+
+      updateCharacterCount();
+      convertBinary();
+    </script>
+  </body>
+</html>

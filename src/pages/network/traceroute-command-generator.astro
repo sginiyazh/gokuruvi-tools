@@ -1,0 +1,1550 @@
+---
+const pageTitle = "Traceroute Command Generator | Gokuruvi Tools";
+const description =
+  "Generate traceroute and tracert commands for Linux, macOS, and Windows with IPv4, IPv6, timeout, hop limit, packet size, protocol, and DNS options.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/traceroute-command-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1140px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 800px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1120px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      input:disabled,
+      select:disabled {
+        cursor: not-allowed;
+        background: #f1f5f9;
+        color: #94a3b8;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .command-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #e2e8f0;
+      }
+
+      .command-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .command-output {
+        min-height: 65px;
+        margin: 0;
+        overflow-x: auto;
+        color: #ffffff;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .explanation {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 11px;
+        background: #eff6ff;
+      }
+
+      .explanation h3 {
+        margin: 0 0 10px;
+        color: #1e3a8a;
+        font-size: 17px;
+      }
+
+      .explanation-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #1e3a8a;
+      }
+
+      .explanation-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1120px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 880px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .checkbox-grid,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Traceroute Command Generator</h1>
+
+        <p>
+          Generate traceroute commands for Linux and macOS or tracert commands
+          for Windows with hop limits, timeouts, protocol selection, IPv4,
+          IPv6, and DNS options.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Configure Traceroute</h2>
+
+            <p class="card-description">
+              Enter the destination and select the options required for your
+              operating system.
+            </p>
+
+            <div class="form-group">
+              <label for="targetInput">Hostname or IP address</label>
+
+              <input
+                id="targetInput"
+                type="text"
+                value="example.com"
+                placeholder="Example: example.com or 8.8.8.8"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Enter a hostname, IPv4 address, or IPv6 address without
+                http://, https://, or a path.
+              </p>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="osSelect">Operating system</label>
+
+                <select id="osSelect">
+                  <option value="linux" selected>Linux</option>
+                  <option value="macos">macOS</option>
+                  <option value="windows">Windows</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ipVersionSelect">IP version</label>
+
+                <select id="ipVersionSelect">
+                  <option value="auto" selected>Automatic</option>
+                  <option value="ipv4">IPv4 only</option>
+                  <option value="ipv6">IPv6 only</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="maxHopsInput">Maximum hops</label>
+
+                <input
+                  id="maxHopsInput"
+                  type="number"
+                  value="30"
+                  min="1"
+                  max="255"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="timeoutInput">
+                  Timeout
+                  <span id="timeoutUnit">(seconds)</span>
+                </label>
+
+                <input
+                  id="timeoutInput"
+                  type="number"
+                  value="5"
+                  min="1"
+                  max="60000"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="queriesInput">Queries per hop</label>
+
+                <input
+                  id="queriesInput"
+                  type="number"
+                  value="3"
+                  min="1"
+                  max="10"
+                />
+
+                <p class="help-text" id="queriesHelp">
+                  Number of probe packets sent to each hop.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label for="packetSizeInput">Packet size in bytes</label>
+
+                <input
+                  id="packetSizeInput"
+                  type="number"
+                  value="60"
+                  min="28"
+                  max="65000"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="protocolSelect">Probe protocol</label>
+
+                <select id="protocolSelect">
+                  <option value="default" selected>Default UDP</option>
+                  <option value="icmp">ICMP</option>
+                  <option value="tcp">TCP SYN</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="portInput">Destination port</label>
+
+                <input
+                  id="portInput"
+                  type="number"
+                  value="443"
+                  min="1"
+                  max="65535"
+                  disabled
+                />
+
+                <p class="help-text">
+                  Used mainly with TCP traceroute.
+                </p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Additional options</label>
+
+              <div class="checkbox-grid">
+                <div class="checkbox-item">
+                  <input
+                    id="numericInput"
+                    type="checkbox"
+                  />
+
+                  <label for="numericInput">
+                    Numeric output only
+                  </label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="dontFragmentInput"
+                    type="checkbox"
+                  />
+
+                  <label for="dontFragmentInput">
+                    Do not fragment
+                  </label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="resolveNamesInput"
+                    type="checkbox"
+                    checked
+                  />
+
+                  <label for="resolveNamesInput">
+                    Resolve hostnames
+                  </label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="verboseInput"
+                    type="checkbox"
+                  />
+
+                  <label for="verboseInput">
+                    Verbose output
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="preset-title">Quick targets</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset"
+                  type="button"
+                  data-target="8.8.8.8"
+                >
+                  Google DNS
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-target="1.1.1.1"
+                >
+                  Cloudflare DNS
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-target="example.com"
+                >
+                  Example.com
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-target="google.com"
+                >
+                  Google.com
+                </button>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Command
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated Command</h2>
+
+            <p class="card-description">
+              Review the generated command before running it in your terminal
+              or command prompt.
+            </p>
+
+            <div class="command-box">
+              <span class="command-label">Traceroute command</span>
+
+              <pre id="commandOutput" class="command-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Command
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Operating System</span>
+                <span id="resultOs" class="result-value">Linux</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Command</span>
+                <span id="resultCommandName" class="result-value">
+                  traceroute
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Destination</span>
+                <span id="resultTarget" class="result-value">
+                  example.com
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Maximum Hops</span>
+                <span id="resultHops" class="result-value">30</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">IP Version</span>
+                <span id="resultIpVersion" class="result-value">
+                  Automatic
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Protocol</span>
+                <span id="resultProtocol" class="result-value">
+                  Default UDP
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Command Shell</span>
+                <span id="resultShell" class="result-value">
+                  Bash / compatible shell
+                </span>
+              </div>
+            </div>
+
+            <div class="explanation">
+              <h3>Command explanation</h3>
+
+              <ul
+                id="explanationList"
+                class="explanation-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              Some firewalls and routers block or limit traceroute probes.
+              Asterisks in the output do not always mean that the destination
+              is unreachable.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Common Traceroute Examples</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Linux/macOS</th>
+                <th>Windows</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Basic route trace</td>
+                <td><code>traceroute example.com</code></td>
+                <td><code>tracert example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Numeric output only</td>
+                <td><code>traceroute -n example.com</code></td>
+                <td><code>tracert -d example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Maximum 20 hops</td>
+                <td><code>traceroute -m 20 example.com</code></td>
+                <td><code>tracert -h 20 example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>IPv4 only</td>
+                <td><code>traceroute -4 example.com</code></td>
+                <td><code>tracert -4 example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>IPv6 only</td>
+                <td><code>traceroute -6 example.com</code></td>
+                <td><code>tracert -6 example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>ICMP probes</td>
+                <td><code>traceroute -I example.com</code></td>
+                <td><code>tracert example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>TCP port 443</td>
+                <td><code>traceroute -T -p 443 example.com</code></td>
+                <td>Not supported by tracert</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const targetInput = document.getElementById("targetInput");
+      const osSelect = document.getElementById("osSelect");
+      const ipVersionSelect =
+        document.getElementById("ipVersionSelect");
+      const maxHopsInput =
+        document.getElementById("maxHopsInput");
+      const timeoutInput =
+        document.getElementById("timeoutInput");
+      const queriesInput =
+        document.getElementById("queriesInput");
+      const packetSizeInput =
+        document.getElementById("packetSizeInput");
+      const protocolSelect =
+        document.getElementById("protocolSelect");
+      const portInput = document.getElementById("portInput");
+
+      const numericInput =
+        document.getElementById("numericInput");
+      const dontFragmentInput =
+        document.getElementById("dontFragmentInput");
+      const resolveNamesInput =
+        document.getElementById("resolveNamesInput");
+      const verboseInput =
+        document.getElementById("verboseInput");
+
+      const timeoutUnit =
+        document.getElementById("timeoutUnit");
+      const queriesHelp =
+        document.getElementById("queriesHelp");
+
+      const generateButton =
+        document.getElementById("generateButton");
+      const resetButton =
+        document.getElementById("resetButton");
+      const copyButton =
+        document.getElementById("copyButton");
+
+      const commandOutput =
+        document.getElementById("commandOutput");
+      const explanationList =
+        document.getElementById("explanationList");
+      const message = document.getElementById("message");
+
+      let currentCommand = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function addExplanation(text) {
+        const item = document.createElement("li");
+        item.textContent = text;
+        explanationList.appendChild(item);
+      }
+
+      function isValidTarget(target) {
+        if (!target || target.length > 253) {
+          return false;
+        }
+
+        if (
+          target.includes("://") ||
+          target.includes("/") ||
+          target.includes("?") ||
+          target.includes("#") ||
+          target.includes("@") ||
+          /\s/.test(target)
+        ) {
+          return false;
+        }
+
+        const ipv4Pattern =
+          /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/;
+
+        const ipv6Pattern =
+          /^(?:[0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$/i;
+
+        const hostnamePattern =
+          /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+
+        return (
+          ipv4Pattern.test(target) ||
+          ipv6Pattern.test(target) ||
+          hostnamePattern.test(target)
+        );
+      }
+
+      function quoteTarget(target) {
+        if (/^[a-z0-9.:_-]+$/i.test(target)) {
+          return target;
+        }
+
+        return `"${target.replace(/"/g, '\\"')}"`;
+      }
+
+      function updateAvailableOptions() {
+        const os = osSelect.value;
+        const isWindows = os === "windows";
+        const isTcp = protocolSelect.value === "tcp";
+
+        timeoutUnit.textContent = isWindows
+          ? "(milliseconds)"
+          : "(seconds)";
+
+        queriesInput.disabled = isWindows;
+        packetSizeInput.disabled = isWindows;
+        protocolSelect.disabled = isWindows;
+        portInput.disabled = isWindows || !isTcp;
+        dontFragmentInput.disabled = isWindows;
+        verboseInput.disabled = isWindows;
+
+        queriesHelp.textContent = isWindows
+          ? "Windows tracert does not support changing queries per hop."
+          : "Number of probe packets sent to each hop.";
+
+        if (isWindows && Number(timeoutInput.value) < 100) {
+          timeoutInput.value = "5000";
+        }
+
+        if (!isWindows && Number(timeoutInput.value) > 600) {
+          timeoutInput.value = "5";
+        }
+
+        generateCommand();
+      }
+
+      function generateUnixCommand(target, os) {
+        const parts = ["traceroute"];
+        const explanations = [];
+
+        const ipVersion = ipVersionSelect.value;
+        const maxHops = Number(maxHopsInput.value);
+        const timeout = Number(timeoutInput.value);
+        const queries = Number(queriesInput.value);
+        const packetSize = Number(packetSizeInput.value);
+        const protocol = protocolSelect.value;
+        const port = Number(portInput.value);
+
+        if (ipVersion === "ipv4") {
+          parts.push("-4");
+          explanations.push("Force traceroute to use IPv4.");
+        }
+
+        if (ipVersion === "ipv6") {
+          parts.push("-6");
+          explanations.push("Force traceroute to use IPv6.");
+        }
+
+        parts.push("-m", String(maxHops));
+
+        explanations.push(
+          `Stop after a maximum of ${maxHops} hop${maxHops === 1 ? "" : "s"}.`
+        );
+
+        parts.push("-w", String(timeout));
+
+        explanations.push(
+          `Wait up to ${timeout} second${timeout === 1 ? "" : "s"} for each probe response.`
+        );
+
+        parts.push("-q", String(queries));
+
+        explanations.push(
+          `Send ${queries} probe${queries === 1 ? "" : "s"} to each hop.`
+        );
+
+        if (
+          numericInput.checked ||
+          !resolveNamesInput.checked
+        ) {
+          parts.push("-n");
+
+          explanations.push(
+            "Display numeric IP addresses without DNS name resolution."
+          );
+        }
+
+        if (protocol === "icmp") {
+          parts.push("-I");
+
+          explanations.push(
+            "Use ICMP echo request probes."
+          );
+        }
+
+        if (protocol === "tcp") {
+          parts.push("-T", "-p", String(port));
+
+          explanations.push(
+            `Use TCP SYN probes directed to port ${port}.`
+          );
+        }
+
+        if (dontFragmentInput.checked) {
+          if (os === "linux") {
+            parts.push("--mtu");
+
+            explanations.push(
+              "Attempt to discover the path MTU without fragmenting packets."
+            );
+          } else {
+            explanations.push(
+              "The Linux path MTU option was not added because macOS traceroute uses different options."
+            );
+          }
+        }
+
+        if (verboseInput.checked) {
+          parts.push("-v");
+
+          explanations.push(
+            "Display additional diagnostic information."
+          );
+        }
+
+        parts.push(quoteTarget(target));
+
+        if (packetSize > 0) {
+          parts.push(String(packetSize));
+
+          explanations.push(
+            `Use a probe packet size of ${packetSize} bytes.`
+          );
+        }
+
+        explanations.push(
+          `Trace the network path to ${target}.`
+        );
+
+        return {
+          command: parts.join(" "),
+          explanations,
+        };
+      }
+
+      function generateWindowsCommand(target) {
+        const parts = ["tracert"];
+        const explanations = [];
+
+        const ipVersion = ipVersionSelect.value;
+        const maxHops = Number(maxHopsInput.value);
+        const timeout = Number(timeoutInput.value);
+
+        if (ipVersion === "ipv4") {
+          parts.push("-4");
+          explanations.push("Force tracert to use IPv4.");
+        }
+
+        if (ipVersion === "ipv6") {
+          parts.push("-6");
+          explanations.push("Force tracert to use IPv6.");
+        }
+
+        if (
+          numericInput.checked ||
+          !resolveNamesInput.checked
+        ) {
+          parts.push("-d");
+
+          explanations.push(
+            "Do not resolve IP addresses into hostnames."
+          );
+        }
+
+        parts.push("-h", String(maxHops));
+
+        explanations.push(
+          `Stop after a maximum of ${maxHops} hop${maxHops === 1 ? "" : "s"}.`
+        );
+
+        parts.push("-w", String(timeout));
+
+        explanations.push(
+          `Wait up to ${timeout} milliseconds for each response.`
+        );
+
+        parts.push(quoteTarget(target));
+
+        explanations.push(
+          `Trace the network route to ${target} using Windows tracert.`
+        );
+
+        return {
+          command: parts.join(" "),
+          explanations,
+        };
+      }
+
+      function generateCommand() {
+        clearMessage();
+
+        const target = targetInput.value.trim();
+        const os = osSelect.value;
+        const maxHops = Number(maxHopsInput.value);
+        const timeout = Number(timeoutInput.value);
+        const queries = Number(queriesInput.value);
+        const packetSize = Number(packetSizeInput.value);
+        const port = Number(portInput.value);
+
+        if (!isValidTarget(target)) {
+          currentCommand = "";
+          commandOutput.textContent =
+            "Enter a valid hostname, IPv4 address, or IPv6 address.";
+
+          explanationList.innerHTML = "";
+
+          showMessage(
+            "Enter a valid hostname, IPv4 address, or IPv6 address without a URL scheme or path.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          !Number.isInteger(maxHops) ||
+          maxHops < 1 ||
+          maxHops > 255
+        ) {
+          showMessage(
+            "Maximum hops must be between 1 and 255.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          !Number.isFinite(timeout) ||
+          timeout < 1
+        ) {
+          showMessage(
+            "Enter a valid timeout value.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          os !== "windows" &&
+          (!Number.isInteger(queries) ||
+            queries < 1 ||
+            queries > 10)
+        ) {
+          showMessage(
+            "Queries per hop must be between 1 and 10.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          os !== "windows" &&
+          (!Number.isInteger(packetSize) ||
+            packetSize < 28 ||
+            packetSize > 65000)
+        ) {
+          showMessage(
+            "Packet size must be between 28 and 65000 bytes.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          os !== "windows" &&
+          protocolSelect.value === "tcp" &&
+          (!Number.isInteger(port) ||
+            port < 1 ||
+            port > 65535)
+        ) {
+          showMessage(
+            "TCP destination port must be between 1 and 65535.",
+            "error"
+          );
+
+          return;
+        }
+
+        const generated =
+          os === "windows"
+            ? generateWindowsCommand(target)
+            : generateUnixCommand(target, os);
+
+        currentCommand = generated.command;
+        commandOutput.textContent = currentCommand;
+
+        explanationList.innerHTML = "";
+
+        generated.explanations.forEach((item) => {
+          addExplanation(item);
+        });
+
+        const osNames = {
+          linux: "Linux",
+          macos: "macOS",
+          windows: "Windows",
+        };
+
+        const ipVersionNames = {
+          auto: "Automatic",
+          ipv4: "IPv4 only",
+          ipv6: "IPv6 only",
+        };
+
+        const protocolNames = {
+          default: "Default UDP",
+          icmp: "ICMP",
+          tcp: "TCP SYN",
+        };
+
+        document.getElementById("resultOs").textContent =
+          osNames[os];
+
+        document.getElementById(
+          "resultCommandName"
+        ).textContent =
+          os === "windows" ? "tracert" : "traceroute";
+
+        document.getElementById(
+          "resultTarget"
+        ).textContent = target;
+
+        document.getElementById(
+          "resultHops"
+        ).textContent = String(maxHops);
+
+        document.getElementById(
+          "resultIpVersion"
+        ).textContent =
+          ipVersionNames[ipVersionSelect.value];
+
+        document.getElementById(
+          "resultProtocol"
+        ).textContent =
+          os === "windows"
+            ? "ICMP"
+            : protocolNames[protocolSelect.value];
+
+        document.getElementById(
+          "resultShell"
+        ).textContent =
+          os === "windows"
+            ? "Command Prompt / PowerShell"
+            : "Bash / compatible shell";
+      }
+
+      function resetGenerator() {
+        targetInput.value = "example.com";
+        osSelect.value = "linux";
+        ipVersionSelect.value = "auto";
+        maxHopsInput.value = "30";
+        timeoutInput.value = "5";
+        queriesInput.value = "3";
+        packetSizeInput.value = "60";
+        protocolSelect.value = "default";
+        portInput.value = "443";
+
+        numericInput.checked = false;
+        dontFragmentInput.checked = false;
+        resolveNamesInput.checked = true;
+        verboseInput.checked = false;
+
+        clearMessage();
+        updateAvailableOptions();
+        targetInput.focus();
+      }
+
+      async function copyCommand() {
+        if (!currentCommand) {
+          showMessage(
+            "Generate a command before copying.",
+            "error"
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentCommand
+          );
+
+          const originalText = copyButton.textContent;
+          copyButton.textContent = "Copied!";
+
+          showMessage(
+            "Traceroute command copied successfully.",
+            "success"
+          );
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the command manually.",
+            "error"
+          );
+        }
+      }
+
+      generateButton.addEventListener(
+        "click",
+        generateCommand
+      );
+
+      resetButton.addEventListener(
+        "click",
+        resetGenerator
+      );
+
+      copyButton.addEventListener(
+        "click",
+        copyCommand
+      );
+
+      osSelect.addEventListener(
+        "change",
+        updateAvailableOptions
+      );
+
+      protocolSelect.addEventListener(
+        "change",
+        updateAvailableOptions
+      );
+
+      [
+        targetInput,
+        ipVersionSelect,
+        maxHopsInput,
+        timeoutInput,
+        queriesInput,
+        packetSizeInput,
+        portInput,
+        numericInput,
+        dontFragmentInput,
+        resolveNamesInput,
+        verboseInput,
+      ].forEach((element) => {
+        element.addEventListener(
+          "input",
+          generateCommand
+        );
+
+        element.addEventListener(
+          "change",
+          generateCommand
+        );
+      });
+
+      targetInput.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key === "Enter") {
+            generateCommand();
+          }
+        }
+      );
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            targetInput.value =
+              button.dataset.target || "";
+
+            generateCommand();
+          });
+        });
+
+      updateAvailableOptions();
+    </script>
+  </body>
+</html>

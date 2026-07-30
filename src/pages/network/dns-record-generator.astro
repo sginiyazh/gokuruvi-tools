@@ -1,0 +1,2540 @@
+---
+const pageTitle = "DNS Record Generator | Gokuruvi Tools";
+const description =
+  "Generate valid DNS records for A, AAAA, CNAME, MX, TXT, NS, PTR, SRV, CAA, and SOA record types with BIND zone-file and provider-friendly output.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/dns-record-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1140px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 820px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1140px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .input-row.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      input:disabled,
+      select:disabled,
+      textarea:disabled {
+        cursor: not-allowed;
+        background: #f1f5f9;
+        color: #94a3b8;
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .dynamic-fields {
+        margin-top: 4px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .dynamic-fields h3 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: 17px;
+      }
+
+      .field-section {
+        display: none;
+      }
+
+      .field-section.active {
+        display: block;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .preset-group {
+        margin-top: 20px;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .output-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .output-tab {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .output-tab.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .record-box {
+        margin-top: 14px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+      }
+
+      .record-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .record-output {
+        min-height: 90px;
+        margin: 0;
+        overflow-x: auto;
+        color: #ffffff;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .explanation {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid var(--info-border);
+        border-radius: 11px;
+        background: var(--info-bg);
+      }
+
+      .explanation h3 {
+        margin: 0 0 10px;
+        color: var(--info-text);
+        font-size: 17px;
+      }
+
+      .explanation-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--info-text);
+      }
+
+      .explanation-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1140px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .info-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 900px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .input-row.three,
+        .result-grid,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>DNS Record Generator</h1>
+
+        <p>
+          Generate valid DNS records for websites, mail servers, domain
+          verification, reverse DNS, service discovery, certificate authority
+          restrictions, and authoritative DNS zones.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Configure DNS Record</h2>
+
+            <p class="card-description">
+              Select a record type and enter the required DNS values.
+            </p>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="recordTypeSelect">Record type</label>
+
+                <select id="recordTypeSelect">
+                  <option value="A" selected>A — IPv4 address</option>
+                  <option value="AAAA">AAAA — IPv6 address</option>
+                  <option value="CNAME">CNAME — Alias</option>
+                  <option value="MX">MX — Mail server</option>
+                  <option value="TXT">TXT — Text value</option>
+                  <option value="NS">NS — Name server</option>
+                  <option value="PTR">PTR — Reverse lookup</option>
+                  <option value="SRV">SRV — Service location</option>
+                  <option value="CAA">
+                    CAA — Certificate authority
+                  </option>
+                  <option value="SOA">
+                    SOA — Start of authority
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ttlSelect">TTL</label>
+
+                <select id="ttlSelect">
+                  <option value="60">60 seconds</option>
+                  <option value="300" selected>300 seconds</option>
+                  <option value="600">600 seconds</option>
+                  <option value="1800">1,800 seconds</option>
+                  <option value="3600">3,600 seconds</option>
+                  <option value="14400">14,400 seconds</option>
+                  <option value="86400">86,400 seconds</option>
+                  <option value="custom">Custom TTL</option>
+                </select>
+              </div>
+            </div>
+
+            <div
+              id="customTtlGroup"
+              class="form-group"
+              style="display:none;"
+            >
+              <label for="customTtlInput">
+                Custom TTL in seconds
+              </label>
+
+              <input
+                id="customTtlInput"
+                type="number"
+                value="300"
+                min="1"
+                max="2147483647"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="domainInput">DNS zone or domain</label>
+
+              <input
+                id="domainInput"
+                type="text"
+                value="example.com"
+                placeholder="Example: example.com"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Used to build the complete fully qualified domain name.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="hostInput">Host or record name</label>
+
+              <input
+                id="hostInput"
+                type="text"
+                value="www"
+                placeholder="Example: www, mail, @ or _sip._tcp"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Use <strong>@</strong> for the zone root.
+              </p>
+            </div>
+
+            <div class="dynamic-fields">
+              <h3 id="recordFieldsTitle">A Record Details</h3>
+
+              <div id="sectionA" class="field-section active">
+                <div class="form-group">
+                  <label for="ipv4Input">IPv4 address</label>
+
+                  <input
+                    id="ipv4Input"
+                    type="text"
+                    value="192.0.2.10"
+                    placeholder="Example: 192.0.2.10"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionAAAA" class="field-section">
+                <div class="form-group">
+                  <label for="ipv6Input">IPv6 address</label>
+
+                  <input
+                    id="ipv6Input"
+                    type="text"
+                    value="2001:db8::10"
+                    placeholder="Example: 2001:db8::10"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionCNAME" class="field-section">
+                <div class="form-group">
+                  <label for="cnameTargetInput">
+                    Canonical target hostname
+                  </label>
+
+                  <input
+                    id="cnameTargetInput"
+                    type="text"
+                    value="example.com"
+                    placeholder="Example: example.com"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                  />
+
+                  <p class="help-text">
+                    Enter a hostname, not an IP address.
+                  </p>
+                </div>
+              </div>
+
+              <div id="sectionMX" class="field-section">
+                <div class="input-row">
+                  <div class="form-group">
+                    <label for="mxPriorityInput">
+                      Priority
+                    </label>
+
+                    <input
+                      id="mxPriorityInput"
+                      type="number"
+                      value="10"
+                      min="0"
+                      max="65535"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mxTargetInput">
+                      Mail server
+                    </label>
+
+                    <input
+                      id="mxTargetInput"
+                      type="text"
+                      value="mail.example.com"
+                      placeholder="Example: mail.example.com"
+                      autocomplete="off"
+                      autocapitalize="none"
+                      spellcheck="false"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div id="sectionTXT" class="field-section">
+                <div class="form-group">
+                  <label for="txtValueInput">TXT value</label>
+
+                  <textarea
+                    id="txtValueInput"
+                    placeholder="Enter SPF, DKIM, DMARC or verification text"
+                  >v=spf1 include:_spf.example.com -all</textarea>
+
+                  <p class="help-text">
+                    Double quotes and backslashes will be escaped automatically.
+                  </p>
+                </div>
+              </div>
+
+              <div id="sectionNS" class="field-section">
+                <div class="form-group">
+                  <label for="nsTargetInput">
+                    Authoritative name server
+                  </label>
+
+                  <input
+                    id="nsTargetInput"
+                    type="text"
+                    value="ns1.example.com"
+                    placeholder="Example: ns1.example.com"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionPTR" class="field-section">
+                <div class="form-group">
+                  <label for="ptrTargetInput">
+                    Target hostname
+                  </label>
+
+                  <input
+                    id="ptrTargetInput"
+                    type="text"
+                    value="server.example.com"
+                    placeholder="Example: server.example.com"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionSRV" class="field-section">
+                <div class="input-row three">
+                  <div class="form-group">
+                    <label for="srvPriorityInput">
+                      Priority
+                    </label>
+
+                    <input
+                      id="srvPriorityInput"
+                      type="number"
+                      value="10"
+                      min="0"
+                      max="65535"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="srvWeightInput">Weight</label>
+
+                    <input
+                      id="srvWeightInput"
+                      type="number"
+                      value="5"
+                      min="0"
+                      max="65535"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="srvPortInput">Port</label>
+
+                    <input
+                      id="srvPortInput"
+                      type="number"
+                      value="443"
+                      min="1"
+                      max="65535"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="srvTargetInput">
+                    Service target
+                  </label>
+
+                  <input
+                    id="srvTargetInput"
+                    type="text"
+                    value="service.example.com"
+                    placeholder="Example: service.example.com"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionCAA" class="field-section">
+                <div class="input-row">
+                  <div class="form-group">
+                    <label for="caaFlagSelect">Flag</label>
+
+                    <select id="caaFlagSelect">
+                      <option value="0" selected>
+                        0 — Standard
+                      </option>
+                      <option value="128">
+                        128 — Critical
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="caaTagSelect">Tag</label>
+
+                    <select id="caaTagSelect">
+                      <option value="issue" selected>
+                        issue
+                      </option>
+                      <option value="issuewild">
+                        issuewild
+                      </option>
+                      <option value="iodef">
+                        iodef
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="caaValueInput">CAA value</label>
+
+                  <input
+                    id="caaValueInput"
+                    type="text"
+                    value="letsencrypt.org"
+                    placeholder="Example: letsencrypt.org"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+
+              <div id="sectionSOA" class="field-section">
+                <div class="form-group">
+                  <label for="soaPrimaryNsInput">
+                    Primary name server
+                  </label>
+
+                  <input
+                    id="soaPrimaryNsInput"
+                    type="text"
+                    value="ns1.example.com"
+                    placeholder="Example: ns1.example.com"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="soaEmailInput">
+                    Administrator email
+                  </label>
+
+                  <input
+                    id="soaEmailInput"
+                    type="email"
+                    value="hostmaster@example.com"
+                    placeholder="Example: hostmaster@example.com"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+
+                  <p class="help-text">
+                    It will be converted to DNS SOA format automatically.
+                  </p>
+                </div>
+
+                <div class="input-row">
+                  <div class="form-group">
+                    <label for="soaSerialInput">Serial</label>
+
+                    <input
+                      id="soaSerialInput"
+                      type="number"
+                      value="2026073001"
+                      min="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="soaRefreshInput">
+                      Refresh
+                    </label>
+
+                    <input
+                      id="soaRefreshInput"
+                      type="number"
+                      value="3600"
+                      min="1"
+                    />
+                  </div>
+                </div>
+
+                <div class="input-row three">
+                  <div class="form-group">
+                    <label for="soaRetryInput">Retry</label>
+
+                    <input
+                      id="soaRetryInput"
+                      type="number"
+                      value="900"
+                      min="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="soaExpireInput">Expire</label>
+
+                    <input
+                      id="soaExpireInput"
+                      type="number"
+                      value="1209600"
+                      min="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="soaMinimumInput">
+                      Minimum
+                    </label>
+
+                    <input
+                      id="soaMinimumInput"
+                      type="number"
+                      value="300"
+                      min="1"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+              <div class="checkbox-item">
+                <input
+                  id="absoluteNamesInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="absoluteNamesInput">
+                  Add trailing dots to complete hostnames
+                </label>
+              </div>
+            </div>
+
+            <div class="preset-group">
+              <p class="preset-title">Quick record templates</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="A"
+                >
+                  Website A
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="AAAA"
+                >
+                  Website AAAA
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="CNAME"
+                >
+                  WWW Alias
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="MX"
+                >
+                  Mail MX
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="TXT"
+                >
+                  SPF TXT
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="SRV"
+                >
+                  Service SRV
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-record="CAA"
+                >
+                  Let's Encrypt CAA
+                </button>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate DNS Record
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated DNS Record</h2>
+
+            <p class="card-description">
+              Choose the output format required by your DNS provider or zone
+              file.
+            </p>
+
+            <div class="output-tabs" role="tablist">
+              <button
+                class="output-tab active"
+                type="button"
+                data-format="zone"
+              >
+                BIND Zone
+              </button>
+
+              <button
+                class="output-tab"
+                type="button"
+                data-format="provider"
+              >
+                Provider Fields
+              </button>
+
+              <button
+                class="output-tab"
+                type="button"
+                data-format="json"
+              >
+                JSON
+              </button>
+            </div>
+
+            <div class="record-box">
+              <span id="recordLabel" class="record-label">
+                BIND zone-file record
+              </span>
+
+              <pre id="recordOutput" class="record-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Record
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Record Type</span>
+                <span id="resultType" class="result-value">A</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">TTL</span>
+                <span id="resultTtl" class="result-value">
+                  300 seconds
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Record Name</span>
+                <span id="resultName" class="result-value">
+                  www.example.com.
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">DNS Class</span>
+                <span class="result-value">IN</span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Record Value</span>
+                <span id="resultValue" class="result-value">
+                  192.0.2.10
+                </span>
+              </div>
+            </div>
+
+            <div class="explanation">
+              <h3>Record explanation</h3>
+
+              <ul
+                id="explanationList"
+                class="explanation-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              DNS provider forms differ. Some providers expect only the short
+              host name, while others expect a complete domain name. Verify the
+              generated record before publishing it.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>DNS Record Type Reference</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Purpose</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td><code>A</code></td>
+                <td>Maps a hostname to an IPv4 address.</td>
+                <td>
+                  <code>www 300 IN A 192.0.2.10</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>AAAA</code></td>
+                <td>Maps a hostname to an IPv6 address.</td>
+                <td>
+                  <code>www 300 IN AAAA 2001:db8::10</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>CNAME</code></td>
+                <td>Creates an alias for another hostname.</td>
+                <td>
+                  <code>www 300 IN CNAME example.com.</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>MX</code></td>
+                <td>Specifies a mail server and priority.</td>
+                <td>
+                  <code>@ 300 IN MX 10 mail.example.com.</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>TXT</code></td>
+                <td>Stores SPF, DKIM, DMARC or verification text.</td>
+                <td>
+                  <code>@ 300 IN TXT "v=spf1 -all"</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>NS</code></td>
+                <td>Defines an authoritative name server.</td>
+                <td>
+                  <code>@ 300 IN NS ns1.example.com.</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>PTR</code></td>
+                <td>Maps a reverse DNS name to a hostname.</td>
+                <td>
+                  <code>10 300 IN PTR server.example.com.</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>SRV</code></td>
+                <td>Defines a service target and port.</td>
+                <td>
+                  <code>
+                    _sip._tcp 300 IN SRV 10 5 5060 sip.example.com.
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>CAA</code></td>
+                <td>Restricts certificate-authority issuance.</td>
+                <td>
+                  <code>@ 300 IN CAA 0 issue "letsencrypt.org"</code>
+                </td>
+              </tr>
+
+              <tr>
+                <td><code>SOA</code></td>
+                <td>Defines zone authority and timing values.</td>
+                <td>
+                  <code>@ 300 IN SOA ns1.example.com. hostmaster.example.com. (...)</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>DNS Record Configuration Tips</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <strong>Use Correct TTL</strong>
+              <p>
+                Use a lower TTL before planned DNS changes and increase it
+                after the configuration becomes stable.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use Complete Targets</strong>
+              <p>
+                CNAME, MX, NS, PTR, SRV and SOA hostname targets should normally
+                be complete domain names.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>MX Priority</strong>
+              <p>
+                A lower MX priority number is preferred before a higher
+                priority number.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>CNAME Restriction</strong>
+              <p>
+                A CNAME name should generally not have other record types at
+                the same owner name.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>TXT Quoting</strong>
+              <p>
+                TXT values are represented inside quotation marks in standard
+                DNS zone-file syntax.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>DNS Propagation</strong>
+              <p>
+                Cached records can remain visible until their previous TTL
+                expires.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const recordTypeSelect =
+        document.getElementById("recordTypeSelect");
+
+      const ttlSelect =
+        document.getElementById("ttlSelect");
+
+      const customTtlGroup =
+        document.getElementById("customTtlGroup");
+
+      const customTtlInput =
+        document.getElementById("customTtlInput");
+
+      const domainInput =
+        document.getElementById("domainInput");
+
+      const hostInput =
+        document.getElementById("hostInput");
+
+      const absoluteNamesInput =
+        document.getElementById("absoluteNamesInput");
+
+      const generateButton =
+        document.getElementById("generateButton");
+
+      const resetButton =
+        document.getElementById("resetButton");
+
+      const copyButton =
+        document.getElementById("copyButton");
+
+      const recordOutput =
+        document.getElementById("recordOutput");
+
+      const recordLabel =
+        document.getElementById("recordLabel");
+
+      const explanationList =
+        document.getElementById("explanationList");
+
+      const message =
+        document.getElementById("message");
+
+      const recordFieldsTitle =
+        document.getElementById("recordFieldsTitle");
+
+      let selectedFormat = "zone";
+      let generatedData = null;
+      let currentCopyText = "";
+
+      const typeNames = {
+        A: "A Record Details",
+        AAAA: "AAAA Record Details",
+        CNAME: "CNAME Record Details",
+        MX: "MX Record Details",
+        TXT: "TXT Record Details",
+        NS: "NS Record Details",
+        PTR: "PTR Record Details",
+        SRV: "SRV Record Details",
+        CAA: "CAA Record Details",
+        SOA: "SOA Record Details",
+      };
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function getValue(id) {
+        return document.getElementById(id).value.trim();
+      }
+
+      function getNumber(id) {
+        return Number(document.getElementById(id).value);
+      }
+
+      function addExplanation(text) {
+        const item = document.createElement("li");
+        item.textContent = text;
+        explanationList.appendChild(item);
+      }
+
+      function normalizeDomain(value) {
+        return value
+          .trim()
+          .toLowerCase()
+          .replace(/^\.+|\.+$/g, "");
+      }
+
+      function normalizeHost(value) {
+        const host = value.trim();
+
+        if (!host || host === "@") {
+          return "@";
+        }
+
+        return host.toLowerCase().replace(/\.+$/g, "");
+      }
+
+      function isValidHostname(value) {
+        const hostname = value.replace(/\.$/, "");
+
+        if (
+          !hostname ||
+          hostname.length > 253 ||
+          hostname.includes("://") ||
+          hostname.includes("/") ||
+          /\s/.test(hostname)
+        ) {
+          return false;
+        }
+
+        return hostname
+          .split(".")
+          .every(
+            (label) =>
+              label.length >= 1 &&
+              label.length <= 63 &&
+              /^[a-z0-9_-]+$/i.test(label) &&
+              !label.startsWith("-") &&
+              !label.endsWith("-"),
+          );
+      }
+
+      function isValidIPv4(value) {
+        const parts = value.split(".");
+
+        return (
+          parts.length === 4 &&
+          parts.every(
+            (part) =>
+              /^\d{1,3}$/.test(part) &&
+              Number(part) >= 0 &&
+              Number(part) <= 255,
+          )
+        );
+      }
+
+      function isValidIPv6(value) {
+        return (
+          value.includes(":") &&
+          value.length <= 45 &&
+          /^[0-9a-f:.]+$/i.test(value)
+        );
+      }
+
+      function ensureDot(value) {
+        const cleaned = value.replace(/\.$/, "");
+
+        return absoluteNamesInput.checked
+          ? `${cleaned}.`
+          : cleaned;
+      }
+
+      function buildFqdn(host, domain) {
+        if (host === "@") {
+          return ensureDot(domain);
+        }
+
+        if (host.endsWith(`.${domain}`)) {
+          return ensureDot(host);
+        }
+
+        return ensureDot(`${host}.${domain}`);
+      }
+
+      function escapeTxt(value) {
+        return value
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/\r?\n/g, " ");
+      }
+
+      function getTtl() {
+        if (ttlSelect.value === "custom") {
+          return Number(customTtlInput.value);
+        }
+
+        return Number(ttlSelect.value);
+      }
+
+      function validateCommonFields() {
+        const domain = normalizeDomain(domainInput.value);
+        const host = normalizeHost(hostInput.value);
+        const ttl = getTtl();
+
+        if (!isValidHostname(domain)) {
+          showMessage(
+            "Enter a valid DNS zone or domain name.",
+            "error",
+          );
+
+          return null;
+        }
+
+        if (
+          host !== "@" &&
+          !isValidHostname(host)
+        ) {
+          showMessage(
+            "Enter a valid host name or use @ for the zone root.",
+            "error",
+          );
+
+          return null;
+        }
+
+        if (
+          !Number.isInteger(ttl) ||
+          ttl < 1 ||
+          ttl > 2147483647
+        ) {
+          showMessage(
+            "TTL must be a whole number between 1 and 2147483647 seconds.",
+            "error",
+          );
+
+          return null;
+        }
+
+        return {
+          domain,
+          host,
+          ttl,
+          fqdn: buildFqdn(host, domain),
+        };
+      }
+
+      function generateRecordData() {
+        clearMessage();
+
+        const common = validateCommonFields();
+
+        if (!common) {
+          return null;
+        }
+
+        const type = recordTypeSelect.value;
+        let value = "";
+        let zoneRdata = "";
+        let providerValue = "";
+        const details = {};
+        const explanations = [];
+
+        if (type === "A") {
+          value = getValue("ipv4Input");
+
+          if (!isValidIPv4(value)) {
+            showMessage(
+              "Enter a valid IPv4 address.",
+              "error",
+            );
+
+            return null;
+          }
+
+          zoneRdata = value;
+          providerValue = value;
+
+          explanations.push(
+            `The A record maps ${common.fqdn} to IPv4 address ${value}.`,
+          );
+        }
+
+        if (type === "AAAA") {
+          value = getValue("ipv6Input");
+
+          if (!isValidIPv6(value)) {
+            showMessage(
+              "Enter a valid IPv6 address.",
+              "error",
+            );
+
+            return null;
+          }
+
+          zoneRdata = value;
+          providerValue = value;
+
+          explanations.push(
+            `The AAAA record maps ${common.fqdn} to IPv6 address ${value}.`,
+          );
+        }
+
+        if (type === "CNAME") {
+          value = normalizeDomain(
+            getValue("cnameTargetInput"),
+          );
+
+          if (!isValidHostname(value)) {
+            showMessage(
+              "Enter a valid canonical target hostname.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const target = ensureDot(value);
+
+          zoneRdata = target;
+          providerValue = target;
+          details.target = target;
+
+          explanations.push(
+            `The CNAME record makes ${common.fqdn} an alias of ${target}.`,
+          );
+        }
+
+        if (type === "MX") {
+          const priority = getNumber("mxPriorityInput");
+          value = normalizeDomain(getValue("mxTargetInput"));
+
+          if (
+            !Number.isInteger(priority) ||
+            priority < 0 ||
+            priority > 65535
+          ) {
+            showMessage(
+              "MX priority must be between 0 and 65535.",
+              "error",
+            );
+
+            return null;
+          }
+
+          if (!isValidHostname(value)) {
+            showMessage(
+              "Enter a valid mail-server hostname.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const target = ensureDot(value);
+
+          zoneRdata = `${priority} ${target}`;
+          providerValue = target;
+          details.priority = priority;
+          details.target = target;
+
+          explanations.push(
+            `The MX record directs mail to ${target} with priority ${priority}.`,
+          );
+
+          explanations.push(
+            "Lower MX priority numbers are preferred before higher values.",
+          );
+        }
+
+        if (type === "TXT") {
+          value = getValue("txtValueInput");
+
+          if (!value) {
+            showMessage(
+              "Enter a TXT record value.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const escapedValue = escapeTxt(value);
+
+          zoneRdata = `"${escapedValue}"`;
+          providerValue = value;
+          details.text = value;
+
+          explanations.push(
+            "The TXT record stores text used for policies, authentication or domain verification.",
+          );
+        }
+
+        if (type === "NS") {
+          value = normalizeDomain(getValue("nsTargetInput"));
+
+          if (!isValidHostname(value)) {
+            showMessage(
+              "Enter a valid authoritative name-server hostname.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const target = ensureDot(value);
+
+          zoneRdata = target;
+          providerValue = target;
+          details.target = target;
+
+          explanations.push(
+            `The NS record delegates DNS authority to ${target}.`,
+          );
+        }
+
+        if (type === "PTR") {
+          value = normalizeDomain(getValue("ptrTargetInput"));
+
+          if (!isValidHostname(value)) {
+            showMessage(
+              "Enter a valid PTR target hostname.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const target = ensureDot(value);
+
+          zoneRdata = target;
+          providerValue = target;
+          details.target = target;
+
+          explanations.push(
+            `The PTR record maps the reverse DNS owner name to ${target}.`,
+          );
+        }
+
+        if (type === "SRV") {
+          const priority = getNumber("srvPriorityInput");
+          const weight = getNumber("srvWeightInput");
+          const port = getNumber("srvPortInput");
+          value = normalizeDomain(getValue("srvTargetInput"));
+
+          if (
+            !Number.isInteger(priority) ||
+            priority < 0 ||
+            priority > 65535
+          ) {
+            showMessage(
+              "SRV priority must be between 0 and 65535.",
+              "error",
+            );
+
+            return null;
+          }
+
+          if (
+            !Number.isInteger(weight) ||
+            weight < 0 ||
+            weight > 65535
+          ) {
+            showMessage(
+              "SRV weight must be between 0 and 65535.",
+              "error",
+            );
+
+            return null;
+          }
+
+          if (
+            !Number.isInteger(port) ||
+            port < 1 ||
+            port > 65535
+          ) {
+            showMessage(
+              "SRV port must be between 1 and 65535.",
+              "error",
+            );
+
+            return null;
+          }
+
+          if (!isValidHostname(value)) {
+            showMessage(
+              "Enter a valid SRV target hostname.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const target = ensureDot(value);
+
+          zoneRdata =
+            `${priority} ${weight} ${port} ${target}`;
+
+          providerValue = target;
+
+          details.priority = priority;
+          details.weight = weight;
+          details.port = port;
+          details.target = target;
+
+          explanations.push(
+            `The SRV record directs clients to ${target} on port ${port}.`,
+          );
+
+          explanations.push(
+            `Priority is ${priority} and weight is ${weight}.`,
+          );
+        }
+
+        if (type === "CAA") {
+          const flag = getNumber("caaFlagSelect");
+          const tag = getValue("caaTagSelect");
+          value = getValue("caaValueInput");
+
+          if (!value) {
+            showMessage(
+              "Enter a CAA value.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const escapedValue = escapeTxt(value);
+
+          zoneRdata =
+            `${flag} ${tag} "${escapedValue}"`;
+
+          providerValue = value;
+
+          details.flag = flag;
+          details.tag = tag;
+          details.value = value;
+
+          explanations.push(
+            `The CAA record uses the ${tag} property with flag ${flag}.`,
+          );
+
+          explanations.push(
+            `The authorized value is ${value}.`,
+          );
+        }
+
+        if (type === "SOA") {
+          const primaryNs = normalizeDomain(
+            getValue("soaPrimaryNsInput"),
+          );
+
+          const email = getValue("soaEmailInput");
+          const serial = getNumber("soaSerialInput");
+          const refresh = getNumber("soaRefreshInput");
+          const retry = getNumber("soaRetryInput");
+          const expire = getNumber("soaExpireInput");
+          const minimum = getNumber("soaMinimumInput");
+
+          if (!isValidHostname(primaryNs)) {
+            showMessage(
+              "Enter a valid SOA primary name server.",
+              "error",
+            );
+
+            return null;
+          }
+
+          if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+          ) {
+            showMessage(
+              "Enter a valid SOA administrator email address.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const numbers = [
+            serial,
+            refresh,
+            retry,
+            expire,
+            minimum,
+          ];
+
+          if (
+            numbers.some(
+              (number) =>
+                !Number.isInteger(number) ||
+                number < 1,
+            )
+          ) {
+            showMessage(
+              "All SOA timing and serial values must be positive whole numbers.",
+              "error",
+            );
+
+            return null;
+          }
+
+          const primaryTarget = ensureDot(primaryNs);
+          const emailParts = email.toLowerCase().split("@");
+
+          const responsibleMailbox = ensureDot(
+            `${emailParts[0].replace(/\./g, "\\.")}.${emailParts[1]}`,
+          );
+
+          zoneRdata =
+            `${primaryTarget} ${responsibleMailbox} (\n` +
+            `  ${serial} ; serial\n` +
+            `  ${refresh} ; refresh\n` +
+            `  ${retry} ; retry\n` +
+            `  ${expire} ; expire\n` +
+            `  ${minimum} ; minimum TTL\n` +
+            `)`;
+
+          providerValue = primaryTarget;
+
+          details.primaryNameServer = primaryTarget;
+          details.responsibleMailbox = responsibleMailbox;
+          details.serial = serial;
+          details.refresh = refresh;
+          details.retry = retry;
+          details.expire = expire;
+          details.minimum = minimum;
+
+          explanations.push(
+            `The SOA record defines ${primaryTarget} as the primary authoritative server.`,
+          );
+
+          explanations.push(
+            `The zone serial number is ${serial}.`,
+          );
+
+          explanations.push(
+            `Refresh, retry, expire and minimum values are expressed in seconds.`,
+          );
+        }
+
+        explanations.push(
+          `The TTL is ${common.ttl} seconds.`,
+        );
+
+        return {
+          type,
+          ttl: common.ttl,
+          domain: common.domain,
+          host: common.host,
+          fqdn: common.fqdn,
+          zoneRdata,
+          providerValue,
+          details,
+          explanations,
+        };
+      }
+
+      function renderOutput() {
+        if (!generatedData) {
+          return;
+        }
+
+        const data = generatedData;
+
+        if (selectedFormat === "zone") {
+          const owner =
+            data.host === "@"
+              ? "@"
+              : data.host;
+
+          currentCopyText =
+            `${owner}\t${data.ttl}\tIN\t${data.type}\t${data.zoneRdata}`;
+
+          recordLabel.textContent =
+            "BIND zone-file record";
+
+          recordOutput.textContent =
+            currentCopyText;
+        }
+
+        if (selectedFormat === "provider") {
+          const providerFields = {
+            Type: data.type,
+            Name: data.host,
+            TTL: String(data.ttl),
+            Value: data.providerValue,
+            ...data.details,
+          };
+
+          currentCopyText = Object.entries(
+            providerFields,
+          )
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("\n");
+
+          recordLabel.textContent =
+            "DNS provider form fields";
+
+          recordOutput.textContent =
+            currentCopyText;
+        }
+
+        if (selectedFormat === "json") {
+          currentCopyText = JSON.stringify(
+            {
+              type: data.type,
+              name: data.host,
+              fqdn: data.fqdn,
+              ttl: data.ttl,
+              class: "IN",
+              value: data.providerValue,
+              details: data.details,
+            },
+            null,
+            2,
+          );
+
+          recordLabel.textContent = "JSON record data";
+          recordOutput.textContent = currentCopyText;
+        }
+      }
+
+      function generateRecord() {
+        generatedData = generateRecordData();
+
+        if (!generatedData) {
+          currentCopyText = "";
+          recordOutput.textContent =
+            "Correct the highlighted DNS record information.";
+          explanationList.innerHTML = "";
+          return;
+        }
+
+        renderOutput();
+
+        explanationList.innerHTML = "";
+
+        generatedData.explanations.forEach(
+          addExplanation,
+        );
+
+        document.getElementById(
+          "resultType",
+        ).textContent = generatedData.type;
+
+        document.getElementById(
+          "resultTtl",
+        ).textContent =
+          `${generatedData.ttl} seconds`;
+
+        document.getElementById(
+          "resultName",
+        ).textContent = generatedData.fqdn;
+
+        document.getElementById(
+          "resultValue",
+        ).textContent =
+          generatedData.zoneRdata.replace(/\n/g, " ");
+
+        clearMessage();
+      }
+
+      function updateRecordFields() {
+        const type = recordTypeSelect.value;
+
+        document
+          .querySelectorAll(".field-section")
+          .forEach((section) => {
+            section.classList.remove("active");
+          });
+
+        document
+          .getElementById(`section${type}`)
+          .classList.add("active");
+
+        recordFieldsTitle.textContent =
+          typeNames[type];
+
+        if (type === "MX" || type === "NS" || type === "SOA") {
+          if (hostInput.value.trim() === "www") {
+            hostInput.value = "@";
+          }
+        }
+
+        if (type === "SRV") {
+          if (
+            hostInput.value.trim() === "www" ||
+            hostInput.value.trim() === "@"
+          ) {
+            hostInput.value = "_https._tcp";
+          }
+        }
+
+        generateRecord();
+      }
+
+      function updateTtlState() {
+        customTtlGroup.style.display =
+          ttlSelect.value === "custom"
+            ? "block"
+            : "none";
+
+        generateRecord();
+      }
+
+      function applyPreset(type) {
+        recordTypeSelect.value = type;
+
+        if (type === "A") {
+          hostInput.value = "www";
+          document.getElementById(
+            "ipv4Input",
+          ).value = "192.0.2.10";
+        }
+
+        if (type === "AAAA") {
+          hostInput.value = "www";
+          document.getElementById(
+            "ipv6Input",
+          ).value = "2001:db8::10";
+        }
+
+        if (type === "CNAME") {
+          hostInput.value = "www";
+          document.getElementById(
+            "cnameTargetInput",
+          ).value = domainInput.value;
+        }
+
+        if (type === "MX") {
+          hostInput.value = "@";
+          document.getElementById(
+            "mxPriorityInput",
+          ).value = "10";
+
+          document.getElementById(
+            "mxTargetInput",
+          ).value = `mail.${normalizeDomain(
+            domainInput.value,
+          )}`;
+        }
+
+        if (type === "TXT") {
+          hostInput.value = "@";
+          document.getElementById(
+            "txtValueInput",
+          ).value =
+            "v=spf1 include:_spf.example.com -all";
+        }
+
+        if (type === "SRV") {
+          hostInput.value = "_https._tcp";
+
+          document.getElementById(
+            "srvPriorityInput",
+          ).value = "10";
+
+          document.getElementById(
+            "srvWeightInput",
+          ).value = "5";
+
+          document.getElementById(
+            "srvPortInput",
+          ).value = "443";
+
+          document.getElementById(
+            "srvTargetInput",
+          ).value = `service.${normalizeDomain(
+            domainInput.value,
+          )}`;
+        }
+
+        if (type === "CAA") {
+          hostInput.value = "@";
+
+          document.getElementById(
+            "caaFlagSelect",
+          ).value = "0";
+
+          document.getElementById(
+            "caaTagSelect",
+          ).value = "issue";
+
+          document.getElementById(
+            "caaValueInput",
+          ).value = "letsencrypt.org";
+        }
+
+        updateRecordFields();
+      }
+
+      function resetGenerator() {
+        recordTypeSelect.value = "A";
+        ttlSelect.value = "300";
+        customTtlInput.value = "300";
+        domainInput.value = "example.com";
+        hostInput.value = "www";
+        absoluteNamesInput.checked = true;
+
+        document.getElementById(
+          "ipv4Input",
+        ).value = "192.0.2.10";
+
+        document.getElementById(
+          "ipv6Input",
+        ).value = "2001:db8::10";
+
+        document.getElementById(
+          "cnameTargetInput",
+        ).value = "example.com";
+
+        document.getElementById(
+          "mxPriorityInput",
+        ).value = "10";
+
+        document.getElementById(
+          "mxTargetInput",
+        ).value = "mail.example.com";
+
+        document.getElementById(
+          "txtValueInput",
+        ).value =
+          "v=spf1 include:_spf.example.com -all";
+
+        document.getElementById(
+          "nsTargetInput",
+        ).value = "ns1.example.com";
+
+        document.getElementById(
+          "ptrTargetInput",
+        ).value = "server.example.com";
+
+        document.getElementById(
+          "srvPriorityInput",
+        ).value = "10";
+
+        document.getElementById(
+          "srvWeightInput",
+        ).value = "5";
+
+        document.getElementById(
+          "srvPortInput",
+        ).value = "443";
+
+        document.getElementById(
+          "srvTargetInput",
+        ).value = "service.example.com";
+
+        document.getElementById(
+          "caaFlagSelect",
+        ).value = "0";
+
+        document.getElementById(
+          "caaTagSelect",
+        ).value = "issue";
+
+        document.getElementById(
+          "caaValueInput",
+        ).value = "letsencrypt.org";
+
+        selectedFormat = "zone";
+
+        document
+          .querySelectorAll(".output-tab")
+          .forEach((tab) => {
+            tab.classList.toggle(
+              "active",
+              tab.dataset.format === "zone",
+            );
+          });
+
+        clearMessage();
+        updateTtlState();
+        updateRecordFields();
+        domainInput.focus();
+      }
+
+      async function copyRecord() {
+        if (!currentCopyText) {
+          showMessage(
+            "Generate a valid DNS record before copying.",
+            "error",
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentCopyText,
+          );
+
+          const originalText =
+            copyButton.textContent;
+
+          copyButton.textContent = "Copied!";
+
+          showMessage(
+            "DNS record copied successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the record manually.",
+            "error",
+          );
+        }
+      }
+
+      recordTypeSelect.addEventListener(
+        "change",
+        updateRecordFields,
+      );
+
+      ttlSelect.addEventListener(
+        "change",
+        updateTtlState,
+      );
+
+      generateButton.addEventListener(
+        "click",
+        generateRecord,
+      );
+
+      resetButton.addEventListener(
+        "click",
+        resetGenerator,
+      );
+
+      copyButton.addEventListener(
+        "click",
+        copyRecord,
+      );
+
+      document
+        .querySelectorAll(
+          "input, select, textarea",
+        )
+        .forEach((element) => {
+          if (
+            element !== recordTypeSelect &&
+            element !== ttlSelect
+          ) {
+            element.addEventListener(
+              "input",
+              generateRecord,
+            );
+
+            element.addEventListener(
+              "change",
+              generateRecord,
+            );
+          }
+        });
+
+      document
+        .querySelectorAll(".output-tab")
+        .forEach((tab) => {
+          tab.addEventListener("click", () => {
+            selectedFormat =
+              tab.dataset.format || "zone";
+
+            document
+              .querySelectorAll(".output-tab")
+              .forEach((button) => {
+                button.classList.remove("active");
+              });
+
+            tab.classList.add("active");
+            renderOutput();
+          });
+        });
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            applyPreset(
+              button.dataset.record || "A",
+            );
+          });
+        });
+
+      updateTtlState();
+      updateRecordFields();
+    </script>
+  </body>
+</html>

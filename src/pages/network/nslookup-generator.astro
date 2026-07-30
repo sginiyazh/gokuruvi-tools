@@ -1,0 +1,1495 @@
+---
+const pageTitle = "NSLookup Command Generator | Gokuruvi Tools";
+const description =
+  "Generate nslookup commands for Windows, Linux, and macOS. Query A, AAAA, MX, NS, TXT, CNAME, PTR, SOA, SRV, and other DNS record types.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/nslookup-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1140px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 800px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1120px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      input:disabled,
+      select:disabled {
+        cursor: not-allowed;
+        background: #f1f5f9;
+        color: #94a3b8;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .command-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #e2e8f0;
+      }
+
+      .command-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .command-output {
+        min-height: 65px;
+        margin: 0;
+        overflow-x: auto;
+        color: #ffffff;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .explanation {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 11px;
+        background: #eff6ff;
+      }
+
+      .explanation h3 {
+        margin: 0 0 10px;
+        color: #1e3a8a;
+        font-size: 17px;
+      }
+
+      .explanation-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #1e3a8a;
+      }
+
+      .explanation-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1120px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .record-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .record-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .record-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .record-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 880px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .record-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .checkbox-grid,
+        .result-grid,
+        .record-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>NSLookup Command Generator</h1>
+
+        <p>
+          Generate ready-to-use nslookup commands for DNS record queries,
+          reverse DNS lookups, custom DNS servers, timeout settings, and
+          troubleshooting.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Configure NSLookup</h2>
+
+            <p class="card-description">
+              Enter the domain or IP address and select the DNS query options.
+            </p>
+
+            <div class="form-group">
+              <label for="targetInput">Domain name or IP address</label>
+
+              <input
+                id="targetInput"
+                type="text"
+                value="example.com"
+                placeholder="Example: example.com or 8.8.8.8"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Enter a domain for forward lookup or an IP address for reverse
+                DNS lookup.
+              </p>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="osSelect">Operating system</label>
+
+                <select id="osSelect">
+                  <option value="linux" selected>Linux</option>
+                  <option value="macos">macOS</option>
+                  <option value="windows">Windows</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="recordTypeSelect">DNS record type</label>
+
+                <select id="recordTypeSelect">
+                  <option value="A" selected>A - IPv4 address</option>
+                  <option value="AAAA">AAAA - IPv6 address</option>
+                  <option value="MX">MX - Mail server</option>
+                  <option value="NS">NS - Name server</option>
+                  <option value="TXT">TXT - Text record</option>
+                  <option value="CNAME">CNAME - Canonical name</option>
+                  <option value="PTR">PTR - Reverse DNS</option>
+                  <option value="SOA">SOA - Start of authority</option>
+                  <option value="SRV">SRV - Service record</option>
+                  <option value="CAA">CAA - Certificate authority</option>
+                  <option value="NAPTR">NAPTR - Naming authority</option>
+                  <option value="ANY">ANY - Available records</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dnsServerInput">Custom DNS server</label>
+
+              <input
+                id="dnsServerInput"
+                type="text"
+                placeholder="Optional: 8.8.8.8 or 1.1.1.1"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Leave empty to use the DNS server configured on your system.
+              </p>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="timeoutInput">Timeout in seconds</label>
+
+                <input
+                  id="timeoutInput"
+                  type="number"
+                  value="5"
+                  min="1"
+                  max="60"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="retryInput">Retry attempts</label>
+
+                <input
+                  id="retryInput"
+                  type="number"
+                  value="2"
+                  min="1"
+                  max="10"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Additional options</label>
+
+              <div class="checkbox-grid">
+                <div class="checkbox-item">
+                  <input
+                    id="debugInput"
+                    type="checkbox"
+                  />
+
+                  <label for="debugInput">Debug output</label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="recursiveInput"
+                    type="checkbox"
+                    checked
+                  />
+
+                  <label for="recursiveInput">Recursive query</label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="tcpInput"
+                    type="checkbox"
+                  />
+
+                  <label for="tcpInput">Use TCP</label>
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    id="shortInput"
+                    type="checkbox"
+                  />
+
+                  <label for="shortInput">
+                    Simple command only
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="preset-title">Quick DNS servers</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset dns-preset"
+                  type="button"
+                  data-server="8.8.8.8"
+                >
+                  Google DNS
+                </button>
+
+                <button
+                  class="preset dns-preset"
+                  type="button"
+                  data-server="1.1.1.1"
+                >
+                  Cloudflare DNS
+                </button>
+
+                <button
+                  class="preset dns-preset"
+                  type="button"
+                  data-server="9.9.9.9"
+                >
+                  Quad9 DNS
+                </button>
+
+                <button
+                  class="preset dns-preset"
+                  type="button"
+                  data-server="208.67.222.222"
+                >
+                  OpenDNS
+                </button>
+
+                <button
+                  class="preset dns-preset"
+                  type="button"
+                  data-server=""
+                >
+                  System DNS
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <p class="preset-title">Quick queries</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset query-preset"
+                  type="button"
+                  data-target="example.com"
+                  data-type="A"
+                >
+                  A Record
+                </button>
+
+                <button
+                  class="preset query-preset"
+                  type="button"
+                  data-target="example.com"
+                  data-type="MX"
+                >
+                  MX Record
+                </button>
+
+                <button
+                  class="preset query-preset"
+                  type="button"
+                  data-target="example.com"
+                  data-type="NS"
+                >
+                  NS Record
+                </button>
+
+                <button
+                  class="preset query-preset"
+                  type="button"
+                  data-target="8.8.8.8"
+                  data-type="PTR"
+                >
+                  Reverse DNS
+                </button>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Command
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated NSLookup Command</h2>
+
+            <p class="card-description">
+              Review the command before running it in your terminal, PowerShell,
+              or Command Prompt.
+            </p>
+
+            <div class="command-box">
+              <span class="command-label">Command</span>
+
+              <pre id="commandOutput" class="command-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Command
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Operating System</span>
+                <span id="resultOs" class="result-value">Linux</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Record Type</span>
+                <span id="resultRecordType" class="result-value">A</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Target</span>
+                <span id="resultTarget" class="result-value">
+                  example.com
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">DNS Server</span>
+                <span id="resultDnsServer" class="result-value">
+                  System default
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Transport</span>
+                <span id="resultTransport" class="result-value">UDP</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Query Mode</span>
+                <span id="resultQueryMode" class="result-value">
+                  Recursive
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Command Shell</span>
+                <span id="resultShell" class="result-value">
+                  Bash / compatible shell
+                </span>
+              </div>
+            </div>
+
+            <div class="explanation">
+              <h3>Command explanation</h3>
+
+              <ul
+                id="explanationList"
+                class="explanation-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              DNS responses may differ depending on the DNS server, cache,
+              geographic location, record TTL, and propagation status.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Common NSLookup Commands</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Command</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Basic DNS lookup</td>
+                <td><code>nslookup example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Query an A record</td>
+                <td><code>nslookup -type=A example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Query an MX record</td>
+                <td><code>nslookup -type=MX example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Query a TXT record</td>
+                <td><code>nslookup -type=TXT example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Use Google DNS</td>
+                <td><code>nslookup example.com 8.8.8.8</code></td>
+              </tr>
+
+              <tr>
+                <td>Reverse DNS lookup</td>
+                <td><code>nslookup 8.8.8.8</code></td>
+              </tr>
+
+              <tr>
+                <td>Enable debug output</td>
+                <td><code>nslookup -debug example.com</code></td>
+              </tr>
+
+              <tr>
+                <td>Use TCP</td>
+                <td><code>nslookup -vc example.com</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>DNS Record Types</h2>
+
+          <div class="record-grid">
+            <article class="record-card">
+              <strong>A</strong>
+              <p>Maps a domain name to an IPv4 address.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>AAAA</strong>
+              <p>Maps a domain name to an IPv6 address.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>MX</strong>
+              <p>Identifies the mail servers for a domain.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>NS</strong>
+              <p>Lists authoritative DNS servers for a domain.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>TXT</strong>
+              <p>Stores text data such as SPF and verification records.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>CNAME</strong>
+              <p>Creates an alias from one hostname to another.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>PTR</strong>
+              <p>Maps an IP address back to a hostname.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>SOA</strong>
+              <p>Provides authority and zone management information.</p>
+            </article>
+
+            <article class="record-card">
+              <strong>SRV</strong>
+              <p>Defines the location and port of a network service.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const targetInput = document.getElementById("targetInput");
+      const osSelect = document.getElementById("osSelect");
+      const recordTypeSelect =
+        document.getElementById("recordTypeSelect");
+      const dnsServerInput =
+        document.getElementById("dnsServerInput");
+      const timeoutInput =
+        document.getElementById("timeoutInput");
+      const retryInput =
+        document.getElementById("retryInput");
+
+      const debugInput = document.getElementById("debugInput");
+      const recursiveInput =
+        document.getElementById("recursiveInput");
+      const tcpInput = document.getElementById("tcpInput");
+      const shortInput = document.getElementById("shortInput");
+
+      const generateButton =
+        document.getElementById("generateButton");
+      const resetButton =
+        document.getElementById("resetButton");
+      const copyButton =
+        document.getElementById("copyButton");
+
+      const commandOutput =
+        document.getElementById("commandOutput");
+      const explanationList =
+        document.getElementById("explanationList");
+      const message = document.getElementById("message");
+
+      let currentCommand = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function addExplanation(text) {
+        const item = document.createElement("li");
+        item.textContent = text;
+        explanationList.appendChild(item);
+      }
+
+      function isValidIPv4(value) {
+        const pattern =
+          /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/;
+
+        return pattern.test(value);
+      }
+
+      function isValidIPv6(value) {
+        return (
+          value.includes(":") &&
+          /^[0-9a-f:]+$/i.test(value) &&
+          value.length <= 45
+        );
+      }
+
+      function isValidHostname(value) {
+        const pattern =
+          /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+
+        return pattern.test(value);
+      }
+
+      function isValidTarget(value) {
+        if (
+          !value ||
+          value.length > 253 ||
+          value.includes("://") ||
+          value.includes("/") ||
+          value.includes("?") ||
+          value.includes("#") ||
+          value.includes("@") ||
+          /\s/.test(value)
+        ) {
+          return false;
+        }
+
+        return (
+          isValidIPv4(value) ||
+          isValidIPv6(value) ||
+          isValidHostname(value)
+        );
+      }
+
+      function isValidDnsServer(value) {
+        if (!value) {
+          return true;
+        }
+
+        return (
+          isValidIPv4(value) ||
+          isValidIPv6(value) ||
+          isValidHostname(value)
+        );
+      }
+
+      function quoteValue(value) {
+        if (/^[a-z0-9.:_-]+$/i.test(value)) {
+          return value;
+        }
+
+        return `"${value.replace(/"/g, '\\"')}"`;
+      }
+
+      function generateCommand() {
+        clearMessage();
+
+        const target = targetInput.value.trim();
+        const os = osSelect.value;
+        const recordType = recordTypeSelect.value;
+        const dnsServer = dnsServerInput.value.trim();
+        const timeout = Number(timeoutInput.value);
+        const retries = Number(retryInput.value);
+
+        if (!isValidTarget(target)) {
+          currentCommand = "";
+          commandOutput.textContent =
+            "Enter a valid domain name, IPv4 address, or IPv6 address.";
+
+          explanationList.innerHTML = "";
+
+          showMessage(
+            "Enter a valid domain name or IP address without http://, https://, a path, or spaces.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (!isValidDnsServer(dnsServer)) {
+          showMessage(
+            "Enter a valid DNS server hostname or IP address.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          !Number.isInteger(timeout) ||
+          timeout < 1 ||
+          timeout > 60
+        ) {
+          showMessage(
+            "Timeout must be between 1 and 60 seconds.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          !Number.isInteger(retries) ||
+          retries < 1 ||
+          retries > 10
+        ) {
+          showMessage(
+            "Retry attempts must be between 1 and 10.",
+            "error"
+          );
+
+          return;
+        }
+
+        const parts = ["nslookup"];
+        const explanations = [];
+
+        if (!shortInput.checked) {
+          parts.push(`-type=${recordType}`);
+
+          explanations.push(
+            `Request the ${recordType} DNS record type.`
+          );
+
+          parts.push(`-timeout=${timeout}`);
+
+          explanations.push(
+            `Wait up to ${timeout} second${timeout === 1 ? "" : "s"} for a DNS response.`
+          );
+
+          parts.push(`-retry=${retries}`);
+
+          explanations.push(
+            `Retry the query up to ${retries} time${retries === 1 ? "" : "s"}.`
+          );
+
+          if (debugInput.checked) {
+            parts.push("-debug");
+
+            explanations.push(
+              "Display detailed DNS request and response information."
+            );
+          }
+
+          if (tcpInput.checked) {
+            parts.push("-vc");
+
+            explanations.push(
+              "Use a virtual circuit, which makes nslookup use TCP."
+            );
+          }
+
+          if (!recursiveInput.checked) {
+            parts.push("-norecurse");
+
+            explanations.push(
+              "Disable recursive DNS resolution."
+            );
+          } else {
+            explanations.push(
+              "Request recursive DNS resolution."
+            );
+          }
+        } else {
+          if (recordType !== "A") {
+            parts.push(`-type=${recordType}`);
+
+            explanations.push(
+              `Request the ${recordType} DNS record type.`
+            );
+          }
+
+          explanations.push(
+            "Generate a simplified command with only essential options."
+          );
+        }
+
+        parts.push(quoteValue(target));
+
+        explanations.push(
+          `Query DNS information for ${target}.`
+        );
+
+        if (dnsServer) {
+          parts.push(quoteValue(dnsServer));
+
+          explanations.push(
+            `Send the query directly to DNS server ${dnsServer}.`
+          );
+        } else {
+          explanations.push(
+            "Use the DNS server configured on the local system."
+          );
+        }
+
+        currentCommand = parts.join(" ");
+        commandOutput.textContent = currentCommand;
+
+        explanationList.innerHTML = "";
+
+        explanations.forEach((item) => {
+          addExplanation(item);
+        });
+
+        const osNames = {
+          linux: "Linux",
+          macos: "macOS",
+          windows: "Windows",
+        };
+
+        document.getElementById("resultOs").textContent =
+          osNames[os];
+
+        document.getElementById(
+          "resultRecordType"
+        ).textContent = recordType;
+
+        document.getElementById(
+          "resultTarget"
+        ).textContent = target;
+
+        document.getElementById(
+          "resultDnsServer"
+        ).textContent = dnsServer || "System default";
+
+        document.getElementById(
+          "resultTransport"
+        ).textContent = tcpInput.checked ? "TCP" : "UDP";
+
+        document.getElementById(
+          "resultQueryMode"
+        ).textContent = recursiveInput.checked
+          ? "Recursive"
+          : "Non-recursive";
+
+        document.getElementById(
+          "resultShell"
+        ).textContent =
+          os === "windows"
+            ? "Command Prompt / PowerShell"
+            : "Bash / compatible shell";
+      }
+
+      function updateRecordType() {
+        const target = targetInput.value.trim();
+
+        if (
+          isValidIPv4(target) ||
+          isValidIPv6(target)
+        ) {
+          recordTypeSelect.value = "PTR";
+        }
+
+        generateCommand();
+      }
+
+      function resetGenerator() {
+        targetInput.value = "example.com";
+        osSelect.value = "linux";
+        recordTypeSelect.value = "A";
+        dnsServerInput.value = "";
+        timeoutInput.value = "5";
+        retryInput.value = "2";
+
+        debugInput.checked = false;
+        recursiveInput.checked = true;
+        tcpInput.checked = false;
+        shortInput.checked = false;
+
+        clearMessage();
+        generateCommand();
+        targetInput.focus();
+      }
+
+      async function copyCommand() {
+        if (!currentCommand) {
+          showMessage(
+            "Generate a command before copying.",
+            "error"
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentCommand
+          );
+
+          const originalText = copyButton.textContent;
+          copyButton.textContent = "Copied!";
+
+          showMessage(
+            "NSLookup command copied successfully.",
+            "success"
+          );
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the command manually.",
+            "error"
+          );
+        }
+      }
+
+      generateButton.addEventListener(
+        "click",
+        generateCommand
+      );
+
+      resetButton.addEventListener(
+        "click",
+        resetGenerator
+      );
+
+      copyButton.addEventListener(
+        "click",
+        copyCommand
+      );
+
+      targetInput.addEventListener(
+        "change",
+        updateRecordType
+      );
+
+      [
+        targetInput,
+        osSelect,
+        recordTypeSelect,
+        dnsServerInput,
+        timeoutInput,
+        retryInput,
+        debugInput,
+        recursiveInput,
+        tcpInput,
+        shortInput,
+      ].forEach((element) => {
+        element.addEventListener(
+          "input",
+          generateCommand
+        );
+
+        element.addEventListener(
+          "change",
+          generateCommand
+        );
+      });
+
+      targetInput.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key === "Enter") {
+            generateCommand();
+          }
+        }
+      );
+
+      document
+        .querySelectorAll(".dns-preset")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            dnsServerInput.value =
+              button.dataset.server || "";
+
+            generateCommand();
+          });
+        });
+
+      document
+        .querySelectorAll(".query-preset")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            targetInput.value =
+              button.dataset.target || "";
+
+            recordTypeSelect.value =
+              button.dataset.type || "A";
+
+            generateCommand();
+          });
+        });
+
+      generateCommand();
+    </script>
+  </body>
+</html>

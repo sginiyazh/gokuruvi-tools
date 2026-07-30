@@ -1,0 +1,1083 @@
+---
+const pageTitle = "IP Address Calculator | Gokuruvi Tools";
+const description =
+  "Free IPv4 address calculator to validate IP addresses, detect IP type and class, and convert IPv4 addresses to binary, decimal, and hexadecimal formats.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/ip-calculator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1120px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1080px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .help-text {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .result-placeholder {
+        padding: 45px 20px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .result-placeholder span {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 48px;
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results.active {
+        display: block;
+      }
+
+      .result-summary {
+        margin-bottom: 18px;
+        padding: 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #1e3a8a;
+      }
+
+      .result-summary strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .octet-section {
+        margin-top: 18px;
+      }
+
+      .octet-section h3 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .octet-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .octet-table th,
+      .octet-table td {
+        padding: 11px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .octet-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+        font-size: 13px;
+      }
+
+      .octet-table td {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+      }
+
+      .copy-row {
+        margin-top: 20px;
+      }
+
+      .info-section {
+        max-width: 1080px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .info-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .info-card h3 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 17px;
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 850px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .info-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .octet-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>IPv4 Address Calculator</h1>
+
+        <p>
+          Validate an IPv4 address and convert it into binary, decimal,
+          hexadecimal, and octal formats. You can also identify the address
+          class and IP type.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Enter IP Address</h2>
+
+            <p class="card-description">
+              Enter a valid IPv4 address such as 192.168.1.10.
+            </p>
+
+            <div class="form-group">
+              <label for="ipAddress">IPv4 Address</label>
+
+              <input
+                id="ipAddress"
+                type="text"
+                value="192.168.1.10"
+                placeholder="Example: 192.168.1.10"
+                autocomplete="off"
+                spellcheck="false"
+              />
+
+              <p class="help-text">
+                Each octet must contain a value between 0 and 255.
+              </p>
+            </div>
+
+            <div>
+              <p class="preset-title">Quick examples</p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset"
+                  type="button"
+                  data-ip="192.168.1.10"
+                >
+                  Private
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-ip="8.8.8.8"
+                >
+                  Public
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-ip="127.0.0.1"
+                >
+                  Loopback
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-ip="169.254.10.20"
+                >
+                  Link-local
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-ip="224.0.0.1"
+                >
+                  Multicast
+                </button>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="calculateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Calculate IP
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>IP Address Result</h2>
+
+            <div id="resultPlaceholder" class="result-placeholder">
+              <span aria-hidden="true">🌐</span>
+
+              Enter an IPv4 address and click
+              <strong>Calculate IP</strong>.
+            </div>
+
+            <div id="results" class="results">
+              <div id="resultSummary" class="result-summary"></div>
+
+              <div class="result-grid">
+                <div class="result-item">
+                  <span class="result-label">IPv4 Address</span>
+                  <span id="resultIp" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">IP Type</span>
+                  <span id="resultType" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">IP Class</span>
+                  <span id="resultClass" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Default Subnet Mask</span>
+                  <span id="resultMask" class="result-value">-</span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">Binary</span>
+                  <span id="resultBinary" class="result-value">-</span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">Binary Without Dots</span>
+                  <span id="resultBinaryFull" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Unsigned Decimal</span>
+                  <span id="resultDecimal" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Hexadecimal</span>
+                  <span id="resultHex" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Octal</span>
+                  <span id="resultOctal" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Reverse DNS Format</span>
+                  <span id="resultReverse" class="result-value">-</span>
+                </div>
+              </div>
+
+              <div class="octet-section">
+                <h3>Octet Details</h3>
+
+                <table class="octet-table">
+                  <thead>
+                    <tr>
+                      <th>Octet</th>
+                      <th>Decimal</th>
+                      <th>Binary</th>
+                      <th>Hex</th>
+                      <th>Octal</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="octetTableBody"></tbody>
+                </table>
+              </div>
+
+              <div class="copy-row">
+                <button
+                  id="copyButton"
+                  class="button primary-button"
+                  type="button"
+                >
+                  Copy Result
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="info-section">
+          <h2>IPv4 Address Types</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Private IP Address</h3>
+
+              <p>
+                Private address ranges include 10.0.0.0/8, 172.16.0.0/12,
+                and 192.168.0.0/16.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <h3>Public IP Address</h3>
+
+              <p>
+                Public addresses are routable on the internet and are not part
+                of a private or reserved address range.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <h3>Loopback Address</h3>
+
+              <p>
+                The 127.0.0.0/8 range is used for communication with the local
+                computer. The most common address is 127.0.0.1.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const ipAddressInput = document.getElementById("ipAddress");
+      const calculateButton = document.getElementById("calculateButton");
+      const resetButton = document.getElementById("resetButton");
+      const copyButton = document.getElementById("copyButton");
+      const message = document.getElementById("message");
+      const results = document.getElementById("results");
+      const resultPlaceholder =
+        document.getElementById("resultPlaceholder");
+
+      let copyText = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function isValidIPv4(ip) {
+        const parts = ip.split(".");
+
+        if (parts.length !== 4) {
+          return false;
+        }
+
+        return parts.every((part) => {
+          if (!/^\d+$/.test(part)) {
+            return false;
+          }
+
+          if (part.length > 1 && part.startsWith("0")) {
+            return false;
+          }
+
+          const value = Number(part);
+
+          return value >= 0 && value <= 255;
+        });
+      }
+
+      function ipToUnsignedDecimal(parts) {
+        return (
+          parts[0] * 16777216 +
+          parts[1] * 65536 +
+          parts[2] * 256 +
+          parts[3]
+        );
+      }
+
+      function getIpClass(firstOctet) {
+        if (firstOctet >= 1 && firstOctet <= 126) {
+          return "Class A";
+        }
+
+        if (firstOctet === 127) {
+          return "Loopback";
+        }
+
+        if (firstOctet >= 128 && firstOctet <= 191) {
+          return "Class B";
+        }
+
+        if (firstOctet >= 192 && firstOctet <= 223) {
+          return "Class C";
+        }
+
+        if (firstOctet >= 224 && firstOctet <= 239) {
+          return "Class D";
+        }
+
+        if (firstOctet >= 240 && firstOctet <= 255) {
+          return "Class E";
+        }
+
+        return "Reserved";
+      }
+
+      function getDefaultSubnetMask(firstOctet) {
+        if (firstOctet >= 1 && firstOctet <= 126) {
+          return "255.0.0.0 (/8)";
+        }
+
+        if (firstOctet >= 128 && firstOctet <= 191) {
+          return "255.255.0.0 (/16)";
+        }
+
+        if (firstOctet >= 192 && firstOctet <= 223) {
+          return "255.255.255.0 (/24)";
+        }
+
+        return "Not applicable";
+      }
+
+      function getIpType(parts) {
+        const [first, second, third, fourth] = parts;
+
+        if (
+          first === 255 &&
+          second === 255 &&
+          third === 255 &&
+          fourth === 255
+        ) {
+          return "Limited Broadcast";
+        }
+
+        if (first === 0) {
+          return "Current Network / Reserved";
+        }
+
+        if (first === 10) {
+          return "Private";
+        }
+
+        if (first === 100 && second >= 64 && second <= 127) {
+          return "Carrier-Grade NAT";
+        }
+
+        if (first === 127) {
+          return "Loopback";
+        }
+
+        if (first === 169 && second === 254) {
+          return "Link-local";
+        }
+
+        if (first === 172 && second >= 16 && second <= 31) {
+          return "Private";
+        }
+
+        if (first === 192 && second === 0 && third === 0) {
+          return "IETF Protocol Assignment";
+        }
+
+        if (first === 192 && second === 0 && third === 2) {
+          return "Documentation Range";
+        }
+
+        if (first === 192 && second === 168) {
+          return "Private";
+        }
+
+        if (first === 198 && second === 18) {
+          return "Benchmark Testing";
+        }
+
+        if (first === 198 && second === 19) {
+          return "Benchmark Testing";
+        }
+
+        if (first === 198 && second === 51 && third === 100) {
+          return "Documentation Range";
+        }
+
+        if (first === 203 && second === 0 && third === 113) {
+          return "Documentation Range";
+        }
+
+        if (first >= 224 && first <= 239) {
+          return "Multicast";
+        }
+
+        if (first >= 240) {
+          return "Reserved";
+        }
+
+        return "Public";
+      }
+
+      function calculateIp() {
+        clearMessage();
+
+        const ip = ipAddressInput.value.trim();
+
+        if (!isValidIPv4(ip)) {
+          results.classList.remove("active");
+          resultPlaceholder.style.display = "block";
+
+          showMessage(
+            "Enter a valid IPv4 address such as 192.168.1.10.",
+            "error"
+          );
+
+          return;
+        }
+
+        const parts = ip.split(".").map(Number);
+
+        const binaryParts = parts.map((part) =>
+          part.toString(2).padStart(8, "0")
+        );
+
+        const hexParts = parts.map((part) =>
+          part.toString(16).padStart(2, "0").toUpperCase()
+        );
+
+        const octalParts = parts.map((part) =>
+          part.toString(8).padStart(3, "0")
+        );
+
+        const decimalValue = ipToUnsignedDecimal(parts);
+        const binary = binaryParts.join(".");
+        const binaryFull = binaryParts.join("");
+        const hexadecimal = `0x${hexParts.join("")}`;
+        const octal = octalParts.join(".");
+        const reverseDns = `${parts.slice().reverse().join(".")}.in-addr.arpa`;
+
+        const ipType = getIpType(parts);
+        const ipClass = getIpClass(parts[0]);
+        const defaultMask = getDefaultSubnetMask(parts[0]);
+
+        document.getElementById("resultIp").textContent = ip;
+        document.getElementById("resultType").textContent = ipType;
+        document.getElementById("resultClass").textContent = ipClass;
+        document.getElementById("resultMask").textContent = defaultMask;
+        document.getElementById("resultBinary").textContent = binary;
+        document.getElementById("resultBinaryFull").textContent =
+          binaryFull;
+        document.getElementById("resultDecimal").textContent =
+          decimalValue.toLocaleString("en-US");
+        document.getElementById("resultHex").textContent = hexadecimal;
+        document.getElementById("resultOctal").textContent = octal;
+        document.getElementById("resultReverse").textContent =
+          reverseDns;
+
+        document.getElementById("resultSummary").innerHTML = `
+          <strong>${ip}</strong>
+          This is a ${ipType.toLowerCase()} IPv4 address classified as
+          ${ipClass}.
+        `;
+
+        const tableBody = document.getElementById("octetTableBody");
+        tableBody.innerHTML = "";
+
+        parts.forEach((part, index) => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${part}</td>
+            <td>${binaryParts[index]}</td>
+            <td>${hexParts[index]}</td>
+            <td>${octalParts[index]}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+
+        copyText = [
+          "IPv4 Address Calculation",
+          "------------------------",
+          `IPv4 Address: ${ip}`,
+          `IP Type: ${ipType}`,
+          `IP Class: ${ipClass}`,
+          `Default Subnet Mask: ${defaultMask}`,
+          `Binary: ${binary}`,
+          `Binary Without Dots: ${binaryFull}`,
+          `Unsigned Decimal: ${decimalValue}`,
+          `Hexadecimal: ${hexadecimal}`,
+          `Octal: ${octal}`,
+          `Reverse DNS: ${reverseDns}`,
+        ].join("\n");
+
+        resultPlaceholder.style.display = "none";
+        results.classList.add("active");
+
+        showMessage(
+          "IP address calculation completed successfully.",
+          "success"
+        );
+      }
+
+      function resetCalculator() {
+        ipAddressInput.value = "192.168.1.10";
+        copyText = "";
+
+        clearMessage();
+
+        results.classList.remove("active");
+        resultPlaceholder.style.display = "block";
+
+        ipAddressInput.focus();
+      }
+
+      async function copyResult() {
+        if (!copyText) {
+          showMessage(
+            "Calculate an IP address before copying the result.",
+            "error"
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(copyText);
+
+          const originalText = copyButton.textContent;
+          copyButton.textContent = "Copied!";
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the result manually.",
+            "error"
+          );
+        }
+      }
+
+      calculateButton.addEventListener("click", calculateIp);
+      resetButton.addEventListener("click", resetCalculator);
+      copyButton.addEventListener("click", copyResult);
+
+      ipAddressInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculateIp();
+        }
+      });
+
+      document.querySelectorAll(".preset").forEach((button) => {
+        button.addEventListener("click", () => {
+          ipAddressInput.value = button.dataset.ip;
+          calculateIp();
+        });
+      });
+
+      calculateIp();
+    </script>
+  </body>
+</html>

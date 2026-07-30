@@ -1,0 +1,1804 @@
+---
+const pageTitle = "SSL Certificate Checker | Gokuruvi Tools";
+const description =
+  "Check SSL certificate expiry, issuer, validity dates, supported TLS protocols, server grade, certificate names, key details, and common TLS security issues.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/ssl-checker"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #15803d;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --warning: #92400e;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --danger: #b91c1c;
+        --danger-bg: #fef2f2;
+        --danger-border: #fecaca;
+        --info: #1e40af;
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1140px);
+        min-height: 70px;
+        margin: auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #fff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #fff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #f8fafc
+        );
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 820px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1140px;
+        margin: auto;
+        grid-template-columns:
+          minmax(0, 0.82fr)
+          minmax(0, 1.18fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow:
+          0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        min-height: 51px;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #fff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--primary);
+        box-shadow:
+          0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .preset-title {
+        margin: 20px 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .button-row {
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .primary-button:hover:not(:disabled) {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.info {
+        display: block;
+        border: 1px solid var(--info-border);
+        background: var(--info-bg);
+        color: var(--info);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success);
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--danger-border);
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+
+      .progress {
+        display: none;
+        margin-top: 18px;
+      }
+
+      .progress-track {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e2e8f0;
+      }
+
+      .progress-bar {
+        width: 8%;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--primary);
+        transition: width 0.4s ease;
+      }
+
+      .progress-text {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .placeholder {
+        padding: 48px 20px;
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .placeholder strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+        font-size: 17px;
+      }
+
+      .result-content {
+        display: none;
+      }
+
+      .summary-banner {
+        display: flex;
+        padding: 20px;
+        border: 1px solid var(--success-border);
+        border-radius: 12px;
+        background: var(--success-bg);
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .summary-banner.warning-state {
+        border-color: var(--warning-border);
+        background: var(--warning-bg);
+      }
+
+      .summary-banner.danger-state {
+        border-color: var(--danger-border);
+        background: var(--danger-bg);
+      }
+
+      .summary-banner span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .summary-banner h3 {
+        margin: 3px 0 0;
+        color: var(--dark);
+        font-size: 24px;
+        overflow-wrap: anywhere;
+      }
+
+      .grade {
+        display: grid;
+        width: 70px;
+        height: 70px;
+        flex: 0 0 70px;
+        border-radius: 14px;
+        background: var(--success);
+        color: #fff;
+        place-items: center;
+        font-size: 30px;
+        font-weight: 900;
+      }
+
+      .grade.warning-grade {
+        background: #d97706;
+      }
+
+      .grade.danger-grade {
+        background: #dc2626;
+      }
+
+      .endpoint-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .endpoint-tab {
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .endpoint-tab.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .section-box {
+        margin-top: 18px;
+        padding: 18px;
+        border: 1px solid var(--info-border);
+        border-radius: 12px;
+        background: var(--info-bg);
+      }
+
+      .section-box h3 {
+        margin: 0 0 13px;
+        color: var(--info);
+        font-size: 17px;
+      }
+
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        padding: 6px 10px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--info);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .security-grid {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .security-item {
+        padding: 11px 13px;
+        border: 1px solid #bfdbfe;
+        border-radius: 9px;
+        background: #fff;
+      }
+
+      .security-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .security-good {
+        color: var(--success);
+      }
+
+      .security-bad {
+        color: var(--danger);
+      }
+
+      .warning-box {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1140px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .info-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 900px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .result-grid,
+        .security-grid,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .summary-banner {
+          align-items: flex-start;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">
+          Gokuruvi Tools
+        </a>
+
+        <nav
+          class="navigation"
+          aria-label="Main navigation"
+        >
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">
+            Network
+          </a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>SSL Certificate Checker</h1>
+
+        <p>
+          Check certificate expiry, issuer, TLS
+          protocols, security grade, hostname coverage,
+          encryption key details, and common SSL/TLS
+          configuration issues.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Check SSL Certificate</h2>
+
+            <p class="card-description">
+              Enter a public hostname. Do not enter an IP
+              address, path, port number, or private server
+              name.
+            </p>
+
+            <form id="checkerForm" novalidate>
+              <div class="form-group">
+                <label for="hostnameInput">
+                  Website hostname
+                </label>
+
+                <input
+                  id="hostnameInput"
+                  type="text"
+                  value="www.gokuruvi.com"
+                  placeholder="Example: www.example.com"
+                  autocomplete="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                />
+
+                <p class="help-text">
+                  A full HTTPS URL is also accepted and will
+                  be converted to its hostname.
+                </p>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="freshScanInput"
+                  type="checkbox"
+                />
+
+                <label for="freshScanInput">
+                  Request a fresh SSL assessment
+                </label>
+              </div>
+
+              <p class="help-text">
+                A fresh assessment may take several minutes.
+                Cached reports are normally faster.
+              </p>
+
+              <p class="preset-title">
+                Example hostnames
+              </p>
+
+              <div class="preset-buttons">
+                <button
+                  class="preset"
+                  type="button"
+                  data-host="www.gokuruvi.com"
+                >
+                  Gokuruvi
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-host="www.google.com"
+                >
+                  Google
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-host="www.cloudflare.com"
+                >
+                  Cloudflare
+                </button>
+
+                <button
+                  class="preset"
+                  type="button"
+                  data-host="github.com"
+                >
+                  GitHub
+                </button>
+              </div>
+
+              <div class="button-row">
+                <button
+                  id="checkButton"
+                  class="button primary-button"
+                  type="submit"
+                >
+                  Check SSL
+                </button>
+
+                <button
+                  id="resetButton"
+                  class="button secondary-button"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <div
+                id="message"
+                class="message"
+                role="alert"
+                aria-live="polite"
+              ></div>
+
+              <div id="progress" class="progress">
+                <div class="progress-track">
+                  <div
+                    id="progressBar"
+                    class="progress-bar"
+                  ></div>
+                </div>
+
+                <p
+                  id="progressText"
+                  class="progress-text"
+                >
+                  Starting SSL assessment…
+                </p>
+              </div>
+            </form>
+          </section>
+
+          <section class="card">
+            <h2>SSL Assessment Result</h2>
+
+            <p class="card-description">
+              Review certificate validity and TLS server
+              configuration.
+            </p>
+
+            <div id="placeholder" class="placeholder">
+              <strong>No assessment performed</strong>
+              Enter a hostname and select “Check SSL.”
+            </div>
+
+            <div
+              id="resultContent"
+              class="result-content"
+            >
+              <div
+                id="summaryBanner"
+                class="summary-banner"
+              >
+                <div>
+                  <span>SSL certificate status</span>
+
+                  <h3 id="resultHostname">
+                    example.com
+                  </h3>
+                </div>
+
+                <div id="resultGrade" class="grade">
+                  A
+                </div>
+              </div>
+
+              <div
+                id="endpointTabs"
+                class="endpoint-tabs"
+              ></div>
+
+              <div class="button-row">
+                <button
+                  id="copyButton"
+                  class="button primary-button"
+                  type="button"
+                >
+                  Copy Result
+                </button>
+              </div>
+
+              <div class="result-grid">
+                <div class="result-item">
+                  <span class="result-label">
+                    IP Address
+                  </span>
+                  <span
+                    id="resultIp"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Days Remaining
+                  </span>
+                  <span
+                    id="resultDays"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Valid From
+                  </span>
+                  <span
+                    id="resultValidFrom"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Valid Until
+                  </span>
+                  <span
+                    id="resultValidUntil"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">
+                    Certificate Subject
+                  </span>
+                  <span
+                    id="resultSubject"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">
+                    Certificate Issuer
+                  </span>
+                  <span
+                    id="resultIssuer"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Key Algorithm
+                  </span>
+                  <span
+                    id="resultKey"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">
+                    Signature Algorithm
+                  </span>
+                  <span
+                    id="resultSignature"
+                    class="result-value"
+                  >
+                    —
+                  </span>
+                </div>
+              </div>
+
+              <div class="section-box">
+                <h3>Certificate Hostnames</h3>
+                <div
+                  id="hostnameTags"
+                  class="tag-list"
+                ></div>
+              </div>
+
+              <div class="section-box">
+                <h3>Supported TLS Protocols</h3>
+                <div
+                  id="protocolTags"
+                  class="tag-list"
+                ></div>
+              </div>
+
+              <div class="section-box">
+                <h3>Security Checks</h3>
+
+                <div class="security-grid">
+                  <div class="security-item">
+                    <span>Certificate expired</span>
+                    <strong id="checkExpired">—</strong>
+                  </div>
+
+                  <div class="security-item">
+                    <span>Self-signed certificate</span>
+                    <strong id="checkSelfSigned">—</strong>
+                  </div>
+
+                  <div class="security-item">
+                    <span>Heartbleed vulnerable</span>
+                    <strong id="checkHeartbleed">—</strong>
+                  </div>
+
+                  <div class="security-item">
+                    <span>POODLE vulnerable</span>
+                    <strong id="checkPoodle">—</strong>
+                  </div>
+
+                  <div class="security-item">
+                    <span>RC4 supported</span>
+                    <strong id="checkRc4">—</strong>
+                  </div>
+
+                  <div class="security-item">
+                    <span>AEAD supported</span>
+                    <strong id="checkAead">—</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="warning-box">
+              The assessment is performed by an external
+              SSL testing service against publicly accessible
+              servers. Do not use this page to test systems
+              without authorization.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>SSL Certificate Checks</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <strong>Expiry Date</strong>
+              <p>
+                Shows when the certificate stops being
+                valid and calculates the remaining days.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Certificate Issuer</strong>
+              <p>
+                Identifies the certificate authority that
+                issued and signed the certificate.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Hostname Coverage</strong>
+              <p>
+                Lists the common name and subject
+                alternative names covered by the
+                certificate.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>TLS Protocols</strong>
+              <p>
+                Displays the SSL and TLS protocol versions
+                supported by the server.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Security Grade</strong>
+              <p>
+                Summarizes the server certificate,
+                protocol, key exchange, and cipher
+                configuration.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Multiple Endpoints</strong>
+              <p>
+                Checks each available server IP separately
+                when a hostname resolves to multiple
+                endpoints.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools.
+      All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const checkerForm =
+        document.getElementById("checkerForm");
+
+      const hostnameInput =
+        document.getElementById("hostnameInput");
+
+      const freshScanInput =
+        document.getElementById("freshScanInput");
+
+      const checkButton =
+        document.getElementById("checkButton");
+
+      const resetButton =
+        document.getElementById("resetButton");
+
+      const copyButton =
+        document.getElementById("copyButton");
+
+      const message =
+        document.getElementById("message");
+
+      const progress =
+        document.getElementById("progress");
+
+      const progressBar =
+        document.getElementById("progressBar");
+
+      const progressText =
+        document.getElementById("progressText");
+
+      const placeholder =
+        document.getElementById("placeholder");
+
+      const resultContent =
+        document.getElementById("resultContent");
+
+      const endpointTabs =
+        document.getElementById("endpointTabs");
+
+      let report = null;
+      let selectedEndpoint = 0;
+      let currentCopyText = "";
+      let cancelled = false;
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function normalizeHostname(value) {
+        let hostname = value.trim().toLowerCase();
+
+        try {
+          if (
+            hostname.startsWith("http://") ||
+            hostname.startsWith("https://")
+          ) {
+            hostname = new URL(hostname).hostname;
+          }
+        } catch {
+          return "";
+        }
+
+        return hostname
+          .replace(/^\[|\]$/g, "")
+          .replace(/\.$/, "");
+      }
+
+      function isValidHostname(hostname) {
+        if (
+          !hostname ||
+          hostname.length > 253 ||
+          hostname.includes("/") ||
+          hostname.includes(":") ||
+          hostname.includes("@") ||
+          /\s/.test(hostname)
+        ) {
+          return false;
+        }
+
+        const labels = hostname.split(".");
+
+        return (
+          labels.length >= 2 &&
+          labels.every(
+            (label) =>
+              label.length >= 1 &&
+              label.length <= 63 &&
+              /^[a-z0-9-]+$/i.test(label) &&
+              !label.startsWith("-") &&
+              !label.endsWith("-"),
+          )
+        );
+      }
+
+      function sleep(milliseconds) {
+        return new Promise((resolve) =>
+          setTimeout(resolve, milliseconds),
+        );
+      }
+
+      function formatDate(value) {
+        if (!value) {
+          return "Not available";
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return "Not available";
+        }
+
+        return date.toLocaleString("en-AE", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        });
+      }
+
+      function setText(id, value) {
+        const element = document.getElementById(id);
+
+        if (element) {
+          element.textContent =
+            value === null ||
+            value === undefined ||
+            value === ""
+              ? "Not available"
+              : String(value);
+        }
+      }
+
+      function setBooleanResult(
+        id,
+        problemExists,
+        positiveText,
+        negativeText,
+      ) {
+        const element = document.getElementById(id);
+
+        element.textContent = problemExists
+          ? positiveText
+          : negativeText;
+
+        element.className = problemExists
+          ? "security-bad"
+          : "security-good";
+      }
+
+      function addTags(containerId, values) {
+        const container =
+          document.getElementById(containerId);
+
+        container.innerHTML = "";
+
+        if (!values || values.length === 0) {
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = "Not available";
+          container.appendChild(tag);
+          return;
+        }
+
+        values.forEach((value) => {
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = value;
+          container.appendChild(tag);
+        });
+      }
+
+      function updateProgress(data, attempt) {
+        const endpointProgress =
+          data.endpoints
+            ?.map((endpoint) => endpoint.progress)
+            .filter((value) =>
+              Number.isFinite(value),
+            ) ?? [];
+
+        const reportedProgress =
+          endpointProgress.length > 0
+            ? Math.max(...endpointProgress)
+            : null;
+
+        const fallbackProgress = Math.min(
+          90,
+          10 + attempt * 7,
+        );
+
+        const percentage =
+          reportedProgress ?? fallbackProgress;
+
+        progressBar.style.width =
+          `${Math.max(5, percentage)}%`;
+
+        progressText.textContent =
+          data.statusMessage ||
+          `SSL assessment in progress: ${percentage}%`;
+      }
+
+      async function callApi(hostname, startNew) {
+        const response = await fetch(
+          "/api/ssl-checker",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              hostname,
+              startNew,
+            }),
+          },
+        );
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            "The SSL checker returned an invalid response.",
+          );
+        }
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.error ||
+              "The SSL assessment failed.",
+          );
+        }
+
+        return data;
+      }
+
+      async function checkSsl(event) {
+        event.preventDefault();
+
+        cancelled = false;
+        clearMessage();
+
+        const hostname = normalizeHostname(
+          hostnameInput.value,
+        );
+
+        if (!isValidHostname(hostname)) {
+          showMessage(
+            "Enter a valid public hostname, such as www.example.com.",
+            "error",
+          );
+
+          hostnameInput.focus();
+          return;
+        }
+
+        hostnameInput.value = hostname;
+        checkButton.disabled = true;
+        resetButton.disabled = true;
+        checkButton.textContent =
+          "Assessment Running…";
+
+        resultContent.style.display = "none";
+        placeholder.style.display = "block";
+        placeholder.innerHTML =
+          "<strong>SSL assessment running</strong>Please wait while the certificate and TLS configuration are checked.";
+
+        progress.style.display = "block";
+        progressBar.style.width = "8%";
+
+        showMessage(
+          "Starting SSL certificate assessment.",
+          "info",
+        );
+
+        try {
+          let data = await callApi(
+            hostname,
+            freshScanInput.checked,
+          );
+
+          let attempt = 0;
+          const maximumAttempts = 45;
+
+          while (
+            !data.ready &&
+            attempt < maximumAttempts &&
+            !cancelled
+          ) {
+            attempt += 1;
+            updateProgress(data, attempt);
+
+            await sleep(10_000);
+
+            if (cancelled) {
+              return;
+            }
+
+            data = await callApi(hostname, false);
+          }
+
+          if (cancelled) {
+            return;
+          }
+
+          if (!data.ready) {
+            throw new Error(
+              "The assessment is still running. Please try again in a few minutes.",
+            );
+          }
+
+          report = data;
+          selectedEndpoint = 0;
+
+          progressBar.style.width = "100%";
+          progressText.textContent =
+            "SSL assessment completed.";
+
+          renderEndpointTabs();
+          renderEndpoint();
+
+          placeholder.style.display = "none";
+          resultContent.style.display = "block";
+
+          showMessage(
+            "SSL certificate assessment completed successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            progress.style.display = "none";
+          }, 1000);
+        } catch (error) {
+          report = null;
+          currentCopyText = "";
+
+          progress.style.display = "none";
+
+          placeholder.style.display = "block";
+          placeholder.innerHTML =
+            "<strong>Assessment unavailable</strong>The SSL information could not be retrieved.";
+
+          showMessage(
+            error instanceof Error
+              ? error.message
+              : "The SSL assessment failed.",
+            "error",
+          );
+        } finally {
+          checkButton.disabled = false;
+          resetButton.disabled = false;
+          checkButton.textContent = "Check SSL";
+        }
+      }
+
+      function renderEndpointTabs() {
+        endpointTabs.innerHTML = "";
+
+        if (!report?.endpoints?.length) {
+          return;
+        }
+
+        report.endpoints.forEach(
+          (endpoint, index) => {
+            const button =
+              document.createElement("button");
+
+            button.type = "button";
+            button.className =
+              index === selectedEndpoint
+                ? "endpoint-tab active"
+                : "endpoint-tab";
+
+            button.textContent =
+              endpoint.ipAddress ||
+              `Endpoint ${index + 1}`;
+
+            button.addEventListener(
+              "click",
+              () => {
+                selectedEndpoint = index;
+                renderEndpointTabs();
+                renderEndpoint();
+              },
+            );
+
+            endpointTabs.appendChild(button);
+          },
+        );
+      }
+
+      function getGradeState(grade) {
+        const normalized = String(
+          grade || "",
+        ).toUpperCase();
+
+        if (
+          normalized.startsWith("A") ||
+          normalized === "B"
+        ) {
+          return "good";
+        }
+
+        if (
+          normalized === "C" ||
+          normalized === "T"
+        ) {
+          return "warning";
+        }
+
+        return "danger";
+      }
+
+      function renderEndpoint() {
+        const endpoint =
+          report?.endpoints?.[selectedEndpoint];
+
+        if (!endpoint) {
+          return;
+        }
+
+        const certificate = endpoint.certificate;
+        const server = endpoint.server;
+        const grade = endpoint.grade || "—";
+        const gradeState = getGradeState(grade);
+
+        setText("resultHostname", report.host);
+        setText("resultGrade", grade);
+        setText("resultIp", endpoint.ipAddress);
+
+        setText(
+          "resultDays",
+          certificate.daysRemaining === null
+            ? "Not available"
+            : certificate.daysRemaining < 0
+              ? `${Math.abs(
+                  certificate.daysRemaining,
+                )} days expired`
+              : `${certificate.daysRemaining} days`,
+        );
+
+        setText(
+          "resultValidFrom",
+          formatDate(certificate.validFrom),
+        );
+
+        setText(
+          "resultValidUntil",
+          formatDate(certificate.validUntil),
+        );
+
+        setText(
+          "resultSubject",
+          certificate.subject,
+        );
+
+        setText(
+          "resultIssuer",
+          certificate.issuerSubject,
+        );
+
+        setText(
+          "resultKey",
+          certificate.keySize
+            ? `${certificate.keyAlgorithm} ${certificate.keySize} bits`
+            : certificate.keyAlgorithm,
+        );
+
+        setText(
+          "resultSignature",
+          certificate.signatureAlgorithm,
+        );
+
+        const hostnames = [
+          ...(certificate.commonNames || []),
+          ...(certificate.alternativeNames || []),
+        ].filter(
+          (value, index, array) =>
+            array.indexOf(value) === index,
+        );
+
+        addTags("hostnameTags", hostnames);
+
+        addTags(
+          "protocolTags",
+          endpoint.protocols.map(
+            (protocol) =>
+              `${protocol.name} ${protocol.version}`,
+          ),
+        );
+
+        setBooleanResult(
+          "checkExpired",
+          certificate.expired === true,
+          "Yes",
+          "No",
+        );
+
+        setBooleanResult(
+          "checkSelfSigned",
+          certificate.selfSigned === true,
+          "Yes",
+          "No",
+        );
+
+        setBooleanResult(
+          "checkHeartbleed",
+          server.heartbleed === true,
+          "Yes",
+          "No",
+        );
+
+        setBooleanResult(
+          "checkPoodle",
+          server.poodle === true,
+          "Yes",
+          "No",
+        );
+
+        setBooleanResult(
+          "checkRc4",
+          server.supportsRc4 === true,
+          "Yes",
+          "No",
+        );
+
+        const aeadElement =
+          document.getElementById("checkAead");
+
+        aeadElement.textContent =
+          server.supportsAead ? "Yes" : "No";
+
+        aeadElement.className =
+          server.supportsAead
+            ? "security-good"
+            : "security-bad";
+
+        const summaryBanner =
+          document.getElementById(
+            "summaryBanner",
+          );
+
+        const gradeElement =
+          document.getElementById(
+            "resultGrade",
+          );
+
+        summaryBanner.className =
+          gradeState === "good"
+            ? "summary-banner"
+            : gradeState === "warning"
+              ? "summary-banner warning-state"
+              : "summary-banner danger-state";
+
+        gradeElement.className =
+          gradeState === "good"
+            ? "grade"
+            : gradeState === "warning"
+              ? "grade warning-grade"
+              : "grade danger-grade";
+
+        currentCopyText =
+          `SSL Certificate Assessment
+Hostname: ${report.host}
+IP address: ${endpoint.ipAddress}
+Grade: ${grade}
+Status: ${endpoint.statusMessage}
+Valid from: ${formatDate(
+  certificate.validFrom,
+)}
+Valid until: ${formatDate(
+  certificate.validUntil,
+)}
+Days remaining: ${
+  certificate.daysRemaining ?? "Not available"
+}
+Subject: ${certificate.subject}
+Issuer: ${certificate.issuerSubject}
+Key: ${certificate.keyAlgorithm} ${
+  certificate.keySize
+    ? `${certificate.keySize} bits`
+    : ""
+}
+Signature algorithm: ${
+  certificate.signatureAlgorithm
+}
+Self-signed: ${
+  certificate.selfSigned ? "Yes" : "No"
+}
+Hostnames: ${hostnames.join(", ")}
+Protocols: ${endpoint.protocols
+  .map(
+    (protocol) =>
+      `${protocol.name} ${protocol.version}`,
+  )
+  .join(", ")}
+Heartbleed vulnerable: ${
+  server.heartbleed ? "Yes" : "No"
+}
+POODLE vulnerable: ${
+  server.poodle ? "Yes" : "No"
+}
+RC4 supported: ${
+  server.supportsRc4 ? "Yes" : "No"
+}
+AEAD supported: ${
+  server.supportsAead ? "Yes" : "No"
+}`;
+      }
+
+      function resetChecker() {
+        cancelled = true;
+        report = null;
+        currentCopyText = "";
+
+        hostnameInput.value =
+          "www.gokuruvi.com";
+
+        freshScanInput.checked = false;
+
+        clearMessage();
+
+        progress.style.display = "none";
+        resultContent.style.display = "none";
+        placeholder.style.display = "block";
+
+        placeholder.innerHTML =
+          "<strong>No assessment performed</strong>Enter a hostname and select “Check SSL.”";
+
+        checkButton.disabled = false;
+        resetButton.disabled = false;
+        checkButton.textContent = "Check SSL";
+
+        hostnameInput.focus();
+      }
+
+      async function copyResult() {
+        if (!currentCopyText) {
+          showMessage(
+            "Complete an SSL assessment before copying.",
+            "error",
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentCopyText,
+          );
+
+          const originalText =
+            copyButton.textContent;
+
+          copyButton.textContent = "Copied!";
+
+          showMessage(
+            "SSL assessment copied successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            copyButton.textContent =
+              originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the result manually.",
+            "error",
+          );
+        }
+      }
+
+      checkerForm.addEventListener(
+        "submit",
+        checkSsl,
+      );
+
+      resetButton.addEventListener(
+        "click",
+        resetChecker,
+      );
+
+      copyButton.addEventListener(
+        "click",
+        copyResult,
+      );
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              hostnameInput.value =
+                button.dataset.host || "";
+
+              clearMessage();
+            },
+          );
+        });
+    </script>
+  </body>
+</html>

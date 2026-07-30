@@ -1,0 +1,1089 @@
+---
+const pageTitle = "Port Checker | Gokuruvi Tools";
+const description =
+  "Check whether a common TCP port is open or closed on a public hostname or IP address.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/port-checker"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #86efac;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1120px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1080px;
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 145px;
+        gap: 12px;
+      }
+
+      .help-text {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .primary-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .notice {
+        margin-top: 22px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .result-placeholder {
+        padding: 48px 20px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .result-placeholder span {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 48px;
+      }
+
+      .loading {
+        display: none;
+        padding: 45px 20px;
+        text-align: center;
+      }
+
+      .loading.active {
+        display: block;
+      }
+
+      .spinner {
+        width: 42px;
+        height: 42px;
+        margin: 0 auto 15px;
+        border: 4px solid #dbeafe;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results.active {
+        display: block;
+      }
+
+      .status-panel {
+        margin-bottom: 18px;
+        padding: 24px;
+        border-radius: 13px;
+        text-align: center;
+      }
+
+      .status-panel.open {
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .status-panel.closed {
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .status-icon {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 42px;
+      }
+
+      .status-title {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 25px;
+        font-weight: 800;
+      }
+
+      .status-description {
+        margin: 0;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .copy-row {
+        margin-top: 20px;
+      }
+
+      .reference-section {
+        max-width: 1080px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .port-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      .port-table th,
+      .port-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .port-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .port-table td:first-child {
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 850px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .port-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="logo" href="/">Gokuruvi Tools</a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a class="active" href="/network">Network</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>TCP Port Checker</h1>
+
+        <p>
+          Check whether a common TCP port is reachable on a public hostname or
+          IPv4 address.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Check a Port</h2>
+
+            <p class="card-description">
+              Enter a public hostname or IPv4 address and select the TCP port
+              you want to test.
+            </p>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="hostInput">Hostname or public IP</label>
+
+                <input
+                  id="hostInput"
+                  type="text"
+                  value="example.com"
+                  placeholder="Example: example.com"
+                  autocomplete="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                />
+
+                <p class="help-text">
+                  Do not include http://, https://, paths, or port numbers.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label for="portInput">TCP Port</label>
+
+                <select id="portInput">
+                  <option value="21">21 - FTP</option>
+                  <option value="22">22 - SSH</option>
+                  <option value="23">23 - Telnet</option>
+                  <option value="53">53 - DNS</option>
+                  <option value="80" selected>80 - HTTP</option>
+                  <option value="110">110 - POP3</option>
+                  <option value="143">143 - IMAP</option>
+                  <option value="443">443 - HTTPS</option>
+                  <option value="465">465 - SMTPS</option>
+                  <option value="587">587 - SMTP Submission</option>
+                  <option value="993">993 - IMAPS</option>
+                  <option value="995">995 - POP3S</option>
+                  <option value="1433">1433 - Microsoft SQL</option>
+                  <option value="1521">1521 - Oracle</option>
+                  <option value="2049">2049 - NFS</option>
+                  <option value="2375">2375 - Docker</option>
+                  <option value="3000">3000 - Application</option>
+                  <option value="3306">3306 - MySQL</option>
+                  <option value="3389">3389 - RDP</option>
+                  <option value="5432">5432 - PostgreSQL</option>
+                  <option value="5672">5672 - RabbitMQ</option>
+                  <option value="6379">6379 - Redis</option>
+                  <option value="6443">6443 - Kubernetes API</option>
+                  <option value="8080">8080 - HTTP Alternate</option>
+                  <option value="8443">8443 - HTTPS Alternate</option>
+                  <option value="9200">9200 - Elasticsearch</option>
+                  <option value="10050">10050 - Zabbix Agent</option>
+                  <option value="27017">27017 - MongoDB</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <p class="preset-title">Quick port selection</p>
+
+              <div class="preset-buttons">
+                <button class="preset" type="button" data-port="22">
+                  SSH 22
+                </button>
+
+                <button class="preset" type="button" data-port="80">
+                  HTTP 80
+                </button>
+
+                <button class="preset" type="button" data-port="443">
+                  HTTPS 443
+                </button>
+
+                <button class="preset" type="button" data-port="3389">
+                  RDP 3389
+                </button>
+
+                <button class="preset" type="button" data-port="3306">
+                  MySQL 3306
+                </button>
+
+                <button class="preset" type="button" data-port="5432">
+                  PostgreSQL 5432
+                </button>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="checkButton"
+                class="button primary-button"
+                type="button"
+              >
+                Check Port
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div class="notice">
+              Check only systems that you own or are authorised to test.
+              Private, loopback, local, and reserved destinations are blocked.
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Port Check Result</h2>
+
+            <div id="resultPlaceholder" class="result-placeholder">
+              <span aria-hidden="true">🔌</span>
+
+              Enter a destination and click
+              <strong>Check Port</strong>.
+            </div>
+
+            <div id="loading" class="loading">
+              <div class="spinner" aria-hidden="true"></div>
+              <strong>Testing TCP connection…</strong>
+            </div>
+
+            <div id="results" class="results">
+              <div id="statusPanel" class="status-panel">
+                <span id="statusIcon" class="status-icon"></span>
+                <span id="statusTitle" class="status-title"></span>
+                <p id="statusDescription" class="status-description"></p>
+              </div>
+
+              <div class="result-grid">
+                <div class="result-item">
+                  <span class="result-label">Hostname</span>
+                  <span id="resultHost" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">TCP Port</span>
+                  <span id="resultPort" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Service</span>
+                  <span id="resultService" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Status</span>
+                  <span id="resultStatus" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Response Time</span>
+                  <span id="resultTime" class="result-value">-</span>
+                </div>
+
+                <div class="result-item">
+                  <span class="result-label">Protocol</span>
+                  <span class="result-value">TCP</span>
+                </div>
+
+                <div class="result-item full">
+                  <span class="result-label">Checked At</span>
+                  <span id="resultCheckedAt" class="result-value">-</span>
+                </div>
+              </div>
+
+              <div class="copy-row">
+                <button
+                  id="copyButton"
+                  class="button primary-button"
+                  type="button"
+                >
+                  Copy Result
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Common TCP Ports</h2>
+
+          <p>
+            These are some commonly used ports available in this checker.
+          </p>
+
+          <table class="port-table">
+            <thead>
+              <tr>
+                <th>Port</th>
+                <th>Service</th>
+                <th>Common purpose</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>22</td>
+                <td>SSH</td>
+                <td>Secure remote server access</td>
+              </tr>
+
+              <tr>
+                <td>80</td>
+                <td>HTTP</td>
+                <td>Unencrypted web traffic</td>
+              </tr>
+
+              <tr>
+                <td>443</td>
+                <td>HTTPS</td>
+                <td>Encrypted web traffic</td>
+              </tr>
+
+              <tr>
+                <td>3306</td>
+                <td>MySQL</td>
+                <td>MySQL database connections</td>
+              </tr>
+
+              <tr>
+                <td>3389</td>
+                <td>RDP</td>
+                <td>Windows Remote Desktop</td>
+              </tr>
+
+              <tr>
+                <td>5432</td>
+                <td>PostgreSQL</td>
+                <td>PostgreSQL database connections</td>
+              </tr>
+
+              <tr>
+                <td>6379</td>
+                <td>Redis</td>
+                <td>Redis database connections</td>
+              </tr>
+
+              <tr>
+                <td>6443</td>
+                <td>Kubernetes API</td>
+                <td>Kubernetes control-plane API</td>
+              </tr>
+
+              <tr>
+                <td>8080</td>
+                <td>HTTP Alternate</td>
+                <td>Application and proxy services</td>
+              </tr>
+
+              <tr>
+                <td>10050</td>
+                <td>Zabbix Agent</td>
+                <td>Zabbix passive agent checks</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
+      · <a href="/privacy-policy">Privacy</a>
+      · <a href="/terms">Terms</a>
+      · <a href="/contact">Contact</a>
+    </footer>
+
+    <script is:inline>
+      const hostInput = document.getElementById("hostInput");
+      const portInput = document.getElementById("portInput");
+      const checkButton = document.getElementById("checkButton");
+      const resetButton = document.getElementById("resetButton");
+      const copyButton = document.getElementById("copyButton");
+
+      const message = document.getElementById("message");
+      const resultPlaceholder =
+        document.getElementById("resultPlaceholder");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+
+      let currentResult = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function isValidHost(host) {
+        if (!host || host.length > 253) {
+          return false;
+        }
+
+        if (
+          host.includes("://") ||
+          host.includes("/") ||
+          host.includes("?") ||
+          host.includes("#") ||
+          host.includes(":")
+        ) {
+          return false;
+        }
+
+        const ipv4Pattern =
+          /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/;
+
+        const hostnamePattern =
+          /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+
+        return ipv4Pattern.test(host) || hostnamePattern.test(host);
+      }
+
+      function setLoadingState(isLoading) {
+        checkButton.disabled = isLoading;
+        checkButton.textContent = isLoading
+          ? "Checking…"
+          : "Check Port";
+
+        resultPlaceholder.style.display = isLoading
+          ? "none"
+          : resultPlaceholder.style.display;
+
+        loading.classList.toggle("active", isLoading);
+
+        if (isLoading) {
+          results.classList.remove("active");
+        }
+      }
+
+      async function checkPort() {
+        clearMessage();
+
+        const host = hostInput.value
+          .trim()
+          .toLowerCase()
+          .replace(/\.$/, "");
+
+        const port = Number(portInput.value);
+
+        if (!isValidHost(host)) {
+          showMessage(
+            "Enter a valid public hostname or IPv4 address without http://, paths, or a port number.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (!Number.isInteger(port) || port < 1 || port > 65535) {
+          showMessage(
+            "Select a valid TCP port.",
+            "error"
+          );
+
+          return;
+        }
+
+        setLoadingState(true);
+
+        try {
+          const response = await fetch("/api/check-port", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              host,
+              port,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.error || "Unable to complete the port check."
+            );
+          }
+
+          displayResult(data);
+        } catch (error) {
+          resultPlaceholder.style.display = "block";
+
+          showMessage(
+            error instanceof Error
+              ? error.message
+              : "Unable to complete the port check.",
+            "error"
+          );
+        } finally {
+          setLoadingState(false);
+        }
+      }
+
+      function displayResult(data) {
+        const statusPanel =
+          document.getElementById("statusPanel");
+
+        const isOpen = data.open === true;
+
+        statusPanel.className =
+          `status-panel ${isOpen ? "open" : "closed"}`;
+
+        document.getElementById("statusIcon").textContent =
+          isOpen ? "✅" : "❌";
+
+        document.getElementById("statusTitle").textContent =
+          isOpen ? "Port Is Open" : "Port Is Closed";
+
+        document.getElementById(
+          "statusDescription"
+        ).textContent = isOpen
+          ? `${data.host}:${data.port} accepted the TCP connection.`
+          : `${data.host}:${data.port} did not accept the TCP connection.`;
+
+        document.getElementById("resultHost").textContent =
+          data.host;
+
+        document.getElementById("resultPort").textContent =
+          String(data.port);
+
+        document.getElementById("resultService").textContent =
+          data.service;
+
+        document.getElementById("resultStatus").textContent =
+          isOpen ? "Open" : "Closed or filtered";
+
+        document.getElementById("resultTime").textContent =
+          `${data.responseTimeMs} ms`;
+
+        document.getElementById(
+          "resultCheckedAt"
+        ).textContent = new Date(data.checkedAt).toLocaleString();
+
+        currentResult = [
+          "TCP Port Check",
+          "--------------",
+          `Host: ${data.host}`,
+          `Port: ${data.port}`,
+          `Service: ${data.service}`,
+          `Protocol: TCP`,
+          `Status: ${isOpen ? "Open" : "Closed or filtered"}`,
+          `Response Time: ${data.responseTimeMs} ms`,
+          `Checked At: ${new Date(data.checkedAt).toLocaleString()}`,
+        ].join("\n");
+
+        resultPlaceholder.style.display = "none";
+        results.classList.add("active");
+
+        showMessage(
+          "Port check completed successfully.",
+          "success"
+        );
+      }
+
+      function resetChecker() {
+        hostInput.value = "example.com";
+        portInput.value = "80";
+        currentResult = "";
+
+        clearMessage();
+
+        loading.classList.remove("active");
+        results.classList.remove("active");
+        resultPlaceholder.style.display = "block";
+
+        hostInput.focus();
+      }
+
+      async function copyResult() {
+        if (!currentResult) {
+          showMessage(
+            "Run a port check before copying the result.",
+            "error"
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(currentResult);
+
+          const originalText = copyButton.textContent;
+          copyButton.textContent = "Copied!";
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the result manually.",
+            "error"
+          );
+        }
+      }
+
+      checkButton.addEventListener("click", checkPort);
+      resetButton.addEventListener("click", resetChecker);
+      copyButton.addEventListener("click", copyResult);
+
+      hostInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          checkPort();
+        }
+      });
+
+      document.querySelectorAll(".preset").forEach((button) => {
+        button.addEventListener("click", () => {
+          portInput.value = button.dataset.port;
+          checkPort();
+        });
+      });
+    </script>
+  </body>
+</html>
