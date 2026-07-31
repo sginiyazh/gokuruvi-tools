@@ -1,4 +1,6 @@
 ---
+import Header from "../../components/Header.astro";
+
 const cloudTools = [
   {
     icon: "☁️",
@@ -94,25 +96,11 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={pageDescription} />
-
-    <meta
-      name="keywords"
-      content="cloud tools, AWS tools, Azure tools, Terraform tools, cloud-init generator, IAM policy generator, security group generator, Azure NSG generator, AWS ARN parser, Azure resource ID parser"
-    />
-
     <meta name="author" content="Gokuruvi Tools" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#0f172a" />
-
-    <link rel="canonical" href={siteUrl} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
@@ -120,964 +108,56 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
     <meta property="og:url" content={siteUrl} />
     <meta property="og:site_name" content="Gokuruvi Tools" />
 
-    <meta
-      property="og:image"
-      content="https://www.gokuruvi.com/og-image.png"
-    />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={pageDescription} />
-
-    <meta
-      name="twitter:image"
-      content="https://www.gokuruvi.com/og-image.png"
-    />
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <title>{pageTitle}</title>
-
-    <style>
-      :root {
-        --primary: #2563eb;
-        --primary-dark: #1d4ed8;
-        --secondary: #38bdf8;
-        --dark: #0f172a;
-        --dark-light: #1e293b;
-        --text: #172033;
-        --muted: #64748b;
-        --background: #f8fafc;
-        --card: #ffffff;
-        --border: #e2e8f0;
-        --success: #16a34a;
-        --maximum-width: 1180px;
-
-        font-family:
-          Inter, Arial, Helvetica, sans-serif;
-        color: var(--text);
-        background: var(--background);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        background: var(--background);
-        color: var(--text);
-        line-height: 1.6;
-      }
-
-      body,
-      button,
-      input,
-      textarea,
-      select {
-        font-family:
-          Inter, Arial, Helvetica, sans-serif;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      .container {
-        width: min(100% - 40px, var(--maximum-width));
-        margin-inline: auto;
-      }
-
-      .skip-link {
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        z-index: 9999;
-        padding: 10px 16px;
-        border-radius: 8px;
-        background: #ffffff;
-        color: var(--dark);
-        font-weight: 800;
-        text-decoration: none;
-        transform: translateY(-160%);
-      }
-
-      .skip-link:focus {
-        transform: translateY(0);
-      }
-
-      a:focus-visible,
-      button:focus-visible {
-        outline: 3px solid rgba(37, 99, 235, 0.45);
-        outline-offset: 4px;
-        border-radius: 6px;
-      }
-
-      /* Header */
-
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(15, 23, 42, 0.97);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-
-      .navbar {
-        display: flex;
-        min-height: 72px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 28px;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #ffffff;
-        font-size: 21px;
-        font-weight: 800;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .logo-icon {
-        display: grid;
-        width: 39px;
-        height: 39px;
-        place-items: center;
-        border-radius: 10px;
-        background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--secondary)
-        );
-        color: #ffffff;
-        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-      }
-
-      .nav-links a {
-        color: #e2e8f0;
-        font-size: 15px;
-        font-weight: 600;
-        text-decoration: none;
-        transition:
-          color 0.2s ease,
-          transform 0.2s ease;
-      }
-
-      .nav-links a:hover,
-      .nav-links a.active {
-        color: #ffffff;
-      }
-
-      .nav-links a:hover {
-        transform: translateY(-1px);
-      }
-
-      .nav-button {
-        padding: 10px 18px;
-        border-radius: 9px;
-        background: var(--primary);
-        color: #ffffff !important;
-      }
-
-      .nav-button:hover {
-        background: var(--primary-dark);
-      }
-
-      /* Breadcrumb */
-
-      .breadcrumb-section {
-        border-bottom: 1px solid var(--border);
-        background: #ffffff;
-      }
-
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        padding: 15px 0;
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      .breadcrumb a {
-        color: var(--primary);
-        font-weight: 700;
-        text-decoration: none;
-      }
-
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-
-      /* Hero */
-
-      .hero {
-        position: relative;
-        overflow: hidden;
-        padding: 90px 0 82px;
-        background:
-          radial-gradient(
-            circle at 15% 15%,
-            rgba(56, 189, 248, 0.2),
-            transparent 31%
-          ),
-          radial-gradient(
-            circle at 88% 35%,
-            rgba(37, 99, 235, 0.19),
-            transparent 34%
-          ),
-          linear-gradient(
-            145deg,
-            #f8fafc 0%,
-            #eff6ff 50%,
-            #f8fafc 100%
-          );
-      }
-
-      .hero::before {
-        position: absolute;
-        inset: 0;
-        content: "";
-        pointer-events: none;
-        background-image:
-          linear-gradient(
-            rgba(37, 99, 235, 0.04) 1px,
-            transparent 1px
-          ),
-          linear-gradient(
-            90deg,
-            rgba(37, 99, 235, 0.04) 1px,
-            transparent 1px
-          );
-        background-size: 42px 42px;
-        -webkit-mask-image: linear-gradient(
-          to bottom,
-          black,
-          transparent
-        );
-        mask-image: linear-gradient(
-          to bottom,
-          black,
-          transparent
-        );
-      }
-
-      .hero-content {
-        position: relative;
-        max-width: 900px;
-        margin: 0 auto;
-        text-align: center;
-      }
-
-      .hero-icon {
-        display: grid;
-        width: 76px;
-        height: 76px;
-        place-items: center;
-        margin: 0 auto 22px;
-        border: 1px solid #bfdbfe;
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.9);
-        font-size: 39px;
-        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.15);
-      }
-
-      .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
-        padding: 7px 15px;
-        border: 1px solid #bfdbfe;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.84);
-        color: var(--primary-dark);
-        font-size: 14px;
-        font-weight: 800;
-      }
-
-      .badge-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--success);
-        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
-      }
-
-      .hero h1 {
-        margin: 0 0 20px;
-        color: var(--dark);
-        font-size: clamp(42px, 7vw, 68px);
-        line-height: 1.08;
-        letter-spacing: -2.3px;
-      }
-
-      .hero h1 span {
-        background: linear-gradient(
-          90deg,
-          var(--primary),
-          #0284c7
-        );
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-      }
-
-      .hero-description {
-        max-width: 780px;
-        margin: 0 auto;
-        color: #475569;
-        font-size: clamp(18px, 2.4vw, 21px);
-        line-height: 1.8;
-      }
-
-      .hero-actions {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin-top: 34px;
-      }
-
-      .button {
-        display: inline-flex;
-        min-height: 50px;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 0 23px;
-        border: 1px solid transparent;
-        border-radius: 11px;
-        font-size: 16px;
-        font-weight: 800;
-        text-decoration: none;
-        transition:
-          transform 0.2s ease,
-          background 0.2s ease,
-          border-color 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-
-      .button:hover {
-        transform: translateY(-2px);
-      }
-
-      .button-primary {
-        background: var(--primary);
-        color: #ffffff;
-        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
-      }
-
-      .button-primary:hover {
-        background: var(--primary-dark);
-        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.32);
-      }
-
-      .button-secondary {
-        border-color: #cbd5e1;
-        background: #ffffff;
-        color: var(--dark);
-      }
-
-      .button-secondary:hover {
-        border-color: #94a3b8;
-        background: #f8fafc;
-      }
-
-      .hero-features {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 24px;
-        margin-top: 35px;
-        color: #475569;
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      .hero-feature {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .check {
-        color: var(--success);
-        font-size: 17px;
-      }
-
-      /* Sections */
-
-      .section {
-        padding: 88px 0;
-      }
-
-      .section-white {
-        background: #ffffff;
-      }
-
-      .section-heading {
-        max-width: 780px;
-        margin: 0 auto 50px;
-        text-align: center;
-      }
-
-      .section-label {
-        display: inline-block;
-        margin-bottom: 12px;
-        color: var(--primary);
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 1.6px;
-        text-transform: uppercase;
-      }
-
-      .section-heading h2 {
-        margin: 0 0 16px;
-        color: var(--dark);
-        font-size: clamp(31px, 4vw, 43px);
-        line-height: 1.2;
-        letter-spacing: -1px;
-      }
-
-      .section-heading p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 18px;
-        line-height: 1.75;
-      }
-
-      /* Featured */
-
-      .featured-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 20px;
-      }
-
-      .featured-card {
-        display: flex;
-        min-height: 245px;
-        flex-direction: column;
-        padding: 25px;
-        border: 1px solid var(--border);
-        border-radius: 17px;
-        background: #ffffff;
-        text-decoration: none;
-        box-shadow: 0 9px 26px rgba(15, 23, 42, 0.05);
-        transition:
-          transform 0.25s ease,
-          border-color 0.25s ease,
-          box-shadow 0.25s ease;
-      }
-
-      .featured-card:hover {
-        border-color: #93c5fd;
-        box-shadow: 0 18px 38px rgba(37, 99, 235, 0.12);
-        transform: translateY(-6px);
-      }
-
-      .featured-icon {
-        display: grid;
-        width: 52px;
-        height: 52px;
-        place-items: center;
-        margin-bottom: 18px;
-        border-radius: 14px;
-        background: #eff6ff;
-        font-size: 26px;
-      }
-
-      .featured-card h3 {
-        margin: 0 0 10px;
-        color: var(--dark);
-        font-size: 19px;
-        line-height: 1.35;
-      }
-
-      .featured-card p {
-        flex: 1;
-        margin: 0 0 18px;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.65;
-      }
-
-      .featured-link {
-        color: var(--primary);
-        font-size: 14px;
-        font-weight: 800;
-      }
-
-      /* All cloud tools */
-
-      .tools-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px;
-      }
-
-      .tool-card {
-        display: flex;
-        align-items: flex-start;
-        gap: 20px;
-        padding: 28px;
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        background: var(--card);
-        text-decoration: none;
-        box-shadow: 0 9px 27px rgba(15, 23, 42, 0.045);
-        transition:
-          transform 0.25s ease,
-          border-color 0.25s ease,
-          box-shadow 0.25s ease;
-      }
-
-      .tool-card:hover {
-        border-color: #93c5fd;
-        box-shadow: 0 19px 40px rgba(37, 99, 235, 0.11);
-        transform: translateY(-5px);
-      }
-
-      .tool-icon {
-        display: grid;
-        width: 57px;
-        height: 57px;
-        flex: 0 0 57px;
-        place-items: center;
-        border-radius: 15px;
-        background: linear-gradient(
-          135deg,
-          #eff6ff,
-          #e0f2fe
-        );
-        font-size: 28px;
-      }
-
-      .tool-content {
-        min-width: 0;
-        flex: 1;
-      }
-
-      .tool-top {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .tool-content h3 {
-        margin: 0 0 9px;
-        color: var(--dark);
-        font-size: 21px;
-        line-height: 1.35;
-      }
-
-      .tool-badge {
-        flex: 0 0 auto;
-        padding: 5px 9px;
-        border: 1px solid #bfdbfe;
-        border-radius: 999px;
-        background: #eff6ff;
-        color: var(--primary-dark);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.4px;
-        text-transform: uppercase;
-      }
-
-      .tool-content p {
-        margin: 0 0 16px;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      .open-tool {
-        color: var(--primary);
-        font-size: 15px;
-        font-weight: 800;
-      }
-
-      /* Information section */
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 22px;
-      }
-
-      .info-card {
-        padding: 28px;
-        border: 1px solid var(--border);
-        border-radius: 17px;
-        background: #ffffff;
-      }
-
-      .info-icon {
-        display: grid;
-        width: 49px;
-        height: 49px;
-        place-items: center;
-        margin-bottom: 18px;
-        border-radius: 13px;
-        background: #eff6ff;
-        font-size: 23px;
-      }
-
-      .info-card h3 {
-        margin: 0 0 9px;
-        color: var(--dark);
-        font-size: 19px;
-      }
-
-      .info-card p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      /* CTA */
-
-      .cta {
-        padding: 0 0 90px;
-      }
-
-      .cta-box {
-        padding: 65px 35px;
-        border-radius: 24px;
-        background:
-          radial-gradient(
-            circle at 10% 20%,
-            rgba(56, 189, 248, 0.25),
-            transparent 30%
-          ),
-          linear-gradient(
-            135deg,
-            #0f172a,
-            #1e3a8a
-          );
-        color: #ffffff;
-        text-align: center;
-        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
-      }
-
-      .cta-box h2 {
-        max-width: 720px;
-        margin: 0 auto 15px;
-        font-size: clamp(30px, 4vw, 43px);
-        line-height: 1.2;
-      }
-
-      .cta-box p {
-        max-width: 700px;
-        margin: 0 auto 27px;
-        color: #cbd5e1;
-        font-size: 18px;
-        line-height: 1.7;
-      }
-
-      .cta-button {
-        background: #ffffff;
-        color: var(--primary-dark);
-      }
-
-      .cta-button:hover {
-        background: #eff6ff;
-      }
-
-      /* Footer */
-
-      footer {
-        background: var(--dark);
-        color: #cbd5e1;
-      }
-
-      .footer-grid {
-        display: grid;
-        grid-template-columns: 2fr repeat(3, 1fr);
-        gap: 55px;
-        padding: 65px 0 45px;
-      }
-
-      .footer-brand p {
-        max-width: 380px;
-        margin: 17px 0 0;
-        color: #94a3b8;
-        line-height: 1.75;
-      }
-
-      .footer-title {
-        margin: 0 0 18px;
-        color: #ffffff;
-        font-size: 16px;
-      }
-
-      .footer-links {
-        display: grid;
-        gap: 12px;
-      }
-
-      .footer-links a {
-        color: #94a3b8;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .footer-links a:hover {
-        color: #ffffff;
-      }
-
-      .footer-bottom {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 25px;
-        padding: 24px 0;
-        border-top: 1px solid #334155;
-        color: #94a3b8;
-        font-size: 14px;
-      }
-
-      .footer-bottom-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 18px;
-      }
-
-      .footer-bottom-links a {
-        color: #94a3b8;
-        text-decoration: none;
-      }
-
-      .footer-bottom-links a:hover {
-        color: #ffffff;
-      }
-
-      /* Responsive */
-
-      @media (max-width: 1050px) {
-        .nav-links {
-          gap: 18px;
-        }
-
-        .featured-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .info-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .footer-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 820px) {
-        .navbar {
-          min-height: auto;
-          align-items: flex-start;
-          flex-direction: column;
-          padding: 17px 0;
-        }
-
-        .nav-links {
-          width: 100%;
-          flex-wrap: wrap;
-          gap: 15px 20px;
-        }
-
-        .nav-button {
-          padding: 7px 13px;
-        }
-
-        .hero {
-          padding: 72px 0 68px;
-        }
-
-        .section {
-          padding: 70px 0;
-        }
-
-        .tools-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .footer-bottom {
-          align-items: flex-start;
-          flex-direction: column;
-        }
-      }
-
-      @media (max-width: 560px) {
-        .container {
-          width: min(100% - 28px, var(--maximum-width));
-        }
-
-        .hero h1 {
-          font-size: 42px;
-          letter-spacing: -1.4px;
-        }
-
-        .hero-actions {
-          flex-direction: column;
-        }
-
-        .button {
-          width: 100%;
-        }
-
-        .hero-features {
-          align-items: flex-start;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .featured-grid,
-        .info-grid,
-        .footer-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .tool-card {
-          padding: 23px;
-        }
-
-        .tool-top {
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .tool-badge {
-          align-self: flex-start;
-        }
-
-        .cta-box {
-          padding: 50px 23px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-
-        *,
-        *::before,
-        *::after {
-          transition-duration: 0.01ms !important;
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-        }
-      }
-    </style>
   </head>
 
   <body>
-    <a class="skip-link" href="#main-content">
-      Skip to main content
-    </a>
+    <Header />
 
-    <header class="site-header">
-      <div class="container">
-        <nav class="navbar" aria-label="Main navigation">
-          <a class="logo" href="/" aria-label="Gokuruvi Tools home">
-            <span class="logo-icon" aria-hidden="true">G</span>
-            <span>Gokuruvi Tools</span>
-          </a>
-
-          <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/linux">Linux</a>
-            <a href="/devops">DevOps</a>
-            <a href="/kubernetes">Kubernetes</a>
-            <a href="/network">Network</a>
-            <a class="active" href="/cloud" aria-current="page">Cloud</a>
-            <a href="/about">About</a>
-
-            <a class="nav-button" href="#all-cloud-tools">
-              Explore Tools
-            </a>
-          </div>
-        </nav>
-      </div>
-    </header>
-
-    <div class="breadcrumb-section">
-      <div class="container">
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-          <a href="/">Home</a>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">Cloud Tools</span>
-        </nav>
-      </div>
-    </div>
-
-    <main id="main-content">
+    <main>
       <section class="hero">
         <div class="container">
           <div class="hero-content">
-            <div class="hero-icon" aria-hidden="true">☁️</div>
-
             <div class="hero-badge">
               <span class="badge-dot" aria-hidden="true"></span>
               Free tools for cloud engineers
             </div>
 
-            <h1>
-              Practical <span>Cloud Tools</span>
-            </h1>
+            <h1>Practical <span>Cloud Tools</span></h1>
 
             <p class="hero-description">
               Generate cloud-init configurations, Terraform templates, AWS IAM
-              policies, security rules and Azure resource information using
-              simple browser-based tools.
+              policies, security rules, cost estimates and Azure resource
+              information using simple browser-based utilities.
             </p>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="#all-cloud-tools">
-                Browse Cloud Tools
-                <span aria-hidden="true">→</span>
+              <a class="button button-primary" href="#cloud-tools">
+                Explore Cloud Tools <span aria-hidden="true">→</span>
               </a>
 
-              <a class="button button-secondary" href="/network">
-                Browse Network Tools
+              <a class="button button-secondary" href="/#tool-categories">
+                Browse All Categories
               </a>
             </div>
 
-            <div class="hero-features">
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Free to use
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{cloudTools.length}</strong>
+                <span>Free cloud tools</span>
               </div>
 
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                No registration
+              <div class="hero-stat">
+                <strong>AWS</strong>
+                <span>IAM and security tools</span>
               </div>
 
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Browser based
-              </div>
-
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Mobile responsive
+              <div class="hero-stat">
+                <strong>Azure</strong>
+                <span>NSG and resource tools</span>
               </div>
             </div>
           </div>
@@ -1087,34 +167,23 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
       <section class="section section-white">
         <div class="container">
           <div class="section-heading">
-            <span class="section-label">Featured Cloud Tools</span>
-
+            <span class="section-label">Featured Utilities</span>
             <h2>Popular tools for everyday cloud administration</h2>
-
             <p>
-              Start with these practical generators for cloud virtual machines
-              and Terraform projects.
+              Start with commonly used generators for cloud virtual machines,
+              Terraform projects, AWS and Azure.
             </p>
           </div>
 
           <div class="featured-grid">
             {
               featuredTools.map((tool) => (
-                <a
-                  class="featured-card"
-                  href={tool.link}
-                  aria-label={`Open ${tool.title}`}
-                >
-                  <div class="featured-icon" aria-hidden="true">
-                    {tool.icon}
-                  </div>
-
+                <a class="featured-card" href={tool.link}>
+                  <div class="featured-icon" aria-hidden="true">{tool.icon}</div>
+                  <span class="tool-badge">{tool.badge}</span>
                   <h3>{tool.title}</h3>
                   <p>{tool.description}</p>
-
-                  <span class="featured-link">
-                    Open tool →
-                  </span>
+                  <span class="open-tool">Open tool <span>→</span></span>
                 </a>
               ))
             }
@@ -1122,15 +191,13 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
         </div>
       </section>
 
-      <section class="section" id="all-cloud-tools">
+      <section class="section" id="cloud-tools">
         <div class="container">
           <div class="section-heading">
             <span class="section-label">All Cloud Tools</span>
-
             <h2>Cloud generators, parsers and calculators</h2>
-
             <p>
-              Select a tool for AWS, Azure, Terraform or Linux cloud
+              Select a utility for AWS, Azure, Terraform or Linux cloud
               administration.
             </p>
           </div>
@@ -1138,27 +205,15 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
           <div class="tools-grid">
             {
               cloudTools.map((tool) => (
-                <a
-                  class="tool-card"
-                  href={tool.link}
-                  aria-label={`Open ${tool.title}`}
-                >
-                  <div class="tool-icon" aria-hidden="true">
-                    {tool.icon}
+                <a class="tool-card" href={tool.link}>
+                  <div class="tool-header">
+                    <div class="tool-icon" aria-hidden="true">{tool.icon}</div>
+                    <span class="tool-badge">{tool.badge}</span>
                   </div>
 
-                  <div class="tool-content">
-                    <div class="tool-top">
-                      <h3>{tool.title}</h3>
-                      <span class="tool-badge">{tool.badge}</span>
-                    </div>
-
-                    <p>{tool.description}</p>
-
-                    <span class="open-tool">
-                      Open tool →
-                    </span>
-                  </div>
+                  <h3>{tool.title}</h3>
+                  <p>{tool.description}</p>
+                  <span class="open-tool">Open tool <span>→</span></span>
                 </a>
               ))
             }
@@ -1169,42 +224,31 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
       <section class="section section-white">
         <div class="container">
           <div class="section-heading">
-            <span class="section-label">Why Use These Tools</span>
-
+            <span class="section-label">Why Gokuruvi</span>
             <h2>Built for practical cloud engineering tasks</h2>
-
             <p>
-              Save time while creating and validating common cloud
-              configurations.
+              Create reusable cloud configurations faster and reduce repetitive
+              manual work.
             </p>
           </div>
 
-          <div class="info-grid">
-            <article class="info-card">
-              <div class="info-icon" aria-hidden="true">⚡</div>
+          <div class="benefits-grid">
+            <article class="benefit-card">
+              <div class="benefit-icon">⚡</div>
               <h3>Generate Faster</h3>
-              <p>
-                Create reusable cloud and Terraform configurations without
-                writing every line manually.
-              </p>
+              <p>Create cloud and Terraform configurations without writing every line manually.</p>
             </article>
 
-            <article class="info-card">
-              <div class="info-icon" aria-hidden="true">🧰</div>
+            <article class="benefit-card">
+              <div class="benefit-icon">🧰</div>
               <h3>Practical Outputs</h3>
-              <p>
-                Copy generated YAML, JSON and Terraform configuration into your
-                projects and modify it as required.
-              </p>
+              <p>Copy generated YAML, JSON and Terraform blocks into your projects.</p>
             </article>
 
-            <article class="info-card">
-              <div class="info-icon" aria-hidden="true">🔒</div>
+            <article class="benefit-card">
+              <div class="benefit-icon">🔒</div>
               <h3>Privacy Friendly</h3>
-              <p>
-                Tools should process input inside the browser whenever
-                client-side processing is supported.
-              </p>
+              <p>Use browser-based tools without registration for common cloud tasks.</p>
             </article>
           </div>
         </div>
@@ -1214,15 +258,13 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
         <div class="container">
           <div class="cta-box">
             <h2>Start building cloud configurations faster</h2>
-
             <p>
               Use free generators and parsers for AWS, Azure, Terraform and
               Linux cloud virtual machines.
             </p>
 
-            <a class="button cta-button" href="#all-cloud-tools">
-              Explore All Cloud Tools
-              <span aria-hidden="true">→</span>
+            <a class="button cta-button" href="/cloud/cloud-init-generator">
+              Open Cloud-init Generator <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>
@@ -1233,80 +275,514 @@ const siteUrl = "https://www.gokuruvi.com/cloud";
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <a class="logo" href="/">
-              <span class="logo-icon" aria-hidden="true">G</span>
+            <a class="footer-logo" href="/">
+              <span class="footer-logo-icon">G</span>
               <span>Gokuruvi Tools</span>
             </a>
-
             <p>
               Free Linux, DevOps, Kubernetes, network and cloud utilities for
-              system administrators, engineers and IT professionals.
+              administrators, engineers and IT professionals.
             </p>
           </div>
 
           <div>
-            <h3 class="footer-title">Tool Categories</h3>
-
-            <div class="footer-links">
-              <a href="/linux">Linux Tools</a>
-              <a href="/devops">DevOps Tools</a>
-              <a href="/kubernetes">Kubernetes Tools</a>
-              <a href="/network">Network Tools</a>
-              <a href="/cloud">Cloud Tools</a>
-            </div>
-          </div>
-
-          <div>
             <h3 class="footer-title">Cloud Tools</h3>
-
             <div class="footer-links">
-              <a href="/cloud/cloud-init-generator">
-                Cloud-init Generator
-              </a>
-
-              <a href="/cloud/terraform-provider-generator">
-                Terraform Provider Generator
-              </a>
-
-              <a href="/cloud/aws-iam-policy-generator">
-                AWS IAM Policy Generator
-              </a>
-
-              <a href="/cloud/azure-nsg-generator">
-                Azure NSG Generator
-              </a>
-
-              <a href="/cloud/aws-arn-parser">
-                AWS ARN Parser
-              </a>
+              <a href="/cloud/cloud-init-generator">Cloud-init Generator</a>
+              <a href="/cloud/terraform-provider-generator">Terraform Provider Generator</a>
+              <a href="/cloud/aws-iam-policy-generator">AWS IAM Policy Generator</a>
+              <a href="/cloud/azure-nsg-generator">Azure NSG Generator</a>
             </div>
           </div>
 
           <div>
-            <h3 class="footer-title">Company</h3>
-
+            <h3 class="footer-title">More Cloud Tools</h3>
             <div class="footer-links">
-              <a href="/about">About</a>
-              <a href="/contact">Contact</a>
-              <a href="/privacy-policy">Privacy Policy</a>
-              <a href="/terms">Terms</a>
-              <a href="/disclaimer">Disclaimer</a>
+              <a href="/cloud/cloud-cost-calculator">Cloud Cost Calculator</a>
+              <a href="/cloud/aws-arn-parser">AWS ARN Parser</a>
+              <a href="/cloud/azure-resource-id-parser">Azure Resource ID Parser</a>
+              <a href="/cloud/terraform-backend-generator">Terraform Backend Generator</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Categories</h3>
+            <div class="footer-links">
+              <a href="/linux/">Linux Tools</a>
+              <a href="/devops/">DevOps Tools</a>
+              <a href="/kubernetes/">Kubernetes Tools</a>
+              <a href="/network/">Network Tools</a>
+              <a href="/cloud/">Cloud Tools</a>
+              <a href="/about/">About</a>
             </div>
           </div>
         </div>
 
         <div class="footer-bottom">
-          <span>
-            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
-          </span>
-
+          <span>© {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.</span>
           <div class="footer-bottom-links">
-            <a href="/privacy-policy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/disclaimer">Disclaimer</a>
+            <a href="/privacy-policy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <a href="/disclaimer/">Disclaimer</a>
           </div>
         </div>
       </div>
     </footer>
   </body>
 </html>
+
+<style>
+  :global(*) { box-sizing: border-box; }
+  :global(html) { scroll-behavior: smooth; }
+  :global(body) {
+    margin: 0;
+    background: #f8fafc;
+    color: #172033;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+  :global(a) { color: inherit; }
+
+  .container {
+    width: min(100% - 40px, 1180px);
+    margin-inline: auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 105px 0 92px;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(56,189,248,.2), transparent 32%),
+      radial-gradient(circle at 88% 25%, rgba(37,99,235,.2), transparent 34%),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f8fafc 100%);
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(rgba(37,99,235,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: rgba(255,255,255,.86);
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22,163,74,.12);
+  }
+
+  .hero h1 {
+    margin: 0 auto 22px;
+    color: #0f172a;
+    font-size: clamp(43px, 7vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #2563eb, #0284c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-description {
+    max-width: 790px;
+    margin: auto;
+    color: #475569;
+    font-size: clamp(18px, 2.5vw, 21px);
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 36px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: .2s ease;
+  }
+
+  .button:hover { transform: translateY(-2px); }
+  .button-primary {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 12px 30px rgba(37,99,235,.26);
+  }
+  .button-secondary {
+    border-color: #cbd5e1;
+    background: white;
+    color: #0f172a;
+  }
+
+  .hero-statistics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 42px;
+  }
+
+  .hero-stat { min-width: 145px; }
+  .hero-stat strong {
+    display: block;
+    color: #0f172a;
+    font-size: 25px;
+  }
+  .hero-stat span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .section { padding: 92px 0; }
+  .section-white { background: white; }
+
+  .section-heading {
+    max-width: 770px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: clamp(31px, 4vw, 44px);
+    line-height: 1.2;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 22px;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 24px;
+  }
+
+  .featured-card,
+  .tool-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 19px;
+    background: white;
+    text-decoration: none;
+    box-shadow: 0 12px 35px rgba(15,23,42,.06);
+    transition: .25s ease;
+  }
+
+  .featured-card { min-height: 315px; }
+  .tool-card { min-height: 310px; }
+
+  .featured-card:hover,
+  .tool-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 24px 50px rgba(37,99,235,.14);
+    transform: translateY(-8px);
+  }
+
+  .featured-icon,
+  .tool-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 29px;
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .featured-card .tool-badge {
+    align-self: flex-start;
+    margin: 18px 0 0;
+  }
+
+  .tool-badge {
+    padding: 5px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .featured-card h3,
+  .tool-card h3 {
+    margin: 16px 0 11px;
+    color: #0f172a;
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .featured-card p,
+  .tool-card p {
+    flex: 1;
+    margin: 0 0 22px;
+    color: #64748b;
+    line-height: 1.72;
+  }
+
+  .open-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 24px;
+  }
+
+  .benefit-card {
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: white;
+  }
+
+  .benefit-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #eff6ff;
+    font-size: 25px;
+  }
+
+  .benefit-card h3 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #64748b;
+  }
+
+  .cta { padding: 0 0 92px; }
+  .cta-box {
+    padding: 70px 35px;
+    border-radius: 25px;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(56,189,248,.28), transparent 31%),
+      linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    text-align: center;
+    box-shadow: 0 25px 65px rgba(15,23,42,.2);
+  }
+
+  .cta-box h2 {
+    max-width: 720px;
+    margin: 0 auto 15px;
+    font-size: clamp(30px, 4vw, 45px);
+  }
+
+  .cta-box p {
+    max-width: 670px;
+    margin: 0 auto 29px;
+    color: #cbd5e1;
+    font-size: 18px;
+  }
+
+  .cta-button {
+    background: white;
+    color: #1d4ed8;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3,1fr);
+    gap: 55px;
+    padding: 65px 0 45px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: white;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+  }
+
+  .footer-brand p {
+    max-width: 380px;
+    margin: 17px 0 0;
+    color: #94a3b8;
+  }
+
+  .footer-title {
+    margin: 0 0 18px;
+    color: white;
+    font-size: 16px;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 24px 0;
+    border-top: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1050px) {
+    .featured-grid,
+    .tools-grid,
+    .benefits-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 78px 0 70px; }
+    .section { padding: 72px 0; }
+    .footer-bottom { flex-direction: column; }
+  }
+
+  @media (max-width: 560px) {
+    .container { width: min(100% - 28px, 1180px); }
+    .hero h1 { font-size: 41px; letter-spacing: -1.4px; }
+    .hero-actions { flex-direction: column; }
+    .button { width: 100%; }
+
+    .featured-grid,
+    .tools-grid,
+    .benefits-grid,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-card,
+    .tool-card {
+      min-height: auto;
+      padding: 25px;
+    }
+
+    .cta-box { padding: 52px 23px; }
+  }
+</style>

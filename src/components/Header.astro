@@ -1,0 +1,497 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navigation = [
+  { name: "Home", href: "/" },
+  { name: "Linux", href: "/linux/" },
+  { name: "DevOps", href: "/devops/" },
+  { name: "Kubernetes", href: "/kubernetes/" },
+  { name: "Network", href: "/network/" },
+  { name: "Cloud", href: "/cloud/" },
+  { name: "Database", href: "/database/" },
+  { name: "Security", href: "/security/" },
+  { name: "AI", href: "/ai/" },
+  { name: "Windows", href: "/windows/" },
+  { name: "Monitoring", href: "/monitoring/" },
+  { name: "Guides", href: "/guides/" },
+  { name: "Store", href: "/store/" },
+  { name: "About", href: "/about/" },
+];
+
+const normalizePath = (path: string) => {
+  if (path === "/") {
+    return "/";
+  }
+
+  return path.endsWith("/") ? path : `${path}/`;
+};
+
+const normalizedCurrentPath = normalizePath(currentPath);
+
+const isActive = (href: string) => {
+  const normalizedHref = normalizePath(href);
+
+  if (normalizedHref === "/") {
+    return normalizedCurrentPath === "/";
+  }
+
+  return normalizedCurrentPath.startsWith(normalizedHref);
+};
+---
+
+<header class="gokuruvi-header">
+  <div class="gokuruvi-header-container">
+    <nav class="gokuruvi-navbar" aria-label="Main navigation">
+      <a
+        class="gokuruvi-logo"
+        href="/"
+        aria-label="Gokuruvi Tools home"
+      >
+        <span class="gokuruvi-logo-icon" aria-hidden="true">
+          G
+        </span>
+
+        <span class="gokuruvi-logo-name">
+          Gokuruvi Tools
+        </span>
+      </a>
+
+      <button
+        class="gokuruvi-menu-button"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="gokuruvi-main-navigation"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div
+        class="gokuruvi-nav-links"
+        id="gokuruvi-main-navigation"
+      >
+        {
+          navigation.map((item) => (
+            <a
+              href={item.href}
+              class:list={{
+                "gokuruvi-nav-link": true,
+                active: isActive(item.href),
+              }}
+              aria-current={
+                isActive(item.href) ? "page" : undefined
+              }
+            >
+              {item.name}
+            </a>
+          ))
+        }
+
+        <a
+          class="gokuruvi-nav-button"
+          href="/#featured-tools"
+        >
+          Explore Tools
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header =
+    document.querySelector<HTMLElement>(".gokuruvi-header");
+
+  const menuButton =
+    header?.querySelector<HTMLButtonElement>(
+      ".gokuruvi-menu-button",
+    );
+
+  const navigation =
+    header?.querySelector<HTMLElement>(
+      ".gokuruvi-nav-links",
+    );
+
+  const setMenuState = (isOpen: boolean) => {
+    navigation?.classList.toggle("open", isOpen);
+    menuButton?.classList.toggle("open", isOpen);
+
+    menuButton?.setAttribute(
+      "aria-expanded",
+      String(isOpen),
+    );
+
+    menuButton?.setAttribute(
+      "aria-label",
+      isOpen
+        ? "Close navigation menu"
+        : "Open navigation menu",
+    );
+
+    document.documentElement.classList.toggle(
+      "gokuruvi-menu-open",
+      isOpen,
+    );
+  };
+
+  menuButton?.addEventListener("click", () => {
+    const isOpen =
+      !(navigation?.classList.contains("open") ?? false);
+
+    setMenuState(isOpen);
+  });
+
+  navigation?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      setMenuState(false);
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof Node)) {
+      return;
+    }
+
+    const isOpen =
+      navigation?.classList.contains("open") ?? false;
+
+    if (
+      isOpen &&
+      !header?.contains(target)
+    ) {
+      setMenuState(false);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setMenuState(false);
+      menuButton?.focus();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1320) {
+      setMenuState(false);
+    }
+  });
+</script>
+
+<style>
+  :global(html.gokuruvi-menu-open) {
+    overflow: hidden;
+  }
+
+  .gokuruvi-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.99);
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.13);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .gokuruvi-header-container {
+    width: min(calc(100% - 32px), 1440px);
+    margin-inline: auto;
+  }
+
+  .gokuruvi-navbar {
+    position: relative;
+    display: flex;
+    min-height: 68px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .gokuruvi-logo {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .gokuruvi-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(
+      135deg,
+      #2563eb,
+      #38bdf8
+    );
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+  }
+
+  .gokuruvi-logo-name {
+    display: block;
+  }
+
+  .gokuruvi-nav-links {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+
+  .gokuruvi-nav-link {
+    position: relative;
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    color: #dbe4f0;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .gokuruvi-nav-link:hover,
+  .gokuruvi-nav-link.active {
+    color: #ffffff;
+  }
+
+  .gokuruvi-nav-link:hover {
+    transform: translateY(-1px);
+  }
+
+  .gokuruvi-nav-link.active::after {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+    left: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: #38bdf8;
+    content: "";
+  }
+
+  .gokuruvi-nav-button {
+    display: inline-flex;
+    min-height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 9px 22px rgba(37, 99, 235, 0.28);
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .gokuruvi-nav-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  .gokuruvi-menu-button {
+    display: none;
+    width: 44px;
+    height: 42px;
+    flex-shrink: 0;
+    padding: 9px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #1e293b;
+    cursor: pointer;
+  }
+
+  .gokuruvi-menu-button span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    margin: 4px 0;
+    border-radius: 999px;
+    background: #ffffff;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .gokuruvi-menu-button.open span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .gokuruvi-menu-button.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .gokuruvi-menu-button.open span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .gokuruvi-logo:focus-visible,
+  .gokuruvi-nav-link:focus-visible,
+  .gokuruvi-nav-button:focus-visible,
+  .gokuruvi-menu-button:focus-visible {
+    outline: 3px solid rgba(56, 189, 248, 0.5);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 1450px) {
+    .gokuruvi-header-container {
+      width: min(calc(100% - 24px), 1400px);
+    }
+
+    .gokuruvi-nav-links {
+      gap: 12px;
+    }
+
+    .gokuruvi-nav-link {
+      font-size: 12.5px;
+    }
+
+    .gokuruvi-nav-button {
+      padding-inline: 15px;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 1320px) {
+    .gokuruvi-menu-button {
+      display: block;
+    }
+
+    .gokuruvi-nav-links {
+      position: fixed;
+      top: 68px;
+      right: 0;
+      left: 0;
+      display: flex;
+      visibility: hidden;
+      max-height: calc(100vh - 68px);
+      overflow-y: auto;
+      padding: 16px 20px 22px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 5px;
+      border-top: 1px solid #263247;
+      background: rgba(15, 23, 42, 0.995);
+      box-shadow: 0 24px 45px rgba(15, 23, 42, 0.38);
+      opacity: 0;
+      transform: translateY(-12px);
+      pointer-events: none;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+    }
+
+    .gokuruvi-nav-links.open {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .gokuruvi-nav-link {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+
+    .gokuruvi-nav-link:hover,
+    .gokuruvi-nav-link.active {
+      background: #1e293b;
+      transform: none;
+    }
+
+    .gokuruvi-nav-link.active {
+      box-shadow: inset 3px 0 0 #38bdf8;
+    }
+
+    .gokuruvi-nav-link.active::after {
+      display: none;
+    }
+
+    .gokuruvi-nav-button {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 7px;
+      font-size: 15px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .gokuruvi-header-container {
+      width: min(calc(100% - 22px), 1400px);
+    }
+
+    .gokuruvi-navbar {
+      min-height: 64px;
+    }
+
+    .gokuruvi-logo {
+      gap: 9px;
+      font-size: 18px;
+    }
+
+    .gokuruvi-logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      font-size: 18px;
+    }
+
+    .gokuruvi-menu-button {
+      width: 42px;
+      height: 40px;
+    }
+
+    .gokuruvi-nav-links {
+      top: 64px;
+      max-height: calc(100vh - 64px);
+      padding: 13px 11px 18px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .gokuruvi-logo-name {
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gokuruvi-nav-link,
+    .gokuruvi-nav-button,
+    .gokuruvi-nav-links,
+    .gokuruvi-menu-button span {
+      transition: none;
+    }
+  }
+</style>

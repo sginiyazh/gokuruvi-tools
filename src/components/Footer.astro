@@ -1,0 +1,286 @@
+---
+const year = new Date().getFullYear();
+
+const toolLinks = [
+  { name: "Linux", href: "/linux/" },
+  { name: "DevOps", href: "/devops/" },
+  { name: "Kubernetes", href: "/kubernetes/" },
+  { name: "Network", href: "/network/" },
+  { name: "Cloud", href: "/cloud/" },
+];
+
+const resourceLinks = [
+  { name: "Guides", href: "/guides/" },
+  { name: "Recommended Tools", href: "/recommended/" },
+  { name: "Store", href: "/store/" },
+  { name: "Contact", href: "/contact/" },
+];
+
+const legalLinks = [
+  { name: "Privacy Policy", href: "/privacy-policy/" },
+  { name: "Terms and Conditions", href: "/terms/" },
+  { name: "Disclaimer", href: "/disclaimer/" },
+  {
+    name: "Affiliate Disclosure",
+    href: "/affiliate-disclosure/",
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <section class="footer-about" aria-labelledby="footer-brand-title">
+      <a class="footer-logo" href="/" aria-label="Gokuruvi Tools home">
+        <span class="footer-logo-icon" aria-hidden="true">G</span>
+
+        <span id="footer-brand-title">
+          Gokuruvi Tools
+        </span>
+      </a>
+
+      <p>
+        Free browser-based tools, generators, calculators, validators, and
+        technical guides for Linux administrators, DevOps engineers, cloud
+        professionals, network engineers, and Kubernetes users.
+      </p>
+
+      <p class="footer-note">
+        Practical utilities designed to simplify common administration,
+        automation, networking, container, and cloud tasks.
+      </p>
+    </section>
+
+    <nav class="footer-links" aria-label="Footer navigation">
+      <div class="footer-column">
+        <h2>Tools</h2>
+
+        {
+          toolLinks.map((link) => (
+            <a href={link.href}>
+              {link.name}
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="footer-column">
+        <h2>Resources</h2>
+
+        {
+          resourceLinks.map((link) => (
+            <a href={link.href}>
+              {link.name}
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="footer-column">
+        <h2>Legal</h2>
+
+        {
+          legalLinks.map((link) => (
+            <a href={link.href}>
+              {link.name}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-container">
+      <p>
+        © {year} Gokuruvi Tools. All rights reserved.
+      </p>
+
+      <div class="footer-bottom-links">
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/privacy-policy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 70px;
+    border-top: 1px solid var(--border);
+    background:
+      radial-gradient(
+        circle at top left,
+        rgba(37, 99, 235, 0.1),
+        transparent 32%
+      ),
+      #080d15;
+    color: var(--text);
+  }
+
+  .footer-container {
+    width: min(calc(100% - 32px), var(--max-width));
+    margin-inline: auto;
+    padding: 54px 0 42px;
+    display: grid;
+    grid-template-columns: minmax(260px, 1.2fr) minmax(420px, 2fr);
+    gap: 64px;
+  }
+
+  .footer-about {
+    max-width: 520px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
+  }
+
+  .footer-about p {
+    margin: 18px 0 0;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  .footer-about .footer-note {
+    margin-top: 12px;
+    font-size: 0.93rem;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    gap: 34px;
+  }
+
+  .footer-column h2 {
+    margin: 0 0 17px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+  .footer-column a {
+    display: block;
+    width: fit-content;
+    margin: 9px 0;
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .footer-column a:hover {
+    color: var(--primary);
+    transform: translateX(3px);
+  }
+
+  .footer-column a:focus-visible,
+  .footer-logo:focus-visible,
+  .footer-bottom-links a:focus-visible {
+    outline: 3px solid rgba(96, 165, 250, 0.45);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-bottom-container {
+    width: min(calc(100% - 32px), var(--max-width));
+    min-height: 68px;
+    margin-inline: auto;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .footer-bottom p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-decoration: none;
+  }
+
+  .footer-bottom-links a:hover {
+    color: var(--primary);
+  }
+
+  @media (max-width: 900px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 38px;
+    }
+
+    .footer-about {
+      max-width: 680px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .site-footer {
+      margin-top: 50px;
+    }
+
+    .footer-container {
+      padding: 42px 0 32px;
+    }
+
+    .footer-links {
+      grid-template-columns: repeat(2, minmax(130px, 1fr));
+      gap: 30px;
+    }
+
+    .footer-bottom-container {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 0;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .footer-links {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-bottom-links {
+      gap: 12px 16px;
+    }
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const products = [
+  {
+    title: "Linux Administration eBook",
+    description:
+      "A practical guide covering Linux commands, administration, troubleshooting, and best practices.",
+    price: "Coming Soon",
+  },
+  {
+    title: "DevOps Interview Guide",
+    description:
+      "Frequently asked DevOps interview questions with detailed answers and explanations.",
+    price: "Coming Soon",
+  },
+  {
+    title: "Kubernetes Cheat Sheet",
+    description:
+      "Quick-reference PDF for kubectl commands, YAML examples, and troubleshooting.",
+    price: "Coming Soon",
+  },
+  {
+    title: "Shell Scripting Guide",
+    description:
+      "Learn Bash scripting from beginner to advanced with practical examples.",
+    price: "Coming Soon",
+  },
+  {
+    title: "Terraform & Ansible Guide",
+    description:
+      "Infrastructure as Code examples and automation best practices.",
+    price: "Coming Soon",
+  },
+  {
+    title: "Linux Hardening Guide",
+    description:
+      "CIS hardening, security best practices, audit, logging, and compliance.",
+    price: "Coming Soon",
+  },
+];
+---
+
+<Layout
+  title="Store"
+  description="Digital products, eBooks, cheat sheets, and learning resources from Gokuruvi Tools."
+>
+  <section class="page-section">
+    <div class="container">
+      <header class="page-header">
+        <h1>Store</h1>
+
+        <p>
+          Premium learning resources designed for Linux administrators,
+          DevOps engineers, cloud professionals, and Kubernetes engineers.
+        </p>
+      </header>
+
+      <div class="card-grid">
+        {
+          products.map((product) => (
+            <article class="card">
+              <span class="badge">{product.price}</span>
+
+              <h2>{product.title}</h2>
+
+              <p>{product.description}</p>
+
+              <button class="button" disabled>
+                Coming Soon
+              </button>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+background:#1d4ed8;
+color:#fff;
+font-size:.8rem;
+font-weight:700;
+margin-bottom:15px;
+}
+
+.card{
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 28px rgba(0,0,0,.2);
+}
+
+button:disabled{
+opacity:.8;
+cursor:not-allowed;
+}
+</style>

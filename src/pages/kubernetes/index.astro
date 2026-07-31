@@ -1,4 +1,6 @@
 ---
+import Header from "../../components/Header.astro";
+
 const pageTitle = "Kubernetes Tools";
 
 const description =
@@ -8,41 +10,47 @@ const tools = [
   {
     icon: "🚀",
     name: "Deployment Generator",
+    category: "Workloads",
     description:
-      "Generate Kubernetes Deployment YAML with replicas, images and container ports.",
+      "Generate Kubernetes Deployment YAML with replicas, container images, ports, labels and resource settings.",
     link: "/kubernetes/deployment-generator",
   },
   {
     icon: "🔌",
     name: "Service Generator",
+    category: "Networking",
     description:
-      "Create ClusterIP, NodePort and LoadBalancer Service manifests.",
+      "Create ClusterIP, NodePort and LoadBalancer Service manifests for Kubernetes applications.",
     link: "/kubernetes/service-generator",
   },
   {
     icon: "🌐",
     name: "Ingress Generator",
+    category: "Networking",
     description:
-      "Generate Kubernetes Ingress YAML with hosts, paths and TLS settings.",
+      "Generate Kubernetes Ingress YAML with hosts, paths, services, annotations and TLS settings.",
     link: "/kubernetes/ingress-generator",
   },
   {
     icon: "🗂️",
     name: "ConfigMap Generator",
+    category: "Configuration",
     description:
-      "Create Kubernetes ConfigMap manifests for application configuration.",
+      "Create Kubernetes ConfigMap manifests for application settings and configuration data.",
     link: "/kubernetes/configmap-generator",
   },
   {
     icon: "🔐",
     name: "Secret Generator",
+    category: "Security",
     description:
-      "Generate Kubernetes Secret YAML with Base64-encoded values.",
+      "Generate Kubernetes Secret YAML with Base64-encoded keys and values.",
     link: "/kubernetes/secret-generator",
   },
   {
     icon: "📁",
     name: "Namespace Generator",
+    category: "Administration",
     description:
       "Create Kubernetes Namespace manifests with labels and annotations.",
     link: "/kubernetes/namespace-generator",
@@ -50,16 +58,39 @@ const tools = [
   {
     icon: "💾",
     name: "PVC Generator",
+    category: "Storage",
     description:
-      "Generate PersistentVolumeClaim YAML for Kubernetes storage.",
+      "Generate PersistentVolumeClaim YAML with access modes, storage size and storage class.",
     link: "/kubernetes/pvc-generator",
   },
   {
     icon: "⚙️",
     name: "Helm Values Validator",
+    category: "Helm",
     description:
-      "Validate Helm values.yaml files and identify YAML syntax errors.",
+      "Validate Helm values.yaml files and identify YAML syntax and formatting errors.",
     link: "/kubernetes/helm-values-validator",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast generation",
+    description:
+      "Create Kubernetes YAML manifests instantly using simple browser-based forms.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy friendly",
+    description:
+      "The tools are designed to process configuration data directly in your browser.",
+  },
+  {
+    icon: "📱",
+    title: "Responsive design",
+    description:
+      "Use every Kubernetes utility from desktop, tablet or mobile devices.",
   },
 ];
 ---
@@ -78,429 +109,113 @@ const tools = [
 
     <meta
       name="keywords"
-      content="Kubernetes tools, YAML generator, Deployment generator, Service generator, Ingress generator, ConfigMap generator, Secret generator, PVC generator, Helm validator"
+      content="Kubernetes tools, Kubernetes YAML generator, Deployment generator, Service generator, Ingress generator, ConfigMap generator, Secret generator, Namespace generator, PVC generator, Helm values validator"
     />
 
     <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
 
     <meta
       property="og:title"
-      content="Kubernetes Tools | Gokuruvi Tools"
+      content="Free Kubernetes Tools | Gokuruvi Tools"
     />
 
     <meta property="og:description" content={description} />
-
     <meta property="og:type" content="website" />
 
     <meta
       property="og:url"
-      content="https://www.gokuruvi.com/kubernetes"
+      content="https://www.gokuruvi.com/kubernetes/"
     />
 
     <link
       rel="canonical"
-      href="https://www.gokuruvi.com/kubernetes"
+      href="https://www.gokuruvi.com/kubernetes/"
     />
 
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
     <title>{pageTitle} | Gokuruvi Tools</title>
-
-    <style>
-      :root {
-        --primary: #326ce5;
-        --primary-dark: #2454b8;
-        --secondary: #38bdf8;
-        --dark: #0f172a;
-        --text: #172033;
-        --muted: #64748b;
-        --background: #f8fafc;
-        --card: #ffffff;
-        --border: #e2e8f0;
-        --max-width: 1180px;
-
-        font-family:
-          Inter, Arial, Helvetica, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        background: var(--background);
-        color: var(--text);
-        line-height: 1.6;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      .container {
-        width: min(100% - 40px, var(--max-width));
-        margin-inline: auto;
-      }
-
-      /* Header */
-
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: var(--dark);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .navbar {
-        min-height: 72px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #ffffff;
-        font-size: 21px;
-        font-weight: 800;
-        text-decoration: none;
-      }
-
-      .logo-icon {
-        width: 40px;
-        height: 40px;
-        display: grid;
-        place-items: center;
-        border-radius: 10px;
-        background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--secondary)
-        );
-        font-size: 22px;
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 24px;
-        flex-wrap: wrap;
-      }
-
-      .nav-links a {
-        color: #cbd5e1;
-        text-decoration: none;
-        font-weight: 600;
-      }
-
-      .nav-links a:hover,
-      .nav-links a[aria-current="page"] {
-        color: #ffffff;
-      }
-
-      /* Hero */
-
-      .hero {
-        padding: 82px 0 68px;
-        background:
-          radial-gradient(
-            circle at 10% 20%,
-            rgba(56, 189, 248, 0.16),
-            transparent 30%
-          ),
-          radial-gradient(
-            circle at 90% 30%,
-            rgba(50, 108, 229, 0.15),
-            transparent 32%
-          ),
-          linear-gradient(
-            145deg,
-            #f8fafc,
-            #edf4ff,
-            #f8fafc
-          );
-      }
-
-      .hero-content {
-        max-width: 820px;
-        margin: auto;
-        text-align: center;
-      }
-
-      .badge {
-        display: inline-block;
-        margin-bottom: 18px;
-        padding: 7px 14px;
-        border: 1px solid #bfd4ff;
-        border-radius: 999px;
-        background: #ffffff;
-        color: var(--primary-dark);
-        font-size: 14px;
-        font-weight: 800;
-      }
-
-      .hero h1 {
-        margin: 0 0 16px;
-        color: var(--dark);
-        font-size: clamp(40px, 6vw, 60px);
-        line-height: 1.1;
-      }
-
-      .hero p {
-        max-width: 760px;
-        margin: 0 auto;
-        color: #475569;
-        font-size: 18px;
-      }
-
-      /* Tools */
-
-      .tools-section {
-        padding: 65px 0 85px;
-      }
-
-      .section-heading {
-        max-width: 720px;
-        margin: 0 auto 45px;
-        text-align: center;
-      }
-
-      .section-heading h2 {
-        margin: 0 0 12px;
-        color: var(--dark);
-        font-size: 34px;
-      }
-
-      .section-heading p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 17px;
-      }
-
-      .tools-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px;
-      }
-
-      .tool-card {
-        display: flex;
-        min-height: 260px;
-        flex-direction: column;
-        padding: 28px;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        background: var(--card);
-        color: inherit;
-        text-decoration: none;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-        transition:
-          transform 0.25s ease,
-          border-color 0.25s ease,
-          box-shadow 0.25s ease;
-      }
-
-      .tool-card:hover {
-        transform: translateY(-6px);
-        border-color: #9bb9f5;
-        box-shadow: 0 20px 40px rgba(50, 108, 229, 0.12);
-      }
-
-      .tool-icon {
-        width: 54px;
-        height: 54px;
-        display: grid;
-        place-items: center;
-        margin-bottom: 20px;
-        border-radius: 14px;
-        background: #edf4ff;
-        font-size: 27px;
-      }
-
-      .tool-card h3 {
-        margin: 0 0 11px;
-        color: var(--dark);
-        font-size: 22px;
-      }
-
-      .tool-card p {
-        flex: 1;
-        margin: 0 0 20px;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      .open-tool {
-        color: var(--primary);
-        font-weight: 800;
-      }
-
-      /* Information */
-
-      .information {
-        padding-bottom: 85px;
-      }
-
-      .information-box {
-        padding: 36px;
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        background: #ffffff;
-      }
-
-      .information-box h2 {
-        margin: 0 0 12px;
-        color: var(--dark);
-        font-size: 27px;
-      }
-
-      .information-box p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.8;
-      }
-
-      /* Footer */
-
-      footer {
-        background: var(--dark);
-        color: #cbd5e1;
-      }
-
-      .footer-inner {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        flex-wrap: wrap;
-        padding: 28px 0;
-      }
-
-      .footer-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-
-      .footer-links a {
-        color: #94a3b8;
-        text-decoration: none;
-      }
-
-      .footer-links a:hover {
-        color: #ffffff;
-      }
-
-      /* Responsive */
-
-      @media (max-width: 1000px) {
-        .tools-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 800px) {
-        .navbar {
-          align-items: flex-start;
-          flex-direction: column;
-          padding: 16px 0;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .container {
-          width: min(100% - 28px, var(--max-width));
-        }
-
-        .hero {
-          padding: 60px 0 50px;
-        }
-
-        .hero h1 {
-          font-size: 38px;
-        }
-
-        .tools-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .tool-card {
-          min-height: auto;
-        }
-
-        .section-heading h2 {
-          font-size: 29px;
-        }
-
-        .information-box {
-          padding: 27px;
-        }
-
-        .footer-inner {
-          flex-direction: column;
-        }
-      }
-    </style>
   </head>
 
   <body>
-    <header class="site-header">
-      <div class="container">
-        <nav class="navbar" aria-label="Main navigation">
-          <a class="logo" href="/">
-            <span class="logo-icon">⎈</span>
-            <span>Gokuruvi Tools</span>
-          </a>
-
-          <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/linux">Linux</a>
-            <a href="/devops">DevOps</a>
-            <a href="/kubernetes" aria-current="page">
-              Kubernetes
-            </a>
-            <a href="/cloud">Cloud</a>
-            <a href="/about">About</a>
-          </div>
-        </nav>
-      </div>
-    </header>
+    <Header />
 
     <main>
       <section class="hero">
-        <div class="container hero-content">
-          <span class="badge">
-            Free Kubernetes utilities
-          </span>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Free tools for Kubernetes professionals
+            </div>
 
-          <h1>Kubernetes Tools</h1>
+            <h1>
+              Practical <span>Kubernetes Tools</span>
+            </h1>
 
-          <p>{description}</p>
+            <p class="hero-description">
+              Generate workloads, services, ingress rules, configuration,
+              secrets, namespaces, storage manifests and validate Helm values
+              using simple browser-based utilities.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#kubernetes-tools">
+                Explore Kubernetes Tools
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a class="button button-secondary" href="/#tool-categories">
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{tools.length}</strong>
+                <span>Free tools</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>100%</strong>
+                <span>Browser based</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>0</strong>
+                <span>Registration required</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="tools-section">
+      <section class="section" id="kubernetes-tools">
         <div class="container">
           <div class="section-heading">
-            <h2>Kubernetes YAML generators</h2>
+            <span class="section-label">Available Utilities</span>
+
+            <h2>Kubernetes tools for everyday cluster work</h2>
 
             <p>
-              Select a tool to generate or validate Kubernetes configuration
-              files directly in your browser.
+              Choose a tool to generate Kubernetes manifests for workloads,
+              networking, configuration, security, namespaces, storage or Helm.
             </p>
           </div>
 
           <div class="tools-grid">
             {
               tools.map((tool) => (
-                <a class="tool-card" href={tool.link}>
-                  <div class="tool-icon">
-                    {tool.icon}
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.name}`}
+                >
+                  <div class="tool-header">
+                    <div class="tool-icon" aria-hidden="true">{tool.icon}</div>
+                    <span class="tool-category">{tool.category}</span>
                   </div>
 
                   <h3>{tool.name}</h3>
@@ -508,7 +223,8 @@ const tools = [
                   <p>{tool.description}</p>
 
                   <span class="open-tool">
-                    Open tool →
+                    Open tool
+                    <span aria-hidden="true">→</span>
                   </span>
                 </a>
               ))
@@ -517,34 +233,730 @@ const tools = [
         </div>
       </section>
 
-      <section class="information">
+      <section class="section section-white">
         <div class="container">
-          <div class="information-box">
-            <h2>Browser-based Kubernetes tools</h2>
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+
+            <h2>Simple tools designed for Kubernetes engineers</h2>
 
             <p>
-              Generate Kubernetes manifests for workloads, networking,
-              configuration, security and persistent storage. Review the
-              generated YAML carefully before applying it to a production
-              Kubernetes cluster.
+              Complete common Kubernetes configuration tasks quickly without
+              installing extra applications or creating an account.
             </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div class="benefit-icon" aria-hidden="true">
+                    {benefit.icon}
+                  </div>
+
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start simplifying your Kubernetes tasks</h2>
+
+            <p>
+              Generate Deployment, Service, Ingress, ConfigMap, Secret,
+              Namespace and PVC manifests using free online tools.
+            </p>
+
+            <a
+              class="button cta-button"
+              href="/kubernetes/deployment-generator"
+            >
+              Open Deployment Generator
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </section>
     </main>
 
     <footer>
-      <div class="container footer-inner">
-        <span>
-          © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
-        </span>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="footer-logo" href="/">
+              <span class="footer-logo-icon" aria-hidden="true">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
 
-        <div class="footer-links">
-          <a href="/privacy-policy">Privacy</a>
-          <a href="/terms">Terms</a>
-          <a href="/disclaimer">Disclaimer</a>
+            <p>
+              Free Linux, DevOps, Kubernetes, network, cloud and security
+              utilities for administrators, engineers and IT professionals.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Kubernetes Tools</h3>
+
+            <div class="footer-links">
+              <a href="/kubernetes/deployment-generator">Deployment Generator</a>
+              <a href="/kubernetes/service-generator">Service Generator</a>
+              <a href="/kubernetes/ingress-generator">Ingress Generator</a>
+              <a href="/kubernetes/configmap-generator">ConfigMap Generator</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">More Tools</h3>
+
+            <div class="footer-links">
+              <a href="/kubernetes/secret-generator">Secret Generator</a>
+              <a href="/kubernetes/namespace-generator">Namespace Generator</a>
+              <a href="/kubernetes/pvc-generator">PVC Generator</a>
+              <a href="/kubernetes/helm-values-validator">
+                Helm Values Validator
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Categories</h3>
+
+            <div class="footer-links">
+              <a href="/linux/">Linux Tools</a>
+              <a href="/devops/">DevOps Tools</a>
+              <a href="/kubernetes/">Kubernetes Tools</a>
+              <a href="/network/">Network Tools</a>
+              <a href="/cloud/">Cloud Tools</a>
+              <a href="/about/">About</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <a href="/disclaimer/">Disclaimer</a>
+          </div>
         </div>
       </div>
     </footer>
   </body>
 </html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f8fafc;
+    color: #172033;
+    font-family:
+      Inter, Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+
+  :global(a) {
+    color: inherit;
+  }
+
+  .container {
+    width: min(100% - 40px, 1180px);
+    margin-inline: auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 105px 0 92px;
+    background:
+      radial-gradient(
+        circle at 15% 15%,
+        rgba(56, 189, 248, 0.2),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 88% 25%,
+        rgba(37, 99, 235, 0.2),
+        transparent 34%
+      ),
+      linear-gradient(
+        145deg,
+        #f8fafc 0%,
+        #eff6ff 52%,
+        #f8fafc 100%
+      );
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(
+        rgba(37, 99, 235, 0.045) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.045) 1px,
+        transparent 1px
+      );
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+  }
+
+  .hero h1 {
+    margin: 0 auto 22px;
+    color: #0f172a;
+    font-size: clamp(43px, 7vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #2563eb, #0284c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-description {
+    max-width: 780px;
+    margin: 0 auto;
+    color: #475569;
+    font-size: clamp(18px, 2.5vw, 21px);
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 36px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button-primary {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.26);
+  }
+
+  .button-primary:hover {
+    background: #1d4ed8;
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.32);
+  }
+
+  .button-secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  }
+
+  .button-secondary:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+  }
+
+  .hero-statistics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 42px;
+  }
+
+  .hero-stat {
+    min-width: 130px;
+  }
+
+  .hero-stat strong {
+    display: block;
+    color: #0f172a;
+    font-size: 25px;
+  }
+
+  .hero-stat span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .section {
+    padding: 92px 0;
+  }
+
+  .section-white {
+    background: #ffffff;
+  }
+
+  .section-heading {
+    max-width: 770px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: clamp(31px, 4vw, 44px);
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .tool-card {
+    position: relative;
+    display: flex;
+    min-height: 310px;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 29px;
+    border: 1px solid #e2e8f0;
+    border-radius: 19px;
+    background: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .tool-card::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card::after {
+    position: absolute;
+    right: -55px;
+    bottom: -65px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.065);
+    content: "";
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 24px 50px rgba(37, 99, 235, 0.14);
+    transform: translateY(-8px);
+  }
+
+  .tool-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .tool-card:hover::after {
+    transform: scale(1.25);
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .tool-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 29px;
+  }
+
+  .tool-category {
+    padding: 5px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .tool-card h3 {
+    margin: 0 0 11px;
+    color: #0f172a;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .tool-card p {
+    flex: 1;
+    margin: 0 0 22px;
+    color: #64748b;
+    line-height: 1.72;
+  }
+
+  .open-tool {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  .open-tool span {
+    transition: transform 0.2s ease;
+  }
+
+  .tool-card:hover .open-tool span {
+    transform: translateX(4px);
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .benefit-card {
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #ffffff;
+  }
+
+  .benefit-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #eff6ff;
+    font-size: 25px;
+  }
+
+  .benefit-card h3 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+  }
+
+  .cta {
+    padding: 0 0 92px;
+  }
+
+  .cta-box {
+    position: relative;
+    overflow: hidden;
+    padding: 70px 35px;
+    border-radius: 25px;
+    background:
+      radial-gradient(
+        circle at 10% 20%,
+        rgba(56, 189, 248, 0.28),
+        transparent 31%
+      ),
+      linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 25px 65px rgba(15, 23, 42, 0.2);
+  }
+
+  .cta-box h2 {
+    max-width: 720px;
+    margin: 0 auto 15px;
+    font-size: clamp(30px, 4vw, 45px);
+    line-height: 1.2;
+  }
+
+  .cta-box p {
+    max-width: 670px;
+    margin: 0 auto 29px;
+    color: #cbd5e1;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .cta-button {
+    background: #ffffff;
+    color: #1d4ed8;
+  }
+
+  .cta-button:hover {
+    background: #eff6ff;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 55px;
+    padding: 65px 0 45px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+  }
+
+  .footer-brand p {
+    max-width: 380px;
+    margin: 17px 0 0;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  .footer-title {
+    margin: 0 0 18px;
+    color: #ffffff;
+    font-size: 16px;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-links a:hover {
+    color: #ffffff;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 24px 0;
+    border-top: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-bottom-links a:hover {
+    color: #ffffff;
+  }
+
+  @media (max-width: 1000px) {
+    .tools-grid,
+    .benefits-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero {
+      padding: 78px 0 70px;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .container {
+      width: min(100% - 28px, 1180px);
+    }
+
+    .hero h1 {
+      font-size: 41px;
+      letter-spacing: -1.4px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .button {
+      width: 100%;
+    }
+
+    .hero-statistics {
+      gap: 20px;
+    }
+
+    .tools-grid,
+    .benefits-grid,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-card {
+      min-height: auto;
+      padding: 25px;
+    }
+
+    .cta-box {
+      padding: 52px 23px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html) {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const tools = [
+  {
+    title: "Visual Studio Code",
+    description:
+      "A lightweight and powerful code editor for Linux, DevOps, Kubernetes, and cloud development.",
+    category: "Development",
+    website: "https://code.visualstudio.com/",
+  },
+  {
+    title: "Git",
+    description:
+      "Distributed version control system for source code management and collaboration.",
+    category: "Version Control",
+    website: "https://git-scm.com/",
+  },
+  {
+    title: "Docker",
+    description:
+      "Industry-standard container platform for building, shipping, and running applications.",
+    category: "Containers",
+    website: "https://www.docker.com/",
+  },
+  {
+    title: "Kubernetes",
+    description:
+      "Container orchestration platform for deploying and managing applications at scale.",
+    category: "Containers",
+    website: "https://kubernetes.io/",
+  },
+  {
+    title: "Terraform",
+    description:
+      "Infrastructure as Code (IaC) tool for provisioning cloud resources.",
+    category: "Infrastructure",
+    website: "https://www.terraform.io/",
+  },
+  {
+    title: "Ansible",
+    description:
+      "Simple automation platform for configuration management and application deployment.",
+    category: "Automation",
+    website: "https://www.ansible.com/",
+  },
+  {
+    title: "Cloudflare",
+    description:
+      "DNS, CDN, SSL, security, and edge platform for modern websites.",
+    category: "Cloud",
+    website: "https://www.cloudflare.com/",
+  },
+  {
+    title: "GitHub",
+    description:
+      "Host your source code, collaborate with teams, and automate deployments.",
+    category: "Development",
+    website: "https://github.com/",
+  },
+];
+---
+
+<Layout
+  title="Recommended Tools"
+  description="A curated collection of useful Linux, DevOps, Kubernetes, Networking, and Cloud tools."
+>
+  <section class="page-section">
+    <div class="container">
+      <header class="page-header">
+        <h1>Recommended Tools</h1>
+
+        <p>
+          These are some of the best tools used by Linux administrators,
+          DevOps engineers, cloud professionals, and Kubernetes engineers.
+        </p>
+      </header>
+
+      <div class="card-grid">
+        {
+          tools.map((tool) => (
+            <article class="card">
+              <span class="category">{tool.category}</span>
+
+              <h2>{tool.title}</h2>
+
+              <p>{tool.description}</p>
+
+              <a
+                class="button"
+                href={tool.website}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit Website →
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .category {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .card {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.2);
+  }
+
+  .card h2 {
+    margin: 10px 0 12px;
+  }
+
+  .card p {
+    min-height: 85px;
+  }
+
+  .button {
+    margin-top: 16px;
+  }
+</style>
