@@ -1,0 +1,1955 @@
+---
+const pageTitle =
+  "Kubernetes ConfigMap Generator | Gokuruvi Tools";
+
+const description =
+  "Generate Kubernetes ConfigMap YAML using key-value entries, environment variables, configuration files, labels, annotations and immutable settings.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/configmap-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #f8fafc
+        );
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(36px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 860px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 50px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1200px;
+        margin: 0 auto;
+        grid-template-columns:
+          minmax(0, 0.95fr)
+          minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow:
+          0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family:
+          Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow:
+          0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 580px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .summary-box {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid var(--info-border);
+        border-radius: 11px;
+        background: var(--info-bg);
+      }
+
+      .summary-box h3 {
+        margin: 0 0 10px;
+        color: var(--info-text);
+        font-size: 17px;
+      }
+
+      .summary-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--info-text);
+      }
+
+      .summary-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1200px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .info-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Kubernetes ConfigMap Generator</h1>
+
+        <p>
+          Generate Kubernetes ConfigMap YAML using
+          environment variables, application properties,
+          JSON, YAML, INI and other configuration file
+          content.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>ConfigMap Configuration</h2>
+
+            <p class="card-description">
+              Enter key-value data or configuration file
+              content. The YAML preview updates automatically.
+            </p>
+
+            <div class="preset-buttons">
+              <button
+                class="preset"
+                type="button"
+                data-preset="environment"
+              >
+                Environment Variables
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="properties"
+              >
+                application.properties
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="nginx"
+              >
+                nginx.conf
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="json"
+              >
+                JSON Config
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="yaml"
+              >
+                YAML Config
+              </button>
+            </div>
+
+            <h3 class="section-title">
+              Basic Settings
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="configMapNameInput">
+                  ConfigMap name
+                </label>
+
+                <input
+                  id="configMapNameInput"
+                  type="text"
+                  value="app-config"
+                  maxlength="253"
+                  placeholder="Example: app-config"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="namespaceInput">
+                  Namespace
+                </label>
+
+                <input
+                  id="namespaceInput"
+                  type="text"
+                  value="default"
+                  maxlength="63"
+                  placeholder="Example: default"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input
+                id="immutableInput"
+                type="checkbox"
+              />
+
+              <label for="immutableInput">
+                Make this ConfigMap immutable
+              </label>
+            </div>
+
+            <p class="help-text">
+              An immutable ConfigMap cannot be changed after
+              creation. It must be deleted and recreated.
+            </p>
+
+            <h3 class="section-title">
+              Key-Value Data
+            </h3>
+
+            <div class="form-group">
+              <label for="keyValueInput">
+                Configuration values
+              </label>
+
+              <textarea
+                id="keyValueInput"
+                placeholder="APP_ENV=production&#10;LOG_LEVEL=info&#10;APP_PORT=8080"
+              >APP_ENV=production
+LOG_LEVEL=info
+APP_PORT=8080</textarea>
+
+              <p class="help-text">
+                Enter one key=value entry per line. Values
+                containing spaces, symbols or YAML keywords
+                will be quoted automatically.
+              </p>
+            </div>
+
+            <h3 class="section-title">
+              Configuration File</h3>
+
+            <div class="checkbox-item">
+              <input
+                id="fileEnabledInput"
+                type="checkbox"
+                checked
+              />
+
+              <label for="fileEnabledInput">
+                Add configuration file content
+              </label>
+            </div>
+
+            <div id="fileSection">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="fileNameInput">
+                  File name
+                </label>
+
+                <input
+                  id="fileNameInput"
+                  type="text"
+                  value="application.yaml"
+                  placeholder="Example: application.yaml"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="fileContentInput">
+                  File content
+                </label>
+
+                <textarea
+                  id="fileContentInput"
+                  style="min-height: 230px;"
+                  placeholder="server:&#10;  port: 8080"
+                >server:
+  port: 8080
+
+application:
+  name: gokuruvi-app
+  environment: production</textarea>
+
+                <p class="help-text">
+                  The content is generated as a YAML literal
+                  block using the <code>|</code> format.
+                </p>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Labels and Annotations
+            </h3>
+
+            <div class="form-group">
+              <label for="labelsInput">
+                Additional labels
+              </label>
+
+              <textarea
+                id="labelsInput"
+                placeholder="app=gokuruvi-app&#10;environment=production"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value label per line.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="annotationsInput">
+                Annotations
+              </label>
+
+              <textarea
+                id="annotationsInput"
+                placeholder="description=Application configuration&#10;owner=platform-team"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value annotation per line.
+              </p>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate ConfigMap
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated configmap.yaml</h2>
+
+            <p class="card-description">
+              Review the generated ConfigMap before applying
+              it to your Kubernetes cluster.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">
+                Kubernetes ConfigMap YAML
+              </span>
+
+              <pre
+                id="yamlOutput"
+                class="yaml-output"
+              ></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download YAML
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">
+                  ConfigMap
+                </span>
+
+                <span
+                  id="resultName"
+                  class="result-value"
+                >
+                  app-config
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Namespace
+                </span>
+
+                <span
+                  id="resultNamespace"
+                  class="result-value"
+                >
+                  default
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Data entries
+                </span>
+
+                <span
+                  id="resultEntries"
+                  class="result-value"
+                >
+                  4
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Immutable
+                </span>
+
+                <span
+                  id="resultImmutable"
+                  class="result-value"
+                >
+                  No
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">
+                  Configuration file
+                </span>
+
+                <span
+                  id="resultFile"
+                  class="result-value"
+                >
+                  application.yaml
+                </span>
+              </div>
+            </div>
+
+            <div class="summary-box">
+              <h3>Manifest summary</h3>
+
+              <ul
+                id="summaryList"
+                class="summary-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              ConfigMaps are not designed for passwords,
+              tokens, private keys or other confidential
+              information. Store sensitive information in a
+              Kubernetes Secret or an external secret
+              management system.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Use the ConfigMap in a Deployment</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Deployment YAML example</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>
+                  Load every ConfigMap key as an environment
+                  variable
+                </td>
+
+                <td>
+                  <code>
+                    envFrom:<br />
+                    &nbsp;&nbsp;- configMapRef:<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name:
+                    app-config
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  Load one ConfigMap key as an environment
+                  variable
+                </td>
+
+                <td>
+                  <code>
+                    env:<br />
+                    &nbsp;&nbsp;- name: APP_ENV<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;valueFrom:<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;configMapKeyRef:<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name:
+                    app-config<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key:
+                    APP_ENV
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  Mount the ConfigMap as files
+                </td>
+
+                <td>
+                  <code>
+                    volumes:<br />
+                    &nbsp;&nbsp;- name: config-volume<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;configMap:<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name:
+                    app-config
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>Apply and Verify</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Validate YAML</th>
+
+                <td>
+                  <code>
+                    kubectl apply --dry-run=client -f configmap.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Apply ConfigMap</th>
+
+                <td>
+                  <code>
+                    kubectl apply -f configmap.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <th>List ConfigMaps</th>
+
+                <td>
+                  <code>
+                    kubectl get configmap -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <th>View ConfigMap YAML</th>
+
+                <td>
+                  <code>
+                    kubectl get configmap app-config -n default -o yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Describe ConfigMap</th>
+
+                <td>
+                  <code>
+                    kubectl describe configmap app-config -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Delete ConfigMap</th>
+
+                <td>
+                  <code>
+                    kubectl delete configmap app-config -n default
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>ConfigMap Guidelines</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <strong>Do Not Store Secrets</strong>
+
+              <p>
+                ConfigMap data is not encrypted and should
+                not contain passwords, API keys or private
+                certificates.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use Valid Keys</strong>
+
+              <p>
+                ConfigMap keys should contain letters,
+                numbers, hyphens, underscores or periods.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Restart Applications</strong>
+
+              <p>
+                Environment variables loaded from ConfigMaps
+                usually require the pods to be restarted
+                after changes.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Mounted Files</strong>
+
+              <p>
+                ConfigMaps mounted as volumes can update
+                automatically, although applications may
+                still need to reload the file.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use Immutable Mode Carefully</strong>
+
+              <p>
+                Immutable ConfigMaps improve safety but
+                cannot be edited after creation.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use Versioned Names</strong>
+
+              <p>
+                For controlled rollouts, use names such as
+                app-config-v1 and update the Deployment
+                reference.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fields = {
+        configMapName:
+          document.getElementById(
+            "configMapNameInput",
+          ),
+
+        namespace:
+          document.getElementById(
+            "namespaceInput",
+          ),
+
+        immutable:
+          document.getElementById(
+            "immutableInput",
+          ),
+
+        keyValue:
+          document.getElementById(
+            "keyValueInput",
+          ),
+
+        fileEnabled:
+          document.getElementById(
+            "fileEnabledInput",
+          ),
+
+        fileName:
+          document.getElementById(
+            "fileNameInput",
+          ),
+
+        fileContent:
+          document.getElementById(
+            "fileContentInput",
+          ),
+
+        labels:
+          document.getElementById(
+            "labelsInput",
+          ),
+
+        annotations:
+          document.getElementById(
+            "annotationsInput",
+          ),
+      };
+
+      const yamlOutput =
+        document.getElementById(
+          "yamlOutput",
+        );
+
+      const message =
+        document.getElementById(
+          "message",
+        );
+
+      const summaryList =
+        document.getElementById(
+          "summaryList",
+        );
+
+      const copyButton =
+        document.getElementById(
+          "copyButton",
+        );
+
+      const fileSection =
+        document.getElementById(
+          "fileSection",
+        );
+
+      let currentYaml = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className =
+          `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function isValidKubernetesName(value) {
+        return (
+          value.length >= 1 &&
+          value.length <= 253 &&
+          /^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$/.test(
+            value,
+          )
+        );
+      }
+
+      function isValidNamespace(value) {
+        return (
+          value.length >= 1 &&
+          value.length <= 63 &&
+          /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(
+            value,
+          )
+        );
+      }
+
+      function isValidDataKey(value) {
+        return /^[A-Za-z0-9._-]+$/.test(
+          value,
+        );
+      }
+
+      function parseKeyValueLines(value) {
+        const result = {};
+        const invalidLines = [];
+
+        value
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .forEach((line) => {
+            const separatorIndex =
+              line.indexOf("=");
+
+            if (separatorIndex <= 0) {
+              invalidLines.push(line);
+              return;
+            }
+
+            const key = line
+              .slice(0, separatorIndex)
+              .trim();
+
+            const itemValue = line
+              .slice(separatorIndex + 1)
+              .trim();
+
+            if (!isValidDataKey(key)) {
+              invalidLines.push(line);
+              return;
+            }
+
+            result[key] = itemValue;
+          });
+
+        return {
+          values: result,
+          invalidLines,
+        };
+      }
+
+      function escapeYamlString(value) {
+        const text = String(value);
+
+        if (
+          text === "" ||
+          /[:#{}[\],&*?|>'"%@`]/.test(text) ||
+          /^\s|\s$/.test(text) ||
+          [
+            "true",
+            "false",
+            "null",
+            "yes",
+            "no",
+            "on",
+            "off",
+            "~",
+          ].includes(text.toLowerCase()) ||
+          /^[-+]?[0-9]+(\.[0-9]+)?$/.test(
+            text,
+          )
+        ) {
+          return `"${text
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"')
+            .replace(/\n/g, "\\n")}"`;
+        }
+
+        return text;
+      }
+
+      function addObjectLines(
+        lines,
+        object,
+        indent,
+      ) {
+        const spacing = " ".repeat(indent);
+
+        Object.entries(object).forEach(
+          ([key, value]) => {
+            lines.push(
+              `${spacing}${key}: ${escapeYamlString(
+                value,
+              )}`,
+            );
+          },
+        );
+      }
+
+      function addLiteralBlock(
+        lines,
+        key,
+        content,
+      ) {
+        lines.push(`  ${key}: |`);
+
+        const normalizedContent =
+          content.replace(/\r\n/g, "\n");
+
+        if (!normalizedContent) {
+          lines.push("    ");
+          return;
+        }
+
+        normalizedContent
+          .split("\n")
+          .forEach((line) => {
+            lines.push(`    ${line}`);
+          });
+      }
+
+      function validateForm() {
+        const configMapName =
+          fields.configMapName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        if (
+          !isValidKubernetesName(
+            configMapName,
+          )
+        ) {
+          return "ConfigMap name must use lowercase letters, numbers, dots and hyphens.";
+        }
+
+        if (
+          !isValidNamespace(namespace)
+        ) {
+          return "Namespace must use lowercase letters, numbers and hyphens.";
+        }
+
+        const parsedData =
+          parseKeyValueLines(
+            fields.keyValue.value,
+          );
+
+        if (
+          parsedData.invalidLines.length >
+          0
+        ) {
+          return `Invalid key-value entry: ${parsedData.invalidLines[0]}. Use KEY=value format.`;
+        }
+
+        if (
+          fields.fileEnabled.checked &&
+          !fields.fileName.value.trim()
+        ) {
+          return "Enter a configuration file name.";
+        }
+
+        if (
+          fields.fileEnabled.checked &&
+          !isValidDataKey(
+            fields.fileName.value.trim(),
+          )
+        ) {
+          return "The configuration file name may contain letters, numbers, dots, hyphens and underscores.";
+        }
+
+        if (
+          Object.keys(parsedData.values)
+            .length === 0 &&
+          (!fields.fileEnabled.checked ||
+            !fields.fileContent.value)
+        ) {
+          return "Add at least one key-value entry or configuration file.";
+        }
+
+        const labels =
+          parseKeyValueLines(
+            fields.labels.value,
+          );
+
+        if (
+          labels.invalidLines.length > 0
+        ) {
+          return `Invalid label entry: ${labels.invalidLines[0]}. Use key=value format.`;
+        }
+
+        const annotations =
+          parseKeyValueLines(
+            fields.annotations.value,
+          );
+
+        if (
+          annotations.invalidLines.length >
+          0
+        ) {
+          return `Invalid annotation entry: ${annotations.invalidLines[0]}. Use key=value format.`;
+        }
+
+        return "";
+      }
+
+      function generateYaml() {
+        clearMessage();
+
+        const validationError =
+          validateForm();
+
+        if (validationError) {
+          currentYaml = "";
+          yamlOutput.textContent =
+            validationError;
+
+          summaryList.innerHTML = "";
+
+          showMessage(
+            validationError,
+            "error",
+          );
+
+          return;
+        }
+
+        const configMapName =
+          fields.configMapName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        const parsedData =
+          parseKeyValueLines(
+            fields.keyValue.value,
+          ).values;
+
+        const labels = {
+          app: configMapName,
+          ...parseKeyValueLines(
+            fields.labels.value,
+          ).values,
+        };
+
+        const annotations =
+          parseKeyValueLines(
+            fields.annotations.value,
+          ).values;
+
+        const lines = [];
+
+        lines.push("apiVersion: v1");
+        lines.push("kind: ConfigMap");
+        lines.push("metadata:");
+        lines.push(
+          `  name: ${configMapName}`,
+        );
+        lines.push(
+          `  namespace: ${namespace}`,
+        );
+        lines.push("  labels:");
+
+        addObjectLines(
+          lines,
+          labels,
+          4,
+        );
+
+        if (
+          Object.keys(annotations).length >
+          0
+        ) {
+          lines.push("  annotations:");
+
+          addObjectLines(
+            lines,
+            annotations,
+            4,
+          );
+        }
+
+        if (fields.immutable.checked) {
+          lines.push("immutable: true");
+        }
+
+        lines.push("data:");
+
+        Object.entries(parsedData).forEach(
+          ([key, value]) => {
+            lines.push(
+              `  ${key}: ${escapeYamlString(
+                value,
+              )}`,
+            );
+          },
+        );
+
+        if (fields.fileEnabled.checked) {
+          addLiteralBlock(
+            lines,
+            fields.fileName.value.trim(),
+            fields.fileContent.value,
+          );
+        }
+
+        currentYaml = lines.join("\n");
+
+        yamlOutput.textContent =
+          currentYaml;
+
+        document.getElementById(
+          "resultName",
+        ).textContent = configMapName;
+
+        document.getElementById(
+          "resultNamespace",
+        ).textContent = namespace;
+
+        const entryCount =
+          Object.keys(parsedData).length +
+          (fields.fileEnabled.checked
+            ? 1
+            : 0);
+
+        document.getElementById(
+          "resultEntries",
+        ).textContent =
+          String(entryCount);
+
+        document.getElementById(
+          "resultImmutable",
+        ).textContent =
+          fields.immutable.checked
+            ? "Yes"
+            : "No";
+
+        document.getElementById(
+          "resultFile",
+        ).textContent =
+          fields.fileEnabled.checked
+            ? fields.fileName.value.trim()
+            : "Not included";
+
+        summaryList.innerHTML = "";
+
+        const summary = [
+          `Creates ConfigMap ${configMapName} in namespace ${namespace}.`,
+          `Contains ${Object.keys(parsedData).length} key-value entr${
+            Object.keys(parsedData).length ===
+            1
+              ? "y"
+              : "ies"
+          }.`,
+        ];
+
+        if (fields.fileEnabled.checked) {
+          summary.push(
+            `Includes ${fields.fileName.value.trim()} as configuration file content.`,
+          );
+        }
+
+        if (fields.immutable.checked) {
+          summary.push(
+            "The ConfigMap is immutable and cannot be updated after creation.",
+          );
+        }
+
+        summary.forEach((text) => {
+          const item =
+            document.createElement("li");
+
+          item.textContent = text;
+
+          summaryList.appendChild(item);
+        });
+      }
+
+      function updateFileSection() {
+        fileSection.style.display =
+          fields.fileEnabled.checked
+            ? "block"
+            : "none";
+
+        fields.fileName.disabled =
+          !fields.fileEnabled.checked;
+
+        fields.fileContent.disabled =
+          !fields.fileEnabled.checked;
+
+        generateYaml();
+      }
+
+      function applyPreset(preset) {
+        if (preset === "environment") {
+          fields.configMapName.value =
+            "app-environment";
+
+          fields.keyValue.value =
+            `APP_ENV=production
+LOG_LEVEL=info
+APP_PORT=8080
+TZ=Asia/Dubai`;
+
+          fields.fileEnabled.checked =
+            false;
+
+          fields.fileName.value = "";
+          fields.fileContent.value = "";
+        }
+
+        if (preset === "properties") {
+          fields.configMapName.value =
+            "spring-app-config";
+
+          fields.keyValue.value =
+            "SPRING_PROFILES_ACTIVE=production";
+
+          fields.fileEnabled.checked =
+            true;
+
+          fields.fileName.value =
+            "application.properties";
+
+          fields.fileContent.value =
+            `server.port=8080
+spring.application.name=gokuruvi-app
+logging.level.root=INFO
+management.endpoints.web.exposure.include=health,info`;
+        }
+
+        if (preset === "nginx") {
+          fields.configMapName.value =
+            "nginx-config";
+
+          fields.keyValue.value = "";
+
+          fields.fileEnabled.checked =
+            true;
+
+          fields.fileName.value =
+            "nginx.conf";
+
+          fields.fileContent.value =
+            `events {}
+
+http {
+  server {
+    listen 80;
+    server_name _;
+
+    location / {
+      root /usr/share/nginx/html;
+      index index.html;
+    }
+  }
+}`;
+        }
+
+        if (preset === "json") {
+          fields.configMapName.value =
+            "json-app-config";
+
+          fields.keyValue.value =
+            "APP_ENV=production";
+
+          fields.fileEnabled.checked =
+            true;
+
+          fields.fileName.value =
+            "config.json";
+
+          fields.fileContent.value =
+            `{
+  "application": "gokuruvi-app",
+  "environment": "production",
+  "port": 8080,
+  "logging": {
+    "level": "info"
+  }
+}`;
+        }
+
+        if (preset === "yaml") {
+          fields.configMapName.value =
+            "yaml-app-config";
+
+          fields.keyValue.value =
+            "APP_ENV=production";
+
+          fields.fileEnabled.checked =
+            true;
+
+          fields.fileName.value =
+            "application.yaml";
+
+          fields.fileContent.value =
+            `server:
+  port: 8080
+
+application:
+  name: gokuruvi-app
+  environment: production
+
+logging:
+  level: info`;
+        }
+
+        updateFileSection();
+      }
+
+      function resetGenerator() {
+        fields.configMapName.value =
+          "app-config";
+
+        fields.namespace.value =
+          "default";
+
+        fields.immutable.checked =
+          false;
+
+        fields.keyValue.value =
+          `APP_ENV=production
+LOG_LEVEL=info
+APP_PORT=8080`;
+
+        fields.fileEnabled.checked =
+          true;
+
+        fields.fileName.value =
+          "application.yaml";
+
+        fields.fileContent.value =
+          `server:
+  port: 8080
+
+application:
+  name: gokuruvi-app
+  environment: production`;
+
+        fields.labels.value = "";
+        fields.annotations.value = "";
+
+        clearMessage();
+        updateFileSection();
+
+        fields.configMapName.focus();
+      }
+
+      async function copyYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate valid ConfigMap YAML before copying.",
+            "error",
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentYaml,
+          );
+
+          const originalText =
+            copyButton.textContent;
+
+          copyButton.textContent =
+            "Copied!";
+
+          showMessage(
+            "ConfigMap YAML copied successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            copyButton.textContent =
+              originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Copy the YAML manually.",
+            "error",
+          );
+        }
+      }
+
+      function downloadYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate valid ConfigMap YAML before downloading.",
+            "error",
+          );
+
+          return;
+        }
+
+        const blob = new Blob(
+          [currentYaml],
+          {
+            type: "application/yaml;charset=utf-8",
+          },
+        );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const anchor =
+          document.createElement("a");
+
+        anchor.href = url;
+
+        anchor.download =
+          `${fields.configMapName.value.trim() || "configmap"}.yaml`;
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showMessage(
+          "ConfigMap YAML downloaded successfully.",
+          "success",
+        );
+      }
+
+      document
+        .getElementById(
+          "generateButton",
+        )
+        .addEventListener(
+          "click",
+          generateYaml,
+        );
+
+      document
+        .getElementById(
+          "resetButton",
+        )
+        .addEventListener(
+          "click",
+          resetGenerator,
+        );
+
+      copyButton.addEventListener(
+        "click",
+        copyYaml,
+      );
+
+      document
+        .getElementById(
+          "downloadButton",
+        )
+        .addEventListener(
+          "click",
+          downloadYaml,
+        );
+
+      Object.values(fields).forEach(
+        (field) => {
+          field.addEventListener(
+            "input",
+            generateYaml,
+          );
+
+          field.addEventListener(
+            "change",
+            () => {
+              if (
+                field ===
+                fields.fileEnabled
+              ) {
+                updateFileSection();
+              } else {
+                generateYaml();
+              }
+            },
+          );
+        },
+      );
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              applyPreset(
+                button.dataset.preset ||
+                  "",
+              );
+            },
+          );
+        });
+
+      updateFileSection();
+    </script>
+  </body>
+</html>

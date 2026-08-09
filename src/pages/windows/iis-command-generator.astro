@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="IIS Command Generator" description="Generate IIS PowerShell commands for websites, application pools, bindings and service administration." slug="iis-command-generator" icon="🌐">
+
+<h2 class="tool-title">IIS command builder</h2><div class="form-grid"><div class="field"><label for="action">Action</label><select id="action"><option value="list">List websites</option><option value="start">Start website</option><option value="stop">Stop website</option><option value="create">Create website</option><option value="pool">Recycle app pool</option><option value="binding">Add HTTPS binding</option></select></div><div class="field"><label for="name">Site / pool name</label><input id="name" value="Default Web Site" /></div><div class="field"><label for="path">Physical path</label><input id="path" value="C:\\inetpub\\wwwroot" /></div><div class="field"><label for="port">Port</label><input id="port" type="number" min="1" max="65535" value="443" /></div><div class="field full"><label for="host">Host header</label><input id="host" placeholder="www.example.com" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell (WebAdministration)</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Import-Module WebAdministration\nGet-Website</pre></div>
+<script>
+
+const v=(id:string)=>(document.querySelector<HTMLInputElement|HTMLSelectElement>('#'+id)!).value;const o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const n=v('name').replace(/'/g,"''"),path=v('path').replace(/'/g,"''"),port=Math.min(65535,Math.max(1,Number(v('port'))||80)),host=v('host').replace(/'/g,"''"),pre='Import-Module WebAdministration\n';const m:Record<string,string>={list:'Get-Website | Format-Table Name,State,PhysicalPath,Bindings -AutoSize',start:`Start-Website -Name '${n}'`,stop:`Stop-Website -Name '${n}'`,create:`New-Website -Name '${n}' -PhysicalPath '${path}' -Port ${port}${host?` -HostHeader '${host}'`:''}`,pool:`Restart-WebAppPool -Name '${n}'`,binding:`New-WebBinding -Name '${n}' -Protocol https -Port ${port}${host?` -HostHeader '${host}'`:''}`};o.textContent=pre+m[v('action')]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

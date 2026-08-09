@@ -1,0 +1,525 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const linuxScenarios = [
+  {
+    id: 1,
+    category: "Boot & Recovery",
+    level: "Critical",
+    question: "A RHEL server drops into emergency mode after a reboot. How do you recover it safely?",
+    answer: "Start by reading the exact mount or dependency failure instead of rebooting repeatedly. Use the emergency shell to identify the failed unit, verify /etc/fstab entries and device UUIDs, and test mounts manually. If the root filesystem is read-only, remount it read-write only when required. Correct the underlying entry, run systemctl daemon-reload, test with mount -a, then continue the boot.",
+    commands: ["systemctl --failed", "journalctl -xb", "lsblk -f", "cat /etc/fstab", "mount -a", "systemctl default"],
+    verify: "Confirm there are no failed mount units and that a normal reboot reaches the expected target without manual intervention."
+  },
+  {
+    id: 2,
+    category: "Boot & Recovery",
+    level: "Critical",
+    question: "The server boots, but a recent kernel causes instability. What is your recovery plan?",
+    answer: "Boot the previously known-good kernel from GRUB, confirm the issue disappears, and collect evidence before changing packages. Keep at least one known-good kernel installed. Set the working kernel as the default only after validation, then investigate whether the newer kernel should be updated, rolled back, or temporarily excluded according to change policy.",
+    commands: ["uname -r", "grubby --default-kernel", "grubby --info=ALL", "rpm -q kernel-core --last"],
+    verify: "Reboot once more and confirm the expected kernel is selected automatically and application checks pass."
+  },
+  {
+    id: 3,
+    category: "Boot & Recovery",
+    level: "Critical",
+    question: "You forgot the root password on a RHEL system. How would you reset it from the console?",
+    answer: "Use the supported GRUB recovery workflow: interrupt boot, edit the kernel line, boot into the break environment, remount the real root filesystem read-write, chroot into it, change the password, and trigger SELinux relabeling when SELinux is enabled. Reboot and validate console login.",
+    commands: ["mount -o remount,rw /sysroot", "chroot /sysroot", "passwd root", "touch /.autorelabel", "exit", "reboot"],
+    verify: "Confirm the new password works and SELinux returns to the intended enforcing state after relabeling."
+  },
+  {
+    id: 4,
+    category: "CPU & Processes",
+    level: "Critical",
+    question: "CPU usage suddenly reaches 100%. How do you identify the real cause before restarting anything?",
+    answer: "Check load average and CPU breakdown first, then identify the process and thread consuming CPU. Determine whether the pressure is user CPU, system CPU, I/O wait, steal time, or a runaway thread. Correlate the process with recent changes and logs. Capture evidence before terminating or restarting a production service.",
+    commands: ["uptime", "top", "ps -eo pid,ppid,user,%cpu,%mem,stat,etime,cmd --sort=-%cpu | head", "pidstat -p ALL 1", "top -H -p <PID>", "journalctl --since '-15 min'"],
+    verify: "After remediation, confirm load average trends down and the workload still meets application response expectations."
+  },
+  {
+    id: 5,
+    category: "CPU & Processes",
+    level: "Important",
+    question: "A process is shown as a zombie. Should you kill the zombie PID?",
+    answer: "No. A zombie has already exited and only retains an entry so its parent can collect the exit status. Identify the parent process. If the parent is healthy, investigate why it is not reaping children. If it is defective, restart or terminate the parent through the service manager after assessing impact. Killing the zombie itself does not solve the cause.",
+    commands: ["ps -eo pid,ppid,stat,cmd | awk '$3 ~ /^Z/'", "ps -fp <PPID>", "systemctl status <service>"],
+    verify: "Verify the zombie entries disappear after the parent correctly reaps them or the parent is safely restarted."
+  },
+  {
+    id: 6,
+    category: "Memory & Performance",
+    level: "Critical",
+    question: "The system reports very little free memory. How do you decide whether this is actually a problem?",
+    answer: "Linux intentionally uses unused RAM for cache, so focus on available memory, swap activity, reclaim pressure, and application symptoms rather than the free column alone. Check whether the kernel is actively swapping, whether major faults are increasing, and which processes are growing. If an OOM event occurred, use the kernel log to identify the victim and memory pressure history.",
+    commands: ["free -h", "vmstat 1", "ps -eo pid,user,%mem,rss,vsz,cmd --sort=-rss | head", "sar -r 1 5", "journalctl -k | grep -i -E 'oom|out of memory'"],
+    verify: "Confirm available memory and swap activity are stable under normal workload and no new OOM events occur."
+  },
+  {
+    id: 7,
+    category: "Memory & Performance",
+    level: "Critical",
+    question: "Swap usage is high even though RAM is now available. Is that automatically a fault?",
+    answer: "Not necessarily. Pages moved to swap can remain there until they are needed. Determine whether swap-in and swap-out activity is currently high. Persistent active swapping with latency indicates pressure; static swap usage without swap I/O may be harmless. Investigate the process working set and memory trend before changing swappiness or clearing swap.",
+    commands: ["free -h", "vmstat 1", "sar -W 1 5", "cat /proc/sys/vm/swappiness"],
+    verify: "Use si/so from vmstat or pswpin/pswpout from sar to verify whether swapping is active, not just allocated."
+  },
+  {
+    id: 8,
+    category: "Storage & Filesystems",
+    level: "Critical",
+    question: "The root filesystem is 100% full. What do you do first?",
+    answer: "Protect service stability first. Identify which filesystem is actually full, then locate the largest consumers without crossing into other mounts unless intended. Check for deleted-but-open files because removing a visible file may not release space while a process still holds it. Remove or rotate data only when ownership and retention requirements are clear; then fix the growth source.",
+    commands: ["df -hT", "df -i", "du -xhd1 / | sort -h", "find / -xdev -type f -size +1G -ls", "lsof +L1"],
+    verify: "Confirm both block usage and inode usage are healthy and that the growing log, cache, or application path is controlled."
+  },
+  {
+    id: 9,
+    category: "Storage & Filesystems",
+    level: "Critical",
+    question: "df shows a filesystem is full, but du cannot account for the used space. What is the likely cause?",
+    answer: "A common cause is a deleted file that is still open by a running process. The directory entry is gone, so du cannot see it, while the filesystem blocks remain allocated until the file descriptor is closed. Use lsof to identify the process and choose a safe service restart or application-specific log reopen action.",
+    commands: ["df -h", "du -xsh /* 2>/dev/null", "lsof +L1"],
+    verify: "After the file descriptor is released, confirm df reports the reclaimed space."
+  },
+  {
+    id: 10,
+    category: "Storage & Filesystems",
+    level: "Critical",
+    question: "A filesystem has free GBs but applications receive 'No space left on device'. What do you check?",
+    answer: "Check inode exhaustion as well as blocks. A workload creating huge numbers of small files can exhaust inodes while capacity remains. Identify the directory with the largest file count, remove data according to retention policy, and address the application behavior or filesystem sizing that caused the inode pressure.",
+    commands: ["df -h", "df -i", "find /path -xdev -type f | wc -l", "du --inodes -x -d1 /path 2>/dev/null | sort -n"],
+    verify: "Confirm inode availability is restored and the application can create files normally."
+  },
+  {
+    id: 11,
+    category: "LVM",
+    level: "Critical",
+    question: "A logical volume needs more space with minimal downtime. How do you extend it?",
+    answer: "Confirm the filesystem type, current LV path, volume group free extents, and underlying storage state. Extend the LV first. Then grow the filesystem with the correct online tool: xfs_growfs for XFS or resize2fs for ext4. Do not use filesystem shrinking procedures on XFS because XFS does not support shrinking.",
+    commands: ["lsblk -f", "pvs", "vgs", "lvs", "lvextend -L +20G /dev/<vg>/<lv>", "xfs_growfs <mountpoint>", "resize2fs /dev/<vg>/<lv>"],
+    verify: "Validate the new size with lvs and df -hT and confirm the application still reads and writes normally."
+  },
+  {
+    id: 12,
+    category: "LVM",
+    level: "Important",
+    question: "A new disk has been attached to a VM. How do you add it to an existing volume group?",
+    answer: "Rescan the appropriate storage bus if the device is not visible, identify the new disk unambiguously, create the physical volume, extend the intended volume group, and only then allocate new extents to the target logical volume. Verify device identity carefully to avoid initializing the wrong disk.",
+    commands: ["lsblk", "lsscsi", "pvcreate /dev/sdX", "vgextend <vg> /dev/sdX", "pvs", "vgs"],
+    verify: "Confirm the new physical volume belongs to the correct volume group and free extents increased as expected."
+  },
+  {
+    id: 13,
+    category: "Networking",
+    level: "Critical",
+    question: "A server can ping its gateway but cannot reach an external hostname. How do you isolate the issue?",
+    answer: "Separate routing from name resolution. Test the external destination by IP first. If IP connectivity works but hostname lookup fails, inspect resolver configuration and query the configured resolver directly. If IP connectivity also fails, inspect routes, source address, firewall policy, upstream ACLs, and path hops.",
+    commands: ["ip addr", "ip route", "ping -c 3 <gateway>", "ping -c 3 1.1.1.1", "resolvectl status", "dig example.com", "tracepath 1.1.1.1"],
+    verify: "Confirm both IP reachability and DNS resolution work from the affected host using the expected interface and resolver."
+  },
+  {
+    id: 14,
+    category: "Networking",
+    level: "Critical",
+    question: "A service is running, but clients cannot connect to its TCP port. What do you check?",
+    answer: "Verify the process is listening, the bind address is correct, and the expected protocol/port is used. Test locally first, then from a remote client. Check host firewall rules and any upstream network policy. Packet capture is useful to distinguish no arrival, rejected traffic, and application-level resets.",
+    commands: ["ss -lntp", "curl -v http://127.0.0.1:<port>/", "nc -vz <server> <port>", "firewall-cmd --list-all", "tcpdump -ni any port <port>"],
+    verify: "Confirm a remote TCP handshake reaches the intended process and the application responds at its protocol layer."
+  },
+  {
+    id: 15,
+    category: "Networking",
+    level: "Important",
+    question: "Two NICs are configured and replies leave through the wrong interface. How do you troubleshoot asymmetric routing?",
+    answer: "Inspect addresses, route metrics, policy rules, and the route selected for the exact destination. On multihomed systems, source-based routing may be required. Also review reverse path filtering because strict rp_filter can drop legitimate asymmetric traffic. Change routing only after understanding the intended network design.",
+    commands: ["ip -br addr", "ip route show table all", "ip rule", "ip route get <client-ip>", "sysctl net.ipv4.conf.all.rp_filter"],
+    verify: "Use ip route get and packet capture to confirm request and reply paths match the intended design."
+  },
+  {
+    id: 16,
+    category: "systemd & Services",
+    level: "Critical",
+    question: "A systemd service fails immediately after start. What is your troubleshooting sequence?",
+    answer: "Read the unit status and journal first, then inspect the exact ExecStart command, user, environment, working directory, permissions, dependencies, and exit code. Run the application command in a controlled way as the configured service user when appropriate. Fix the root cause, run daemon-reload only if the unit changed, then restart and verify.",
+    commands: ["systemctl status <service> --no-pager -l", "journalctl -u <service> -b --no-pager", "systemctl cat <service>", "systemctl show <service> -p User -p Group -p ExecStart", "systemctl daemon-reload"],
+    verify: "Confirm the unit remains active after several minutes and its application endpoint or function works."
+  },
+  {
+    id: 17,
+    category: "systemd & Services",
+    level: "Important",
+    question: "A service must start only after the network is truly usable. Is After=network.target enough?",
+    answer: "Usually not. network.target mainly represents ordering around network management, not confirmed connectivity. Use network-online.target when the service genuinely requires configured networking and ensure the system's wait-online service is correctly enabled for the active network stack. Avoid unnecessary dependencies because they can slow boot.",
+    commands: ["systemctl cat <service>", "systemctl status network-online.target", "systemctl list-dependencies network-online.target"],
+    verify: "Test a reboot and confirm the service starts reliably only after its required network path is available."
+  },
+  {
+    id: 18,
+    category: "Logs & Troubleshooting",
+    level: "Critical",
+    question: "An incident occurred 30 minutes ago but the service looks healthy now. How do you reconstruct what happened?",
+    answer: "Build a time-bounded timeline. Review the service journal, kernel messages, authentication events, resource statistics, and any application logs for the same window. Correlate timestamps with deployment or configuration changes. Preserve relevant evidence before log rotation removes it.",
+    commands: ["journalctl --since '-45 min' --until '-15 min'", "journalctl -k --since '-45 min'", "journalctl -u <service> --since '-45 min'", "last -F | head", "sar -u -r -q"],
+    verify: "Document a consistent timeline with evidence for the trigger, impact, remediation, and prevention step."
+  },
+  {
+    id: 19,
+    category: "Security",
+    level: "Critical",
+    question: "SSH password authentication was disabled, and a user is locked out after key rotation. How do you recover without weakening security globally?",
+    answer: "Use an approved console, bastion, or alternate privileged session. Validate the user's home directory, .ssh directory, authorized_keys ownership, permissions, key content, account status, and sshd effective configuration. Restore the correct key and permissions rather than enabling password authentication for everyone.",
+    commands: ["sshd -T | grep -E 'pubkeyauthentication|passwordauthentication|authorizedkeysfile'", "getent passwd <user>", "ls -ld ~<user> ~<user>/.ssh ~<user>/.ssh/authorized_keys", "restorecon -RFv ~<user>/.ssh", "journalctl -u sshd -b"],
+    verify: "Test key-based login from the intended source and confirm password authentication remains in the required state."
+  },
+  {
+    id: 20,
+    category: "Security",
+    level: "Critical",
+    question: "A service works with SELinux permissive but fails when enforcing. What should you do?",
+    answer: "Do not disable SELinux as the fix. Reproduce the denial, inspect AVC messages, confirm file labels and expected booleans, and determine whether the application is using supported paths and ports. Correct labeling or configuration first. Create a custom policy only when the access is legitimate and cannot be expressed with standard labels or booleans.",
+    commands: ["getenforce", "ausearch -m AVC,USER_AVC -ts recent", "sealert -a /var/log/audit/audit.log", "ls -Z <path>", "restorecon -Rv <path>", "getsebool -a | grep <keyword>"],
+    verify: "Return to enforcing mode and confirm the service works without new unexpected AVC denials."
+  },
+  {
+    id: 21,
+    category: "Security",
+    level: "Important",
+    question: "A user can run more sudo commands than intended. How do you investigate safely?",
+    answer: "Inspect the effective sudo policy rather than only /etc/sudoers. Check included files, group memberships, aliases, and host/run-as restrictions. Use visudo for changes so syntax is validated. Prefer least-privilege command rules and avoid broad wildcards where arguments can be abused.",
+    commands: ["sudo -l -U <user>", "id <user>", "visudo -c", "grep -R --line-number -E '^[^#].*<user>|%<group>' /etc/sudoers /etc/sudoers.d 2>/dev/null"],
+    verify: "Re-test sudo -l for the user and confirm only approved commands are authorized."
+  },
+  {
+    id: 22,
+    category: "Packages & Updates",
+    level: "Important",
+    question: "A package update broke an application. How do you investigate and roll back responsibly?",
+    answer: "Identify exactly what changed and whether the application failure is caused by the package, configuration migration, or dependency. Review package history and logs. If rollback is supported and risk-assessed, revert the relevant transaction or install the approved previous package version. Preserve security implications and avoid blindly downgrading critical components.",
+    commands: ["dnf history", "dnf history info <ID>", "rpm -qa --last | head", "journalctl --since today", "dnf repoquery --show-duplicates <package>"],
+    verify: "Confirm application function, service health, and package versions, then document the temporary hold or permanent remediation."
+  },
+  {
+    id: 23,
+    category: "Files & Permissions",
+    level: "Critical",
+    question: "An application gets Permission denied even though chmod 777 was tested. What should you check next?",
+    answer: "Stop using world-writable permissions as a diagnostic shortcut. Walk the full path and check ownership, execute permission on parent directories, ACLs, SELinux context, mount options, service user identity, and whether the filesystem is read-only. The denial may not be traditional mode bits at all.",
+    commands: ["namei -l /path/to/file", "getfacl /path/to/file", "ls -lZ /path/to/file", "findmnt -no TARGET,OPTIONS /path/to/file", "id <service-user>", "ausearch -m AVC -ts recent"],
+    verify: "Restore least-privilege permissions and confirm the application can access only the intended path."
+  },
+  {
+    id: 24,
+    category: "Files & Permissions",
+    level: "Important",
+    question: "New files in a shared directory must inherit a common group. How do you configure it correctly?",
+    answer: "Set the directory group to the shared group and enable the setgid bit so new files and directories inherit that group. Use a suitable umask or default ACL when group write access must be consistent regardless of the creator's shell umask.",
+    commands: ["chgrp <group> /shared", "chmod 2775 /shared", "setfacl -m d:g:<group>:rwx /shared", "getfacl /shared"],
+    verify: "Create test files as different authorized users and confirm the group and effective permissions are inherited correctly."
+  },
+  {
+    id: 25,
+    category: "I/O & Performance",
+    level: "Critical",
+    question: "Load average is very high but CPU utilization is low. What does that suggest?",
+    answer: "High load can include tasks waiting in uninterruptible sleep, often due to storage or remote filesystem I/O. Check the process states, I/O wait, device latency, queue depth, and kernel messages. Do not assume high load always means CPU saturation.",
+    commands: ["uptime", "vmstat 1", "ps -eo state,pid,ppid,wchan:32,cmd | awk '$1 ~ /^D/'", "iostat -xz 1", "pidstat -d 1", "journalctl -k -b"],
+    verify: "Confirm blocked-task counts and device latency normalize after the storage or I/O issue is resolved."
+  },
+  {
+    id: 26,
+    category: "I/O & Performance",
+    level: "Important",
+    question: "A filesystem becomes read-only unexpectedly. What is the safe response?",
+    answer: "Treat it as a possible filesystem or storage integrity event. Check kernel logs for I/O errors or filesystem protection actions. Avoid forcing it read-write repeatedly. Protect data, assess redundancy and backups, and schedule the filesystem-specific offline repair procedure where required. Resolve underlying disk, path, or virtual storage errors first.",
+    commands: ["findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS <mountpoint>", "journalctl -k -b | tail -200", "dmesg -T | tail -200", "lsblk -f"],
+    verify: "After repair and storage validation, confirm clean mounts and no recurring kernel I/O or filesystem errors."
+  },
+  {
+    id: 27,
+    category: "Time & Scheduling",
+    level: "Important",
+    question: "A cron job works manually but fails from cron. What are the most common causes?",
+    answer: "Cron has a minimal environment and may use a different shell, PATH, working directory, and permissions. Use absolute paths, capture stdout/stderr, verify the crontab belongs to the intended user, and check the scheduler logs. If the task depends on environment variables, define them explicitly or call a controlled wrapper script.",
+    commands: ["crontab -l", "systemctl status crond", "journalctl -u crond -b", "env -i /bin/bash --noprofile --norc -c '<command>'"],
+    verify: "Run the job under an equivalent minimal environment and confirm its next scheduled execution succeeds."
+  },
+  {
+    id: 28,
+    category: "Time & Scheduling",
+    level: "Critical",
+    question: "Several servers suddenly show authentication or TLS errors and their clocks differ. How do you troubleshoot time synchronization?",
+    answer: "Verify current time, timezone, synchronization state, configured sources, reachability, and clock offset. Large offsets can affect authentication and certificate validation. Correct the synchronization service and upstream reachability rather than manually setting clocks on each server except under an approved recovery procedure.",
+    commands: ["timedatectl", "chronyc tracking", "chronyc sources -v", "chronyc sourcestats -v", "journalctl -u chronyd -b"],
+    verify: "Confirm chronyc reports a synchronized source and offsets converge within the environment's tolerance."
+  },
+  {
+    id: 29,
+    category: "Containers",
+    level: "Important",
+    question: "A container exits immediately after start. How do you investigate it from the Linux host?",
+    answer: "Check the exit code, logs, configured entrypoint/command, mounts, environment, resource limits, and host permissions. A container needs a foreground process; if its main process exits, the container stops. Also verify host security policy and storage availability before changing the image.",
+    commands: ["podman ps -a", "podman logs <container>", "podman inspect <container>", "podman top <container>", "journalctl -u podman -b 2>/dev/null || true"],
+    verify: "Confirm the container remains running and the expected application check succeeds without host-level denials."
+  },
+  {
+    id: 30,
+    category: "Automation",
+    level: "Critical",
+    question: "You must run a change on 100 Linux servers. What makes your approach production-safe?",
+    answer: "Make the change idempotent, scope it to an approved inventory, validate prerequisites, test on a representative canary group, capture before/after state, stop on defined failure thresholds, and keep a rollback path. Avoid one-off parallel SSH loops for high-impact changes when an automation platform with inventory, logging, and controlled concurrency is available.",
+    commands: ["ansible all -m ping", "ansible-playbook change.yml --check --diff --limit canary", "ansible-playbook change.yml --limit canary", "ansible-playbook change.yml --serial 10"],
+    verify: "Use an explicit post-check across the fleet and retain execution evidence tied to the approved change."
+  },
+  {
+    id: 31,
+    category: "Networking",
+    level: "Critical",
+    question: "SSH is slow before the password or key prompt appears. Where do you look?",
+    answer: "Determine whether the delay is client-side name resolution, server reverse lookup, GSSAPI negotiation, PAM, or network packet loss. Use verbose SSH timing and the sshd journal. Verify DNS forward/reverse resolution where required. Change authentication options only when they are not required by the environment.",
+    commands: ["ssh -vvv user@host", "journalctl -u sshd -b", "getent hosts <client-ip>", "sshd -T | grep -E 'usedns|gssapiauthentication'"],
+    verify: "Measure connection time after the fix and confirm the intended authentication mechanisms still work."
+  },
+  {
+    id: 32,
+    category: "Kernel & Limits",
+    level: "Important",
+    question: "An application says 'Too many open files'. How do you find the correct limit to change?",
+    answer: "Identify whether the process hit its per-process file descriptor limit or whether the host is under broader file table pressure. Check the running process limits, systemd unit limits, shell limits, and actual descriptor count. Raise only the justified scope and ensure the application does not have a descriptor leak.",
+    commands: ["cat /proc/<PID>/limits | grep -i 'open files'", "ls /proc/<PID>/fd | wc -l", "systemctl show <service> -p LimitNOFILE", "sysctl fs.file-max", "cat /proc/sys/fs/file-nr"],
+    verify: "After a controlled restart if required, confirm the process receives the intended limit and descriptor count remains stable."
+  },
+  {
+    id: 33,
+    category: "Kernel & Limits",
+    level: "Important",
+    question: "You change a sysctl value but it returns to the old value after reboot. Why?",
+    answer: "A runtime sysctl command is not automatically persistent. Find which configuration file sets the value and whether multiple files override it. Put the approved setting in the appropriate sysctl.d file, reload it, and confirm there is no later conflicting definition.",
+    commands: ["sysctl <key>", "grep -R --line-number '<key>' /etc/sysctl.conf /etc/sysctl.d /usr/lib/sysctl.d 2>/dev/null", "sysctl --system"],
+    verify: "Reboot during a maintenance window and confirm the effective value matches the intended persistent configuration."
+  },
+  {
+    id: 34,
+    category: "Incident Response",
+    level: "Critical",
+    question: "A production server becomes unreachable. What is your first five-minute checklist?",
+    answer: "Confirm scope before acting: one host, subnet, site, or service. Check external reachability, virtualization or hardware console state, recent alerts and changes, route/path behavior, and whether the host responds on any management channel. Avoid rebooting until you have enough evidence to justify it because a reboot can destroy transient diagnostic data.",
+    commands: ["ping -c 3 <host>", "tracepath <host>", "nc -vz <host> 22", "ip route get <host>", "arping <host>  # same L2 only"],
+    verify: "Record the failure domain and recovery evidence, then perform a service-level validation after connectivity returns."
+  },
+  {
+    id: 35,
+    category: "Incident Response",
+    level: "Critical",
+    question: "A server recovered after a reboot. Is 'reboot fixed it' an acceptable RCA?",
+    answer: "No. A reboot is a recovery action, not a root cause. Use logs from the previous boot, resource history, service crash data, kernel events, change records, and infrastructure events to identify the most plausible trigger. If evidence is insufficient, state that clearly and add instrumentation or retention needed to capture the next occurrence.",
+    commands: ["journalctl -b -1", "journalctl -k -b -1", "last -x | head -30", "coredumpctl list", "sar -A"],
+    verify: "The final RCA should separate trigger, contributing factors, recovery action, and preventive measures, each tied to evidence."
+  },
+  {
+    id: 36,
+    category: "Architecture & Operations",
+    level: "Important",
+    question: "How do you explain the difference between load average and CPU utilization in an interview?",
+    answer: "CPU utilization describes how busy CPU time is. Linux load average represents the average number of tasks runnable on CPU or waiting in uninterruptible sleep over 1, 5, and 15 minutes. Therefore high load with high CPU suggests CPU contention, while high load with low CPU can indicate blocked I/O. Always interpret load relative to CPU count and workload behavior.",
+    commands: ["uptime", "nproc", "vmstat 1", "ps -eo state,pid,cmd | head"],
+    verify: "Support the explanation with current host data instead of using a fixed load threshold for every server."
+  }
+];
+
+const extraScenarios = [
+  {id:101,domain:"DevOps",category:"CI/CD",level:"Critical",question:"A deployment pipeline passed, but the new release is failing in production. What do you check first?",answer:"Separate deployment success from application health. Confirm the exact artifact and version deployed, compare production configuration with the tested environment, inspect startup and runtime logs, validate dependencies and secrets, and check health probes and traffic routing. If customer impact is significant, use the approved rollback while preserving evidence.",commands:["git rev-parse HEAD","docker image inspect <image>:<tag>","kubectl rollout status deployment/<name>","kubectl logs deployment/<name> --tail=200"],verify:"Confirm the expected version is serving healthy traffic and the rollback or fix is documented."},
+  {id:102,domain:"DevOps",category:"CI/CD",level:"Critical",question:"A CI pipeline suddenly becomes very slow. How do you find the bottleneck?",answer:"Compare stage durations with a known-good run. Identify whether delay is in checkout, dependency download, build, tests, image push, approvals, or deployment. Check runner saturation, cache hit rates, external registry latency, and recent pipeline changes before increasing resources.",commands:["git diff <good>..<bad> -- .github .gitlab-ci.yml Jenkinsfile","docker system df","df -h","free -h"],verify:"Re-run the pipeline and confirm the slow stage has returned to the expected duration."},
+  {id:103,domain:"DevOps",category:"Git",level:"Important",question:"A developer force-pushed and removed commits from a shared branch. How do you recover safely?",answer:"Stop additional writes, identify the last known-good commit from local reflogs, CI references, or another clone, create a recovery branch, validate the missing commits, and restore through the team's protected-branch process instead of performing another blind force push.",commands:["git reflog","git log --all --oneline --decorate --graph","git branch recovery/<name> <commit>"],verify:"Confirm the shared branch contains the intended history and branch protection prevents recurrence."},
+  {id:104,domain:"DevOps",category:"Containers",level:"Critical",question:"A container works locally but exits immediately in CI or production. What do you inspect?",answer:"Check the container exit code, logs, entrypoint, command, architecture, environment variables, mounted files, filesystem permissions, and resource limits. Compare the exact image digest used locally and remotely so you are troubleshooting the same artifact.",commands:["docker ps -a","docker logs <container>","docker inspect <container>","docker image inspect <image>"],verify:"Start the same image with production-equivalent inputs and confirm it remains healthy."},
+  {id:105,domain:"DevOps",category:"Release Engineering",level:"Critical",question:"How would you perform a production deployment with minimal risk?",answer:"Use an immutable versioned artifact, pre-deployment validation, backups where required, progressive rollout such as rolling, canary, or blue-green, automated health checks, clear rollback criteria, and post-deployment verification. Avoid making unrelated configuration changes in the same window.",commands:["kubectl rollout history deployment/<name>","kubectl rollout status deployment/<name>","kubectl rollout undo deployment/<name>"],verify:"Validate application, dependency, and business health checks after traffic reaches the new version."},
+  {id:106,domain:"DevOps",category:"Secrets",level:"Critical",question:"A secret was accidentally committed to Git. Is deleting the file enough?",answer:"No. Treat the credential as compromised. Revoke or rotate it first, remove it from current code and history where appropriate, invalidate cached artifacts, review access logs, and add secret scanning or pre-commit controls. Coordinate history rewriting because it affects all clones.",commands:["git log --all -- <path>","git grep -n '<pattern>' $(git rev-list --all)"],verify:"Confirm the old secret no longer works and automated scanning no longer detects it."},
+  {id:107,domain:"DevOps",category:"Observability",level:"Important",question:"Your service has no errors in logs, but users report high latency. What do you investigate?",answer:"Look beyond error logs. Measure request latency percentiles, dependency timing, saturation, queue depth, DNS and network latency, database or API response time, and resource throttling. Correlate traces and metrics with the affected request path.",commands:["curl -sS -o /dev/null -w '%{time_connect} %{time_starttransfer} %{time_total}\\n' https://<service>","ss -s","vmstat 1"],verify:"Confirm latency percentiles and user-visible response times return to baseline."},
+  {id:108,domain:"DevOps",category:"Automation",level:"Important",question:"An automation script partially completed and failed. How should a production-safe script behave?",answer:"Design automation to be idempotent, validate prerequisites, fail clearly, log actions, avoid destructive defaults, and support safe retries. For multi-step changes, record state and use transactional or rollback-aware patterns where possible.",commands:["set -euo pipefail","shellcheck <script>.sh"],verify:"Run the automation twice in a test environment and confirm the second run does not cause unintended changes."},
+
+  {id:201,domain:"Cloud",category:"Compute",level:"Critical",question:"A cloud VM is running but unreachable over SSH. What is your troubleshooting order?",answer:"Check instance state and platform health, security-group or NSG rules, subnet route tables, public or private IP assignment, network ACLs, OS firewall, sshd listening state, and the return path. Use console or serial access if network access is unavailable.",commands:["ip addr","ip route","ss -lntp | grep :22","systemctl status sshd","journalctl -u sshd -b"],verify:"Confirm SSH works from the approved source and only the required network path is open."},
+  {id:202,domain:"Cloud",category:"Networking",level:"Critical",question:"A private subnet can reach internal systems but not the internet. What could be missing?",answer:"Check whether the subnet has a default route to the correct NAT or egress service, whether the NAT has upstream internet connectivity and a public address, and whether security controls permit outbound traffic and return traffic. Also confirm DNS separately from IP connectivity.",commands:["ip route","curl -I https://example.com","dig example.com"],verify:"Test outbound connectivity by IP and DNS from the private workload without exposing it directly to inbound internet traffic."},
+  {id:203,domain:"Cloud",category:"Storage",level:"Critical",question:"A cloud disk was expanded in the portal but Linux still shows the old filesystem size. What next?",answer:"Expansion has layers. Rescan if necessary, confirm the block device sees the new size, grow the partition or LVM PV when used, extend the LV, and finally grow the filesystem with the correct tool. Take a backup or snapshot according to change policy before storage changes.",commands:["lsblk","growpart /dev/<disk> <partition>","pvresize /dev/<partition>","lvextend -r -L +20G /dev/<vg>/<lv>","xfs_growfs <mountpoint>"],verify:"Confirm lsblk, LVM, and df all show the expected size and applications can write successfully."},
+  {id:204,domain:"Cloud",category:"High Availability",level:"Critical",question:"One availability zone fails. How should a highly available application behave?",answer:"Healthy capacity in another zone should continue serving traffic through a zone-aware load balancer, with replicated or managed data services and sufficient spare capacity. Recovery plans must also account for quorum, session state, DNS, and dependencies that may still be single-zone.",commands:["curl -f https://<health-endpoint>","dig <service-domain>"],verify:"Run or review a controlled failover test and confirm both technical health and business transactions succeed."},
+  {id:205,domain:"Cloud",category:"IAM",level:"Critical",question:"An application has broad cloud administrator credentials. How do you reduce risk?",answer:"Replace long-lived human-style credentials with a workload identity or instance role, grant only the actions and resources required, scope conditions where possible, rotate exposed credentials, and monitor privileged API activity. Test the least-privilege policy against real application operations.",commands:["env | grep -i -E 'key|secret|token'","grep -RniE 'access.*key|secret' ."],verify:"Confirm the application functions with the restricted identity and denied actions are visible in audit logs."},
+  {id:206,domain:"Cloud",category:"Cost",level:"Important",question:"Cloud cost increased sharply this month. How do you investigate without guessing?",answer:"Break cost down by service, account or subscription, region, tag, and usage type. Compare with the previous period and recent deployments. Look for newly provisioned resources, data egress, autoscaling growth, snapshots, idle compute, oversized services, or changed pricing commitments.",commands:["Use the provider cost explorer and resource inventory","Review IaC and deployment history for the same period"],verify:"Tie each major cost increase to a specific resource or usage change and assign an owner or remediation."},
+  {id:207,domain:"Cloud",category:"Disaster Recovery",level:"Critical",question:"A backup exists. Does that mean the cloud workload has a valid DR plan?",answer:"No. A backup is only one component. Define RPO and RTO, protect configuration and secrets, replicate or export required data, document network and DNS recovery, automate rebuild where possible, and regularly restore into an isolated environment to prove recoverability.",commands:["Document restore runbook","Test restore and application validation in an isolated environment"],verify:"Record measured restore time, recovered data point, and any gaps against the required RTO and RPO."},
+  {id:208,domain:"Cloud",category:"Infrastructure as Code",level:"Important",question:"Someone changed a cloud resource manually and Terraform now shows drift. What do you do?",answer:"Review the plan to understand the difference and business intent. Decide whether the manual change should be reverted, imported or represented in code. Do not blindly apply a plan that may destroy valid production changes. Restore code as the source of truth after approval.",commands:["terraform plan","terraform state list","terraform import <address> <id>"],verify:"A final plan should show no unexpected changes and the repository should represent the approved state."},
+
+  {id:301,domain:"Kubernetes",category:"Pods",level:"Critical",question:"A pod is in CrashLoopBackOff. How do you troubleshoot it?",answer:"Inspect pod events, current and previous container logs, exit code, probes, environment, configuration mounts, secrets, command and resource limits. CrashLoopBackOff is a retry state, not the root cause. Use the termination reason to decide the next check.",commands:["kubectl describe pod <pod>","kubectl logs <pod> -c <container>","kubectl logs <pod> -c <container> --previous","kubectl get pod <pod> -o yaml"],verify:"Confirm the pod stays Ready through multiple probe intervals and the application endpoint works."},
+  {id:302,domain:"Kubernetes",category:"Scheduling",level:"Critical",question:"A pod remains Pending. What are the common causes?",answer:"Read scheduler events. Common causes include insufficient CPU or memory, unmatched node selectors or affinity, missing tolerations for taints, unbound PVCs, topology constraints, quota limits, and unavailable nodes. Fix the scheduling constraint rather than repeatedly recreating the pod.",commands:["kubectl describe pod <pod>","kubectl get nodes","kubectl describe node <node>","kubectl get pvc","kubectl get resourcequota -A"],verify:"Confirm the pod schedules onto an intended node and reaches Ready state."},
+  {id:303,domain:"Kubernetes",category:"Networking",level:"Critical",question:"A Service exists but traffic does not reach the pods. What do you check?",answer:"Verify the Service selector matches pod labels, endpoints are populated, targetPort matches the container port, pods are Ready, and NetworkPolicies or ingress components allow the traffic. Test from inside the cluster to separate service discovery from external routing.",commands:["kubectl get svc <svc> -o yaml","kubectl get endpoints <svc>","kubectl get pods --show-labels","kubectl exec <pod> -- curl -v http://<svc>:<port>"],verify:"Confirm endpoints are healthy and traffic succeeds from both the required internal and external paths."},
+  {id:304,domain:"Kubernetes",category:"Storage",level:"Critical",question:"A PVC is stuck in Pending. How do you troubleshoot it?",answer:"Check the PVC events, StorageClass, requested access mode and size, provisioner health, topology constraints, and available PVs if using static provisioning. Ensure the selected storage backend supports the requested mode and zone.",commands:["kubectl describe pvc <pvc>","kubectl get storageclass","kubectl get pv","kubectl get events --sort-by=.lastTimestamp"],verify:"Confirm the PVC becomes Bound and a test pod can mount and write to it."},
+  {id:305,domain:"Kubernetes",category:"Rollouts",level:"Critical",question:"A Deployment rollout is stuck. What do you inspect?",answer:"Check rollout status and ReplicaSets, then inspect new pod scheduling, image pulls, readiness probes, startup failures, quotas, and maxUnavailable/maxSurge constraints. If impact is unacceptable, roll back to the last validated revision while investigating.",commands:["kubectl rollout status deployment/<name>","kubectl get rs","kubectl describe deployment <name>","kubectl rollout history deployment/<name>","kubectl rollout undo deployment/<name>"],verify:"Confirm the desired replicas are updated, available, Ready, and serving the intended version."},
+  {id:306,domain:"Kubernetes",category:"Resources",level:"Critical",question:"A pod was killed with OOMKilled. What does that tell you?",answer:"The container exceeded its memory limit or was terminated under memory pressure. Inspect the termination reason, limits and requests, application memory behavior, and node pressure. Increase memory only after understanding whether the workload is correctly sized or leaking memory.",commands:["kubectl describe pod <pod>","kubectl top pod <pod> --containers","kubectl top node","kubectl get pod <pod> -o jsonpath='{.status.containerStatuses[*].lastState.terminated.reason}'"],verify:"Observe the workload under representative load and confirm memory stays within a justified limit."},
+  {id:307,domain:"Kubernetes",category:"DNS",level:"Important",question:"Pods cannot resolve service names. How do you isolate Kubernetes DNS issues?",answer:"Test DNS from an affected pod, inspect /etc/resolv.conf, verify the DNS service and endpoints, check CoreDNS pods and logs, and review NetworkPolicies that may block UDP or TCP 53. Also determine whether only external names or cluster service names fail.",commands:["kubectl exec <pod> -- cat /etc/resolv.conf","kubectl exec <pod> -- nslookup kubernetes.default","kubectl -n kube-system get pods -l k8s-app=kube-dns","kubectl -n kube-system logs -l k8s-app=kube-dns --tail=100"],verify:"Confirm both cluster-local and required external names resolve from representative pods."},
+  {id:308,domain:"Kubernetes",category:"Security",level:"Critical",question:"A pod is running privileged with hostPath mounts. Why is this risky?",answer:"Privileged containers and hostPath can bypass much of the container isolation boundary and expose the node filesystem or devices. Remove privileges unless technically required, use least-privilege securityContext settings, restrict hostPath, apply admission controls, and run as non-root where possible.",commands:["kubectl get pod <pod> -o yaml","kubectl auth can-i --list --as=system:serviceaccount:<ns>:<sa>"],verify:"Validate the workload functions with reduced privileges and policy prevents unapproved privileged pods."},
+
+  {id:401,domain:"Network",category:"Troubleshooting",level:"Critical",question:"Users can ping a server but cannot open its website. What do you check?",answer:"ICMP reachability only proves part of the path. Check DNS resolution, TCP connectivity to 80 or 443, server listening sockets, host and network firewalls, TLS handshake, reverse proxy or load balancer health, and application response. Test each layer separately.",commands:["dig <name>","nc -vz <host> 443","curl -vk https://<host>/","ss -lntp","tcpdump -ni any port 443"],verify:"Confirm DNS, TCP, TLS, and HTTP all succeed from an affected client path."},
+  {id:402,domain:"Network",category:"DNS",level:"Critical",question:"A website works by IP but not by hostname. What is the likely troubleshooting path?",answer:"Focus on DNS and virtual-host behavior. Check the client resolver, record type and TTL, authoritative answer, split-DNS differences, and whether the web server or TLS certificate expects the hostname. Do not change routing when IP connectivity already works.",commands:["nslookup <name>","dig <name> A","dig +trace <name>","curl -vk --resolve <name>:443:<ip> https://<name>/"],verify:"Confirm the expected DNS record resolves from the affected network and hostname-based HTTPS works."},
+  {id:403,domain:"Network",category:"Routing",level:"Critical",question:"A host can reach its local subnet but not a remote subnet. What do you inspect?",answer:"Check the host route table and default gateway, then trace the path. Verify intermediate routers have a forward route and, critically, a return route. Review ACLs, firewall rules, VPN selectors, and NAT policies that may affect the destination.",commands:["ip route","ip route get <remote-ip>","traceroute <remote-ip>","ping <gateway>"],verify:"Confirm forward and return traffic use the intended path without unintended NAT or filtering."},
+  {id:404,domain:"Network",category:"Ports",level:"Critical",question:"A TCP port is open locally but closed from another subnet. How do you isolate where it is blocked?",answer:"Confirm the process is bound to the correct address, then capture packets on the server while testing remotely. If SYN packets never arrive, investigate upstream routing or firewall policy. If SYN arrives without response, inspect host firewall and listening state. If reset is returned, inspect application or proxy behavior.",commands:["ss -lntp","nc -vz <host> <port>","tcpdump -ni any tcp port <port>","nft list ruleset"],verify:"Observe a complete TCP handshake from the required source and confirm the application protocol succeeds."},
+  {id:405,domain:"Network",category:"Performance",level:"Important",question:"Users report a slow network. How do you distinguish latency, loss, and bandwidth problems?",answer:"Measure round-trip latency and packet loss first, then test path variation and throughput. Check interface errors, drops, duplex or speed negotiation, queueing, and whether congestion is local or upstream. Avoid relying on a single internet speed-test result for internal network diagnosis.",commands:["ping -c 20 <target>","mtr <target>","ip -s link","ethtool <iface>","iperf3 -c <server>"],verify:"Compare measurements against a known-good baseline and confirm errors, loss, and latency are within acceptable limits."},
+  {id:406,domain:"Network",category:"Subnetting",level:"Important",question:"Two hosts have IPs 192.168.10.10/24 and 192.168.11.10/24. Can they communicate directly without a router?",answer:"No, not with those /24 masks. They are in different Layer 3 subnets: 192.168.10.0/24 and 192.168.11.0/24. They need a router or Layer 3 switch with routes between the networks, unless the addressing or mask is changed as part of an intentional network design.",commands:["ipcalc 192.168.10.10/24","ipcalc 192.168.11.10/24"],verify:"Confirm each host's route table sends the other subnet to the intended gateway."},
+  {id:407,domain:"Network",category:"VLAN",level:"Critical",question:"A device in a new VLAN cannot reach its default gateway. What do you check?",answer:"Verify access VLAN assignment or trunk allowance, switchport mode, tagging expectations, SVI or gateway status, subnet and mask, spanning-tree state, and any port security. A VLAN mismatch often produces local link-up with no Layer 3 reachability.",commands:["Check switch VLAN and trunk configuration","arp -a","ping <gateway>"],verify:"Confirm the device learns the gateway MAC in the correct VLAN and can reach routed networks."},
+  {id:408,domain:"Network",category:"TLS",level:"Critical",question:"HTTPS suddenly shows a certificate warning even though the site is reachable. What do you verify?",answer:"Inspect the certificate presented by the actual endpoint, including subject alternative names, issuer, validity dates, chain, and SNI behavior. Check whether a load balancer or proxy is serving an old certificate and whether intermediate certificates are correctly installed.",commands:["openssl s_client -connect <host>:443 -servername <host> -showcerts","openssl x509 -noout -subject -issuer -dates -ext subjectAltName"],verify:"Validate from an external client that the complete chain is trusted and the hostname matches."},
+
+  {id:501,domain:"Security",category:"Incident Response",level:"Critical",question:"You suspect a Linux server has been compromised. What are your first actions?",answer:"Follow the incident-response process: preserve evidence, limit further damage, avoid unnecessary reboots or cleanup, record current connections and processes, isolate the system using an approved method, and engage the security team. Collect volatile evidence before actions that destroy it.",commands:["date -Is","ss -plant","ps auxf","who","last -a | head","journalctl --since '-1 hour'"],verify:"Ensure evidence is preserved, containment is documented, and recovery uses a trusted source rather than simply cleaning the suspected host."},
+  {id:502,domain:"Security",category:"SSH",level:"Critical",question:"SSH logs show thousands of failed login attempts from the internet. What should you do?",answer:"Confirm whether SSH needs internet exposure at all. Restrict source networks through perimeter controls, use key-based authentication, disable direct root login and password authentication where appropriate, apply rate limiting or an approved ban mechanism, and review logs for any successful authentication from suspicious sources.",commands:["journalctl -u sshd --since today","lastb | head","sshd -T | grep -E 'passwordauthentication|permitrootlogin|pubkeyauthentication'"],verify:"Confirm unauthorized sources can no longer reach or authenticate and no suspicious successful sessions remain unexplained."},
+  {id:503,domain:"Security",category:"Patching",level:"Critical",question:"A critical vulnerability is announced for a package running in production. How do you respond?",answer:"Confirm actual exposure and affected versions, assess exploitability and business impact, obtain the vendor-supported fix or mitigation, test it, schedule an expedited change if warranted, deploy with rollback planning, and verify both package level and service health. Do not rely only on a scanner status.",commands:["rpm -q <package>","dnf updateinfo info --cves <CVE>","dnf check-update <package>"],verify:"Confirm the vulnerable version or configuration is no longer present and the service passes functional checks."},
+  {id:504,domain:"Security",category:"Permissions",level:"Critical",question:"You find an application directory set to 777. How do you remediate it?",answer:"Determine which user and group actually need read, write, and execute access. Replace world-writable permissions with ownership, group permissions, ACLs, or service-specific paths. Check whether the broad permission was masking an SELinux or service-account problem before tightening it.",commands:["namei -l <path>","getfacl <path>","ls -ldZ <path>","find <path> -xdev -perm -0002 -ls"],verify:"Confirm the application works with least privilege and unauthorized users can no longer modify the path."},
+  {id:505,domain:"Security",category:"Certificates",level:"Important",question:"A TLS certificate expires tomorrow. What is the correct production response?",answer:"Renew or replace the certificate using the approved CA process, verify hostname coverage and chain, deploy it to every terminating endpoint such as load balancers and proxies, reload services safely, and test from an external client. Also fix renewal automation or alerting if this was unexpected.",commands:["openssl s_client -connect <host>:443 -servername <host>","openssl x509 -noout -dates -subject -issuer"],verify:"Confirm all public and internal endpoints present the new certificate with the expected expiry date and trust chain."},
+  {id:506,domain:"Security",category:"Accounts",level:"Critical",question:"An employee leaves the company. What should happen to their privileged access?",answer:"Disable or revoke the identity promptly through the authoritative identity system, remove privileged group memberships, revoke active sessions and tokens where supported, rotate shared credentials they knew, preserve required audit data, and verify access to critical systems is removed.",commands:["id <user>","last -a | head","passwd -S <user>"],verify:"Test or audit each relevant access path and confirm the offboarded identity cannot authenticate."},
+  {id:507,domain:"Security",category:"Hardening",level:"Important",question:"A security benchmark recommends disabling a service that your application requires. What should you do?",answer:"Do not apply benchmark controls blindly. Document the business and technical requirement, assess the specific risk, apply compensating controls where appropriate, obtain an approved exception, and keep the service configured with least privilege and restricted exposure.",commands:["systemctl status <service>","ss -lntup","systemctl cat <service>"],verify:"Confirm the exception is documented, exposure is minimized, and the application remains functional."},
+  {id:508,domain:"Security",category:"Audit",level:"Important",question:"How do you investigate who changed a protected configuration file?",answer:"Use audit logs if file watches or relevant syscall auditing were configured, then correlate timestamps with sudo, SSH, configuration-management, and deployment logs. Filesystem timestamps alone usually cannot prove who made the change.",commands:["ausearch -f <path>","aureport -f","journalctl _COMM=sudo --since today","stat <path>"],verify:"Build a timestamped evidence trail and add or correct auditing if attribution was not possible."},
+
+  {id:601,domain:"Windows",category:"Services",level:"Critical",question:"A Windows service will not start. What is your troubleshooting sequence?",answer:"Check the Service Control Manager error and Event Viewer, inspect the service account, dependencies, executable path, permissions, recent changes, and port conflicts. Run the underlying application diagnostic only when safe. Avoid repeatedly restarting without capturing the failure reason.",commands:["Get-Service <name>","sc.exe qc <name>","Get-WinEvent -LogName System -MaxEvents 100 | Where-Object ProviderName -eq 'Service Control Manager'","Get-NetTCPConnection -State Listen"],verify:"Confirm the service remains Running and its actual application function succeeds."},
+  {id:602,domain:"Windows",category:"Performance",level:"Critical",question:"A Windows Server is at 100% CPU. How do you identify the cause?",answer:"Confirm whether CPU is sustained, identify the top process and if necessary the hot thread, correlate with scheduled tasks, antivirus, updates, and application logs, and check whether virtualization CPU ready or host contention is involved. Capture evidence before terminating a production process.",commands:["Get-Process | Sort-Object CPU -Descending | Select-Object -First 10","Get-Counter '\\Processor(_Total)\\% Processor Time'","Get-ScheduledTask | Where-Object State -eq 'Running'"],verify:"After remediation, confirm CPU and application response return to normal under representative load."},
+  {id:603,domain:"Windows",category:"Disk",level:"Critical",question:"The C: drive is almost full. What do you check before deleting files?",answer:"Identify the largest directories and growth source, including Windows Update cache, logs, temp files, dumps, application data, and user profiles. Check whether another component expects those files and use supported cleanup tools. Do not manually delete system component-store files.",commands:["Get-PSDrive C","Get-ChildItem C:\\ -Force -ErrorAction SilentlyContinue","cleanmgr.exe"],verify:"Confirm adequate free space remains and the source of growth is controlled."},
+  {id:604,domain:"Windows",category:"Active Directory",level:"Critical",question:"A domain user can log in to one PC but not another. How do you troubleshoot it?",answer:"Check network and DNS connectivity to domain controllers, time synchronization, account status, computer trust, cached credentials, local policy, and the exact authentication event on the failing PC. Active Directory authentication depends heavily on correct DNS and time.",commands:["whoami /all","nltest /dsgetdc:<domain>","w32tm /query /status","Test-ComputerSecureChannel -Verbose","Get-WinEvent -LogName Security -MaxEvents 100"],verify:"Confirm domain authentication succeeds and the machine has a healthy secure channel to the domain."},
+  {id:605,domain:"Windows",category:"DNS",level:"Critical",question:"A domain-joined Windows server is using a public DNS server. Why is that a problem?",answer:"Active Directory clients must resolve AD service records from the AD-integrated DNS namespace. Public DNS can prevent locating domain controllers, Kerberos, LDAP, and Group Policy services. Point the client to approved internal DNS servers and configure forwarders at the DNS-server layer as designed.",commands:["Get-DnsClientServerAddress","nslookup -type=SRV _ldap._tcp.dc._msdcs.<domain>","ipconfig /flushdns"],verify:"Confirm AD SRV records resolve and nltest can locate a domain controller."},
+  {id:606,domain:"Windows",category:"Group Policy",level:"Important",question:"A new Group Policy setting is not applying to one server. What do you check?",answer:"Confirm the GPO is linked to the correct OU, enabled, and in scope for the computer or user. Review security and WMI filtering, inheritance and block-enforcement behavior, replication, and the Resultant Set of Policy. Then inspect Group Policy operational logs for processing errors.",commands:["gpresult /h C:\\Temp\\gp.html","gpupdate /force","Get-GPResultantSetOfPolicy -ReportType Html -Path C:\\Temp\\rsop.html"],verify:"Confirm the intended GPO appears in the applied list and the target registry or policy setting has changed."},
+  {id:607,domain:"Windows",category:"Networking",level:"Critical",question:"A Windows server has an IP address but cannot reach its default gateway. What do you inspect?",answer:"Verify IP address, subnet mask, gateway, VLAN, NIC status, routes, ARP, and duplicate IP possibility. Check teaming or virtual-switch configuration when applicable. A valid-looking IP does not prove the Layer 2 path is correct.",commands:["Get-NetIPConfiguration","Get-NetRoute -AddressFamily IPv4","Get-NetNeighbor","Test-NetConnection <gateway>"],verify:"Confirm the server resolves the gateway MAC and can reach the next hop from the intended interface."},
+  {id:608,domain:"Windows",category:"RDP",level:"Critical",question:"RDP is enabled but remote users cannot connect. What do you check?",answer:"Verify the Remote Desktop service, listener on TCP 3389 or the configured port, Windows Firewall rule, network path, NLA requirements, user rights, licensing where applicable, and authentication event logs. Test the port before changing RDP policy.",commands:["Get-Service TermService","Get-NetTCPConnection -LocalPort 3389 -State Listen","Test-NetConnection <server> -Port 3389","Get-NetFirewallRule -DisplayGroup 'Remote Desktop'"],verify:"Confirm an authorized user can establish an RDP session from the intended network while unauthorized access remains blocked."}
+];
+
+const scenarios = [
+  ...linuxScenarios.map((item) => ({ ...item, domain: "Linux" })),
+  ...extraScenarios
+];
+const domains = ["Linux", "DevOps", "Cloud", "Kubernetes", "Network", "Security", "Windows"];
+const categories = [...new Set(scenarios.map((item) => item.category))];
+const pageDescription = "Production-focused scenario interview questions and answers for Linux, DevOps, Cloud, Kubernetes, Network, Security, and Windows engineers.";
+---
+
+<Layout title="IT Scenario Interview Questions & Answers | Linux, DevOps, Cloud, Kubernetes, Network, Security & Windows" description={pageDescription}>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Interview Q&A</span></nav>
+        <span class="eyebrow">Production troubleshooting practice</span>
+        <h1>IT Scenario Interview Questions & Answers</h1>
+        <p class="lead">Practice real production scenarios across Linux, DevOps, Cloud, Kubernetes, Network, Security, and Windows. Every answer focuses on troubleshooting order, useful commands, risk awareness, and verification.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#questions">Start Practicing</a>
+          <a class="secondary" href="/linux/">Linux Tools</a>
+        </div>
+      </div>
+      <aside class="hero-card" aria-label="Interview guide summary">
+        <strong>{scenarios.length}</strong>
+        <span>Production scenarios</span>
+        <div class="mini-grid">
+          <div><b>{categories.length}</b><small>skill areas</small></div>
+          <div><b>{domains.length}</b><small>technology domains</small></div>
+          <div><b>Senior</b><small>troubleshooting</small></div>
+          <div><b>Free</b><small>no signup</small></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="intro container" aria-labelledby="how-to-use">
+    <div>
+      <span class="section-label">Interview method</span>
+      <h2 id="how-to-use">How to answer scenario questions well</h2>
+      <p>Explain your sequence: protect the service, collect evidence, isolate the failure domain, make the smallest safe change, and verify the result. Strong answers show what you would check before restarting a service or changing a production configuration.</p>
+    </div>
+    <div class="method-grid">
+      <article><b>1</b><h3>Confirm impact</h3><p>Define what is actually broken and who is affected.</p></article>
+      <article><b>2</b><h3>Collect evidence</h3><p>Use logs, metrics, process state, network state, and recent changes.</p></article>
+      <article><b>3</b><h3>Fix safely</h3><p>Choose the smallest change with a rollback path.</p></article>
+      <article><b>4</b><h3>Verify</h3><p>Prove the service works and the failure does not immediately return.</p></article>
+    </div>
+  </section>
+
+  <section class="qa-section" id="questions">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="section-label">Scenario library</span><h2>Interview Questions by Technology</h2><p>Choose Linux, DevOps, Cloud, Kubernetes, Network, Security, or Windows, then search by symptom, command, or topic.</p></div>
+      </div>
+
+      <div class="domain-tabs" role="tablist" aria-label="Interview technology">
+        {domains.map((domain, index) => <button type="button" class:list={{active:index===0}} data-domain={domain} aria-pressed={index===0 ? "true" : "false"}>{domain}<span>{scenarios.filter((item) => item.domain === domain).length}</span></button>)}
+      </div>
+
+
+      <div class="toolbar" role="search">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="qa-search" type="search" placeholder="Search interview questions, symptoms, commands..." autocomplete="off" />
+        </label>
+        <select id="qa-category" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          {categories.map((category) => <option value={category}>{category}</option>)}
+        </select>
+      </div>
+
+      <div class="results-line"><span id="qa-count">{scenarios.length}</span> scenarios shown</div>
+
+      <div class="qa-list" id="qa-list">
+        {scenarios.map((item) => (
+          <details class="qa-card" data-domain={item.domain} data-category={item.category} data-search={`${item.question} ${item.answer} ${item.commands.join(" ")} ${item.category}`.toLowerCase()}>
+            <summary>
+              <div class="q-number">{String(item.id).padStart(2, "0")}</div>
+              <div class="q-copy"><div class="tags"><span class="domain-tag">{item.domain}</span><span>{item.category}</span><span class:list={{critical: item.level === "Critical"}}>{item.level}</span></div><h3>{item.question}</h3></div>
+              <span class="chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="answer">
+              <div class="answer-block"><h4>Recommended answer</h4><p>{item.answer}</p></div>
+              <div class="command-block"><div class="command-title"><span>Useful commands</span><small>Adapt placeholders before use</small></div><pre><code>{item.commands.join("\n")}</code></pre></div>
+              <div class="verify"><strong>Verification:</strong> {item.verify}</div>
+            </div>
+          </details>
+        ))}
+      </div>
+      <p id="qa-empty" class="empty" hidden>No scenarios match your current search. Try a broader keyword or choose another category.</p>
+    </div>
+  </section>
+
+  <section class="closing container">
+    <div><span class="section-label">Interview tip</span><h2>Do not memorize only commands</h2><p>Interviewers usually care more about your troubleshooting order, risk awareness, and verification than a single command. Explain why each check matters and what result would make you take the next step.</p></div>
+    <a class="primary" href="#questions">Practice Another Topic</a>
+  </section>
+</Layout>
+
+<script>
+  const searchInput = document.querySelector<HTMLInputElement>("#qa-search");
+  const categorySelect = document.querySelector<HTMLSelectElement>("#qa-category");
+  const cards = [...document.querySelectorAll<HTMLElement>(".qa-card")];
+  const domainButtons = [...document.querySelectorAll<HTMLButtonElement>(".domain-tabs button")];
+  let activeDomain = "Linux";
+  const count = document.querySelector<HTMLElement>("#qa-count");
+  const empty = document.querySelector<HTMLElement>("#qa-empty");
+
+  const applyFilters = () => {
+    const query = (searchInput?.value ?? "").trim().toLowerCase();
+    const category = categorySelect?.value ?? "all";
+    let visible = 0;
+    cards.forEach((card) => {
+      const matchesText = !query || (card.dataset.search ?? "").includes(query);
+      const matchesCategory = category === "all" || card.dataset.category === category;
+      const matchesDomain = card.dataset.domain === activeDomain;
+      const show = matchesText && matchesCategory && matchesDomain;
+      card.hidden = !show;
+      if (show) visible += 1;
+    });
+    if (count) count.textContent = String(visible);
+    if (empty) empty.hidden = visible !== 0;
+  };
+  searchInput?.addEventListener("input", applyFilters);
+  categorySelect?.addEventListener("change", applyFilters);
+  domainButtons.forEach((button) => button.addEventListener("click", () => {
+    activeDomain = button.dataset.domain ?? "Linux";
+    domainButtons.forEach((item) => { const selected = item === button; item.classList.toggle("active", selected); item.setAttribute("aria-pressed", String(selected)); });
+    if (categorySelect) categorySelect.value = "all";
+    if (searchInput) searchInput.value = "";
+    applyFilters();
+  }));
+  applyFilters();
+</script>
+
+<style>
+  :global(:root){--qa-navy:#0f172a;--qa-blue:#2563eb;--qa-cyan:#38bdf8;--qa-border:#dbe4f0;--qa-muted:#5f6b7c;--qa-bg:#f6f9fd}
+  .container{width:min(calc(100% - 32px),1180px);margin-inline:auto}.hero{position:relative;overflow:hidden;padding:76px 0 70px;background:radial-gradient(circle at 85% 15%,rgba(56,189,248,.2),transparent 26%),linear-gradient(135deg,#0b1220,#111d33 62%,#162a4f);color:#fff}.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:38px 38px}.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.65fr);gap:64px;align-items:center}.breadcrumb{display:flex;gap:9px;align-items:center;margin-bottom:20px;color:#9fb2cc;font-size:.9rem}.breadcrumb a{text-decoration:none}.breadcrumb a:hover{color:#fff}.eyebrow,.section-label{display:inline-block;color:#66d3ff;font-size:.76rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.hero h1{max-width:850px;margin:12px 0 18px;font-size:clamp(2.35rem,5vw,4.3rem);line-height:1.03;letter-spacing:-.045em}.lead{max-width:790px;margin:0;color:#c8d5e7;font-size:1.08rem;line-height:1.8}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 19px;border-radius:11px;font-weight:800;text-decoration:none}.primary{background:linear-gradient(135deg,#2f6fed,#2563eb);color:#fff;box-shadow:0 12px 30px rgba(37,99,235,.28)}.secondary{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff}.hero-card{padding:28px;border:1px solid rgba(255,255,255,.12);border-radius:22px;background:rgba(255,255,255,.075);box-shadow:0 24px 70px rgba(0,0,0,.18);backdrop-filter:blur(10px)}.hero-card>strong{display:block;font-size:3.4rem;line-height:1}.hero-card>span{display:block;margin:5px 0 24px;color:#b8c7da}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini-grid div{padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(8,15,29,.25)}.mini-grid b,.mini-grid small{display:block}.mini-grid small{margin-top:2px;color:#9fb2cc}.intro{padding:72px 0}.intro>div:first-child{max-width:800px}.intro h2,.section-heading h2,.closing h2{margin:8px 0 12px;color:#111827;font-size:clamp(1.8rem,3.2vw,2.65rem);line-height:1.12;letter-spacing:-.025em}.intro>div:first-child>p,.section-heading p,.closing p{color:var(--qa-muted);font-size:1.02rem;line-height:1.75}.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}.method-grid article{padding:22px;border:1px solid var(--qa-border);border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.04)}.method-grid b{display:grid;width:34px;height:34px;place-items:center;border-radius:9px;background:#eaf2ff;color:var(--qa-blue)}.method-grid h3{margin:15px 0 6px;font-size:1rem}.method-grid p{margin:0;color:var(--qa-muted);font-size:.9rem;line-height:1.6}.qa-section{padding:70px 0 82px;background:var(--qa-bg);border-block:1px solid #e5edf6}.section-heading{max-width:800px}.domain-tabs{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;margin:28px 0 4px;scrollbar-width:thin}.domain-tabs button{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;min-height:44px;padding:0 14px;border:1px solid #cbd7e7;border-radius:11px;background:#fff;color:#334155;font-weight:800;cursor:pointer;transition:.18s ease}.domain-tabs button:hover{border-color:#8eb1ee;color:#1d4ed8}.domain-tabs button.active{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 8px 22px rgba(37,99,235,.18)}.domain-tabs button span{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:999px;background:#eef3f9;color:#526173;font-size:.72rem}.domain-tabs button.active span{background:rgba(255,255,255,.18);color:#fff}.domain-tag{background:#e8f1ff!important;color:#1d4ed8!important}.toolbar{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:12px;margin:30px 0 12px}.search-box{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 16px;border:1px solid #cbd7e7;border-radius:12px;background:#fff}.search-box:focus-within{border-color:#7aa6f8;box-shadow:0 0 0 4px rgba(37,99,235,.09)}.search-box input{width:100%;border:0;outline:0;background:transparent;color:#172033}.toolbar select{min-height:52px;padding:0 14px;border:1px solid #cbd7e7;border-radius:12px;background:#fff;color:#172033}.results-line{margin:0 0 16px;color:#66758a;font-size:.9rem}.results-line span{font-weight:800;color:#172033}.qa-list{display:grid;gap:12px}.qa-card{border:1px solid #d9e3ef;border-radius:15px;background:#fff;box-shadow:0 6px 20px rgba(15,23,42,.035);overflow:hidden}.qa-card[hidden]{display:none}.qa-card summary{display:grid;grid-template-columns:48px 1fr 28px;gap:15px;align-items:center;padding:20px 22px;cursor:pointer;list-style:none}.qa-card summary::-webkit-details-marker{display:none}.q-number{display:grid;width:42px;height:42px;place-items:center;border-radius:11px;background:#eff5ff;color:var(--qa-blue);font-size:.84rem;font-weight:900}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:7px}.tags span{padding:3px 8px;border-radius:999px;background:#edf2f7;color:#536276;font-size:.68rem;font-weight:800;letter-spacing:.03em}.tags span.critical{background:#fff0ed;color:#b63a22}.q-copy h3{margin:0;color:#172033;font-size:1rem;line-height:1.48}.chevron{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#f2f6fb;color:#344256;font-size:1.2rem;transition:transform .2s}.qa-card[open] .chevron{transform:rotate(45deg)}.answer{padding:0 22px 22px 85px}.answer-block{padding-top:2px;border-top:1px solid #edf2f7}.answer h4{margin:18px 0 7px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#2563eb}.answer p{margin:0;color:#4c5b6f;line-height:1.75}.command-block{margin-top:18px;border-radius:12px;overflow:hidden;background:#0d1524;color:#dce8f7}.command-title{display:flex;justify-content:space-between;gap:15px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08);color:#9fb3ca;font-size:.76rem}.command-title span{font-weight:800;color:#e7f2ff}.command-block pre{margin:0;padding:15px;overflow:auto;font:500 .84rem/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.verify{margin-top:15px;padding:13px 15px;border:1px solid #d9e8db;border-radius:10px;background:#f3fbf4;color:#3d5f43;font-size:.9rem;line-height:1.6}.empty{padding:28px;border:1px dashed #b8c7d8;border-radius:14px;text-align:center;color:#65758a;background:#fff}.closing{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:70px 0}.closing>div{max-width:800px}.closing .primary{flex-shrink:0}@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:35px}.hero-card{max-width:620px}.method-grid{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.closing{align-items:flex-start;flex-direction:column}}@media(max-width:620px){.hero{padding:54px 0}.hero h1{font-size:2.45rem}.method-grid{grid-template-columns:1fr}.qa-card summary{grid-template-columns:38px 1fr 26px;padding:17px 14px;gap:10px}.q-number{width:36px;height:36px}.answer{padding:0 14px 18px}.answer-block{padding-top:4px}.command-title{flex-direction:column;gap:2px}.mini-grid{grid-template-columns:1fr 1fr}}
+</style>

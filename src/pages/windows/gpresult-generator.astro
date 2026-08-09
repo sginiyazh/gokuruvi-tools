@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Group Policy Result Generator" description="Generate GPResult commands and HTML reports to verify effective Group Policy settings." slug="gpresult-generator" icon="📊">
+
+<h2 class="tool-title">GPResult report builder</h2><div class="form-grid"><div class="field"><label for="scope">Scope</label><select id="scope"><option value="">Computer + User</option><option value="computer">Computer</option><option value="user">User</option></select></div><div class="field"><label for="format">Output</label><select id="format"><option value="summary">Summary</option><option value="verbose">Verbose</option><option value="html">HTML report</option></select></div><div class="field full"><label for="path">HTML path</label><input id="path" value="C:\\Temp\\gpresult.html" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>Command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">gpresult /r</pre></div>
+<script>
+
+const scope=document.querySelector<HTMLSelectElement>('#scope')!,fmt=document.querySelector<HTMLSelectElement>('#format')!,path=document.querySelector<HTMLInputElement>('#path')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{let x='gpresult';if(scope.value)x+=` /scope ${scope.value}`;x+=fmt.value==='verbose'?' /v':fmt.value==='html'?` /h "${path.value.replace(/"/g,'')}" /f`:' /r';o.textContent=x});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

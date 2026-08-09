@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Windows Firewall Rule Generator" description="Create Microsoft Defender Firewall rules for inbound or outbound TCP and UDP traffic." slug="firewall-rule-generator" icon="🛡️">
+
+<h2 class="tool-title">Create a firewall rule</h2><div class="form-grid"><div class="field"><label for="name">Rule name</label><input id="name" value="Allow Application Port" /></div><div class="field"><label for="dir">Direction</label><select id="dir"><option>Inbound</option><option>Outbound</option></select></div><div class="field"><label for="proto">Protocol</label><select id="proto"><option>TCP</option><option>UDP</option></select></div><div class="field"><label for="port">Port</label><input id="port" type="number" min="1" max="65535" value="443" /></div><div class="field"><label for="action">Action</label><select id="action"><option>Allow</option><option>Block</option></select></div><div class="field"><label for="profile">Profile</label><select id="profile"><option>Any</option><option>Domain</option><option>Private</option><option>Public</option></select></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate rule</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Configure the rule above.</pre></div>
+<script>
+
+const g=(id:string)=>(document.querySelector<HTMLInputElement|HTMLSelectElement>('#'+id)!).value;const o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const p=Number(g('port'));if(p<1||p>65535){o.textContent='Port must be between 1 and 65535.';return}o.textContent=`New-NetFirewallRule -DisplayName '${g('name').replace(/'/g,"''")}' -Direction ${g('dir')} -Protocol ${g('proto')} -LocalPort ${p} -Action ${g('action')} -Profile ${g('profile')}`});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Local User Management Generator" description="Generate PowerShell commands to create, disable, enable, remove and manage local Windows users." slug="user-management-generator" icon="👤">
+
+<h2 class="tool-title">Local user command builder</h2><div class="form-grid"><div class="field"><label for="user">Username</label><input id="user" value="appuser" /></div><div class="field"><label for="action">Action</label><select id="action"><option value="create">Create user</option><option value="enable">Enable</option><option value="disable">Disable</option><option value="remove">Remove</option><option value="admin">Add to Administrators</option><option value="info">Show details</option></select></div><div class="field full"><label for="fullname">Full name (for create)</label><input id="fullname" placeholder="Application User" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Choose an action.</pre></div><p class="hint">For user creation, the generated command securely prompts for the password instead of embedding it in the page.</p>
+<script>
+
+const u=document.querySelector<HTMLInputElement>('#user')!,f=document.querySelector<HTMLInputElement>('#fullname')!,a=document.querySelector<HTMLSelectElement>('#action')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const n=u.value.trim().replace(/'/g,"''")||'appuser',fn=f.value.trim().replace(/'/g,"''");const m:Record<string,string>={create:`$Password = Read-Host 'Enter password' -AsSecureString\nNew-LocalUser -Name '${n}' -Password $Password${fn?` -FullName '${fn}'`:''} -PasswordNeverExpires:$false`,enable:`Enable-LocalUser -Name '${n}'`,disable:`Disable-LocalUser -Name '${n}'`,remove:`Remove-LocalUser -Name '${n}'`,admin:`Add-LocalGroupMember -Group 'Administrators' -Member '${n}'`,info:`Get-LocalUser -Name '${n}' | Format-List *`};o.textContent=m[a.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

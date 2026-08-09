@@ -1,0 +1,2078 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Systemd Service Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate Linux systemd service unit files with service, restart, dependency, user and installation settings.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/systemd-service-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="systemd service generator, systemd unit file generator, Linux service generator, systemctl service, service unit file"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Hero */
+
+      .hero {
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 860px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      /* Generator */
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.95fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .preview-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .field-input,
+      .field-select {
+        min-height: 48px;
+        padding: 0 13px;
+      }
+
+      .field-textarea {
+        min-height: 88px;
+        padding: 12px 13px;
+        resize: vertical;
+      }
+
+      .field-input:focus,
+      .field-select:focus,
+      .field-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-content {
+        min-width: 0;
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      /* Preview */
+
+      .preview-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .preview-card {
+        overflow: hidden;
+      }
+
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 20px 22px;
+        border-bottom: 1px solid #334155;
+        background: var(--dark);
+        color: #ffffff;
+      }
+
+      .preview-header h2 {
+        margin: 0;
+        font-size: 19px;
+      }
+
+      .file-name {
+        color: #94a3b8;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 13px;
+      }
+
+      .preview-output {
+        min-height: 560px;
+        margin: 0;
+        overflow: auto;
+        padding: 22px;
+        background: #0b1220;
+        color: #dbeafe;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .preview-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 17px 20px;
+        border-top: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .preview-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preview-button:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .status-message {
+        min-height: 22px;
+        padding: 0 20px 15px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .commands-card {
+        padding: 23px;
+      }
+
+      .commands-card h3 {
+        margin: 0 0 15px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .command-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .command-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 11px 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+      }
+
+      .command-item code {
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-size: 13px;
+      }
+
+      .mini-copy {
+        flex: 0 0 auto;
+        padding: 5px 8px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        background: #ffffff;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      /* Information */
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .preview-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .preview-output {
+          min-height: 450px;
+          padding: 17px;
+          font-size: 13px;
+        }
+
+        .preview-actions {
+          flex-direction: column;
+        }
+
+        .preview-button {
+          width: 100%;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Systemd Service Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">⚙️</div>
+
+            <h1>
+              Systemd Service <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate a complete Linux systemd service unit file with service
+              dependencies, startup commands, restart policies, users,
+              environment variables and installation settings.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Configure your systemd service</h2>
+
+                <p>
+                  Enter the service details below. The unit file preview updates
+                  automatically.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Service information
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="service-name">
+                      Service name
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="service-name"
+                      type="text"
+                      value="my-application"
+                      placeholder="my-application"
+                    />
+
+                    <span class="field-help">
+                      Do not include the .service extension.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="description">
+                      Description
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="description"
+                      type="text"
+                      value="My application service"
+                      placeholder="My application service"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="documentation">
+                      Documentation URL
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="documentation"
+                      type="text"
+                      placeholder="https://example.com/docs"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="after">
+                      Start after
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="after"
+                      type="text"
+                      value="network.target"
+                      placeholder="network.target"
+                    />
+
+                    <span class="field-help">
+                      Separate multiple units with spaces.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="wants">
+                      Wants
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="wants"
+                      type="text"
+                      placeholder="network-online.target"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="requires">
+                      Requires
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="requires"
+                      type="text"
+                      placeholder="nginx.service"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Execution settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="service-type">
+                      Service type
+                    </label>
+
+                    <select class="field-select" id="service-type">
+                      <option value="simple" selected>simple</option>
+                      <option value="exec">exec</option>
+                      <option value="forking">forking</option>
+                      <option value="oneshot">oneshot</option>
+                      <option value="notify">notify</option>
+                      <option value="idle">idle</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="working-directory">
+                      Working directory
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="working-directory"
+                      type="text"
+                      value="/opt/my-application"
+                      placeholder="/opt/my-application"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="exec-start">
+                      ExecStart
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="exec-start"
+                      type="text"
+                      value="/usr/bin/python3 /opt/my-application/app.py"
+                      placeholder="/usr/bin/python3 /opt/app/app.py"
+                    />
+
+                    <span class="field-help">
+                      Use absolute paths for executables and scripts.
+                    </span>
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="exec-start-pre">
+                      ExecStartPre
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="exec-start-pre"
+                      type="text"
+                      placeholder="/usr/bin/test -f /opt/my-application/app.py"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="exec-stop">
+                      ExecStop
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="exec-stop"
+                      type="text"
+                      placeholder="/bin/kill -TERM $MAINPID"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="exec-reload">
+                      ExecReload
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="exec-reload"
+                      type="text"
+                      placeholder="/bin/kill -HUP $MAINPID"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  User and environment
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="user">
+                      User
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="user"
+                      type="text"
+                      value="appuser"
+                      placeholder="appuser"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="group">
+                      Group
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="group"
+                      type="text"
+                      value="appuser"
+                      placeholder="appuser"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="environment">
+                      Environment variables
+                    </label>
+
+                    <textarea
+                      class="field-textarea"
+                      id="environment"
+                      placeholder="APP_ENV=production&#10;PORT=8080"
+                    >APP_ENV=production
+PORT=8080</textarea
+                    >
+
+                    <span class="field-help">
+                      Enter one NAME=value variable per line.
+                    </span>
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="environment-file">
+                      Environment file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="environment-file"
+                      type="text"
+                      placeholder="/etc/my-application/environment"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Restart and runtime
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="restart">
+                      Restart policy
+                    </label>
+
+                    <select class="field-select" id="restart">
+                      <option value="no">no</option>
+                      <option value="on-success">on-success</option>
+                      <option value="on-failure" selected>
+                        on-failure
+                      </option>
+                      <option value="on-abnormal">on-abnormal</option>
+                      <option value="on-watchdog">on-watchdog</option>
+                      <option value="on-abort">on-abort</option>
+                      <option value="always">always</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="restart-sec">
+                      Restart delay
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="restart-sec"
+                      type="text"
+                      value="5s"
+                      placeholder="5s"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="timeout-start">
+                      Start timeout
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="timeout-start"
+                      type="text"
+                      value="90s"
+                      placeholder="90s"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="timeout-stop">
+                      Stop timeout
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="timeout-stop"
+                      type="text"
+                      value="90s"
+                      placeholder="90s"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="kill-signal">
+                      Kill signal
+                    </label>
+
+                    <select class="field-select" id="kill-signal">
+                      <option value="">Default</option>
+                      <option value="SIGTERM" selected>SIGTERM</option>
+                      <option value="SIGINT">SIGINT</option>
+                      <option value="SIGQUIT">SIGQUIT</option>
+                      <option value="SIGHUP">SIGHUP</option>
+                      <option value="SIGKILL">SIGKILL</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="umask">
+                      UMask
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="umask"
+                      type="text"
+                      placeholder="0027"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Logging and installation
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="standard-output">
+                      Standard output
+                    </label>
+
+                    <select class="field-select" id="standard-output">
+                      <option value="">Default</option>
+                      <option value="journal" selected>journal</option>
+                      <option value="inherit">inherit</option>
+                      <option value="null">null</option>
+                      <option value="tty">tty</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="standard-error">
+                      Standard error
+                    </label>
+
+                    <select class="field-select" id="standard-error">
+                      <option value="">Default</option>
+                      <option value="journal" selected>journal</option>
+                      <option value="inherit">inherit</option>
+                      <option value="null">null</option>
+                      <option value="tty">tty</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="syslog-identifier">
+                      Syslog identifier
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="syslog-identifier"
+                      type="text"
+                      value="my-application"
+                      placeholder="my-application"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="wanted-by">
+                      WantedBy
+                    </label>
+
+                    <select class="field-select" id="wanted-by">
+                      <option value="multi-user.target" selected>
+                        multi-user.target
+                      </option>
+                      <option value="graphical.target">
+                        graphical.target
+                      </option>
+                      <option value="default.target">
+                        default.target
+                      </option>
+                      <option value="network-online.target">
+                        network-online.target
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 18px;">
+                  <label class="checkbox-item">
+                    <input
+                      id="remain-after-exit"
+                      type="checkbox"
+                    />
+
+                    <span class="checkbox-content">
+                      <span class="checkbox-title">
+                        RemainAfterExit
+                      </span>
+
+                      <span class="checkbox-description">
+                        Keep the service active after the command exits.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input
+                      id="private-tmp"
+                      type="checkbox"
+                      checked
+                    />
+
+                    <span class="checkbox-content">
+                      <span class="checkbox-title">
+                        PrivateTmp
+                      </span>
+
+                      <span class="checkbox-description">
+                        Provide a private temporary directory.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input
+                      id="no-new-privileges"
+                      type="checkbox"
+                      checked
+                    />
+
+                    <span class="checkbox-content">
+                      <span class="checkbox-title">
+                        NoNewPrivileges
+                      </span>
+
+                      <span class="checkbox-description">
+                        Prevent the service from gaining new privileges.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input
+                      id="protect-system"
+                      type="checkbox"
+                    />
+
+                    <span class="checkbox-content">
+                      <span class="checkbox-title">
+                        ProtectSystem
+                      </span>
+
+                      <span class="checkbox-description">
+                        Protect system directories from modification.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Unit File
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="example"
+                  type="button"
+                >
+                  Load Web App Example
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="preview-column" aria-label="Generated unit file">
+              <div class="preview-card">
+                <div class="preview-header">
+                  <h2>Generated service unit</h2>
+
+                  <span class="file-name" id="file-name">
+                    my-application.service
+                  </span>
+                </div>
+
+                <pre
+                  class="preview-output"
+                  id="unit-output"
+                  tabindex="0"
+                ></pre>
+
+                <div class="preview-actions">
+                  <button
+                    class="preview-button"
+                    id="copy-unit"
+                    type="button"
+                  >
+                    Copy Unit File
+                  </button>
+
+                  <button
+                    class="preview-button"
+                    id="download-unit"
+                    type="button"
+                  >
+                    Download .service
+                  </button>
+                </div>
+
+                <div
+                  class="status-message"
+                  id="status-message"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="preview-card commands-card">
+                <h3>Installation commands</h3>
+
+                <div class="command-list">
+                  <div class="command-item">
+                    <code id="install-command">
+                      sudo nano /etc/systemd/system/my-application.service
+                    </code>
+
+                    <button
+                      class="mini-copy"
+                      type="button"
+                      data-copy-target="install-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+
+                  <div class="command-item">
+                    <code id="reload-command">
+                      sudo systemctl daemon-reload
+                    </code>
+
+                    <button
+                      class="mini-copy"
+                      type="button"
+                      data-copy-target="reload-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+
+                  <div class="command-item">
+                    <code id="enable-command">
+                      sudo systemctl enable --now my-application.service
+                    </code>
+
+                    <button
+                      class="mini-copy"
+                      type="button"
+                      data-copy-target="enable-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+
+                  <div class="command-item">
+                    <code id="status-command">
+                      sudo systemctl status my-application.service
+                    </code>
+
+                    <button
+                      class="mini-copy"
+                      type="button"
+                      data-copy-target="status-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+
+                  <div class="command-item">
+                    <code id="logs-command">
+                      sudo journalctl -u my-application.service -f
+                    </code>
+
+                    <button
+                      class="mini-copy"
+                      type="button"
+                      data-copy-target="logs-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Understanding systemd service files</h2>
+
+            <p>
+              A systemd service file normally contains Unit, Service and Install
+              sections.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>[Unit] section</h3>
+
+              <p>
+                Defines the service description, dependencies and startup
+                ordering.
+              </p>
+
+              <ul>
+                <li><code>Description=</code> describes the service.</li>
+                <li><code>After=</code> controls startup order.</li>
+                <li><code>Requires=</code> adds a mandatory dependency.</li>
+                <li><code>Wants=</code> adds a weaker dependency.</li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>[Service] section</h3>
+
+              <p>
+                Defines how the process starts, stops, restarts and runs.
+              </p>
+
+              <ul>
+                <li><code>ExecStart=</code> starts the application.</li>
+                <li><code>User=</code> selects the Linux account.</li>
+                <li><code>Restart=</code> controls restart behaviour.</li>
+                <li><code>Environment=</code> sets variables.</li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>[Install] section</h3>
+
+              <p>
+                Defines the target used when enabling the service with
+                systemctl.
+              </p>
+
+              <ul>
+                <li>
+                  <code>WantedBy=multi-user.target</code> is common for server
+                  applications.
+                </li>
+                <li>
+                  Run <code>systemctl daemon-reload</code> after modifying a
+                  unit file.
+                </li>
+                <li>
+                  Use <code>systemctl enable --now</code> to enable and start.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fieldIds = [
+        "service-name",
+        "description",
+        "documentation",
+        "after",
+        "wants",
+        "requires",
+        "service-type",
+        "working-directory",
+        "exec-start",
+        "exec-start-pre",
+        "exec-stop",
+        "exec-reload",
+        "user",
+        "group",
+        "environment",
+        "environment-file",
+        "restart",
+        "restart-sec",
+        "timeout-start",
+        "timeout-stop",
+        "kill-signal",
+        "umask",
+        "standard-output",
+        "standard-error",
+        "syslog-identifier",
+        "wanted-by",
+      ];
+
+      const checkboxIds = [
+        "remain-after-exit",
+        "private-tmp",
+        "no-new-privileges",
+        "protect-system",
+      ];
+
+      const unitOutput = document.getElementById("unit-output");
+      const fileNameElement = document.getElementById("file-name");
+      const statusMessage = document.getElementById("status-message");
+
+      function getValue(id) {
+        const element = document.getElementById(id);
+        return element?.value?.trim() ?? "";
+      }
+
+      function getChecked(id) {
+        const element = document.getElementById(id);
+        return Boolean(element?.checked);
+      }
+
+      function sanitizeServiceName(value) {
+        const cleaned = value
+          .trim()
+          .replace(/\.service$/i, "")
+          .replace(/[^a-zA-Z0-9@_.-]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
+        return cleaned || "my-application";
+      }
+
+      function escapeEnvironmentValue(value) {
+        return value
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"');
+      }
+
+      function generateUnitFile() {
+        const serviceName = sanitizeServiceName(
+          getValue("service-name")
+        );
+
+        const description =
+          getValue("description") || "Custom systemd service";
+
+        const documentation = getValue("documentation");
+        const after = getValue("after");
+        const wants = getValue("wants");
+        const requires = getValue("requires");
+
+        const serviceType = getValue("service-type") || "simple";
+        const workingDirectory = getValue("working-directory");
+        const execStart = getValue("exec-start");
+        const execStartPre = getValue("exec-start-pre");
+        const execStop = getValue("exec-stop");
+        const execReload = getValue("exec-reload");
+
+        const user = getValue("user");
+        const group = getValue("group");
+        const environment = getValue("environment");
+        const environmentFile = getValue("environment-file");
+
+        const restart = getValue("restart");
+        const restartSec = getValue("restart-sec");
+        const timeoutStart = getValue("timeout-start");
+        const timeoutStop = getValue("timeout-stop");
+        const killSignal = getValue("kill-signal");
+        const umask = getValue("umask");
+
+        const standardOutput = getValue("standard-output");
+        const standardError = getValue("standard-error");
+        const syslogIdentifier = getValue("syslog-identifier");
+        const wantedBy =
+          getValue("wanted-by") || "multi-user.target";
+
+        const lines = [];
+
+        lines.push("[Unit]");
+        lines.push(`Description=${description}`);
+
+        if (documentation) {
+          lines.push(`Documentation=${documentation}`);
+        }
+
+        if (after) {
+          lines.push(`After=${after}`);
+        }
+
+        if (wants) {
+          lines.push(`Wants=${wants}`);
+        }
+
+        if (requires) {
+          lines.push(`Requires=${requires}`);
+        }
+
+        lines.push("");
+        lines.push("[Service]");
+        lines.push(`Type=${serviceType}`);
+
+        if (user) {
+          lines.push(`User=${user}`);
+        }
+
+        if (group) {
+          lines.push(`Group=${group}`);
+        }
+
+        if (workingDirectory) {
+          lines.push(`WorkingDirectory=${workingDirectory}`);
+        }
+
+        if (environmentFile) {
+          lines.push(`EnvironmentFile=${environmentFile}`);
+        }
+
+        if (environment) {
+          environment
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .forEach((variable) => {
+              lines.push(
+                `Environment="${escapeEnvironmentValue(variable)}"`
+              );
+            });
+        }
+
+        if (execStartPre) {
+          lines.push(`ExecStartPre=${execStartPre}`);
+        }
+
+        lines.push(
+          `ExecStart=${execStart || "/usr/bin/true"}`
+        );
+
+        if (execReload) {
+          lines.push(`ExecReload=${execReload}`);
+        }
+
+        if (execStop) {
+          lines.push(`ExecStop=${execStop}`);
+        }
+
+        if (restart) {
+          lines.push(`Restart=${restart}`);
+        }
+
+        if (restart !== "no" && restartSec) {
+          lines.push(`RestartSec=${restartSec}`);
+        }
+
+        if (timeoutStart) {
+          lines.push(`TimeoutStartSec=${timeoutStart}`);
+        }
+
+        if (timeoutStop) {
+          lines.push(`TimeoutStopSec=${timeoutStop}`);
+        }
+
+        if (killSignal) {
+          lines.push(`KillSignal=${killSignal}`);
+        }
+
+        if (umask) {
+          lines.push(`UMask=${umask}`);
+        }
+
+        if (getChecked("remain-after-exit")) {
+          lines.push("RemainAfterExit=yes");
+        }
+
+        if (getChecked("private-tmp")) {
+          lines.push("PrivateTmp=true");
+        }
+
+        if (getChecked("no-new-privileges")) {
+          lines.push("NoNewPrivileges=true");
+        }
+
+        if (getChecked("protect-system")) {
+          lines.push("ProtectSystem=strict");
+        }
+
+        if (standardOutput) {
+          lines.push(`StandardOutput=${standardOutput}`);
+        }
+
+        if (standardError) {
+          lines.push(`StandardError=${standardError}`);
+        }
+
+        if (syslogIdentifier) {
+          lines.push(`SyslogIdentifier=${syslogIdentifier}`);
+        }
+
+        lines.push("");
+        lines.push("[Install]");
+        lines.push(`WantedBy=${wantedBy}`);
+
+        const unitFile = `${lines.join("\n")}\n`;
+
+        unitOutput.textContent = unitFile;
+        fileNameElement.textContent = `${serviceName}.service`;
+
+        updateCommands(serviceName);
+
+        return {
+          serviceName,
+          unitFile,
+        };
+      }
+
+      function updateCommands(serviceName) {
+        const unitName = `${serviceName}.service`;
+
+        document.getElementById(
+          "install-command"
+        ).textContent =
+          `sudo nano /etc/systemd/system/${unitName}`;
+
+        document.getElementById(
+          "reload-command"
+        ).textContent =
+          "sudo systemctl daemon-reload";
+
+        document.getElementById(
+          "enable-command"
+        ).textContent =
+          `sudo systemctl enable --now ${unitName}`;
+
+        document.getElementById(
+          "status-command"
+        ).textContent =
+          `sudo systemctl status ${unitName}`;
+
+        document.getElementById(
+          "logs-command"
+        ).textContent =
+          `sudo journalctl -u ${unitName} -f`;
+      }
+
+      async function copyText(text, message = "Copied successfully.") {
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          statusMessage.textContent = message;
+        } catch (error) {
+          statusMessage.textContent =
+            "Copy failed. Please select and copy the text manually.";
+        }
+
+        window.setTimeout(() => {
+          statusMessage.textContent = "";
+        }, 2500);
+      }
+
+      function downloadUnitFile() {
+        const { serviceName, unitFile } = generateUnitFile();
+
+        const blob = new Blob([unitFile], {
+          type: "text/plain;charset=utf-8",
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = `${serviceName}.service`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        statusMessage.textContent =
+          `${serviceName}.service downloaded.`;
+
+        window.setTimeout(() => {
+          statusMessage.textContent = "";
+        }, 2500);
+      }
+
+      function loadExample() {
+        const values = {
+          "service-name": "gokuruvi-web",
+          description: "Gokuruvi web application",
+          documentation: "https://www.gokuruvi.com",
+          after: "network-online.target",
+          wants: "network-online.target",
+          requires: "",
+          "service-type": "simple",
+          "working-directory": "/opt/gokuruvi-web",
+          "exec-start":
+            "/usr/bin/node /opt/gokuruvi-web/server.js",
+          "exec-start-pre":
+            "/usr/bin/test -f /opt/gokuruvi-web/server.js",
+          "exec-stop": "",
+          "exec-reload": "/bin/kill -HUP $MAINPID",
+          user: "gokuruvi",
+          group: "gokuruvi",
+          environment:
+            "NODE_ENV=production\nPORT=3000",
+          "environment-file":
+            "/etc/gokuruvi-web/environment",
+          restart: "on-failure",
+          "restart-sec": "5s",
+          "timeout-start": "90s",
+          "timeout-stop": "30s",
+          "kill-signal": "SIGTERM",
+          umask: "0027",
+          "standard-output": "journal",
+          "standard-error": "journal",
+          "syslog-identifier": "gokuruvi-web",
+          "wanted-by": "multi-user.target",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        document.getElementById(
+          "remain-after-exit"
+        ).checked = false;
+
+        document.getElementById(
+          "private-tmp"
+        ).checked = true;
+
+        document.getElementById(
+          "no-new-privileges"
+        ).checked = true;
+
+        document.getElementById(
+          "protect-system"
+        ).checked = false;
+
+        generateUnitFile();
+      }
+
+      function resetForm() {
+        const values = {
+          "service-name": "my-application",
+          description: "My application service",
+          documentation: "",
+          after: "network.target",
+          wants: "",
+          requires: "",
+          "service-type": "simple",
+          "working-directory": "/opt/my-application",
+          "exec-start":
+            "/usr/bin/python3 /opt/my-application/app.py",
+          "exec-start-pre": "",
+          "exec-stop": "",
+          "exec-reload": "",
+          user: "appuser",
+          group: "appuser",
+          environment:
+            "APP_ENV=production\nPORT=8080",
+          "environment-file": "",
+          restart: "on-failure",
+          "restart-sec": "5s",
+          "timeout-start": "90s",
+          "timeout-stop": "90s",
+          "kill-signal": "SIGTERM",
+          umask: "",
+          "standard-output": "journal",
+          "standard-error": "journal",
+          "syslog-identifier": "my-application",
+          "wanted-by": "multi-user.target",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        document.getElementById(
+          "remain-after-exit"
+        ).checked = false;
+
+        document.getElementById(
+          "private-tmp"
+        ).checked = true;
+
+        document.getElementById(
+          "no-new-privileges"
+        ).checked = true;
+
+        document.getElementById(
+          "protect-system"
+        ).checked = false;
+
+        generateUnitFile();
+      }
+
+      fieldIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener("input", generateUnitFile);
+
+        document
+          .getElementById(id)
+          ?.addEventListener("change", generateUnitFile);
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener("change", generateUnitFile);
+      });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateUnitFile);
+
+      document
+        .getElementById("example")
+        ?.addEventListener("click", loadExample);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      document
+        .getElementById("copy-unit")
+        ?.addEventListener("click", () => {
+          const { unitFile } = generateUnitFile();
+
+          copyText(unitFile, "Unit file copied.");
+        });
+
+      document
+        .getElementById("download-unit")
+        ?.addEventListener("click", downloadUnitFile);
+
+      document
+        .querySelectorAll(".mini-copy")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.dataset.copyTarget;
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(
+              target?.textContent?.trim() ?? "",
+              "Command copied."
+            );
+          });
+        });
+
+      generateUnitFile();
+    </script>
+  </body>
+</html>

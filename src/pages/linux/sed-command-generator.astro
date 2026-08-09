@@ -1,0 +1,2403 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Sed Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate common Linux sed commands for replacing text, deleting lines, printing matches, inserting content and editing files in place.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/sed-command-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="sed command generator, Linux sed generator, replace text sed, delete line sed, sed examples"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 65px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .action-card {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .action-card input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .action-content {
+        display: block;
+        min-height: 118px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #ffffff;
+        text-align: center;
+      }
+
+      .action-card input:checked + .action-content {
+        border-color: var(--primary);
+        background: #eff6ff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+      }
+
+      .action-icon {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 25px;
+      }
+
+      .action-title {
+        display: block;
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .action-description {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input,
+      .field-select {
+        min-height: 48px;
+        padding: 0 13px;
+      }
+
+      .field-textarea {
+        min-height: 90px;
+        padding: 12px 13px;
+        resize: vertical;
+      }
+
+      .field-input:focus,
+      .field-select:focus,
+      .field-textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .main-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .primary-button {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-block + .result-block {
+        margin-top: 20px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 82px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .copy-all-button {
+        width: 100%;
+        min-height: 45px;
+        margin-top: 16px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .action-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 39px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid,
+        .action-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .main-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span>/</span>
+          <a href="/linux">Linux Tools</a>
+          <span>/</span>
+          <span aria-current="page">Sed Command Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">✏️</div>
+
+            <h1>
+              Sed Command <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate common Linux <code>sed</code> commands for replacing
+              text, deleting lines, printing matches, inserting content and
+              editing files in place.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Build your sed command</h2>
+
+                <p>
+                  Select a common task, enter the pattern and file details, and
+                  copy the generated command.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Select task
+                </h3>
+
+                <div class="action-grid">
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="replace"
+                      checked
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔄</span>
+                      <span class="action-title">Replace text</span>
+                      <span class="action-description">
+                        Find text and replace it.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="delete"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🗑️</span>
+                      <span class="action-title">Delete lines</span>
+                      <span class="action-description">
+                        Delete matching or numbered lines.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="print"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔎</span>
+                      <span class="action-title">Print lines</span>
+                      <span class="action-description">
+                        Print only matching lines.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="insert-before"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">⬆️</span>
+                      <span class="action-title">Insert before</span>
+                      <span class="action-description">
+                        Insert text before a match.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="append-after"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">⬇️</span>
+                      <span class="action-title">Append after</span>
+                      <span class="action-description">
+                        Add text after a match.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="replace-line"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">📝</span>
+                      <span class="action-title">Replace line</span>
+                      <span class="action-description">
+                        Replace the complete matching line.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="remove-blank"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🧹</span>
+                      <span class="action-title">Remove blank lines</span>
+                      <span class="action-description">
+                        Delete empty or whitespace-only lines.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="remove-comments"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">#️⃣</span>
+                      <span class="action-title">Remove comments</span>
+                      <span class="action-description">
+                        Delete comment lines from a file.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="sed-task"
+                      value="custom"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">⌨️</span>
+                      <span class="action-title">Custom expression</span>
+                      <span class="action-description">
+                        Enter your own sed expression.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  File settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="file-path">
+                      File path
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="file-path"
+                      type="text"
+                      value="/etc/example.conf"
+                      placeholder="/etc/example.conf"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="delimiter">
+                      Sed delimiter
+                    </label>
+
+                    <select class="field-select" id="delimiter">
+                      <option value="/" selected>/</option>
+                      <option value="|">|</option>
+                      <option value="#">#</option>
+                      <option value="@">@</option>
+                      <option value=":">:</option>
+                    </select>
+
+                    <span class="field-help">
+                      Use <code>|</code> when replacing paths or URLs.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="line-scope">
+                      Line scope
+                    </label>
+
+                    <select class="field-select" id="line-scope">
+                      <option value="all" selected>All lines</option>
+                      <option value="line">Specific line</option>
+                      <option value="range">Line range</option>
+                      <option value="matching">Matching lines only</option>
+                    </select>
+                  </div>
+
+                  <div
+                    class="form-field"
+                    id="single-line-field"
+                    hidden
+                  >
+                    <label class="field-label" for="line-number">
+                      Line number
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="line-number"
+                      type="number"
+                      min="1"
+                      value="5"
+                    />
+                  </div>
+
+                  <div
+                    class="form-field"
+                    id="start-line-field"
+                    hidden
+                  >
+                    <label class="field-label" for="start-line">
+                      Start line
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="start-line"
+                      type="number"
+                      min="1"
+                      value="5"
+                    />
+                  </div>
+
+                  <div
+                    class="form-field"
+                    id="end-line-field"
+                    hidden
+                  >
+                    <label class="field-label" for="end-line">
+                      End line
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="end-line"
+                      type="number"
+                      min="1"
+                      value="10"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="replace-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Replacement settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="search-text">
+                      Search pattern
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="search-text"
+                      type="text"
+                      value="old_value"
+                      placeholder="old_value"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="replacement-text">
+                      Replacement text
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="replacement-text"
+                      type="text"
+                      value="new_value"
+                      placeholder="new_value"
+                    />
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 18px;">
+                  <label class="checkbox-item">
+                    <input id="replace-global" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Replace all occurrences
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add the global <code>g</code> flag.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="ignore-case" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Ignore case
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add the case-insensitive <code>I</code> flag.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section" id="pattern-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Pattern settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="match-pattern">
+                      Match pattern
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="match-pattern"
+                      type="text"
+                      value="ERROR"
+                      placeholder="ERROR"
+                    />
+                  </div>
+
+                  <div
+                    class="form-field full-width"
+                    id="insert-text-field"
+                    hidden
+                  >
+                    <label class="field-label" for="insert-text">
+                      Text to insert
+                    </label>
+
+                    <textarea
+                      class="field-textarea"
+                      id="insert-text"
+                      placeholder="Enter text"
+                    >Inserted text</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="custom-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Custom sed expression
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="custom-expression">
+                      Sed expression
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="custom-expression"
+                      type="text"
+                      value="s/old/new/g"
+                      placeholder="s/old/new/g"
+                    />
+
+                    <span class="field-help">
+                      Enter the expression without <code>sed</code> or
+                      <code>-e</code>.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Command options
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="in-place" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Edit file in place
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-i</code> to modify the original file.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="create-backup" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Create backup
+                      </span>
+
+                      <span class="checkbox-description">
+                        Create a backup before modifying the file.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="extended-regex" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Extended regular expressions
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-E</code> for extended regex syntax.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="use-sudo" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Include sudo
+                      </span>
+
+                      <span class="checkbox-description">
+                        Prefix the command with <code>sudo</code>.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="recursive-mode" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Apply recursively
+                      </span>
+
+                      <span class="checkbox-description">
+                        Generate a <code>find</code> command for multiple files.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                <div
+                  class="field-grid"
+                  id="backup-section"
+                  style="margin-top: 18px;"
+                  hidden
+                >
+                  <div class="form-field">
+                    <label class="field-label" for="backup-extension">
+                      Backup extension
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="backup-extension"
+                      type="text"
+                      value=".bak"
+                      placeholder=".bak"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="field-grid"
+                  id="recursive-section"
+                  style="margin-top: 18px;"
+                  hidden
+                >
+                  <div class="form-field">
+                    <label class="field-label" for="search-directory">
+                      Search directory
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="search-directory"
+                      type="text"
+                      value="/etc"
+                      placeholder="/etc"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="file-pattern">
+                      Filename pattern
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="file-pattern"
+                      type="text"
+                      value="*.conf"
+                      placeholder="*.conf"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Day-to-day presets
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="replace"
+                  >
+                    Replace text
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="replace-path"
+                  >
+                    Replace path
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="delete-match"
+                  >
+                    Delete matching lines
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="print-match"
+                  >
+                    Print matching lines
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="blank-lines"
+                  >
+                    Remove blank lines
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="comments"
+                  >
+                    Remove comments
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="recursive"
+                  >
+                    Recursive replace
+                  </button>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button
+                  class="main-button primary-button"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Sed Command
+                </button>
+
+                <button
+                  class="main-button secondary-button"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Generated command">
+              <div class="result-card">
+                <h2>Generated command</h2>
+
+                <div class="result-block">
+                  <span class="result-label">Sed command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="main-command">
+                      sed 's/old_value/new_value/g' '/etc/example.conf'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="main-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="result-block"
+                  id="preview-block"
+                >
+                  <span class="result-label">Safe preview command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="preview-command">
+                      sed 's/old_value/new_value/g' '/etc/example.conf'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="preview-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="copy-all-button"
+                  id="copy-all"
+                  type="button"
+                >
+                  Copy All Commands
+                </button>
+
+                <div class="warning-box" id="warning-box">
+                  Preview the output before enabling in-place editing.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Command summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Task</span>
+                    <strong id="summary-task">Replace text</strong>
+                  </li>
+
+                  <li>
+                    <span>File</span>
+                    <strong id="summary-file">/etc/example.conf</strong>
+                  </li>
+
+                  <li>
+                    <span>Edit in place</span>
+                    <strong id="summary-in-place">Disabled</strong>
+                  </li>
+
+                  <li>
+                    <span>Backup</span>
+                    <strong id="summary-backup">Disabled</strong>
+                  </li>
+
+                  <li>
+                    <span>Recursive</span>
+                    <strong id="summary-recursive">Disabled</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common sed examples</h2>
+
+            <p>
+              Useful commands for common Linux text-processing tasks.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Replace text</h3>
+
+              <ul>
+                <li>
+                  <code>sed 's/old/new/' file</code> replaces the first match
+                  on each line.
+                </li>
+
+                <li>
+                  <code>sed 's/old/new/g' file</code> replaces all matches.
+                </li>
+
+                <li>
+                  <code>sed -i.bak 's/old/new/g' file</code> edits with a
+                  backup.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Delete and print lines</h3>
+
+              <ul>
+                <li>
+                  <code>sed '/pattern/d' file</code> deletes matching lines.
+                </li>
+
+                <li>
+                  <code>sed -n '/pattern/p' file</code> prints matching lines.
+                </li>
+
+                <li>
+                  <code>sed '5,10d' file</code> deletes lines 5 through 10.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Safety recommendations</h3>
+
+              <ul>
+                <li>
+                  Run the command without <code>-i</code> first.
+                </li>
+
+                <li>
+                  Use <code>-i.bak</code> to create a backup.
+                </li>
+
+                <li>
+                  Check special characters in regular expressions.
+                </li>
+
+                <li>
+                  Use a different delimiter when replacing paths.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const taskSections = {
+        replace: document.getElementById("replace-section"),
+        pattern: document.getElementById("pattern-section"),
+        custom: document.getElementById("custom-section"),
+      };
+
+      const mainCommand =
+        document.getElementById("main-command");
+
+      const previewCommand =
+        document.getElementById("preview-command");
+
+      const previewBlock =
+        document.getElementById("preview-block");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      const warningBox =
+        document.getElementById("warning-box");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function getTask() {
+        return (
+          document.querySelector(
+            'input[name="sed-task"]:checked'
+          )?.value || "replace"
+        );
+      }
+
+      function shellQuote(value) {
+        const text = String(value);
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function escapeSedValue(value, delimiter) {
+        return String(value)
+          .replaceAll("\\", "\\\\")
+          .replaceAll(delimiter, `\\${delimiter}`)
+          .replaceAll("&", "\\&");
+      }
+
+      function escapeSedPattern(value, delimiter) {
+        return String(value)
+          .replaceAll("\\", "\\\\")
+          .replaceAll(delimiter, `\\${delimiter}`);
+      }
+
+      function getAddressPrefix() {
+        const scope = getValue("line-scope");
+
+        if (scope === "line") {
+          return getValue("line-number") || "1";
+        }
+
+        if (scope === "range") {
+          const start = getValue("start-line") || "1";
+          const end = getValue("end-line") || start;
+
+          return `${start},${end}`;
+        }
+
+        if (scope === "matching") {
+          const delimiter = getValue("delimiter") || "/";
+          const pattern =
+            escapeSedPattern(
+              getValue("match-pattern") || "pattern",
+              delimiter
+            );
+
+          return `${delimiter}${pattern}${delimiter}`;
+        }
+
+        return "";
+      }
+
+      function buildExpression() {
+        const task = getTask();
+        const delimiter = getValue("delimiter") || "/";
+        const address = getAddressPrefix();
+
+        if (task === "replace") {
+          const search = escapeSedPattern(
+            getValue("search-text") || "old_value",
+            delimiter
+          );
+
+          const replacement = escapeSedValue(
+            getValue("replacement-text") || "new_value",
+            delimiter
+          );
+
+          let flags = "";
+
+          if (isChecked("replace-global")) {
+            flags += "g";
+          }
+
+          if (isChecked("ignore-case")) {
+            flags += "I";
+          }
+
+          return `${address}s${delimiter}${search}${delimiter}${replacement}${delimiter}${flags}`;
+        }
+
+        if (task === "delete") {
+          const pattern =
+            getValue("match-pattern") || "pattern";
+
+          if (getValue("line-scope") === "all") {
+            return `${delimiter}${escapeSedPattern(
+              pattern,
+              delimiter
+            )}${delimiter}d`;
+          }
+
+          return `${address}d`;
+        }
+
+        if (task === "print") {
+          const pattern =
+            getValue("match-pattern") || "pattern";
+
+          if (getValue("line-scope") === "all") {
+            return `${delimiter}${escapeSedPattern(
+              pattern,
+              delimiter
+            )}${delimiter}p`;
+          }
+
+          return `${address}p`;
+        }
+
+        if (task === "insert-before") {
+          const pattern =
+            getValue("match-pattern") || "pattern";
+
+          const text =
+            getValue("insert-text") || "Inserted text";
+
+          const target =
+            address ||
+            `${delimiter}${escapeSedPattern(
+              pattern,
+              delimiter
+            )}${delimiter}`;
+
+          return `${target}i\\${text}`;
+        }
+
+        if (task === "append-after") {
+          const pattern =
+            getValue("match-pattern") || "pattern";
+
+          const text =
+            getValue("insert-text") || "Appended text";
+
+          const target =
+            address ||
+            `${delimiter}${escapeSedPattern(
+              pattern,
+              delimiter
+            )}${delimiter}`;
+
+          return `${target}a\\${text}`;
+        }
+
+        if (task === "replace-line") {
+          const pattern =
+            getValue("match-pattern") || "pattern";
+
+          const text =
+            getValue("insert-text") || "Replacement line";
+
+          const target =
+            address ||
+            `${delimiter}${escapeSedPattern(
+              pattern,
+              delimiter
+            )}${delimiter}`;
+
+          return `${target}c\\${text}`;
+        }
+
+        if (task === "remove-blank") {
+          return "/^[[:space:]]*$/d";
+        }
+
+        if (task === "remove-comments") {
+          return "/^[[:space:]]*#/d";
+        }
+
+        if (task === "custom") {
+          return getValue("custom-expression") || "s/old/new/g";
+        }
+
+        return "s/old/new/g";
+      }
+
+      function buildSedCommand(inPlaceMode) {
+        const file =
+          getValue("file-path") || "/etc/example.conf";
+
+        const expression = buildExpression();
+
+        const parts = [];
+
+        if (isChecked("use-sudo") && inPlaceMode) {
+          parts.push("sudo");
+        }
+
+        parts.push("sed");
+
+        if (
+          getTask() === "print" &&
+          !inPlaceMode
+        ) {
+          parts.push("-n");
+        }
+
+        if (isChecked("extended-regex")) {
+          parts.push("-E");
+        }
+
+        if (inPlaceMode) {
+          if (isChecked("create-backup")) {
+            const extension =
+              getValue("backup-extension") || ".bak";
+
+            parts.push(`-i${extension}`);
+          } else {
+            parts.push("-i");
+          }
+        }
+
+        parts.push(shellQuote(expression));
+        parts.push(shellQuote(file));
+
+        return parts.join(" ");
+      }
+
+      function buildRecursiveCommand(inPlaceMode) {
+        const directory =
+          getValue("search-directory") || ".";
+
+        const pattern =
+          getValue("file-pattern") || "*.conf";
+
+        const expression = buildExpression();
+
+        const command = [];
+
+        if (isChecked("use-sudo") && inPlaceMode) {
+          command.push("sudo");
+        }
+
+        command.push(
+          "find",
+          shellQuote(directory),
+          "-type",
+          "f",
+          "-name",
+          shellQuote(pattern),
+          "-exec",
+          "sed"
+        );
+
+        if (
+          getTask() === "print" &&
+          !inPlaceMode
+        ) {
+          command.push("-n");
+        }
+
+        if (isChecked("extended-regex")) {
+          command.push("-E");
+        }
+
+        if (inPlaceMode) {
+          if (isChecked("create-backup")) {
+            const extension =
+              getValue("backup-extension") || ".bak";
+
+            command.push(`-i${extension}`);
+          } else {
+            command.push("-i");
+          }
+        }
+
+        command.push(shellQuote(expression), "{}", "+");
+
+        return command.join(" ");
+      }
+
+      function generateCommands() {
+        const inPlace = isChecked("in-place");
+        const recursive = isChecked("recursive-mode");
+
+        document.getElementById(
+          "backup-section"
+        ).hidden =
+          !isChecked("create-backup");
+
+        document.getElementById(
+          "recursive-section"
+        ).hidden = !recursive;
+
+        const main = recursive
+          ? buildRecursiveCommand(inPlace)
+          : buildSedCommand(inPlace);
+
+        const preview = recursive
+          ? buildRecursiveCommand(false)
+          : buildSedCommand(false);
+
+        mainCommand.textContent = main;
+        previewCommand.textContent = preview;
+
+        previewBlock.hidden = !inPlace;
+
+        updateSummary();
+        updateWarning();
+      }
+
+      function updateTaskUI() {
+        const task = getTask();
+
+        taskSections.replace.hidden = task !== "replace";
+
+        taskSections.pattern.hidden = ![
+          "delete",
+          "print",
+          "insert-before",
+          "append-after",
+          "replace-line",
+        ].includes(task);
+
+        taskSections.custom.hidden = task !== "custom";
+
+        document.getElementById(
+          "insert-text-field"
+        ).hidden = ![
+          "insert-before",
+          "append-after",
+          "replace-line",
+        ].includes(task);
+
+        if (
+          ["remove-blank", "remove-comments", "custom"].includes(task)
+        ) {
+          document.getElementById("line-scope").value = "all";
+        }
+
+        updateScopeUI();
+        generateCommands();
+      }
+
+      function updateScopeUI() {
+        const scope = getValue("line-scope");
+
+        document.getElementById(
+          "single-line-field"
+        ).hidden = scope !== "line";
+
+        document.getElementById(
+          "start-line-field"
+        ).hidden = scope !== "range";
+
+        document.getElementById(
+          "end-line-field"
+        ).hidden = scope !== "range";
+
+        generateCommands();
+      }
+
+      function updateSummary() {
+        const labels = {
+          replace: "Replace text",
+          delete: "Delete lines",
+          print: "Print lines",
+          "insert-before": "Insert before",
+          "append-after": "Append after",
+          "replace-line": "Replace complete line",
+          "remove-blank": "Remove blank lines",
+          "remove-comments": "Remove comments",
+          custom: "Custom expression",
+        };
+
+        document.getElementById(
+          "summary-task"
+        ).textContent =
+          labels[getTask()] || "Replace text";
+
+        document.getElementById(
+          "summary-file"
+        ).textContent =
+          isChecked("recursive-mode")
+            ? `${getValue("search-directory") || "."}/${
+                getValue("file-pattern") || "*.conf"
+              }`
+            : getValue("file-path") || "/etc/example.conf";
+
+        document.getElementById(
+          "summary-in-place"
+        ).textContent =
+          isChecked("in-place")
+            ? "Enabled"
+            : "Disabled";
+
+        document.getElementById(
+          "summary-backup"
+        ).textContent =
+          isChecked("create-backup")
+            ? getValue("backup-extension") || ".bak"
+            : "Disabled";
+
+        document.getElementById(
+          "summary-recursive"
+        ).textContent =
+          isChecked("recursive-mode")
+            ? "Enabled"
+            : "Disabled";
+      }
+
+      function updateWarning() {
+        if (
+          isChecked("in-place") &&
+          !isChecked("create-backup")
+        ) {
+          warningBox.textContent =
+            "This command modifies the original file without creating a backup. Run the preview command first.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          isChecked("in-place") &&
+          isChecked("create-backup")
+        ) {
+          warningBox.textContent =
+            "A backup file will be created. Verify the preview output before running the in-place command.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else if (isChecked("recursive-mode")) {
+          warningBox.textContent =
+            "This command may process multiple files. Verify the directory and filename pattern carefully.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else {
+          warningBox.textContent =
+            "This command only prints the modified output and does not change the original file.";
+
+          warningBox.style.borderColor = "#bbf7d0";
+          warningBox.style.background = "#f0fdf4";
+          warningBox.style.color = "#166534";
+        }
+      }
+
+      function selectTask(task) {
+        const radio = document.querySelector(
+          `input[name="sed-task"][value="${task}"]`
+        );
+
+        if (radio) {
+          radio.checked = true;
+        }
+      }
+
+      function resetForm() {
+        selectTask("replace");
+
+        document.getElementById("file-path").value =
+          "/etc/example.conf";
+
+        document.getElementById("delimiter").value = "/";
+        document.getElementById("line-scope").value = "all";
+        document.getElementById("line-number").value = "5";
+        document.getElementById("start-line").value = "5";
+        document.getElementById("end-line").value = "10";
+
+        document.getElementById("search-text").value =
+          "old_value";
+
+        document.getElementById("replacement-text").value =
+          "new_value";
+
+        document.getElementById("match-pattern").value =
+          "ERROR";
+
+        document.getElementById("insert-text").value =
+          "Inserted text";
+
+        document.getElementById(
+          "custom-expression"
+        ).value = "s/old/new/g";
+
+        document.getElementById(
+          "replace-global"
+        ).checked = true;
+
+        document.getElementById(
+          "ignore-case"
+        ).checked = false;
+
+        document.getElementById(
+          "in-place"
+        ).checked = false;
+
+        document.getElementById(
+          "create-backup"
+        ).checked = false;
+
+        document.getElementById(
+          "extended-regex"
+        ).checked = false;
+
+        document.getElementById(
+          "use-sudo"
+        ).checked = false;
+
+        document.getElementById(
+          "recursive-mode"
+        ).checked = false;
+
+        document.getElementById(
+          "backup-extension"
+        ).value = ".bak";
+
+        document.getElementById(
+          "search-directory"
+        ).value = "/etc";
+
+        document.getElementById(
+          "file-pattern"
+        ).value = "*.conf";
+
+        updateTaskUI();
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "replace") {
+          selectTask("replace");
+        }
+
+        if (preset === "replace-path") {
+          selectTask("replace");
+
+          document.getElementById("delimiter").value = "|";
+
+          document.getElementById("search-text").value =
+            "/opt/old/application";
+
+          document.getElementById("replacement-text").value =
+            "/opt/new/application";
+        }
+
+        if (preset === "delete-match") {
+          selectTask("delete");
+
+          document.getElementById("match-pattern").value =
+            "deprecated";
+
+          document.getElementById("line-scope").value =
+            "all";
+        }
+
+        if (preset === "print-match") {
+          selectTask("print");
+
+          document.getElementById("match-pattern").value =
+            "ERROR";
+        }
+
+        if (preset === "blank-lines") {
+          selectTask("remove-blank");
+        }
+
+        if (preset === "comments") {
+          selectTask("remove-comments");
+        }
+
+        if (preset === "recursive") {
+          selectTask("replace");
+
+          document.getElementById(
+            "recursive-mode"
+          ).checked = true;
+
+          document.getElementById(
+            "in-place"
+          ).checked = true;
+
+          document.getElementById(
+            "create-backup"
+          ).checked = true;
+
+          document.getElementById(
+            "search-directory"
+          ).value = "/etc";
+
+          document.getElementById(
+            "file-pattern"
+          ).value = "*.conf";
+        }
+
+        updateTaskUI();
+      }
+
+      async function copyText(text, message) {
+        try {
+          await navigator.clipboard.writeText(text);
+
+          copyStatus.textContent =
+            message || "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      function getAllCommands() {
+        const commands = [];
+
+        if (!previewBlock.hidden) {
+          commands.push(
+            `# Preview\n${previewCommand.textContent.trim()}`
+          );
+        }
+
+        commands.push(
+          `# Main command\n${mainCommand.textContent.trim()}`
+        );
+
+        return commands.join("\n\n");
+      }
+
+      document
+        .querySelectorAll('input[name="sed-task"]')
+        .forEach((radio) => {
+          radio.addEventListener("change", updateTaskUI);
+        });
+
+      document
+        .querySelectorAll("input, select, textarea")
+        .forEach((element) => {
+          if (element.name !== "sed-task") {
+            element.addEventListener("input", generateCommands);
+            element.addEventListener("change", generateCommands);
+          }
+        });
+
+      document
+        .getElementById("line-scope")
+        ?.addEventListener("change", updateScopeUI);
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId =
+              button.dataset.copyTarget;
+
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(
+              target?.textContent?.trim() || "",
+              "Command copied successfully."
+            );
+          });
+        });
+
+      document
+        .getElementById("copy-all")
+        ?.addEventListener("click", () => {
+          copyText(
+            getAllCommands(),
+            "All commands copied successfully."
+          );
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateCommands);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      updateTaskUI();
+    </script>
+  </body>
+</html>

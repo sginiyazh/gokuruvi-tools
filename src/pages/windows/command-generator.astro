@@ -1,0 +1,14 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Windows CMD Generator" description="Build common Command Prompt commands for files, networking, processes and system administration." slug="command-generator" icon="⌨️">
+
+<h2 class="tool-title">Build a CMD command</h2><p class="tool-subtitle">Generate safe, commonly used Windows command-line operations.</p>
+<div class="form-grid"><div class="field"><label for="task">Task</label><select id="task"><option value="ping">Ping host</option><option value="dns">DNS lookup</option><option value="task">Find process</option><option value="sys">System information</option><option value="route">Routing table</option><option value="dir">List directory</option></select></div><div class="field"><label for="value">Host / process / path</label><input id="value" placeholder="e.g. server01, chrome.exe, C:\\Temp" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate command</button></div><div class="output-wrap"><div class="output-head"><strong>Command Prompt</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Choose a task.</pre></div>
+<script>
+
+const task=document.querySelector<HTMLSelectElement>('#task')!,v=document.querySelector<HTMLInputElement>('#value')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const x=v.value.trim().replace(/[&|<>]/g,'');const m:Record<string,string>={ping:`ping ${x||'8.8.8.8'} -n 4`,dns:`nslookup ${x||'example.com'}`,task:`tasklist /FI "IMAGENAME eq ${x||'explorer.exe'}"`,sys:'systeminfo',route:'route print',dir:`dir "${x||'C:\\'}" /a /o:n`};o.textContent=m[task.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

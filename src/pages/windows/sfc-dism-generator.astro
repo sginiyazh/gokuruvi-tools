@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="SFC & DISM Repair Generator" description="Generate Windows system-file and component-store diagnostic and repair commands." slug="sfc-dism-generator" icon="🧰">
+
+<h2 class="tool-title">Windows repair command builder</h2><div class="form-grid"><div class="field"><label for="tool">Tool</label><select id="tool"><option value="sfcscan">SFC full scan & repair</option><option value="sfcverify">SFC verify only</option><option value="dismcheck">DISM CheckHealth</option><option value="dismscan">DISM ScanHealth</option><option value="dismrestore">DISM RestoreHealth</option></select></div><div class="field"><label for="source">Optional repair source (WIM/ESD path)</label><input id="source" placeholder="WIM:D:\\sources\\install.wim:1" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>Elevated command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">sfc /scannow</pre></div><p class="hint">A common repair sequence is DISM RestoreHealth followed by <code>sfc /scannow</code>.</p>
+<script>
+
+const t=document.querySelector<HTMLSelectElement>('#tool')!,s=document.querySelector<HTMLInputElement>('#source')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const src=s.value.trim().replace(/"/g,'');const m:Record<string,string>={sfcscan:'sfc /scannow',sfcverify:'sfc /verifyonly',dismcheck:'DISM /Online /Cleanup-Image /CheckHealth',dismscan:'DISM /Online /Cleanup-Image /ScanHealth',dismrestore:`DISM /Online /Cleanup-Image /RestoreHealth${src?` /Source:"${src}" /LimitAccess`:''}`};o.textContent=m[t.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

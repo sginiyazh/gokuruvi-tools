@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/ai-tools.css";
+---
+<Layout title="AI Model Comparison" description="Compare AI model context windows, pricing references and common use cases across leading providers.">
+  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">AI Reference</span><h1>AI Model Comparison</h1><p>Compare common LLM context sizes, pricing references and typical workloads side by side.</p></div></section>
+  <section class="ai-section"><div class="ai-container">
+    <div class="ai-search"><input id="modelSearch" type="search" placeholder="Search model, provider or use case..." aria-label="Search models"/><select id="providerFilter" aria-label="Filter by provider"><option value="all">All providers</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="google">Google</option></select></div>
+    <div class="ai-table-wrap"><table class="ai-table"><thead><tr><th>Model family</th><th>Provider</th><th>Context</th><th>Input / 1M</th><th>Output / 1M</th><th>Typical use</th></tr></thead><tbody id="modelRows">
+      <tr data-provider="openai" data-search="gpt openai reasoning coding agents"><td><strong>GPT</strong></td><td><span class="ai-pill">OpenAI</span></td><td>Varies by model</td><td>Verify current pricing</td><td>Verify current pricing</td><td>Reasoning, coding and agent workflows</td></tr>
+      <tr data-provider="anthropic" data-search="claude anthropic coding long context agents"><td><strong>Claude</strong></td><td><span class="ai-pill">Anthropic</span></td><td>Varies by model</td><td>Verify current pricing</td><td>Verify current pricing</td><td>Coding, long-context analysis and agents</td></tr>
+      <tr data-provider="google" data-search="gemini google multimodal long context"><td><strong>Gemini</strong></td><td><span class="ai-pill">Google</span></td><td>Varies by model</td><td>Verify current pricing</td><td>Verify current pricing</td><td>Multimodal and long-context workloads</td></tr>
+    </tbody></table></div>
+    <div class="ai-note"><strong>Production note:</strong> Model names, limits and API pricing change frequently. Verify official provider documentation before making architectural or budget decisions.</div>
+  </div></section>
+</Layout>
+<script is:inline>
+(function () {
+  var searchEl = document.getElementById('modelSearch');
+  var providerEl = document.getElementById('providerFilter');
+  function filterRows() {
+    var query = searchEl ? searchEl.value.toLowerCase().trim() : '';
+    var provider = providerEl ? providerEl.value : 'all';
+    var rows = document.querySelectorAll('#modelRows tr');
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var text = row.getAttribute('data-search') || '';
+      var rowProvider = row.getAttribute('data-provider') || '';
+      var visible = text.indexOf(query) !== -1 && (provider === 'all' || provider === rowProvider);
+      row.hidden = !visible;
+    }
+  }
+  if (searchEl) searchEl.addEventListener('input', filterRows);
+  if (providerEl) providerEl.addEventListener('change', filterRows);
+})();
+</script>

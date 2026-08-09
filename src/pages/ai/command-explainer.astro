@@ -1,0 +1,84 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/ai-tools.css";
+---
+<Layout title="Command Explainer" description="Free command explainer for shell, kubectl, Docker, git and Linux commands with a local rule-based breakdown.">
+  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">Rule-based · Local</span><h1>Command Explainer</h1><p>Paste a common Linux, kubectl, Docker, Git or systemd command and get a plain-English breakdown. Commands are never executed.</p></div></section>
+  <section class="ai-section"><div class="ai-container">
+    <div class="ai-panel"><div class="ai-field"><label for="commandText">Command</label><textarea id="commandText" style="min-height:130px" placeholder="Example: kubectl get pods -n production -o wide"></textarea></div><div class="ai-actions"><button class="ai-button" id="explainBtn" type="button">Explain command</button><button class="ai-button secondary" id="exampleBtn" type="button">Load example</button><button class="ai-button secondary" id="clearCommandBtn" type="button">Clear</button></div><div id="commandSummary" class="ai-code" aria-live="polite">Enter a command to see an explanation.</div><div id="commandBreakdown" class="ai-breakdown"></div></div>
+    <div class="ai-note"><strong>Safety:</strong> This tool explains known patterns only. It does not run commands and does not guarantee a command is safe in your environment.</div>
+  </div></section>
+</Layout>
+<script is:inline>
+(function () {
+  var commands = {
+    kubectl: 'Kubernetes command-line client used to inspect and manage cluster resources.',
+    docker: 'Docker command-line client used to build, run and manage containers and images.',
+    git: 'Git version-control command.',
+    systemctl: 'systemd service and unit manager.',
+    ssh: 'Secure Shell client used for encrypted remote connections.',
+    curl: 'Transfers data to or from URLs and APIs.',
+    rsync: 'Synchronizes files and directories efficiently.',
+    chmod: 'Changes Linux file permission bits.',
+    chown: 'Changes file or directory ownership.',
+    tar: 'Creates, lists or extracts archive files.',
+    find: 'Searches files and directories using conditions.',
+    grep: 'Searches text for matching patterns.'
+  };
+  var flags = {
+    '-n': 'Namespace option in kubectl; meaning can vary in other commands.',
+    '--namespace': 'Selects a Kubernetes namespace.',
+    '-o': 'Selects output format or another command-specific output option.',
+    '--output': 'Selects output format.',
+    '-f': 'Specifies a file or input; exact meaning depends on the command.',
+    '-r': 'Recursive operation in many Unix commands.',
+    '-R': 'Recursive operation in many Unix commands.',
+    '-v': 'Verbose mode in many commands.',
+    '--rm': 'Removes a Docker container automatically after it exits.',
+    '-d': 'Commonly runs a Docker container in detached mode.',
+    '-it': 'Docker interactive mode plus pseudo-terminal.',
+    '--delete': 'Deletes destination files missing from the rsync source; review carefully.',
+    '--dry-run': 'Previews changes without applying them when the command supports it.'
+  };
+  function splitCommand(text) {
+    var matches = text.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g);
+    return matches || [];
+  }
+  function explain() {
+    var input = document.getElementById('commandText');
+    var summary = document.getElementById('commandSummary');
+    var breakdown = document.getElementById('commandBreakdown');
+    if (!input || !summary || !breakdown) return;
+    var raw = input.value.trim();
+    breakdown.innerHTML = '';
+    if (!raw) { summary.textContent = 'Enter a command to see an explanation.'; return; }
+    var tokens = splitCommand(raw);
+    var base = tokens.length ? tokens[0].replace(/^.*\//, '') : '';
+    summary.textContent = commands[base] || ('Command "' + base + '" is not yet in the built-in rule database.');
+    for (var i = 0; i < tokens.length; i++) {
+      var token = tokens[i];
+      var description = 'Argument or value passed to the command.';
+      if (i === 0) description = commands[base] || 'Executable or command name.';
+      else if (flags[token]) description = flags[token];
+      else if (token.charAt(0) === '-') description = 'Option or flag. Verify its exact meaning in the command documentation.';
+      else if (/^https?:\/\//.test(token)) description = 'URL target.';
+      else if (/^\/.+/.test(token) || /^\.\.?\//.test(token)) description = 'Filesystem path.';
+      var item = document.createElement('div');
+      item.className = 'ai-breakdown-item';
+      var code = document.createElement('code');
+      code.textContent = token;
+      var p = document.createElement('p');
+      p.textContent = description;
+      item.appendChild(code);
+      item.appendChild(p);
+      breakdown.appendChild(item);
+    }
+  }
+  var explainBtn = document.getElementById('explainBtn');
+  var exampleBtn = document.getElementById('exampleBtn');
+  var clearBtn = document.getElementById('clearCommandBtn');
+  if (explainBtn) explainBtn.addEventListener('click', explain);
+  if (exampleBtn) exampleBtn.addEventListener('click', function () { var input = document.getElementById('commandText'); if (input) { input.value = 'kubectl get pods -n production -o wide'; explain(); } });
+  if (clearBtn) clearBtn.addEventListener('click', function () { var input = document.getElementById('commandText'); if (input) input.value = ''; explain(); });
+})();
+</script>

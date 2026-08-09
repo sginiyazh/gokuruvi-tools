@@ -1,0 +1,247 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const features = [
+  {
+    icon: "⚡",
+    title: "Fast and Practical",
+    description: "Focused utilities for common administration, troubleshooting and engineering tasks without unnecessary complexity.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy Friendly",
+    description: "Where possible, calculations and generators run directly in your browser so sensitive input does not need to leave your device.",
+  },
+  {
+    icon: "🛠️",
+    title: "Built for Real Work",
+    description: "Tools are organized around tasks administrators and engineers regularly perform across infrastructure and operations.",
+  },
+  {
+    icon: "📚",
+    title: "Learning Resources",
+    description: "Scenario-based Interview Q&A and practical guides help professionals prepare, troubleshoot and strengthen technical skills.",
+  },
+];
+
+const categories = [
+  ["Linux", "Commands, permissions, services, storage and administration utilities."],
+  ["DevOps", "CI/CD, Docker, YAML, JSON and automation helpers."],
+  ["Kubernetes", "Manifest, deployment, service, ingress and cluster utilities."],
+  ["Network", "IP, subnet, DNS, ports, bandwidth, SSL and diagnostics."],
+  ["Cloud", "Cloud-init, CIDR and infrastructure-oriented utilities."],
+  ["Database", "SQL, connection strings, backup, restore and database administration helpers."],
+  ["Security", "Hashing, JWT, headers, checksums and security-focused utilities."],
+  ["Windows", "PowerShell, Robocopy, firewall, services, BitLocker, IIS, Hyper-V and administration tools."],
+  ["AI", "Useful AI-oriented technical utilities and resources."],
+  ["Interview Q&A", "Scenario-based Linux, DevOps, cloud, Kubernetes, network, security and Windows interview preparation."],
+];
+
+const audiences = [
+  "Linux & Windows administrators",
+  "DevOps & platform engineers",
+  "Cloud engineers",
+  "Kubernetes administrators",
+  "Network & security professionals",
+  "Database administrators",
+  "Students and interview candidates",
+  "IT support and infrastructure teams",
+];
+---
+
+<Layout
+  title="About Gokuruvi Tools"
+  description="Learn about Gokuruvi Tools, a collection of practical utilities and interview resources for Linux, Windows, DevOps, Kubernetes, cloud, networking, database and security professionals."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <span class="eyebrow"><span class="status-dot"></span>Built for IT professionals</span>
+      <h1>About <span>Gokuruvi Tools</span></h1>
+      <p>
+        Free, practical and easy-to-use technical utilities designed to simplify
+        everyday administration, troubleshooting, automation and interview preparation.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-white">
+    <div class="container intro-grid">
+      <div>
+        <span class="section-label">Who we are</span>
+        <h2>Useful technical tools in one place</h2>
+        <p>
+          <strong>Gokuruvi Tools</strong> is a growing collection of browser-based utilities
+          for infrastructure and IT professionals. The goal is simple: reduce repetitive
+          work, make technical tasks easier to understand, and provide quick access to
+          commands, calculators, generators and validation tools.
+        </p>
+        <p>
+          Instead of searching across multiple websites or manually building long commands,
+          you can use focused tools for Linux, Windows, networking, cloud, DevOps,
+          Kubernetes, databases and security from one consistent interface.
+        </p>
+        <p>
+          The site also includes scenario-based <strong>Interview Q&A</strong> covering the
+          technologies commonly used by system administrators, engineers and operations teams.
+        </p>
+      </div>
+
+      <aside class="mission-card">
+        <div class="mission-icon">🎯</div>
+        <span class="section-label">Our mission</span>
+        <h3>Make daily IT work faster and clearer</h3>
+        <p>
+          Build dependable utilities that help professionals save time, reduce command and
+          configuration mistakes, troubleshoot efficiently and continuously improve their skills.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-label">Why Gokuruvi Tools</span>
+        <h2>Designed for production-focused technical work</h2>
+        <p>Simple interfaces, useful outputs and practical coverage across modern infrastructure technologies.</p>
+      </div>
+
+      <div class="feature-grid">
+        {features.map((feature) => (
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">{feature.icon}</div>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-white" id="categories">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-label">Coverage</span>
+        <h2>Technical areas available on Gokuruvi</h2>
+        <p>The website is structured around the categories engineers use in day-to-day infrastructure work.</p>
+      </div>
+
+      <div class="category-grid">
+        {categories.map(([title, description]) => (
+          <article class="category-card">
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container audience-grid">
+      <div>
+        <span class="section-label">Who can use it</span>
+        <h2>For professionals, learners and technical teams</h2>
+        <p>
+          Whether you manage production servers, troubleshoot networks, automate deployments,
+          administer databases or prepare for your next technical interview, the tools are
+          designed to provide quick and practical assistance.
+        </p>
+      </div>
+      <div class="audience-list">
+        {audiences.map((audience) => (
+          <div class="audience-item"><span>✓</span>{audience}</div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="creator-section">
+    <div class="container">
+      <div class="creator-card">
+        <div class="creator-avatar" aria-hidden="true">SR</div>
+        <div>
+          <span class="creator-label">Creator & maintainer</span>
+          <h2>Created by Sathish Ramalingam</h2>
+          <p>
+            Gokuruvi Tools is created and maintained with a focus on practical system
+            administration, infrastructure operations and knowledge sharing. The project
+            continues to evolve with new utilities, improved interfaces and scenario-based
+            technical content.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <div>
+          <span class="section-label">Start exploring</span>
+          <h2>Use the tools you need, when you need them</h2>
+          <p>Browse technical categories or practice with scenario-based Interview Q&A.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="primary-button" href="/#featured-tools">Explore Tools</a>
+          <a class="secondary-button" href="/interview-qa/">Interview Q&A</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 40px), 1180px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 92px 0 86px; background: radial-gradient(circle at 10% 20%, rgba(56,189,248,.18), transparent 31%), radial-gradient(circle at 90% 15%, rgba(37,99,235,.17), transparent 34%), linear-gradient(145deg,#f8fafc,#eff6ff 55%,#f8fafc); }
+  .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(37,99,235,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.045) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(to bottom,#000,transparent); }
+  .hero-content { position:relative; z-index:1; max-width:900px; text-align:center; }
+  .eyebrow { display:inline-flex; align-items:center; gap:9px; padding:8px 15px; border:1px solid #bfdbfe; border-radius:999px; background:rgba(255,255,255,.88); color:#1d4ed8; font-size:14px; font-weight:800; box-shadow:0 8px 25px rgba(37,99,235,.08); }
+  .status-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; box-shadow:0 0 0 5px rgba(22,163,74,.12); }
+  .hero h1 { margin:24px 0 18px; color:#0f172a; font-size:clamp(44px,7vw,68px); line-height:1.06; letter-spacing:-2.5px; }
+  .hero h1 span { background:linear-gradient(90deg,#2563eb,#0284c7); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p { max-width:780px; margin:0 auto; color:#475569; font-size:clamp(18px,2.2vw,21px); line-height:1.75; }
+  .section { padding:82px 0; }
+  .section-white { background:#fff; }
+  .section-label { display:inline-block; margin-bottom:10px; color:#2563eb; font-size:12px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; }
+  h2 { margin:0 0 18px; color:#0f172a; font-size:clamp(31px,4vw,43px); line-height:1.2; letter-spacing:-1.2px; }
+  .intro-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:60px; align-items:center; }
+  .intro-grid > div > p { margin:0 0 18px; color:#64748b; font-size:17px; line-height:1.85; }
+  .intro-grid strong { color:#0f172a; }
+  .mission-card { padding:34px; border:1px solid #bfdbfe; border-radius:22px; background:linear-gradient(145deg,#fff,#eff6ff); box-shadow:0 20px 50px rgba(37,99,235,.11); }
+  .mission-icon { display:grid; place-items:center; width:62px; height:62px; margin-bottom:22px; border-radius:17px; background:linear-gradient(135deg,#2563eb,#38bdf8); font-size:29px; }
+  .mission-card h3 { margin:0 0 13px; color:#0f172a; font-size:27px; line-height:1.3; }
+  .mission-card p { margin:0; color:#475569; font-size:16.5px; line-height:1.75; }
+  .section-heading { max-width:760px; margin:0 auto 46px; text-align:center; }
+  .section-heading p { margin:0; color:#64748b; font-size:17px; line-height:1.75; }
+  .feature-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .feature-card { padding:27px; border:1px solid #e2e8f0; border-radius:17px; background:#fff; box-shadow:0 10px 30px rgba(15,23,42,.05); }
+  .feature-icon { display:grid; place-items:center; width:53px; height:53px; margin-bottom:19px; border-radius:14px; background:#eff6ff; font-size:25px; }
+  .feature-card h3 { margin:0 0 10px; color:#0f172a; font-size:20px; }
+  .feature-card p { margin:0; color:#64748b; line-height:1.7; }
+  .category-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .category-card { padding:23px 25px; border:1px solid #e2e8f0; border-radius:14px; background:#f8fafc; }
+  .category-card h3 { margin:0 0 6px; color:#0f172a; font-size:19px; }
+  .category-card p { margin:0; color:#64748b; line-height:1.65; }
+  .audience-grid { display:grid; grid-template-columns:.9fr 1.1fr; align-items:center; gap:58px; }
+  .audience-grid > div:first-child p { margin:0; color:#64748b; font-size:17px; line-height:1.8; }
+  .audience-list { display:grid; grid-template-columns:repeat(2,1fr); gap:13px; }
+  .audience-item { display:flex; align-items:center; gap:11px; padding:16px; border:1px solid #e2e8f0; border-radius:12px; background:#fff; color:#0f172a; font-weight:700; box-shadow:0 6px 18px rgba(15,23,42,.04); }
+  .audience-item span { display:grid; place-items:center; width:26px; height:26px; flex:0 0 26px; border-radius:50%; background:#dcfce7; color:#16a34a; }
+  .creator-section { padding:0 0 82px; }
+  .creator-card { display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:center; padding:38px; border-radius:22px; background:radial-gradient(circle at 90% 10%,rgba(56,189,248,.22),transparent 32%),linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; box-shadow:0 25px 60px rgba(15,23,42,.17); }
+  .creator-avatar { display:grid; place-items:center; width:86px; height:86px; border:3px solid rgba(255,255,255,.22); border-radius:22px; background:rgba(255,255,255,.1); font-size:31px; font-weight:900; }
+  .creator-label { color:#7dd3fc; font-size:12px; font-weight:900; letter-spacing:1.3px; text-transform:uppercase; }
+  .creator-card h2 { margin:5px 0 8px; color:#fff; font-size:29px; }
+  .creator-card p { max-width:850px; margin:0; color:#cbd5e1; font-size:16.5px; line-height:1.75; }
+  .cta-section { padding:0 0 82px; }
+  .cta-card { display:flex; align-items:center; justify-content:space-between; gap:35px; padding:42px; border:1px solid #bfdbfe; border-radius:22px; background:linear-gradient(145deg,#eff6ff,#fff); }
+  .cta-card h2 { margin-bottom:9px; font-size:clamp(28px,3.6vw,39px); }
+  .cta-card p { margin:0; color:#64748b; font-size:17px; }
+  .cta-actions { display:flex; flex-shrink:0; gap:11px; }
+  .primary-button,.secondary-button { display:inline-flex; min-height:48px; align-items:center; justify-content:center; padding:0 20px; border-radius:10px; font-weight:800; text-decoration:none; }
+  .primary-button { background:#2563eb; color:#fff; box-shadow:0 10px 25px rgba(37,99,235,.2); }
+  .secondary-button { border:1px solid #cbd5e1; background:#fff; color:#0f172a; }
+  @media (max-width:1000px) { .feature-grid{grid-template-columns:repeat(2,1fr)} .intro-grid,.audience-grid{grid-template-columns:1fr;gap:38px} .cta-card{align-items:flex-start;flex-direction:column} }
+  @media (max-width:680px) { .container{width:min(calc(100% - 28px),1180px)} .hero{padding:70px 0 66px} .hero h1{letter-spacing:-1.5px} .section{padding:64px 0} .feature-grid,.category-grid,.audience-list{grid-template-columns:1fr} .creator-card{grid-template-columns:1fr;text-align:center;padding:28px} .creator-avatar{margin:auto} .cta-card{padding:28px} .cta-actions{width:100%;flex-direction:column} .primary-button,.secondary-button{width:100%} }
+</style>

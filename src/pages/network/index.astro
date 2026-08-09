@@ -1,0 +1,832 @@
+---
+import Header from "../../components/Header.astro";
+
+const pageTitle = "Network Tools";
+const description =
+  "Free network utilities for public IP lookup, internet speed testing, bandwidth calculations, AbuseIPDB checks, password generation, ports, DNS, SSL certificates and IPv4 addressing.";
+
+const tools = [
+  {
+    icon: "🌍",
+    name: "What is my IP",
+    category: "IP Lookup",
+    description: "See the public IP address detected for your current connection.",
+    link: "/network/what-is-my-ip",
+  },
+  {
+    icon: "⚡",
+    name: "Internet Speed Test",
+    category: "Performance",
+    description: "Measure approximate download, upload and latency performance from your browser.",
+    link: "/network/internet-speed-test",
+  },
+  {
+    icon: "📊",
+    name: "Bandwidth Calculator",
+    category: "Performance",
+    description: "Calculate transfer time, data size and bandwidth using common network units.",
+    link: "/network/bandwidth-calculator",
+  },
+  {
+    icon: "🛡️",
+    name: "AbuseIPDB Check",
+    category: "Security",
+    description: "Check an IP address against AbuseIPDB using your API key.",
+    link: "/network/abuseipdb-check",
+  },
+  {
+    icon: "🔐",
+    name: "Password Generator",
+    category: "Security",
+    description: "Generate strong random passwords with configurable length and character sets.",
+    link: "/network/password-generator",
+  },
+  {
+    icon: "🔌",
+    name: "Port Checker",
+    category: "Ports",
+    description: "Check common TCP port information and test reachability for a public host.",
+    link: "/network/port-checker",
+  },
+  {
+    icon: "🧭",
+    name: "DNS Checker",
+    category: "DNS",
+    description: "Query common DNS records for a hostname and review returned answers.",
+    link: "/network/dns-checker",
+  },
+  {
+    icon: "🔒",
+    name: "SSL Certificate Checker",
+    category: "TLS / SSL",
+    description: "Check SSL certificate installation, validity and TLS details for a website.",
+    link: "/network/ssl-checker",
+  },
+  {
+    icon: "🧮",
+    name: "IPv4 Subnet Calculator",
+    category: "IPv4",
+    description: "Calculate subnet mask, network, broadcast, usable range and host capacity.",
+    link: "/network/subnet-calculator",
+  },
+  {
+    icon: "🌐",
+    name: "IPv4 Address Calculator",
+    category: "IPv4",
+    description: "Calculate IPv4 network details, host ranges and address information.",
+    link: "/network/ip-calculator",
+  },
+  {
+    icon: "🔢",
+    name: "IPv4 CIDR Calculator",
+    category: "IPv4",
+    description: "Convert CIDR prefixes into masks, ranges and usable host counts.",
+    link: "/network/cidr-calculator",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast network checks",
+    description: "Run practical network lookups, calculations and diagnostics from one page.",
+  },
+  {
+    icon: "🧭",
+    title: "Operations focused",
+    description: "Useful for administrators, support engineers and network troubleshooting workflows.",
+  },
+  {
+    icon: "🔒",
+    title: "Simple and privacy aware",
+    description: "Local calculations stay in your browser; online checks run only when required.",
+  },
+];
+import Footer from "../../components/Footer.astro";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={description} />
+
+    <meta
+      name="keywords"
+      content="network tools, what is my IP, internet speed test, bandwidth calculator, AbuseIPDB check, password generator, port checker, DNS checker, SSL certificate checker, IPv4 subnet calculator, IPv4 address calculator, IPv4 CIDR calculator"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <meta property="og:title" content="Network Tools | Gokuruvi Tools" />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://www.gokuruvi.com/network/"
+    />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/network/"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Essential tools for network professionals
+            </div>
+
+            <h1>
+              Practical <span>Network Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Check your public IP, test internet speed, calculate bandwidth, inspect DNS and SSL, check ports and work with IPv4 addressing from one focused toolkit.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#network-tools">
+                Explore Network Tools
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a class="button button-secondary" href="/#tool-categories">
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{tools.length}</strong>
+                <span>Free utilities</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>11</strong>
+                <span>Focused network tools</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>IPv4</strong>
+                <span>Addressing calculators</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="network-tools">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Available Utilities</span>
+
+            <h2>Essential network checks and calculators</h2>
+
+            <p>
+              Select a tool for IP lookup, speed testing, bandwidth planning, security checks, DNS, SSL, ports or IPv4 calculations.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              tools.map((tool) => (
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.name}`}
+                >
+                  <div class="tool-header">
+                    <div class="tool-icon" aria-hidden="true">{tool.icon}</div>
+                    <span class="tool-category">{tool.category}</span>
+                  </div>
+
+                  <h3>{tool.name}</h3>
+                  <p>{tool.description}</p>
+
+                  <span class="open-tool">
+                    Open tool
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+
+            <h2>Built for network administrators and engineers</h2>
+
+            <p>
+              Use practical utilities for planning, troubleshooting and
+              validating common network configurations.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div class="benefit-icon" aria-hidden="true">
+                    {benefit.icon}
+                  </div>
+
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start simplifying your network tasks</h2>
+
+            <p>
+              Calculate subnet details, generate DNS commands and troubleshoot
+              connectivity using free online networking tools.
+            </p>
+
+            <a
+              class="button cta-button"
+              href="/network/subnet-calculator"
+            >
+              Open Subnet Calculator
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f8fafc;
+    color: #172033;
+    font-family:
+      Inter, Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+
+  :global(a) {
+    color: inherit;
+  }
+
+  .container {
+    width: min(100% - 40px, 1180px);
+    margin-inline: auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 105px 0 92px;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.2), transparent 32%),
+      radial-gradient(circle at 88% 25%, rgba(37, 99, 235, 0.2), transparent 34%),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f8fafc 100%);
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+  }
+
+  .hero h1 {
+    margin: 0 auto 22px;
+    color: #0f172a;
+    font-size: clamp(43px, 7vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #2563eb, #0284c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-description {
+    max-width: 790px;
+    margin: 0 auto;
+    color: #475569;
+    font-size: clamp(18px, 2.5vw, 21px);
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 36px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button-primary {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.26);
+  }
+
+  .button-primary:hover {
+    background: #1d4ed8;
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.32);
+  }
+
+  .button-secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  }
+
+  .hero-statistics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 42px;
+  }
+
+  .hero-stat {
+    min-width: 135px;
+  }
+
+  .hero-stat strong {
+    display: block;
+    color: #0f172a;
+    font-size: 25px;
+  }
+
+  .hero-stat span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .section {
+    padding: 92px 0;
+  }
+
+  .section-white {
+    background: #ffffff;
+  }
+
+  .section-heading {
+    max-width: 770px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: clamp(31px, 4vw, 44px);
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .tool-card {
+    position: relative;
+    display: flex;
+    min-height: 310px;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 29px;
+    border: 1px solid #e2e8f0;
+    border-radius: 19px;
+    background: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .tool-card::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card::after {
+    position: absolute;
+    right: -55px;
+    bottom: -65px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.065);
+    content: "";
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 24px 50px rgba(37, 99, 235, 0.14);
+    transform: translateY(-8px);
+  }
+
+  .tool-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .tool-card:hover::after {
+    transform: scale(1.25);
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .tool-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 29px;
+  }
+
+  .tool-category {
+    padding: 5px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .tool-card h3 {
+    margin: 0 0 11px;
+    color: #0f172a;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .tool-card p {
+    flex: 1;
+    margin: 0 0 22px;
+    color: #64748b;
+    line-height: 1.72;
+  }
+
+  .open-tool {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .benefit-card {
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #ffffff;
+  }
+
+  .benefit-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #eff6ff;
+    font-size: 25px;
+  }
+
+  .benefit-card h3 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+  }
+
+  .cta {
+    padding: 0 0 92px;
+  }
+
+  .cta-box {
+    padding: 70px 35px;
+    border-radius: 25px;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.28), transparent 31%),
+      linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 25px 65px rgba(15, 23, 42, 0.2);
+  }
+
+  .cta-box h2 {
+    max-width: 720px;
+    margin: 0 auto 15px;
+    font-size: clamp(30px, 4vw, 45px);
+    line-height: 1.2;
+  }
+
+  .cta-box p {
+    max-width: 670px;
+    margin: 0 auto 29px;
+    color: #cbd5e1;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .cta-button {
+    background: #ffffff;
+    color: #1d4ed8;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 55px;
+    padding: 65px 0 45px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+  }
+
+  .footer-brand p {
+    max-width: 380px;
+    margin: 17px 0 0;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  .footer-title {
+    margin: 0 0 18px;
+    color: #ffffff;
+    font-size: 16px;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-links a:hover {
+    color: #ffffff;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 24px 0;
+    border-top: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1000px) {
+    .tools-grid,
+    .benefits-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero {
+      padding: 78px 0 70px;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .container {
+      width: min(100% - 28px, 1180px);
+    }
+
+    .hero h1 {
+      font-size: 41px;
+      letter-spacing: -1.4px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .button {
+      width: 100%;
+    }
+
+    .tools-grid,
+    .benefits-grid,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-card {
+      min-height: auto;
+      padding: 25px;
+    }
+
+    .cta-box {
+      padding: 52px 23px;
+    }
+  }
+</style>

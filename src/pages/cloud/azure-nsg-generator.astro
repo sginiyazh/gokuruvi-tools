@@ -1,0 +1,1767 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Azure NSG Generator | Gokuruvi Tools";
+const description =
+  "Generate Azure Network Security Group rules in Terraform HCL and Azure CLI format with inbound, outbound, ports, protocols, priorities, service tags, CIDR ranges, copy, and download options.";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/azure-nsg-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .tab-button {
+        padding: 9px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .tab-button.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .code-box {
+        margin-top: 14px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 650px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Azure NSG Generator</h1>
+        <p>
+          Generate Azure Network Security Group rules in Terraform HCL and
+          Azure CLI format with inbound, outbound, priorities, ports,
+          protocols, CIDR ranges, service tags, presets, copy, and download.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>NSG Configuration</h2>
+            <p class="card-description">
+              Configure an Azure Network Security Group and generate Terraform
+              plus Azure CLI commands.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="web">
+                Web Server
+              </button>
+              <button class="preset" type="button" data-preset="ssh">
+                SSH Access
+              </button>
+              <button class="preset" type="button" data-preset="rdp">
+                RDP Access
+              </button>
+              <button class="preset" type="button" data-preset="internal">
+                Internal Only
+              </button>
+            </div>
+
+            <h3 class="section-title">NSG Details</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="nameInput">NSG name</label>
+                <input
+                  id="nameInput"
+                  type="text"
+                  value="web-server-nsg"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="terraformNameInput">Terraform resource name</label>
+                <input
+                  id="terraformNameInput"
+                  type="text"
+                  value="web_server"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="resourceGroupInput">Resource group</label>
+                <input
+                  id="resourceGroupInput"
+                  type="text"
+                  value="rg-network-production"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="locationInput">Azure location</label>
+                <input
+                  id="locationInput"
+                  type="text"
+                  value="UAE North"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="descriptionInput">Description</label>
+              <textarea id="descriptionInput">Network security group for a public web server.</textarea>
+            </div>
+
+            <h3 class="section-title">Primary Security Rule</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="ruleNameInput">Rule name</label>
+                <input
+                  id="ruleNameInput"
+                  type="text"
+                  value="Allow-HTTP-Inbound"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="priorityInput">Priority</label>
+                <input
+                  id="priorityInput"
+                  type="number"
+                  min="100"
+                  max="4096"
+                  value="100"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="directionSelect">Direction</label>
+                <select id="directionSelect">
+                  <option value="Inbound" selected>Inbound</option>
+                  <option value="Outbound">Outbound</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="accessSelect">Access</label>
+                <select id="accessSelect">
+                  <option value="Allow" selected>Allow</option>
+                  <option value="Deny">Deny</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="protocolSelect">Protocol</label>
+                <select id="protocolSelect">
+                  <option value="Tcp" selected>TCP</option>
+                  <option value="Udp">UDP</option>
+                  <option value="Icmp">ICMP</option>
+                  <option value="*">Any</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sourceTypeSelect">Source type</label>
+                <select id="sourceTypeSelect">
+                  <option value="cidr" selected>CIDR / IP</option>
+                  <option value="service-tag">Service tag</option>
+                  <option value="application-security-group">
+                    Application Security Group ID
+                  </option>
+                  <option value="any">Any (*)</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="portsSection" class="conditional-section active">
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="sourcePortInput">Source port</label>
+                  <input
+                    id="sourcePortInput"
+                    type="text"
+                    value="*"
+                    placeholder="Example: * or 1024-65535"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="destinationPortInput">Destination port</label>
+                  <input
+                    id="destinationPortInput"
+                    type="text"
+                    value="80"
+                    placeholder="Example: 443 or 8000-8080"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div id="sourceValuesSection" class="conditional-section active">
+              <div class="form-group">
+                <label for="sourceValuesInput">Source values</label>
+                <textarea id="sourceValuesInput">Internet</textarea>
+                <p>Enter one CIDR, IP, service tag, or ASG resource ID per line.</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="destinationTypeSelect">Destination type</label>
+              <select id="destinationTypeSelect">
+                <option value="cidr" selected>CIDR / IP</option>
+                <option value="service-tag">Service tag</option>
+                <option value="application-security-group">
+                  Application Security Group ID
+                </option>
+                <option value="any">Any (*)</option>
+              </select>
+            </div>
+
+            <div id="destinationValuesSection" class="conditional-section active">
+              <div class="form-group">
+                <label for="destinationValuesInput">Destination values</label>
+                <textarea id="destinationValuesInput">*</textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ruleDescriptionInput">Rule description</label>
+              <input
+                id="ruleDescriptionInput"
+                type="text"
+                value="Allow HTTP from the internet"
+              />
+            </div>
+
+            <h3 class="section-title">Additional Common Rules</h3>
+
+            <div class="checkbox-item">
+              <input id="httpsEnabledInput" type="checkbox" checked />
+              <label for="httpsEnabledInput">Add HTTPS inbound rule</label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="sshEnabledInput" type="checkbox" />
+              <label for="sshEnabledInput">Add restricted SSH inbound rule</label>
+            </div>
+
+            <div id="sshSection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="sshSourceInput">SSH source CIDR</label>
+                  <input
+                    id="sshSourceInput"
+                    type="text"
+                    value="203.0.113.10/32"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="sshPriorityInput">SSH priority</label>
+                  <input
+                    id="sshPriorityInput"
+                    type="number"
+                    min="100"
+                    max="4096"
+                    value="120"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="rdpEnabledInput" type="checkbox" />
+              <label for="rdpEnabledInput">Add restricted RDP inbound rule</label>
+            </div>
+
+            <div id="rdpSection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="rdpSourceInput">RDP source CIDR</label>
+                  <input
+                    id="rdpSourceInput"
+                    type="text"
+                    value="203.0.113.10/32"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="rdpPriorityInput">RDP priority</label>
+                  <input
+                    id="rdpPriorityInput"
+                    type="number"
+                    min="100"
+                    max="4096"
+                    value="130"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="outboundEnabledInput" type="checkbox" checked />
+              <label for="outboundEnabledInput">Add allow-internet outbound rule</label>
+            </div>
+
+            <h3 class="section-title">Tags</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="environmentInput">Environment</label>
+                <input
+                  id="environmentInput"
+                  type="text"
+                  value="production"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="ownerInput">Owner</label>
+                <input
+                  id="ownerInput"
+                  type="text"
+                  value="network-team"
+                />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate NSG
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated Configuration</h2>
+            <p class="card-description">
+              Switch between Terraform and Azure CLI output.
+            </p>
+
+            <div class="tabs">
+              <button class="tab-button active" type="button" data-tab="terraform">
+                Terraform HCL
+              </button>
+              <button class="tab-button" type="button" data-tab="cli">
+                Azure CLI
+              </button>
+            </div>
+
+            <div class="code-box">
+              <span id="codeLabel" class="code-label">network-security-group.tf</span>
+              <pre id="codeOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Current
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download Current
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">NSG</span>
+                <span id="resultName" class="result-value">web-server-nsg</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource group</span>
+                <span id="resultResourceGroup" class="result-value">
+                  rg-network-production
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Inbound rules</span>
+                <span id="resultInbound" class="result-value">2</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Outbound rules</span>
+                <span id="resultOutbound" class="result-value">1</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Do not expose SSH, RDP, or other administrative services
+              to the entire internet. Restrict access to trusted CIDRs, Azure
+              Bastion, VPN ranges, service tags, or Application Security Groups.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Azure NSG Commands</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Create an NSG</th>
+                <td>
+                  <code>az network nsg create --resource-group RG --name NSG --location LOCATION</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Create a security rule</th>
+                <td>
+                  <code>az network nsg rule create --resource-group RG --nsg-name NSG --name RULE --priority 100 --direction Inbound --access Allow --protocol Tcp --destination-port-ranges 443</code>
+                </td>
+              </tr>
+              <tr>
+                <th>List NSG rules</th>
+                <td>
+                  <code>az network nsg rule list --resource-group RG --nsg-name NSG --output table</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Show effective NSG rules</th>
+                <td>
+                  <code>az network nic list-effective-nsg --resource-group RG --name NIC_NAME</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Validate Terraform</th>
+                <td><code>terraform fmt && terraform validate</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          name: document.getElementById("nameInput"),
+          terraformName: document.getElementById("terraformNameInput"),
+          resourceGroup: document.getElementById("resourceGroupInput"),
+          location: document.getElementById("locationInput"),
+          description: document.getElementById("descriptionInput"),
+          ruleName: document.getElementById("ruleNameInput"),
+          priority: document.getElementById("priorityInput"),
+          direction: document.getElementById("directionSelect"),
+          access: document.getElementById("accessSelect"),
+          protocol: document.getElementById("protocolSelect"),
+          sourceType: document.getElementById("sourceTypeSelect"),
+          sourcePort: document.getElementById("sourcePortInput"),
+          destinationPort: document.getElementById("destinationPortInput"),
+          sourceValues: document.getElementById("sourceValuesInput"),
+          destinationType: document.getElementById("destinationTypeSelect"),
+          destinationValues: document.getElementById(
+            "destinationValuesInput"
+          ),
+          ruleDescription: document.getElementById(
+            "ruleDescriptionInput"
+          ),
+          httpsEnabled: document.getElementById("httpsEnabledInput"),
+          sshEnabled: document.getElementById("sshEnabledInput"),
+          sshSource: document.getElementById("sshSourceInput"),
+          sshPriority: document.getElementById("sshPriorityInput"),
+          rdpEnabled: document.getElementById("rdpEnabledInput"),
+          rdpSource: document.getElementById("rdpSourceInput"),
+          rdpPriority: document.getElementById("rdpPriorityInput"),
+          outboundEnabled: document.getElementById(
+            "outboundEnabledInput"
+          ),
+          environment: document.getElementById("environmentInput"),
+          owner: document.getElementById("ownerInput")
+        };
+
+        var portsSection = document.getElementById("portsSection");
+        var sourceValuesSection = document.getElementById(
+          "sourceValuesSection"
+        );
+        var destinationValuesSection = document.getElementById(
+          "destinationValuesSection"
+        );
+        var sshSection = document.getElementById("sshSection");
+        var rdpSection = document.getElementById("rdpSection");
+
+        var codeOutput = document.getElementById("codeOutput");
+        var codeLabel = document.getElementById("codeLabel");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+
+        var activeTab = "terraform";
+        var outputs = {
+          terraform: "",
+          cli: ""
+        };
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function splitLines(value) {
+          return String(value)
+            .split(/\r?\n/)
+            .map(function (line) {
+              return line.trim();
+            })
+            .filter(function (line) {
+              return line.length > 0;
+            });
+        }
+
+        function quoteHcl(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function shellQuote(value) {
+          return "'" + String(value).replace(/'/g, "'\\''") + "'";
+        }
+
+        function isValidTerraformName(value) {
+          return /^[A-Za-z_][A-Za-z0-9_]*$/.test(value);
+        }
+
+        function isValidPriority(value) {
+          var number = Number(value);
+          return Number.isInteger(number) && number >= 100 && number <= 4096;
+        }
+
+        function isValidPortExpression(value) {
+          if (value === "*") {
+            return true;
+          }
+
+          if (/^\d+$/.test(value)) {
+            return Number(value) >= 0 && Number(value) <= 65535;
+          }
+
+          if (/^\d+-\d+$/.test(value)) {
+            var parts = value.split("-").map(Number);
+            return (
+              parts[0] >= 0 &&
+              parts[1] <= 65535 &&
+              parts[0] <= parts[1]
+            );
+          }
+
+          return false;
+        }
+
+        function validateForm() {
+          var sourceValues = splitLines(fields.sourceValues.value);
+          var destinationValues = splitLines(
+            fields.destinationValues.value
+          );
+          var priorities = [Number(fields.priority.value)];
+
+          if (!fields.name.value.trim()) {
+            return "NSG name is required.";
+          }
+
+          if (!isValidTerraformName(fields.terraformName.value.trim())) {
+            return "Terraform resource name must use letters, numbers, and underscores.";
+          }
+
+          if (!fields.resourceGroup.value.trim()) {
+            return "Resource group is required.";
+          }
+
+          if (!fields.location.value.trim()) {
+            return "Azure location is required.";
+          }
+
+          if (!fields.ruleName.value.trim()) {
+            return "Rule name is required.";
+          }
+
+          if (!isValidPriority(fields.priority.value)) {
+            return "Rule priority must be between 100 and 4096.";
+          }
+
+          if (
+            fields.protocol.value !== "*" &&
+            !isValidPortExpression(fields.sourcePort.value.trim())
+          ) {
+            return "Source port must be *, a port number, or a range.";
+          }
+
+          if (
+            fields.protocol.value !== "*" &&
+            !isValidPortExpression(fields.destinationPort.value.trim())
+          ) {
+            return "Destination port must be *, a port number, or a range.";
+          }
+
+          if (
+            fields.sourceType.value !== "any" &&
+            sourceValues.length === 0
+          ) {
+            return "Enter at least one source value.";
+          }
+
+          if (
+            fields.destinationType.value !== "any" &&
+            destinationValues.length === 0
+          ) {
+            return "Enter at least one destination value.";
+          }
+
+          if (fields.sshEnabled.checked) {
+            if (!isValidPriority(fields.sshPriority.value)) {
+              return "SSH priority must be between 100 and 4096.";
+            }
+            priorities.push(Number(fields.sshPriority.value));
+          }
+
+          if (fields.rdpEnabled.checked) {
+            if (!isValidPriority(fields.rdpPriority.value)) {
+              return "RDP priority must be between 100 and 4096.";
+            }
+            priorities.push(Number(fields.rdpPriority.value));
+          }
+
+          if (fields.httpsEnabled.checked) {
+            priorities.push(110);
+          }
+
+          if (fields.outboundEnabled.checked) {
+            priorities.push(200);
+          }
+
+          if (new Set(priorities).size !== priorities.length) {
+            return "Each NSG rule must use a unique priority.";
+          }
+
+          return "";
+        }
+
+        function addressAttribute(prefix, type, values) {
+          if (type === "application-security-group") {
+            return {
+              plural: prefix + "_application_security_group_ids",
+              values: values
+            };
+          }
+
+          return {
+            plural: prefix + "_address_prefixes",
+            values: type === "any" ? ["*"] : values
+          };
+        }
+
+        function buildRules() {
+          var rules = [];
+
+          rules.push({
+            name: fields.ruleName.value.trim(),
+            priority: Number(fields.priority.value),
+            direction: fields.direction.value,
+            access: fields.access.value,
+            protocol: fields.protocol.value,
+            sourcePort: fields.protocol.value === "*" ? "*" : fields.sourcePort.value.trim(),
+            destinationPort:
+              fields.protocol.value === "*"
+                ? "*"
+                : fields.destinationPort.value.trim(),
+            sourceType: fields.sourceType.value,
+            sourceValues:
+              fields.sourceType.value === "any"
+                ? ["*"]
+                : splitLines(fields.sourceValues.value),
+            destinationType: fields.destinationType.value,
+            destinationValues:
+              fields.destinationType.value === "any"
+                ? ["*"]
+                : splitLines(fields.destinationValues.value),
+            description:
+              fields.ruleDescription.value.trim() || "Custom NSG rule"
+          });
+
+          if (fields.httpsEnabled.checked) {
+            rules.push({
+              name: "Allow-HTTPS-Inbound",
+              priority: 110,
+              direction: "Inbound",
+              access: "Allow",
+              protocol: "Tcp",
+              sourcePort: "*",
+              destinationPort: "443",
+              sourceType: "service-tag",
+              sourceValues: ["Internet"],
+              destinationType: "any",
+              destinationValues: ["*"],
+              description: "Allow HTTPS from the internet"
+            });
+          }
+
+          if (fields.sshEnabled.checked) {
+            rules.push({
+              name: "Allow-SSH-Inbound",
+              priority: Number(fields.sshPriority.value),
+              direction: "Inbound",
+              access: "Allow",
+              protocol: "Tcp",
+              sourcePort: "*",
+              destinationPort: "22",
+              sourceType: "cidr",
+              sourceValues: [fields.sshSource.value.trim()],
+              destinationType: "any",
+              destinationValues: ["*"],
+              description: "Allow SSH from trusted source"
+            });
+          }
+
+          if (fields.rdpEnabled.checked) {
+            rules.push({
+              name: "Allow-RDP-Inbound",
+              priority: Number(fields.rdpPriority.value),
+              direction: "Inbound",
+              access: "Allow",
+              protocol: "Tcp",
+              sourcePort: "*",
+              destinationPort: "3389",
+              sourceType: "cidr",
+              sourceValues: [fields.rdpSource.value.trim()],
+              destinationType: "any",
+              destinationValues: ["*"],
+              description: "Allow RDP from trusted source"
+            });
+          }
+
+          if (fields.outboundEnabled.checked) {
+            rules.push({
+              name: "Allow-Internet-Outbound",
+              priority: 200,
+              direction: "Outbound",
+              access: "Allow",
+              protocol: "*",
+              sourcePort: "*",
+              destinationPort: "*",
+              sourceType: "any",
+              sourceValues: ["*"],
+              destinationType: "service-tag",
+              destinationValues: ["Internet"],
+              description: "Allow outbound traffic to the internet"
+            });
+          }
+
+          return rules;
+        }
+
+        function terraformList(values) {
+          return (
+            "[" +
+            values
+              .map(function (value) {
+                return quoteHcl(value);
+              })
+              .join(", ") +
+            "]"
+          );
+        }
+
+        function addTerraformRule(lines, rule) {
+          var source = addressAttribute(
+            "source",
+            rule.sourceType,
+            rule.sourceValues
+          );
+          var destination = addressAttribute(
+            "destination",
+            rule.destinationType,
+            rule.destinationValues
+          );
+
+          lines.push("  security_rule {");
+          lines.push("    name                       = " + quoteHcl(rule.name));
+          lines.push("    priority                   = " + rule.priority);
+          lines.push("    direction                  = " + quoteHcl(rule.direction));
+          lines.push("    access                     = " + quoteHcl(rule.access));
+          lines.push("    protocol                   = " + quoteHcl(rule.protocol));
+          lines.push("    source_port_range          = " + quoteHcl(rule.sourcePort));
+          lines.push("    destination_port_range     = " + quoteHcl(rule.destinationPort));
+          lines.push(
+            "    " + source.plural.padEnd(28, " ") + " = " + terraformList(source.values)
+          );
+          lines.push(
+            "    " +
+              destination.plural.padEnd(28, " ") +
+              " = " +
+              terraformList(destination.values)
+          );
+          lines.push("    description                = " + quoteHcl(rule.description));
+          lines.push("  }");
+        }
+
+        function buildTerraform(rules) {
+          var lines = [];
+          var resourceName = fields.terraformName.value.trim();
+
+          lines.push('resource "azurerm_network_security_group" "' + resourceName + '" {');
+          lines.push("  name                = " + quoteHcl(fields.name.value.trim()));
+          lines.push(
+            "  location            = " + quoteHcl(fields.location.value.trim())
+          );
+          lines.push(
+            "  resource_group_name = " + quoteHcl(fields.resourceGroup.value.trim())
+          );
+
+          rules.forEach(function (rule) {
+            lines.push("");
+            addTerraformRule(lines, rule);
+          });
+
+          lines.push("");
+          lines.push("  tags = {");
+          lines.push("    Name        = " + quoteHcl(fields.name.value.trim()));
+
+          if (fields.environment.value.trim()) {
+            lines.push(
+              "    Environment = " + quoteHcl(fields.environment.value.trim())
+            );
+          }
+
+          if (fields.owner.value.trim()) {
+            lines.push("    Owner       = " + quoteHcl(fields.owner.value.trim()));
+          }
+
+          lines.push('    ManagedBy   = "terraform"');
+          lines.push("  }");
+          lines.push("}");
+
+          lines.push("");
+          lines.push('output "network_security_group_id" {');
+          lines.push(
+            "  value = azurerm_network_security_group." + resourceName + ".id"
+          );
+          lines.push("}");
+
+          return lines.join("\n") + "\n";
+        }
+
+        function cliAddressArgs(type, values, prefix) {
+          if (type === "application-security-group") {
+            return (
+              "--" +
+              prefix +
+              "-asgs " +
+              values.map(shellQuote).join(" ")
+            );
+          }
+
+          return (
+            "--" +
+            prefix +
+            "-address-prefixes " +
+            (type === "any" ? shellQuote("*") : values.map(shellQuote).join(" "))
+          );
+        }
+
+        function buildCli(rules) {
+          var lines = [];
+          var rg = fields.resourceGroup.value.trim();
+          var nsg = fields.name.value.trim();
+
+          lines.push("# Create the Network Security Group");
+          lines.push(
+            "az network nsg create \\\n" +
+              "  --resource-group " +
+              shellQuote(rg) +
+              " \\\n" +
+              "  --name " +
+              shellQuote(nsg) +
+              " \\\n" +
+              "  --location " +
+              shellQuote(fields.location.value.trim()) +
+              " \\\n" +
+              "  --tags " +
+              shellQuote(
+                "Environment=" +
+                  fields.environment.value.trim() +
+                  " Owner=" +
+                  fields.owner.value.trim() +
+                  " ManagedBy=azure-cli"
+              )
+          );
+
+          rules.forEach(function (rule) {
+            lines.push("");
+            lines.push("# " + rule.description);
+            lines.push(
+              "az network nsg rule create \\\n" +
+                "  --resource-group " +
+                shellQuote(rg) +
+                " \\\n" +
+                "  --nsg-name " +
+                shellQuote(nsg) +
+                " \\\n" +
+                "  --name " +
+                shellQuote(rule.name) +
+                " \\\n" +
+                "  --priority " +
+                rule.priority +
+                " \\\n" +
+                "  --direction " +
+                rule.direction +
+                " \\\n" +
+                "  --access " +
+                rule.access +
+                " \\\n" +
+                "  --protocol " +
+                shellQuote(rule.protocol) +
+                " \\\n" +
+                "  --source-port-ranges " +
+                shellQuote(rule.sourcePort) +
+                " \\\n" +
+                "  --destination-port-ranges " +
+                shellQuote(rule.destinationPort) +
+                " \\\n" +
+                "  " +
+                cliAddressArgs(rule.sourceType, rule.sourceValues, "source") +
+                " \\\n" +
+                "  " +
+                cliAddressArgs(
+                  rule.destinationType,
+                  rule.destinationValues,
+                  "destination"
+                ) +
+                " \\\n" +
+                "  --description " +
+                shellQuote(rule.description)
+            );
+          });
+
+          return lines.join("\n") + "\n";
+        }
+
+        function renderActiveTab() {
+          codeLabel.textContent =
+            activeTab === "terraform"
+              ? "network-security-group.tf"
+              : "create-nsg.sh";
+          codeOutput.textContent = outputs[activeTab];
+        }
+
+        function generateCode(showError) {
+          var error = validateForm();
+          var rules;
+          var inboundCount;
+          var outboundCount;
+
+          clearMessage();
+
+          if (error) {
+            outputs.terraform = error;
+            outputs.cli = error;
+            renderActiveTab();
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          rules = buildRules();
+          outputs.terraform = buildTerraform(rules);
+          outputs.cli = buildCli(rules);
+
+          renderActiveTab();
+
+          inboundCount = rules.filter(function (rule) {
+            return rule.direction === "Inbound";
+          }).length;
+
+          outboundCount = rules.filter(function (rule) {
+            return rule.direction === "Outbound";
+          }).length;
+
+          document.getElementById("resultName").textContent =
+            fields.name.value.trim();
+          document.getElementById("resultResourceGroup").textContent =
+            fields.resourceGroup.value.trim();
+          document.getElementById("resultInbound").textContent =
+            String(inboundCount);
+          document.getElementById("resultOutbound").textContent =
+            String(outboundCount);
+        }
+
+        function updateSections() {
+          portsSection.classList.toggle(
+            "active",
+            fields.protocol.value !== "*"
+          );
+
+          sourceValuesSection.classList.toggle(
+            "active",
+            fields.sourceType.value !== "any"
+          );
+
+          destinationValuesSection.classList.toggle(
+            "active",
+            fields.destinationType.value !== "any"
+          );
+
+          sshSection.classList.toggle(
+            "active",
+            fields.sshEnabled.checked
+          );
+
+          rdpSection.classList.toggle(
+            "active",
+            fields.rdpEnabled.checked
+          );
+
+          generateCode(false);
+        }
+
+        function applyPreset(preset) {
+          fields.httpsEnabled.checked = false;
+          fields.sshEnabled.checked = false;
+          fields.rdpEnabled.checked = false;
+          fields.outboundEnabled.checked = true;
+
+          if (preset === "web") {
+            fields.name.value = "web-server-nsg";
+            fields.terraformName.value = "web_server";
+            fields.description.value =
+              "Network security group for a public web server.";
+            fields.ruleName.value = "Allow-HTTP-Inbound";
+            fields.priority.value = "100";
+            fields.direction.value = "Inbound";
+            fields.access.value = "Allow";
+            fields.protocol.value = "Tcp";
+            fields.sourceType.value = "service-tag";
+            fields.sourceValues.value = "Internet";
+            fields.destinationType.value = "any";
+            fields.destinationValues.value = "*";
+            fields.sourcePort.value = "*";
+            fields.destinationPort.value = "80";
+            fields.ruleDescription.value =
+              "Allow HTTP from the internet";
+            fields.httpsEnabled.checked = true;
+          } else if (preset === "ssh") {
+            fields.name.value = "ssh-access-nsg";
+            fields.terraformName.value = "ssh_access";
+            fields.description.value =
+              "Network security group for restricted SSH administration.";
+            fields.ruleName.value = "Allow-SSH-Inbound";
+            fields.priority.value = "100";
+            fields.direction.value = "Inbound";
+            fields.access.value = "Allow";
+            fields.protocol.value = "Tcp";
+            fields.sourceType.value = "cidr";
+            fields.sourceValues.value = "203.0.113.10/32";
+            fields.destinationType.value = "any";
+            fields.destinationValues.value = "*";
+            fields.sourcePort.value = "*";
+            fields.destinationPort.value = "22";
+            fields.ruleDescription.value =
+              "Allow SSH from administrator IP";
+          } else if (preset === "rdp") {
+            fields.name.value = "rdp-access-nsg";
+            fields.terraformName.value = "rdp_access";
+            fields.description.value =
+              "Network security group for restricted RDP administration.";
+            fields.ruleName.value = "Allow-RDP-Inbound";
+            fields.priority.value = "100";
+            fields.direction.value = "Inbound";
+            fields.access.value = "Allow";
+            fields.protocol.value = "Tcp";
+            fields.sourceType.value = "cidr";
+            fields.sourceValues.value = "203.0.113.10/32";
+            fields.destinationType.value = "any";
+            fields.destinationValues.value = "*";
+            fields.sourcePort.value = "*";
+            fields.destinationPort.value = "3389";
+            fields.ruleDescription.value =
+              "Allow RDP from administrator IP";
+          } else if (preset === "internal") {
+            fields.name.value = "internal-services-nsg";
+            fields.terraformName.value = "internal_services";
+            fields.description.value =
+              "Network security group for internal services.";
+            fields.ruleName.value = "Allow-VNet-Inbound";
+            fields.priority.value = "100";
+            fields.direction.value = "Inbound";
+            fields.access.value = "Allow";
+            fields.protocol.value = "*";
+            fields.sourceType.value = "service-tag";
+            fields.sourceValues.value = "VirtualNetwork";
+            fields.destinationType.value = "service-tag";
+            fields.destinationValues.value = "VirtualNetwork";
+            fields.sourcePort.value = "*";
+            fields.destinationPort.value = "*";
+            fields.ruleDescription.value =
+              "Allow traffic within the virtual network";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.name.value = "web-server-nsg";
+          fields.terraformName.value = "web_server";
+          fields.resourceGroup.value = "rg-network-production";
+          fields.location.value = "UAE North";
+          fields.description.value =
+            "Network security group for a public web server.";
+          fields.ruleName.value = "Allow-HTTP-Inbound";
+          fields.priority.value = "100";
+          fields.direction.value = "Inbound";
+          fields.access.value = "Allow";
+          fields.protocol.value = "Tcp";
+          fields.sourceType.value = "service-tag";
+          fields.sourcePort.value = "*";
+          fields.destinationPort.value = "80";
+          fields.sourceValues.value = "Internet";
+          fields.destinationType.value = "any";
+          fields.destinationValues.value = "*";
+          fields.ruleDescription.value =
+            "Allow HTTP from the internet";
+          fields.httpsEnabled.checked = true;
+          fields.sshEnabled.checked = false;
+          fields.sshSource.value = "203.0.113.10/32";
+          fields.sshPriority.value = "120";
+          fields.rdpEnabled.checked = false;
+          fields.rdpSource.value = "203.0.113.10/32";
+          fields.rdpPriority.value = "130";
+          fields.outboundEnabled.checked = true;
+          fields.environment.value = "production";
+          fields.owner.value = "network-team";
+
+          activeTab = "terraform";
+
+          document.querySelectorAll(".tab-button").forEach(function (button) {
+            button.classList.toggle(
+              "active",
+              button.getAttribute("data-tab") === activeTab
+            );
+          });
+
+          updateSections();
+          fields.name.focus();
+        }
+
+        function copyCurrent() {
+          var current = outputs[activeTab];
+
+          if (!current) {
+            showMessage("Generate a valid NSG configuration first.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(current)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("NSG configuration copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the configuration manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadCurrent() {
+          var filename =
+            activeTab === "terraform"
+              ? "network-security-group.tf"
+              : "create-nsg.sh";
+          var current = outputs[activeTab];
+          var blob;
+          var url;
+          var anchor;
+
+          if (!current) {
+            showMessage("Generate a valid NSG configuration first.", "error");
+            return;
+          }
+
+          blob = new Blob([current], {
+            type: "text/plain;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filename;
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage(filename + " downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateCode(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyCurrent);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadCurrent);
+
+        [
+          fields.protocol,
+          fields.sourceType,
+          fields.destinationType,
+          fields.sshEnabled,
+          fields.rdpEnabled
+        ].forEach(function (field) {
+          field.addEventListener("change", updateSections);
+        });
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateCode(false);
+          });
+
+          field.addEventListener("change", function () {
+            generateCode(false);
+          });
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "web");
+          });
+        });
+
+        document.querySelectorAll(".tab-button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            activeTab = button.getAttribute("data-tab") || "terraform";
+
+            document
+              .querySelectorAll(".tab-button")
+              .forEach(function (tabButton) {
+                tabButton.classList.toggle("active", tabButton === button);
+              });
+
+            renderActiveTab();
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

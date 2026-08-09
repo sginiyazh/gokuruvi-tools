@@ -1,0 +1,3189 @@
+---
+const pageTitle =
+  "Kubernetes Deployment Generator | Gokuruvi Tools";
+
+const description =
+  "Generate Kubernetes Deployment YAML manifests with container images, replicas, ports, environment variables, resources, probes, security context, volumes, node selectors, tolerations, and image pull secrets.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/deployment-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 58px 20px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #f8fafc
+        );
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 6vw, 54px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 860px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 55px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        max-width: 1200px;
+        margin: 0 auto;
+        grid-template-columns:
+          minmax(0, 0.95fr)
+          minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow:
+          0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      .card-description {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .input-row.three {
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 95px;
+        resize: vertical;
+        font-family:
+          Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow:
+          0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      input:disabled,
+      select:disabled,
+      textarea:disabled {
+        cursor: not-allowed;
+        background: #f1f5f9;
+        color: #94a3b8;
+      }
+
+      .help-text {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 49px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: auto;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .conditional-section {
+        display: none;
+        margin-top: 14px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-title {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .preset {
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 45px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .message {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: #ffffff;
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 640px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .explanation {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid var(--info-border);
+        border-radius: 11px;
+        background: var(--info-bg);
+      }
+
+      .explanation h3 {
+        margin: 0 0 10px;
+        color: var(--info-text);
+        font-size: 17px;
+      }
+
+      .explanation-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--info-text);
+      }
+
+      .explanation-list li {
+        margin: 6px 0;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        max-width: 1200px;
+        margin: 30px auto 0;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+        color: var(--dark);
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .info-grid {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+
+        .yaml-output {
+          min-height: 500px;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .input-row.three,
+        .checkbox-grid,
+        .result-grid,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 22px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Kubernetes Deployment Generator</h1>
+
+        <p>
+          Generate production-ready Kubernetes
+          Deployment YAML with replicas, images,
+          ports, resources, environment variables,
+          probes, security settings, scheduling
+          options, volumes, and image pull secrets.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Deployment Configuration</h2>
+
+            <p class="card-description">
+              Enter your application settings. The YAML
+              preview updates automatically.
+            </p>
+
+            <div class="preset-title">
+              Application templates
+            </div>
+
+            <div class="preset-buttons">
+              <button
+                class="preset"
+                type="button"
+                data-preset="nginx"
+              >
+                NGINX
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="apache"
+              >
+                Apache
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="node"
+              >
+                Node.js
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="python"
+              >
+                Python
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-preset="spring"
+              >
+                Spring Boot
+              </button>
+            </div>
+
+            <h3 class="section-title">
+              Basic Settings
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="deploymentNameInput">
+                  Deployment name
+                </label>
+
+                <input
+                  id="deploymentNameInput"
+                  type="text"
+                  value="nginx-app"
+                  placeholder="Example: nginx-app"
+                  maxlength="63"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="namespaceInput">
+                  Namespace
+                </label>
+
+                <input
+                  id="namespaceInput"
+                  type="text"
+                  value="default"
+                  placeholder="Example: default"
+                  maxlength="63"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="replicasInput">
+                  Replicas
+                </label>
+
+                <input
+                  id="replicasInput"
+                  type="number"
+                  value="2"
+                  min="0"
+                  max="1000"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="strategySelect">
+                  Update strategy
+                </label>
+
+                <select id="strategySelect">
+                  <option
+                    value="RollingUpdate"
+                    selected
+                  >
+                    RollingUpdate
+                  </option>
+
+                  <option value="Recreate">
+                    Recreate
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div
+              id="rollingUpdateSection"
+              class="conditional-section active"
+            >
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="maxUnavailableInput">
+                    Max unavailable
+                  </label>
+
+                  <input
+                    id="maxUnavailableInput"
+                    type="text"
+                    value="25%"
+                    placeholder="Example: 25% or 1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="maxSurgeInput">
+                    Max surge
+                  </label>
+
+                  <input
+                    id="maxSurgeInput"
+                    type="text"
+                    value="25%"
+                    placeholder="Example: 25% or 1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Container
+            </h3>
+
+            <div class="form-group">
+              <label for="imageInput">
+                Container image
+              </label>
+
+              <input
+                id="imageInput"
+                type="text"
+                value="nginx:latest"
+                placeholder="Example: nginx:1.27"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="containerNameInput">
+                  Container name
+                </label>
+
+                <input
+                  id="containerNameInput"
+                  type="text"
+                  value="nginx-app"
+                  placeholder="Example: nginx-app"
+                  maxlength="63"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="pullPolicySelect">
+                  Image pull policy
+                </label>
+
+                <select id="pullPolicySelect">
+                  <option value="Always">
+                    Always
+                  </option>
+
+                  <option
+                    value="IfNotPresent"
+                    selected
+                  >
+                    IfNotPresent
+                  </option>
+
+                  <option value="Never">
+                    Never
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-row three">
+              <div class="form-group">
+                <label for="containerPortInput">
+                  Container port
+                </label>
+
+                <input
+                  id="containerPortInput"
+                  type="number"
+                  value="80"
+                  min="1"
+                  max="65535"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="portNameInput">
+                  Port name
+                </label>
+
+                <input
+                  id="portNameInput"
+                  type="text"
+                  value="http"
+                  placeholder="Example: http"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="protocolSelect">
+                  Protocol
+                </label>
+
+                <select id="protocolSelect">
+                  <option value="TCP" selected>
+                    TCP
+                  </option>
+
+                  <option value="UDP">
+                    UDP
+                  </option>
+
+                  <option value="SCTP">
+                    SCTP
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="commandInput">
+                Command
+              </label>
+
+              <input
+                id="commandInput"
+                type="text"
+                placeholder='Optional: nginx,-g'
+              />
+
+              <p class="help-text">
+                Enter comma-separated command values.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="argsInput">
+                Arguments
+              </label>
+
+              <input
+                id="argsInput"
+                type="text"
+                placeholder='Optional: daemon off;'
+              />
+
+              <p class="help-text">
+                Enter comma-separated argument values.
+              </p>
+            </div>
+
+            <h3 class="section-title">
+              Labels and Environment
+            </h3>
+
+            <div class="form-group">
+              <label for="additionalLabelsInput">
+                Additional labels
+              </label>
+
+              <textarea
+                id="additionalLabelsInput"
+                placeholder="team=platform&#10;environment=production"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value label per line.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="environmentInput">
+                Environment variables
+              </label>
+
+              <textarea
+                id="environmentInput"
+                placeholder="APP_ENV=production&#10;LOG_LEVEL=info"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one NAME=value variable per line.
+              </p>
+            </div>
+
+            <h3 class="section-title">
+              Resource Requests and Limits
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="cpuRequestInput">
+                  CPU request
+                </label>
+
+                <input
+                  id="cpuRequestInput"
+                  type="text"
+                  value="100m"
+                  placeholder="Example: 100m"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="memoryRequestInput">
+                  Memory request
+                </label>
+
+                <input
+                  id="memoryRequestInput"
+                  type="text"
+                  value="128Mi"
+                  placeholder="Example: 128Mi"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="cpuLimitInput">
+                  CPU limit
+                </label>
+
+                <input
+                  id="cpuLimitInput"
+                  type="text"
+                  value="500m"
+                  placeholder="Example: 500m"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="memoryLimitInput">
+                  Memory limit
+                </label>
+
+                <input
+                  id="memoryLimitInput"
+                  type="text"
+                  value="512Mi"
+                  placeholder="Example: 512Mi"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Health Probes
+            </h3>
+
+            <div class="checkbox-grid">
+              <div class="checkbox-item">
+                <input
+                  id="readinessEnabledInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="readinessEnabledInput">
+                  Readiness probe
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="livenessEnabledInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="livenessEnabledInput">
+                  Liveness probe
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="startupEnabledInput"
+                  type="checkbox"
+                />
+
+                <label for="startupEnabledInput">
+                  Startup probe
+                </label>
+              </div>
+            </div>
+
+            <div
+              id="probeSettingsSection"
+              class="conditional-section active"
+            >
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="probeTypeSelect">
+                    Probe type
+                  </label>
+
+                  <select id="probeTypeSelect">
+                    <option
+                      value="http"
+                      selected
+                    >
+                      HTTP GET
+                    </option>
+
+                    <option value="tcp">
+                      TCP socket
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="probePathInput">
+                    HTTP path
+                  </label>
+
+                  <input
+                    id="probePathInput"
+                    type="text"
+                    value="/"
+                    placeholder="Example: /health"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row three">
+                <div class="form-group">
+                  <label for="initialDelayInput">
+                    Initial delay
+                  </label>
+
+                  <input
+                    id="initialDelayInput"
+                    type="number"
+                    value="10"
+                    min="0"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="periodSecondsInput">
+                    Period
+                  </label>
+
+                  <input
+                    id="periodSecondsInput"
+                    type="number"
+                    value="10"
+                    min="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="timeoutSecondsInput">
+                    Timeout
+                  </label>
+
+                  <input
+                    id="timeoutSecondsInput"
+                    type="number"
+                    value="2"
+                    min="1"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="failureThresholdInput">
+                    Failure threshold
+                  </label>
+
+                  <input
+                    id="failureThresholdInput"
+                    type="number"
+                    value="3"
+                    min="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="successThresholdInput">
+                    Success threshold
+                  </label>
+
+                  <input
+                    id="successThresholdInput"
+                    type="number"
+                    value="1"
+                    min="1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Pod and Security Settings
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="serviceAccountInput">
+                  Service account
+                </label>
+
+                <input
+                  id="serviceAccountInput"
+                  type="text"
+                  placeholder="Optional: app-service-account"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="imagePullSecretInput">
+                  Image pull secret
+                </label>
+
+                <input
+                  id="imagePullSecretInput"
+                  type="text"
+                  placeholder="Optional: registry-secret"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-grid">
+              <div class="checkbox-item">
+                <input
+                  id="runAsNonRootInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="runAsNonRootInput">
+                  Run as non-root
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="readOnlyRootInput"
+                  type="checkbox"
+                />
+
+                <label for="readOnlyRootInput">
+                  Read-only root filesystem
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="dropCapabilitiesInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="dropCapabilitiesInput">
+                  Drop all Linux capabilities
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="automountTokenInput"
+                  type="checkbox"
+                  checked
+                />
+
+                <label for="automountTokenInput">
+                  Automount service account token
+                </label>
+              </div>
+            </div>
+
+            <div class="input-row" style="margin-top:14px;">
+              <div class="form-group">
+                <label for="runAsUserInput">
+                  Run as user
+                </label>
+
+                <input
+                  id="runAsUserInput"
+                  type="number"
+                  value="1000"
+                  min="1"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="runAsGroupInput">
+                  Run as group
+                </label>
+
+                <input
+                  id="runAsGroupInput"
+                  type="number"
+                  value="1000"
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Scheduling
+            </h3>
+
+            <div class="form-group">
+              <label for="nodeSelectorInput">
+                Node selector
+              </label>
+
+              <textarea
+                id="nodeSelectorInput"
+                placeholder="disktype=ssd&#10;kubernetes.io/os=linux"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one key=value selector per line.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="tolerationsInput">
+                Tolerations
+              </label>
+
+              <textarea
+                id="tolerationsInput"
+                placeholder="key=dedicated,operator=Equal,value=apps,effect=NoSchedule"
+              ></textarea>
+
+              <p class="help-text">
+                Enter one toleration per line using
+                key, operator, value and effect.
+              </p>
+            </div>
+
+            <h3 class="section-title">
+              Volume
+            </h3>
+
+            <div class="checkbox-item">
+              <input
+                id="volumeEnabledInput"
+                type="checkbox"
+              />
+
+              <label for="volumeEnabledInput">
+                Add volume and volume mount
+              </label>
+            </div>
+
+            <div
+              id="volumeSection"
+              class="conditional-section"
+            >
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="volumeNameInput">
+                    Volume name
+                  </label>
+
+                  <input
+                    id="volumeNameInput"
+                    type="text"
+                    value="app-data"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="mountPathInput">
+                    Mount path
+                  </label>
+
+                  <input
+                    id="mountPathInput"
+                    type="text"
+                    value="/app/data"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="volumeTypeSelect">
+                    Volume type
+                  </label>
+
+                  <select id="volumeTypeSelect">
+                    <option
+                      value="emptyDir"
+                      selected
+                    >
+                      emptyDir
+                    </option>
+
+                    <option value="configMap">
+                      ConfigMap
+                    </option>
+
+                    <option value="secret">
+                      Secret
+                    </option>
+
+                    <option value="pvc">
+                      PersistentVolumeClaim
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="volumeSourceInput">
+                    Source name
+                  </label>
+
+                  <input
+                    id="volumeSourceInput"
+                    type="text"
+                    placeholder="Required for ConfigMap, Secret or PVC"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  id="volumeReadOnlyInput"
+                  type="checkbox"
+                />
+
+                <label for="volumeReadOnlyInput">
+                  Mount volume as read-only
+                </label>
+              </div>
+            </div>
+
+            <h3 class="section-title">
+              Additional Deployment Options
+            </h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="revisionHistoryInput">
+                  Revision history limit
+                </label>
+
+                <input
+                  id="revisionHistoryInput"
+                  type="number"
+                  value="10"
+                  min="0"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="progressDeadlineInput">
+                  Progress deadline
+                </label>
+
+                <input
+                  id="progressDeadlineInput"
+                  type="number"
+                  value="600"
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Deployment
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated deployment.yaml</h2>
+
+            <p class="card-description">
+              Review the manifest before applying it to
+              your Kubernetes cluster.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">
+                Kubernetes Deployment YAML
+              </span>
+
+              <pre
+                id="yamlOutput"
+                class="yaml-output"
+              ></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download YAML
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">
+                  Deployment
+                </span>
+
+                <span
+                  id="resultDeployment"
+                  class="result-value"
+                >
+                  nginx-app
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Namespace
+                </span>
+
+                <span
+                  id="resultNamespace"
+                  class="result-value"
+                >
+                  default
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Replicas
+                </span>
+
+                <span
+                  id="resultReplicas"
+                  class="result-value"
+                >
+                  2
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">
+                  Strategy
+                </span>
+
+                <span
+                  id="resultStrategy"
+                  class="result-value"
+                >
+                  RollingUpdate
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">
+                  Container Image
+                </span>
+
+                <span
+                  id="resultImage"
+                  class="result-value"
+                >
+                  nginx:latest
+                </span>
+              </div>
+            </div>
+
+            <div class="explanation">
+              <h3>Manifest summary</h3>
+
+              <ul
+                id="explanationList"
+                class="explanation-list"
+              ></ul>
+            </div>
+
+            <div class="warning">
+              Test the generated manifest in a non-production
+              environment first. Verify images, resource
+              limits, security context, ports, probes,
+              namespaces, secrets, and volume references
+              before deployment.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Apply and Verify the Deployment</h2>
+
+          <table class="reference-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Command</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Validate the manifest locally</td>
+                <td>
+                  <code>
+                    kubectl apply --dry-run=client -f deployment.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Apply the deployment</td>
+                <td>
+                  <code>
+                    kubectl apply -f deployment.yaml
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Check deployment status</td>
+                <td>
+                  <code>
+                    kubectl get deployment -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Check rollout status</td>
+                <td>
+                  <code>
+                    kubectl rollout status deployment/nginx-app -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>View pods</td>
+                <td>
+                  <code>
+                    kubectl get pods -n default -o wide
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>View pod logs</td>
+                <td>
+                  <code>
+                    kubectl logs -n default deployment/nginx-app
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Restart the deployment</td>
+                <td>
+                  <code>
+                    kubectl rollout restart deployment/nginx-app -n default
+                  </code>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Rollback the deployment</td>
+                <td>
+                  <code>
+                    kubectl rollout undo deployment/nginx-app -n default
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="reference-section">
+          <h2>Kubernetes Deployment Guidelines</h2>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <strong>Use Fixed Image Tags</strong>
+              <p>
+                Avoid using latest in production. Use a
+                fixed application version or image digest.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Configure Resources</strong>
+              <p>
+                Resource requests help scheduling, while
+                limits prevent containers from consuming
+                excessive CPU or memory.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Add Health Probes</strong>
+              <p>
+                Readiness, liveness and startup probes help
+                Kubernetes identify healthy application
+                instances.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Use Non-Root Containers</strong>
+              <p>
+                Run workloads using a non-root user and drop
+                unnecessary Linux capabilities.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Protect Secrets</strong>
+              <p>
+                Do not place passwords or private keys
+                directly in Deployment YAML. Use Kubernetes
+                Secrets or an external secret manager.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <strong>Review Rollout Settings</strong>
+              <p>
+                Tune maxSurge and maxUnavailable based on
+                application availability and cluster
+                capacity.
+              </p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fields = {
+        deploymentName:
+          document.getElementById(
+            "deploymentNameInput",
+          ),
+
+        namespace:
+          document.getElementById(
+            "namespaceInput",
+          ),
+
+        replicas:
+          document.getElementById(
+            "replicasInput",
+          ),
+
+        strategy:
+          document.getElementById(
+            "strategySelect",
+          ),
+
+        maxUnavailable:
+          document.getElementById(
+            "maxUnavailableInput",
+          ),
+
+        maxSurge:
+          document.getElementById(
+            "maxSurgeInput",
+          ),
+
+        image:
+          document.getElementById(
+            "imageInput",
+          ),
+
+        containerName:
+          document.getElementById(
+            "containerNameInput",
+          ),
+
+        pullPolicy:
+          document.getElementById(
+            "pullPolicySelect",
+          ),
+
+        containerPort:
+          document.getElementById(
+            "containerPortInput",
+          ),
+
+        portName:
+          document.getElementById(
+            "portNameInput",
+          ),
+
+        protocol:
+          document.getElementById(
+            "protocolSelect",
+          ),
+
+        command:
+          document.getElementById(
+            "commandInput",
+          ),
+
+        args:
+          document.getElementById(
+            "argsInput",
+          ),
+
+        labels:
+          document.getElementById(
+            "additionalLabelsInput",
+          ),
+
+        environment:
+          document.getElementById(
+            "environmentInput",
+          ),
+
+        cpuRequest:
+          document.getElementById(
+            "cpuRequestInput",
+          ),
+
+        memoryRequest:
+          document.getElementById(
+            "memoryRequestInput",
+          ),
+
+        cpuLimit:
+          document.getElementById(
+            "cpuLimitInput",
+          ),
+
+        memoryLimit:
+          document.getElementById(
+            "memoryLimitInput",
+          ),
+
+        readiness:
+          document.getElementById(
+            "readinessEnabledInput",
+          ),
+
+        liveness:
+          document.getElementById(
+            "livenessEnabledInput",
+          ),
+
+        startup:
+          document.getElementById(
+            "startupEnabledInput",
+          ),
+
+        probeType:
+          document.getElementById(
+            "probeTypeSelect",
+          ),
+
+        probePath:
+          document.getElementById(
+            "probePathInput",
+          ),
+
+        initialDelay:
+          document.getElementById(
+            "initialDelayInput",
+          ),
+
+        period:
+          document.getElementById(
+            "periodSecondsInput",
+          ),
+
+        timeout:
+          document.getElementById(
+            "timeoutSecondsInput",
+          ),
+
+        failureThreshold:
+          document.getElementById(
+            "failureThresholdInput",
+          ),
+
+        successThreshold:
+          document.getElementById(
+            "successThresholdInput",
+          ),
+
+        serviceAccount:
+          document.getElementById(
+            "serviceAccountInput",
+          ),
+
+        imagePullSecret:
+          document.getElementById(
+            "imagePullSecretInput",
+          ),
+
+        runAsNonRoot:
+          document.getElementById(
+            "runAsNonRootInput",
+          ),
+
+        readOnlyRoot:
+          document.getElementById(
+            "readOnlyRootInput",
+          ),
+
+        dropCapabilities:
+          document.getElementById(
+            "dropCapabilitiesInput",
+          ),
+
+        automountToken:
+          document.getElementById(
+            "automountTokenInput",
+          ),
+
+        runAsUser:
+          document.getElementById(
+            "runAsUserInput",
+          ),
+
+        runAsGroup:
+          document.getElementById(
+            "runAsGroupInput",
+          ),
+
+        nodeSelector:
+          document.getElementById(
+            "nodeSelectorInput",
+          ),
+
+        tolerations:
+          document.getElementById(
+            "tolerationsInput",
+          ),
+
+        volumeEnabled:
+          document.getElementById(
+            "volumeEnabledInput",
+          ),
+
+        volumeName:
+          document.getElementById(
+            "volumeNameInput",
+          ),
+
+        mountPath:
+          document.getElementById(
+            "mountPathInput",
+          ),
+
+        volumeType:
+          document.getElementById(
+            "volumeTypeSelect",
+          ),
+
+        volumeSource:
+          document.getElementById(
+            "volumeSourceInput",
+          ),
+
+        volumeReadOnly:
+          document.getElementById(
+            "volumeReadOnlyInput",
+          ),
+
+        revisionHistory:
+          document.getElementById(
+            "revisionHistoryInput",
+          ),
+
+        progressDeadline:
+          document.getElementById(
+            "progressDeadlineInput",
+          ),
+      };
+
+      const yamlOutput =
+        document.getElementById("yamlOutput");
+
+      const message =
+        document.getElementById("message");
+
+      const explanationList =
+        document.getElementById(
+          "explanationList",
+        );
+
+      const copyButton =
+        document.getElementById("copyButton");
+
+      const downloadButton =
+        document.getElementById(
+          "downloadButton",
+        );
+
+      let currentYaml = "";
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+      }
+
+      function escapeYamlString(value) {
+        const text = String(value);
+
+        if (
+          text === "" ||
+          /[:#{}[\],&*?|>'"%@`]/.test(text) ||
+          /^\s|\s$/.test(text) ||
+          [
+            "true",
+            "false",
+            "null",
+            "yes",
+            "no",
+            "on",
+            "off",
+          ].includes(text.toLowerCase())
+        ) {
+          return `"${text
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"')}"`;
+        }
+
+        return text;
+      }
+
+      function parseKeyValueLines(value) {
+        const result = {};
+
+        value
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .forEach((line) => {
+            const separatorIndex =
+              line.indexOf("=");
+
+            if (separatorIndex <= 0) {
+              return;
+            }
+
+            const key = line
+              .slice(0, separatorIndex)
+              .trim();
+
+            const itemValue = line
+              .slice(separatorIndex + 1)
+              .trim();
+
+            if (key) {
+              result[key] = itemValue;
+            }
+          });
+
+        return result;
+      }
+
+      function parseCsv(value) {
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function parseTolerations(value) {
+        return value
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const toleration = {};
+
+            line
+              .split(",")
+              .map((part) => part.trim())
+              .filter(Boolean)
+              .forEach((part) => {
+                const index = part.indexOf("=");
+
+                if (index > 0) {
+                  const key = part
+                    .slice(0, index)
+                    .trim();
+
+                  const itemValue = part
+                    .slice(index + 1)
+                    .trim();
+
+                  toleration[key] = itemValue;
+                }
+              });
+
+            return toleration;
+          })
+          .filter(
+            (item) =>
+              Object.keys(item).length > 0,
+          );
+      }
+
+      function isValidKubernetesName(value) {
+        return (
+          value.length >= 1 &&
+          value.length <= 63 &&
+          /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(
+            value,
+          )
+        );
+      }
+
+      function isValidPort(value) {
+        return (
+          Number.isInteger(value) &&
+          value >= 1 &&
+          value <= 65535
+        );
+      }
+
+      function addObjectLines(
+        lines,
+        object,
+        indent,
+      ) {
+        const spacing = " ".repeat(indent);
+
+        Object.entries(object).forEach(
+          ([key, value]) => {
+            lines.push(
+              `${spacing}${key}: ${escapeYamlString(
+                value,
+              )}`,
+            );
+          },
+        );
+      }
+
+      function buildProbeLines(
+        lines,
+        probeName,
+        indent,
+      ) {
+        const spacing = " ".repeat(indent);
+        const childSpacing =
+          " ".repeat(indent + 2);
+
+        lines.push(`${spacing}${probeName}:`);
+
+        if (fields.probeType.value === "http") {
+          lines.push(`${childSpacing}httpGet:`);
+          lines.push(
+            `${childSpacing}  path: ${escapeYamlString(
+              fields.probePath.value.trim() ||
+                "/",
+            )}`,
+          );
+
+          lines.push(
+            `${childSpacing}  port: ${Number(
+              fields.containerPort.value,
+            )}`,
+          );
+
+          lines.push(
+            `${childSpacing}  scheme: HTTP`,
+          );
+        } else {
+          lines.push(`${childSpacing}tcpSocket:`);
+          lines.push(
+            `${childSpacing}  port: ${Number(
+              fields.containerPort.value,
+            )}`,
+          );
+        }
+
+        lines.push(
+          `${childSpacing}initialDelaySeconds: ${Number(
+            fields.initialDelay.value,
+          )}`,
+        );
+
+        lines.push(
+          `${childSpacing}periodSeconds: ${Number(
+            fields.period.value,
+          )}`,
+        );
+
+        lines.push(
+          `${childSpacing}timeoutSeconds: ${Number(
+            fields.timeout.value,
+          )}`,
+        );
+
+        lines.push(
+          `${childSpacing}failureThreshold: ${Number(
+            fields.failureThreshold.value,
+          )}`,
+        );
+
+        lines.push(
+          `${childSpacing}successThreshold: ${Number(
+            fields.successThreshold.value,
+          )}`,
+        );
+      }
+
+      function validateForm() {
+        const deploymentName =
+          fields.deploymentName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        const containerName =
+          fields.containerName.value.trim();
+
+        const replicas = Number(
+          fields.replicas.value,
+        );
+
+        const port = Number(
+          fields.containerPort.value,
+        );
+
+        if (
+          !isValidKubernetesName(deploymentName)
+        ) {
+          return "Deployment name must use lowercase letters, numbers and hyphens, and must be 63 characters or fewer.";
+        }
+
+        if (!isValidKubernetesName(namespace)) {
+          return "Namespace must use lowercase letters, numbers and hyphens.";
+        }
+
+        if (
+          !isValidKubernetesName(containerName)
+        ) {
+          return "Container name must use lowercase letters, numbers and hyphens.";
+        }
+
+        if (!fields.image.value.trim()) {
+          return "Container image is required.";
+        }
+
+        if (
+          !Number.isInteger(replicas) ||
+          replicas < 0 ||
+          replicas > 1000
+        ) {
+          return "Replicas must be a whole number between 0 and 1000.";
+        }
+
+        if (!isValidPort(port)) {
+          return "Container port must be between 1 and 65535.";
+        }
+
+        if (
+          fields.volumeEnabled.checked &&
+          !isValidKubernetesName(
+            fields.volumeName.value.trim(),
+          )
+        ) {
+          return "Volume name must be a valid Kubernetes name.";
+        }
+
+        if (
+          fields.volumeEnabled.checked &&
+          !fields.mountPath.value
+            .trim()
+            .startsWith("/")
+        ) {
+          return "Volume mount path must start with /.";
+        }
+
+        if (
+          fields.volumeEnabled.checked &&
+          fields.volumeType.value !==
+            "emptyDir" &&
+          !fields.volumeSource.value.trim()
+        ) {
+          return "A source name is required for the selected volume type.";
+        }
+
+        return "";
+      }
+
+      function generateYaml() {
+        clearMessage();
+
+        const validationError =
+          validateForm();
+
+        if (validationError) {
+          currentYaml = "";
+          yamlOutput.textContent =
+            validationError;
+
+          explanationList.innerHTML = "";
+
+          showMessage(
+            validationError,
+            "error",
+          );
+
+          return;
+        }
+
+        const deploymentName =
+          fields.deploymentName.value.trim();
+
+        const namespace =
+          fields.namespace.value.trim();
+
+        const containerName =
+          fields.containerName.value.trim();
+
+        const replicas = Number(
+          fields.replicas.value,
+        );
+
+        const containerPort = Number(
+          fields.containerPort.value,
+        );
+
+        const labels = {
+          app: deploymentName,
+          ...parseKeyValueLines(
+            fields.labels.value,
+          ),
+        };
+
+        const environment =
+          parseKeyValueLines(
+            fields.environment.value,
+          );
+
+        const nodeSelector =
+          parseKeyValueLines(
+            fields.nodeSelector.value,
+          );
+
+        const tolerations =
+          parseTolerations(
+            fields.tolerations.value,
+          );
+
+        const command = parseCsv(
+          fields.command.value,
+        );
+
+        const args = parseCsv(
+          fields.args.value,
+        );
+
+        const lines = [];
+
+        lines.push("apiVersion: apps/v1");
+        lines.push("kind: Deployment");
+        lines.push("metadata:");
+        lines.push(`  name: ${deploymentName}`);
+        lines.push(`  namespace: ${namespace}`);
+        lines.push("  labels:");
+
+        addObjectLines(lines, labels, 4);
+
+        lines.push("spec:");
+        lines.push(`  replicas: ${replicas}`);
+
+        lines.push(
+          `  revisionHistoryLimit: ${Number(
+            fields.revisionHistory.value,
+          )}`,
+        );
+
+        lines.push(
+          `  progressDeadlineSeconds: ${Number(
+            fields.progressDeadline.value,
+          )}`,
+        );
+
+        lines.push("  selector:");
+        lines.push("    matchLabels:");
+        lines.push(
+          `      app: ${deploymentName}`,
+        );
+
+        lines.push("  strategy:");
+        lines.push(
+          `    type: ${fields.strategy.value}`,
+        );
+
+        if (
+          fields.strategy.value ===
+          "RollingUpdate"
+        ) {
+          lines.push("    rollingUpdate:");
+          lines.push(
+            `      maxUnavailable: ${escapeYamlString(
+              fields.maxUnavailable.value.trim() ||
+                "25%",
+            )}`,
+          );
+
+          lines.push(
+            `      maxSurge: ${escapeYamlString(
+              fields.maxSurge.value.trim() ||
+                "25%",
+            )}`,
+          );
+        }
+
+        lines.push("  template:");
+        lines.push("    metadata:");
+        lines.push("      labels:");
+
+        addObjectLines(lines, labels, 8);
+
+        lines.push("    spec:");
+
+        lines.push(
+          `      automountServiceAccountToken: ${fields.automountToken.checked}`,
+        );
+
+        if (
+          fields.serviceAccount.value.trim()
+        ) {
+          lines.push(
+            `      serviceAccountName: ${fields.serviceAccount.value.trim()}`,
+          );
+        }
+
+        if (
+          fields.imagePullSecret.value.trim()
+        ) {
+          lines.push("      imagePullSecrets:");
+          lines.push(
+            `        - name: ${fields.imagePullSecret.value.trim()}`,
+          );
+        }
+
+        if (
+          Object.keys(nodeSelector).length > 0
+        ) {
+          lines.push("      nodeSelector:");
+          addObjectLines(
+            lines,
+            nodeSelector,
+            8,
+          );
+        }
+
+        if (tolerations.length > 0) {
+          lines.push("      tolerations:");
+
+          tolerations.forEach(
+            (toleration) => {
+              lines.push("        -");
+
+              Object.entries(
+                toleration,
+              ).forEach(([key, value]) => {
+                lines.push(
+                  `          ${key}: ${escapeYamlString(
+                    value,
+                  )}`,
+                );
+              });
+            },
+          );
+        }
+
+        lines.push("      securityContext:");
+        lines.push(
+          `        runAsNonRoot: ${fields.runAsNonRoot.checked}`,
+        );
+
+        if (fields.runAsNonRoot.checked) {
+          lines.push(
+            `        runAsUser: ${Number(
+              fields.runAsUser.value,
+            )}`,
+          );
+
+          lines.push(
+            `        runAsGroup: ${Number(
+              fields.runAsGroup.value,
+            )}`,
+          );
+
+          lines.push(
+            `        fsGroup: ${Number(
+              fields.runAsGroup.value,
+            )}`,
+          );
+        }
+
+        lines.push("      containers:");
+        lines.push(`        - name: ${containerName}`);
+        lines.push(
+          `          image: ${escapeYamlString(
+            fields.image.value.trim(),
+          )}`,
+        );
+
+        lines.push(
+          `          imagePullPolicy: ${fields.pullPolicy.value}`,
+        );
+
+        if (command.length > 0) {
+          lines.push("          command:");
+
+          command.forEach((item) => {
+            lines.push(
+              `            - ${escapeYamlString(
+                item,
+              )}`,
+            );
+          });
+        }
+
+        if (args.length > 0) {
+          lines.push("          args:");
+
+          args.forEach((item) => {
+            lines.push(
+              `            - ${escapeYamlString(
+                item,
+              )}`,
+            );
+          });
+        }
+
+        lines.push("          ports:");
+        lines.push(
+          `            - name: ${fields.portName.value.trim() || "http"}`,
+        );
+        lines.push(
+          `              containerPort: ${containerPort}`,
+        );
+        lines.push(
+          `              protocol: ${fields.protocol.value}`,
+        );
+
+        if (
+          Object.keys(environment).length > 0
+        ) {
+          lines.push("          env:");
+
+          Object.entries(environment).forEach(
+            ([name, value]) => {
+              lines.push(
+                `            - name: ${name}`,
+              );
+
+              lines.push(
+                `              value: ${escapeYamlString(
+                  value,
+                )}`,
+              );
+            },
+          );
+        }
+
+        lines.push("          resources:");
+        lines.push("            requests:");
+        lines.push(
+          `              cpu: ${escapeYamlString(
+            fields.cpuRequest.value.trim(),
+          )}`,
+        );
+        lines.push(
+          `              memory: ${escapeYamlString(
+            fields.memoryRequest.value.trim(),
+          )}`,
+        );
+        lines.push("            limits:");
+        lines.push(
+          `              cpu: ${escapeYamlString(
+            fields.cpuLimit.value.trim(),
+          )}`,
+        );
+        lines.push(
+          `              memory: ${escapeYamlString(
+            fields.memoryLimit.value.trim(),
+          )}`,
+        );
+
+        lines.push(
+          "          securityContext:",
+        );
+
+        lines.push(
+          `            allowPrivilegeEscalation: false`,
+        );
+
+        lines.push(
+          `            readOnlyRootFilesystem: ${fields.readOnlyRoot.checked}`,
+        );
+
+        if (
+          fields.dropCapabilities.checked
+        ) {
+          lines.push(
+            "            capabilities:",
+          );
+          lines.push("              drop:");
+          lines.push(
+            '                - "ALL"',
+          );
+        }
+
+        if (fields.readiness.checked) {
+          buildProbeLines(
+            lines,
+            "readinessProbe",
+            10,
+          );
+        }
+
+        if (fields.liveness.checked) {
+          buildProbeLines(
+            lines,
+            "livenessProbe",
+            10,
+          );
+        }
+
+        if (fields.startup.checked) {
+          buildProbeLines(
+            lines,
+            "startupProbe",
+            10,
+          );
+        }
+
+        if (fields.volumeEnabled.checked) {
+          lines.push(
+            "          volumeMounts:",
+          );
+          lines.push(
+            `            - name: ${fields.volumeName.value.trim()}`,
+          );
+          lines.push(
+            `              mountPath: ${escapeYamlString(
+              fields.mountPath.value.trim(),
+            )}`,
+          );
+
+          if (
+            fields.volumeReadOnly.checked
+          ) {
+            lines.push(
+              "              readOnly: true",
+            );
+          }
+
+          lines.push("      volumes:");
+          lines.push(
+            `        - name: ${fields.volumeName.value.trim()}`,
+          );
+
+          const sourceName =
+            fields.volumeSource.value.trim();
+
+          if (
+            fields.volumeType.value ===
+            "emptyDir"
+          ) {
+            lines.push(
+              "          emptyDir: {}",
+            );
+          }
+
+          if (
+            fields.volumeType.value ===
+            "configMap"
+          ) {
+            lines.push(
+              "          configMap:",
+            );
+            lines.push(
+              `            name: ${sourceName}`,
+            );
+          }
+
+          if (
+            fields.volumeType.value ===
+            "secret"
+          ) {
+            lines.push("          secret:");
+            lines.push(
+              `            secretName: ${sourceName}`,
+            );
+          }
+
+          if (
+            fields.volumeType.value ===
+            "pvc"
+          ) {
+            lines.push(
+              "          persistentVolumeClaim:",
+            );
+            lines.push(
+              `            claimName: ${sourceName}`,
+            );
+          }
+        }
+
+        currentYaml = lines.join("\n");
+
+        yamlOutput.textContent = currentYaml;
+
+        document.getElementById(
+          "resultDeployment",
+        ).textContent = deploymentName;
+
+        document.getElementById(
+          "resultNamespace",
+        ).textContent = namespace;
+
+        document.getElementById(
+          "resultReplicas",
+        ).textContent = String(replicas);
+
+        document.getElementById(
+          "resultStrategy",
+        ).textContent =
+          fields.strategy.value;
+
+        document.getElementById(
+          "resultImage",
+        ).textContent =
+          fields.image.value.trim();
+
+        explanationList.innerHTML = "";
+
+        const explanations = [
+          `Creates Deployment ${deploymentName} in namespace ${namespace}.`,
+          `Runs ${replicas} replica${replicas === 1 ? "" : "s"} using image ${fields.image.value.trim()}.`,
+          `Exposes container port ${containerPort}/${fields.protocol.value}.`,
+          `Uses ${fields.strategy.value} as the deployment update strategy.`,
+          "Includes CPU and memory requests and limits.",
+        ];
+
+        if (
+          fields.readiness.checked ||
+          fields.liveness.checked ||
+          fields.startup.checked
+        ) {
+          explanations.push(
+            "Health probes are enabled to verify container readiness and liveness.",
+          );
+        }
+
+        if (fields.runAsNonRoot.checked) {
+          explanations.push(
+            `The pod runs as non-root user ${fields.runAsUser.value}.`,
+          );
+        }
+
+        if (fields.volumeEnabled.checked) {
+          explanations.push(
+            `Mounts ${fields.volumeName.value.trim()} at ${fields.mountPath.value.trim()}.`,
+          );
+        }
+
+        explanations.forEach((text) => {
+          const item =
+            document.createElement("li");
+
+          item.textContent = text;
+          explanationList.appendChild(item);
+        });
+      }
+
+      function updateConditionalSections() {
+        document
+          .getElementById(
+            "rollingUpdateSection",
+          )
+          .classList.toggle(
+            "active",
+            fields.strategy.value ===
+              "RollingUpdate",
+          );
+
+        const probesEnabled =
+          fields.readiness.checked ||
+          fields.liveness.checked ||
+          fields.startup.checked;
+
+        document
+          .getElementById(
+            "probeSettingsSection",
+          )
+          .classList.toggle(
+            "active",
+            probesEnabled,
+          );
+
+        document
+          .getElementById("volumeSection")
+          .classList.toggle(
+            "active",
+            fields.volumeEnabled.checked,
+          );
+
+        fields.volumeSource.disabled =
+          !fields.volumeEnabled.checked ||
+          fields.volumeType.value ===
+            "emptyDir";
+
+        fields.probePath.disabled =
+          fields.probeType.value !== "http";
+
+        generateYaml();
+      }
+
+      function applyPreset(preset) {
+        const presets = {
+          nginx: {
+            name: "nginx-app",
+            image: "nginx:1.27",
+            port: 80,
+            portName: "http",
+            cpuRequest: "100m",
+            memoryRequest: "128Mi",
+            cpuLimit: "500m",
+            memoryLimit: "512Mi",
+            path: "/",
+          },
+
+          apache: {
+            name: "apache-app",
+            image: "httpd:2.4",
+            port: 80,
+            portName: "http",
+            cpuRequest: "100m",
+            memoryRequest: "128Mi",
+            cpuLimit: "500m",
+            memoryLimit: "512Mi",
+            path: "/",
+          },
+
+          node: {
+            name: "node-app",
+            image: "node:22-alpine",
+            port: 3000,
+            portName: "http",
+            cpuRequest: "100m",
+            memoryRequest: "128Mi",
+            cpuLimit: "500m",
+            memoryLimit: "512Mi",
+            path: "/health",
+          },
+
+          python: {
+            name: "python-app",
+            image: "python:3.13-slim",
+            port: 8000,
+            portName: "http",
+            cpuRequest: "100m",
+            memoryRequest: "128Mi",
+            cpuLimit: "500m",
+            memoryLimit: "512Mi",
+            path: "/health",
+          },
+
+          spring: {
+            name: "spring-app",
+            image: "eclipse-temurin:21-jre",
+            port: 8080,
+            portName: "http",
+            cpuRequest: "250m",
+            memoryRequest: "512Mi",
+            cpuLimit: "1000m",
+            memoryLimit: "1Gi",
+            path: "/actuator/health",
+          },
+        };
+
+        const selected = presets[preset];
+
+        if (!selected) {
+          return;
+        }
+
+        fields.deploymentName.value =
+          selected.name;
+
+        fields.containerName.value =
+          selected.name;
+
+        fields.image.value =
+          selected.image;
+
+        fields.containerPort.value =
+          String(selected.port);
+
+        fields.portName.value =
+          selected.portName;
+
+        fields.cpuRequest.value =
+          selected.cpuRequest;
+
+        fields.memoryRequest.value =
+          selected.memoryRequest;
+
+        fields.cpuLimit.value =
+          selected.cpuLimit;
+
+        fields.memoryLimit.value =
+          selected.memoryLimit;
+
+        fields.probePath.value =
+          selected.path;
+        fields.probeType.value = "http";
+
+        updateConditionalSections();
+      }
+
+      function resetGenerator() {
+        fields.deploymentName.value =
+          "nginx-app";
+
+        fields.namespace.value =
+          "default";
+
+        fields.replicas.value = "2";
+        fields.strategy.value =
+          "RollingUpdate";
+
+        fields.maxUnavailable.value =
+          "25%";
+
+        fields.maxSurge.value = "25%";
+        fields.image.value =
+          "nginx:latest";
+
+        fields.containerName.value =
+          "nginx-app";
+
+        fields.pullPolicy.value =
+          "IfNotPresent";
+
+        fields.containerPort.value =
+          "80";
+
+        fields.portName.value = "http";
+        fields.protocol.value = "TCP";
+        fields.command.value = "";
+        fields.args.value = "";
+        fields.labels.value = "";
+        fields.environment.value = "";
+
+        fields.cpuRequest.value = "100m";
+        fields.memoryRequest.value =
+          "128Mi";
+
+        fields.cpuLimit.value = "500m";
+        fields.memoryLimit.value =
+          "512Mi";
+
+        fields.readiness.checked = true;
+        fields.liveness.checked = true;
+        fields.startup.checked = false;
+
+        fields.probeType.value = "http";
+        fields.probePath.value = "/";
+        fields.initialDelay.value = "10";
+        fields.period.value = "10";
+        fields.timeout.value = "2";
+        fields.failureThreshold.value =
+          "3";
+
+        fields.successThreshold.value =
+          "1";
+
+        fields.serviceAccount.value = "";
+        fields.imagePullSecret.value = "";
+
+        fields.runAsNonRoot.checked =
+          true;
+
+        fields.readOnlyRoot.checked =
+          false;
+
+        fields.dropCapabilities.checked =
+          true;
+
+        fields.automountToken.checked =
+          true;
+
+        fields.runAsUser.value = "1000";
+        fields.runAsGroup.value = "1000";
+
+        fields.nodeSelector.value = "";
+        fields.tolerations.value = "";
+
+        fields.volumeEnabled.checked =
+          false;
+
+        fields.volumeName.value =
+          "app-data";
+
+        fields.mountPath.value =
+          "/app/data";
+
+        fields.volumeType.value =
+          "emptyDir";
+
+        fields.volumeSource.value = "";
+
+        fields.volumeReadOnly.checked =
+          false;
+
+        fields.revisionHistory.value =
+          "10";
+
+        fields.progressDeadline.value =
+          "600";
+
+        clearMessage();
+        updateConditionalSections();
+
+        fields.deploymentName.focus();
+      }
+
+      async function copyYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate a valid Deployment YAML before copying.",
+            "error",
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(
+            currentYaml,
+          );
+
+          const originalText =
+            copyButton.textContent;
+
+          copyButton.textContent =
+            "Copied!";
+
+          showMessage(
+            "Deployment YAML copied successfully.",
+            "success",
+          );
+
+          setTimeout(() => {
+            copyButton.textContent =
+              originalText;
+          }, 1500);
+        } catch {
+          showMessage(
+            "Unable to copy automatically. Please copy the YAML manually.",
+            "error",
+          );
+        }
+      }
+
+      function downloadYaml() {
+        if (!currentYaml) {
+          showMessage(
+            "Generate a valid Deployment YAML before downloading.",
+            "error",
+          );
+
+          return;
+        }
+
+        const blob = new Blob(
+          [currentYaml],
+          {
+            type: "application/yaml;charset=utf-8",
+          },
+        );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const anchor =
+          document.createElement("a");
+
+        anchor.href = url;
+        anchor.download =
+          `${fields.deploymentName.value.trim() || "deployment"}.yaml`;
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showMessage(
+          "Deployment YAML downloaded successfully.",
+          "success",
+        );
+      }
+
+      document
+        .getElementById("generateButton")
+        .addEventListener(
+          "click",
+          generateYaml,
+        );
+
+      document
+        .getElementById("resetButton")
+        .addEventListener(
+          "click",
+          resetGenerator,
+        );
+
+      copyButton.addEventListener(
+        "click",
+        copyYaml,
+      );
+
+      downloadButton.addEventListener(
+        "click",
+        downloadYaml,
+      );
+
+      Object.values(fields).forEach(
+        (field) => {
+          field.addEventListener(
+            "input",
+            generateYaml,
+          );
+
+          field.addEventListener(
+            "change",
+            updateConditionalSections,
+          );
+        },
+      );
+
+      document
+        .querySelectorAll(".preset")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              applyPreset(
+                button.dataset.preset || "",
+              );
+            },
+          );
+        });
+
+      updateConditionalSections();
+    </script>
+  </body>
+</html>

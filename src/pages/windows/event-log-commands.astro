@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Event Log Command Generator" description="Generate PowerShell commands to query, filter and export Windows Event Logs for troubleshooting." slug="event-log-commands" icon="📋">
+
+<h2 class="tool-title">Event Log query builder</h2><div class="form-grid"><div class="field"><label for="log">Log</label><select id="log"><option>System</option><option>Application</option><option>Security</option><option>Setup</option></select></div><div class="field"><label for="level">Level</label><select id="level"><option value="">Any</option><option value="1">Critical</option><option value="2">Error</option><option value="3">Warning</option><option value="4">Information</option></select></div><div class="field"><label for="hours">Last N hours</label><input id="hours" type="number" min="1" value="24" /></div><div class="field"><label for="max">Max events</label><input id="max" type="number" min="1" max="5000" value="100" /></div><div class="field full"><label for="export">Optional CSV export path</label><input id="export" placeholder="C:\\Temp\\events.csv" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate query</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Build an Event Log query.</pre></div>
+<script>
+
+const v=(id:string)=>(document.querySelector<HTMLInputElement|HTMLSelectElement>('#'+id)!).value;const o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const lvl=v('level'),exp=v('export').trim().replace(/'/g,"''");let c=`Get-WinEvent -FilterHashtable @{LogName='${v('log')}'; StartTime=(Get-Date).AddHours(-${Math.max(1,Number(v('hours'))||24)})${lvl?`; Level=${lvl}`:''}} -MaxEvents ${Math.max(1,Number(v('max'))||100)} | Select-Object TimeCreated,Id,LevelDisplayName,ProviderName,Message`;if(exp)c+=` | Export-Csv -Path '${exp}' -NoTypeInformation -Encoding UTF8`;o.textContent=c});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

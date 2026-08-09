@@ -1,0 +1,1840 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Cron Expression Generator | Gokuruvi Tools";
+const pageDescription =
+  "Free Linux cron expression generator. Build and validate cron schedules for minutes, hours, days, months and weekdays.";
+const siteUrl = "https://www.gokuruvi.com/linux/cron-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="cron generator, cron expression generator, crontab generator, Linux cron, cron schedule, cron syntax"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #d97706;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Hero */
+
+      .hero {
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 770px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      /* Generator */
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(310px, 0.8fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 25px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .preset-section {
+        margin-bottom: 26px;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        transform: translateY(-1px);
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-input,
+      .field-select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .field-input:focus,
+      .field-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .expression-input-wrapper {
+        display: flex;
+        gap: 10px;
+      }
+
+      .expression-input {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .validate-button {
+        flex: 0 0 auto;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .validate-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .command-field {
+        margin-top: 22px;
+      }
+
+      .command-input {
+        width: 100%;
+        min-height: 90px;
+        resize: vertical;
+        padding: 12px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        color: var(--dark);
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 24px;
+      }
+
+      .action-button {
+        min-height: 45px;
+        padding: 0 18px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      /* Results */
+
+      .results-column {
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-group {
+        margin-bottom: 18px;
+      }
+
+      .result-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 57px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .expression-value {
+        color: var(--primary-dark);
+        font-size: 25px;
+        letter-spacing: 2px;
+      }
+
+      .description-value {
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .validation-box {
+        padding: 14px;
+        border-radius: 11px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .validation-success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .validation-error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
+      .next-runs {
+        display: grid;
+        gap: 9px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .next-runs li {
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      /* Information */
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      .cron-table {
+        width: 100%;
+        margin-top: 13px;
+        border-collapse: collapse;
+      }
+
+      .cron-table th,
+      .cron-table td {
+        padding: 9px 8px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .cron-table th {
+        color: var(--dark);
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 900px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .expression-input-wrapper {
+          flex-direction: column;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button,
+        .validate-button {
+          width: 100%;
+        }
+
+        .result-output {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Cron Expression Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">⏰</div>
+
+            <h1>
+              Cron Expression <span>Generator</span>
+            </h1>
+
+            <p>
+              Build Linux cron expressions using simple schedule controls.
+              Generate the complete crontab line, validate custom expressions
+              and preview upcoming execution times.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Configure your cron schedule</h2>
+
+                <p>
+                  Select a preset or define each cron field manually.
+                </p>
+              </div>
+
+              <div class="preset-section">
+                <span class="field-label">Common schedules</span>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="* * * * *"
+                  >
+                    Every minute
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="*/5 * * * *"
+                  >
+                    Every 5 minutes
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="0 * * * *"
+                  >
+                    Every hour
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="0 0 * * *"
+                  >
+                    Every day
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="0 0 * * 0"
+                  >
+                    Every Sunday
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="0 0 1 * *"
+                  >
+                    Every month
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-expression="0 9 * * 1-5"
+                  >
+                    Weekdays at 9 AM
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-grid">
+                <div class="form-field">
+                  <label class="field-label" for="minute">
+                    Minute
+                  </label>
+
+                  <input
+                    class="field-input"
+                    id="minute"
+                    type="text"
+                    value="0"
+                    inputmode="text"
+                    aria-describedby="minute-help"
+                  />
+
+                  <span class="field-help" id="minute-help">
+                    Allowed: 0–59, *, lists, ranges and steps.
+                  </span>
+                </div>
+
+                <div class="form-field">
+                  <label class="field-label" for="hour">
+                    Hour
+                  </label>
+
+                  <input
+                    class="field-input"
+                    id="hour"
+                    type="text"
+                    value="0"
+                    inputmode="text"
+                    aria-describedby="hour-help"
+                  />
+
+                  <span class="field-help" id="hour-help">
+                    Allowed: 0–23, *, lists, ranges and steps.
+                  </span>
+                </div>
+
+                <div class="form-field">
+                  <label class="field-label" for="day-month">
+                    Day of month
+                  </label>
+
+                  <input
+                    class="field-input"
+                    id="day-month"
+                    type="text"
+                    value="*"
+                    inputmode="text"
+                    aria-describedby="day-month-help"
+                  />
+
+                  <span class="field-help" id="day-month-help">
+                    Allowed: 1–31, *, lists, ranges and steps.
+                  </span>
+                </div>
+
+                <div class="form-field">
+                  <label class="field-label" for="month">
+                    Month
+                  </label>
+
+                  <input
+                    class="field-input"
+                    id="month"
+                    type="text"
+                    value="*"
+                    inputmode="text"
+                    aria-describedby="month-help"
+                  />
+
+                  <span class="field-help" id="month-help">
+                    Allowed: 1–12, JAN–DEC or *.
+                  </span>
+                </div>
+
+                <div class="form-field">
+                  <label class="field-label" for="weekday">
+                    Day of week
+                  </label>
+
+                  <input
+                    class="field-input"
+                    id="weekday"
+                    type="text"
+                    value="*"
+                    inputmode="text"
+                    aria-describedby="weekday-help"
+                  />
+
+                  <span class="field-help" id="weekday-help">
+                    Allowed: 0–7, SUN–SAT or *. Sunday is 0 or 7.
+                  </span>
+                </div>
+
+                <div class="form-field">
+                  <label class="field-label" for="shell">
+                    Shell
+                  </label>
+
+                  <select class="field-select" id="shell">
+                    <option value="">No shell prefix</option>
+                    <option value="/bin/bash">
+                      /bin/bash
+                    </option>
+                    <option value="/bin/sh">
+                      /bin/sh
+                    </option>
+                    <option value="/usr/bin/bash">
+                      /usr/bin/bash
+                    </option>
+                  </select>
+
+                  <span class="field-help">
+                    Optional shell used to execute the command.
+                  </span>
+                </div>
+
+                <div class="form-field full-width">
+                  <label class="field-label" for="custom-expression">
+                    Cron expression
+                  </label>
+
+                  <div class="expression-input-wrapper">
+                    <input
+                      class="field-input expression-input"
+                      id="custom-expression"
+                      type="text"
+                      value="0 0 * * *"
+                      spellcheck="false"
+                      aria-describedby="expression-help"
+                    />
+
+                    <button
+                      class="validate-button"
+                      id="validate-expression"
+                      type="button"
+                    >
+                      Validate
+                    </button>
+                  </div>
+
+                  <span class="field-help" id="expression-help">
+                    Format: minute hour day-of-month month day-of-week
+                  </span>
+                </div>
+              </div>
+
+              <div class="command-field">
+                <label class="field-label" for="cron-command">
+                  Command to run
+                </label>
+
+                <textarea
+                  class="command-input"
+                  id="cron-command"
+                  placeholder="/path/to/script.sh"
+                >/path/to/script.sh</textarea>
+
+                <span class="field-help">
+                  Use the full path to scripts, commands and output files.
+                </span>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Cron Entry
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Cron results">
+              <div class="result-card">
+                <h2>Generated schedule</h2>
+
+                <div class="result-group">
+                  <span class="result-label">Cron expression</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value expression-value"
+                      id="expression-result"
+                    >
+                      0 0 * * *
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="expression-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">Schedule meaning</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value description-value"
+                      id="description-result"
+                    >
+                      Runs every day at 12:00 AM.
+                    </span>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">Crontab entry</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value"
+                      id="crontab-result"
+                    >
+                      0 0 * * * /path/to/script.sh
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="crontab-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  id="validation-result"
+                  class="validation-box validation-success"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Valid five-field cron expression.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Next estimated runs</h2>
+
+                <ul class="next-runs" id="next-runs">
+                  <li>Calculating upcoming runs…</li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Understanding Linux cron syntax</h2>
+
+            <p>
+              A standard Linux cron expression contains five time fields
+              followed by the command that should run.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Cron field order</h3>
+
+              <table class="cron-table">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Allowed values</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td>Minute</td>
+                    <td>0–59</td>
+                  </tr>
+                  <tr>
+                    <td>Hour</td>
+                    <td>0–23</td>
+                  </tr>
+                  <tr>
+                    <td>Day of month</td>
+                    <td>1–31</td>
+                  </tr>
+                  <tr>
+                    <td>Month</td>
+                    <td>1–12</td>
+                  </tr>
+                  <tr>
+                    <td>Day of week</td>
+                    <td>0–7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </article>
+
+            <article class="info-card">
+              <h3>Special characters</h3>
+
+              <ul>
+                <li><code>*</code> — every allowed value</li>
+                <li><code>,</code> — list of values, such as <code>1,15,30</code></li>
+                <li><code>-</code> — range, such as <code>1-5</code></li>
+                <li><code>/</code> — step, such as <code>*/10</code></li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Common examples</h3>
+
+              <ul>
+                <li><code>*/5 * * * *</code> — every five minutes</li>
+                <li><code>0 * * * *</code> — at the start of every hour</li>
+                <li><code>0 2 * * *</code> — every day at 2:00 AM</li>
+                <li><code>0 9 * * 1-5</code> — weekdays at 9:00 AM</li>
+                <li><code>0 0 1 * *</code> — first day of every month</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const minuteInput = document.getElementById("minute");
+      const hourInput = document.getElementById("hour");
+      const dayMonthInput = document.getElementById("day-month");
+      const monthInput = document.getElementById("month");
+      const weekdayInput = document.getElementById("weekday");
+      const shellInput = document.getElementById("shell");
+      const expressionInput = document.getElementById("custom-expression");
+      const commandInput = document.getElementById("cron-command");
+
+      const expressionResult =
+        document.getElementById("expression-result");
+      const descriptionResult =
+        document.getElementById("description-result");
+      const crontabResult =
+        document.getElementById("crontab-result");
+      const validationResult =
+        document.getElementById("validation-result");
+      const nextRunsElement =
+        document.getElementById("next-runs");
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      const monthNames = {
+        JAN: 1,
+        FEB: 2,
+        MAR: 3,
+        APR: 4,
+        MAY: 5,
+        JUN: 6,
+        JUL: 7,
+        AUG: 8,
+        SEP: 9,
+        OCT: 10,
+        NOV: 11,
+        DEC: 12,
+      };
+
+      const weekdayNames = {
+        SUN: 0,
+        MON: 1,
+        TUE: 2,
+        WED: 3,
+        THU: 4,
+        FRI: 5,
+        SAT: 6,
+      };
+
+      function normalizeToken(token, names) {
+        let normalized = token.toUpperCase();
+
+        Object.entries(names).forEach(([name, value]) => {
+          normalized = normalized.replaceAll(name, String(value));
+        });
+
+        return normalized;
+      }
+
+      function validateSimpleNumber(value, minimum, maximum) {
+        if (!/^\d+$/.test(value)) {
+          return false;
+        }
+
+        const number = Number(value);
+        return number >= minimum && number <= maximum;
+      }
+
+      function validateFieldPart(part, minimum, maximum, names = {}) {
+        const normalizedPart = normalizeToken(part, names);
+
+        if (normalizedPart === "*") {
+          return true;
+        }
+
+        if (normalizedPart.includes("/")) {
+          const stepParts = normalizedPart.split("/");
+
+          if (stepParts.length !== 2) {
+            return false;
+          }
+
+          const [base, step] = stepParts;
+
+          if (
+            !validateSimpleNumber(step, 1, maximum - minimum + 1)
+          ) {
+            return false;
+          }
+
+          return (
+            base === "*" ||
+            validateFieldPart(base, minimum, maximum)
+          );
+        }
+
+        if (normalizedPart.includes("-")) {
+          const rangeParts = normalizedPart.split("-");
+
+          if (rangeParts.length !== 2) {
+            return false;
+          }
+
+          const [start, end] = rangeParts;
+
+          return (
+            validateSimpleNumber(start, minimum, maximum) &&
+            validateSimpleNumber(end, minimum, maximum) &&
+            Number(start) <= Number(end)
+          );
+        }
+
+        return validateSimpleNumber(
+          normalizedPart,
+          minimum,
+          maximum
+        );
+      }
+
+      function validateField(value, minimum, maximum, names = {}) {
+        if (!value || /\s/.test(value)) {
+          return false;
+        }
+
+        return value
+          .split(",")
+          .every((part) =>
+            validateFieldPart(part, minimum, maximum, names)
+          );
+      }
+
+      function validateExpression(expression) {
+        const fields = expression.trim().split(/\s+/);
+
+        if (fields.length !== 5) {
+          return {
+            valid: false,
+            message:
+              "Cron expression must contain exactly five fields.",
+          };
+        }
+
+        const validators = [
+          validateField(fields[0], 0, 59),
+          validateField(fields[1], 0, 23),
+          validateField(fields[2], 1, 31),
+          validateField(fields[3], 1, 12, monthNames),
+          validateField(fields[4], 0, 7, weekdayNames),
+        ];
+
+        if (!validators.every(Boolean)) {
+          return {
+            valid: false,
+            message:
+              "One or more cron fields contain an invalid value.",
+          };
+        }
+
+        return {
+          valid: true,
+          message: "Valid five-field cron expression.",
+        };
+      }
+
+      function fieldMatches(
+        field,
+        value,
+        minimum,
+        maximum,
+        names = {}
+      ) {
+        const normalizedField = normalizeToken(field, names);
+
+        return normalizedField.split(",").some((part) => {
+          if (part === "*") {
+            return true;
+          }
+
+          if (part.includes("/")) {
+            const [base, stepText] = part.split("/");
+            const step = Number(stepText);
+
+            if (!Number.isInteger(step) || step <= 0) {
+              return false;
+            }
+
+            if (base === "*") {
+              return (value - minimum) % step === 0;
+            }
+
+            if (base.includes("-")) {
+              const [startText, endText] = base.split("-");
+              const start = Number(startText);
+              const end = Number(endText);
+
+              return (
+                value >= start &&
+                value <= end &&
+                (value - start) % step === 0
+              );
+            }
+
+            const start = Number(base);
+
+            return value >= start && (value - start) % step === 0;
+          }
+
+          if (part.includes("-")) {
+            const [startText, endText] = part.split("-");
+            const start = Number(startText);
+            const end = Number(endText);
+
+            return value >= start && value <= end;
+          }
+
+          return Number(part) === value;
+        });
+      }
+
+      function dateMatchesCron(date, fields) {
+        const minute = date.getMinutes();
+        const hour = date.getHours();
+        const dayOfMonth = date.getDate();
+        const month = date.getMonth() + 1;
+        const weekday = date.getDay();
+
+        const minuteMatch = fieldMatches(
+          fields[0],
+          minute,
+          0,
+          59
+        );
+
+        const hourMatch = fieldMatches(
+          fields[1],
+          hour,
+          0,
+          23
+        );
+
+        const dayMonthMatch = fieldMatches(
+          fields[2],
+          dayOfMonth,
+          1,
+          31
+        );
+
+        const monthMatch = fieldMatches(
+          fields[3],
+          month,
+          1,
+          12,
+          monthNames
+        );
+
+        const weekdayMatch =
+          fieldMatches(
+            fields[4],
+            weekday,
+            0,
+            7,
+            weekdayNames
+          ) ||
+          (weekday === 0 &&
+            fieldMatches(
+              fields[4],
+              7,
+              0,
+              7,
+              weekdayNames
+            ));
+
+        const dayMonthWildcard = fields[2] === "*";
+        const weekdayWildcard = fields[4] === "*";
+
+        let dayMatch;
+
+        if (!dayMonthWildcard && !weekdayWildcard) {
+          dayMatch = dayMonthMatch || weekdayMatch;
+        } else {
+          dayMatch = dayMonthMatch && weekdayMatch;
+        }
+
+        return (
+          minuteMatch &&
+          hourMatch &&
+          dayMatch &&
+          monthMatch
+        );
+      }
+
+      function calculateNextRuns(expression, count = 5) {
+        const validation = validateExpression(expression);
+
+        if (!validation.valid) {
+          return [];
+        }
+
+        const fields = expression.trim().split(/\s+/);
+        const results = [];
+
+        const candidate = new Date();
+        candidate.setSeconds(0, 0);
+        candidate.setMinutes(candidate.getMinutes() + 1);
+
+        const maximumChecks = 60 * 24 * 366 * 2;
+        let checks = 0;
+
+        while (
+          results.length < count &&
+          checks < maximumChecks
+        ) {
+          if (dateMatchesCron(candidate, fields)) {
+            results.push(new Date(candidate));
+          }
+
+          candidate.setMinutes(candidate.getMinutes() + 1);
+          checks += 1;
+        }
+
+        return results;
+      }
+
+      function formatDate(date) {
+        return new Intl.DateTimeFormat("en-AE", {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: undefined,
+        }).format(date);
+      }
+
+      function describeExpression(expression) {
+        const knownExpressions = {
+          "* * * * *": "Runs every minute.",
+          "*/5 * * * *": "Runs every five minutes.",
+          "*/10 * * * *": "Runs every ten minutes.",
+          "*/15 * * * *": "Runs every fifteen minutes.",
+          "*/30 * * * *": "Runs every thirty minutes.",
+          "0 * * * *": "Runs at the start of every hour.",
+          "0 0 * * *": "Runs every day at 12:00 AM.",
+          "0 2 * * *": "Runs every day at 2:00 AM.",
+          "0 0 * * 0": "Runs every Sunday at 12:00 AM.",
+          "0 0 1 * *":
+            "Runs on the first day of every month at 12:00 AM.",
+          "0 9 * * 1-5":
+            "Runs Monday through Friday at 9:00 AM.",
+        };
+
+        if (knownExpressions[expression]) {
+          return knownExpressions[expression];
+        }
+
+        const fields = expression.split(/\s+/);
+        const [minute, hour, dayMonth, month, weekday] =
+          fields;
+
+        if (
+          /^\d+$/.test(minute) &&
+          /^\d+$/.test(hour) &&
+          dayMonth === "*" &&
+          month === "*" &&
+          weekday === "*"
+        ) {
+          const date = new Date();
+          date.setHours(Number(hour), Number(minute), 0, 0);
+
+          const time = new Intl.DateTimeFormat("en-AE", {
+            hour: "numeric",
+            minute: "2-digit",
+          }).format(date);
+
+          return `Runs every day at ${time}.`;
+        }
+
+        return `Runs when minute="${minute}", hour="${hour}", day of month="${dayMonth}", month="${month}" and day of week="${weekday}" match.`;
+      }
+
+      function updateFieldsFromExpression(expression) {
+        const fields = expression.trim().split(/\s+/);
+
+        if (fields.length !== 5) {
+          return;
+        }
+
+        minuteInput.value = fields[0];
+        hourInput.value = fields[1];
+        dayMonthInput.value = fields[2];
+        monthInput.value = fields[3];
+        weekdayInput.value = fields[4];
+      }
+
+      function getExpressionFromFields() {
+        return [
+          minuteInput.value.trim(),
+          hourInput.value.trim(),
+          dayMonthInput.value.trim(),
+          monthInput.value.trim(),
+          weekdayInput.value.trim(),
+        ].join(" ");
+      }
+
+      function buildCrontabEntry(expression) {
+        const command =
+          commandInput.value.trim() || "/path/to/script.sh";
+        const shell = shellInput.value;
+
+        if (shell) {
+          return `${expression} ${shell} -c '${command.replaceAll(
+            "'",
+            "'\\''"
+          )}'`;
+        }
+
+        return `${expression} ${command}`;
+      }
+
+      function renderNextRuns(expression) {
+        const runs = calculateNextRuns(expression);
+
+        nextRunsElement.innerHTML = "";
+
+        if (runs.length === 0) {
+          const item = document.createElement("li");
+          item.textContent =
+            "No upcoming runs could be calculated for this expression.";
+          nextRunsElement.appendChild(item);
+          return;
+        }
+
+        runs.forEach((run) => {
+          const item = document.createElement("li");
+          item.textContent = formatDate(run);
+          nextRunsElement.appendChild(item);
+        });
+      }
+
+      function renderValidation(validation) {
+        validationResult.textContent = validation.message;
+
+        validationResult.classList.toggle(
+          "validation-success",
+          validation.valid
+        );
+
+        validationResult.classList.toggle(
+          "validation-error",
+          !validation.valid
+        );
+      }
+
+      function updateResults(expression) {
+        const validation = validateExpression(expression);
+
+        renderValidation(validation);
+
+        expressionResult.textContent = expression;
+        descriptionResult.textContent = validation.valid
+          ? describeExpression(expression)
+          : "Correct the cron expression to see its schedule meaning.";
+
+        crontabResult.textContent = validation.valid
+          ? buildCrontabEntry(expression)
+          : "Invalid cron expression";
+
+        if (validation.valid) {
+          renderNextRuns(expression);
+        } else {
+          nextRunsElement.innerHTML =
+            "<li>Correct the expression to calculate upcoming runs.</li>";
+        }
+      }
+
+      function generateFromFields() {
+        const expression = getExpressionFromFields();
+        expressionInput.value = expression;
+        updateResults(expression);
+      }
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const expression = button.dataset.expression;
+
+            if (!expression) {
+              return;
+            }
+
+            expressionInput.value = expression;
+            updateFieldsFromExpression(expression);
+            updateResults(expression);
+          });
+        });
+
+      [
+        minuteInput,
+        hourInput,
+        dayMonthInput,
+        monthInput,
+        weekdayInput,
+      ].forEach((input) => {
+        input.addEventListener("input", generateFromFields);
+      });
+
+      shellInput.addEventListener("change", () => {
+        updateResults(expressionInput.value.trim());
+      });
+
+      commandInput.addEventListener("input", () => {
+        updateResults(expressionInput.value.trim());
+      });
+
+      expressionInput.addEventListener("input", () => {
+        const expression = expressionInput.value.trim();
+        updateFieldsFromExpression(expression);
+        updateResults(expression);
+      });
+
+      document
+        .getElementById("validate-expression")
+        ?.addEventListener("click", () => {
+          const expression = expressionInput.value.trim();
+          updateFieldsFromExpression(expression);
+          updateResults(expression);
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateFromFields);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", () => {
+          const defaultExpression = "0 0 * * *";
+
+          expressionInput.value = defaultExpression;
+          commandInput.value = "/path/to/script.sh";
+          shellInput.value = "";
+
+          updateFieldsFromExpression(defaultExpression);
+          updateResults(defaultExpression);
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", async () => {
+            const targetId = button.dataset.copyTarget;
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            const text = target?.textContent?.trim() ?? "";
+
+            if (!text) {
+              return;
+            }
+
+            try {
+              await navigator.clipboard.writeText(text);
+
+              copyStatus.textContent = `Copied: ${text}`;
+            } catch (error) {
+              copyStatus.textContent =
+                "Copy failed. Please select and copy the value manually.";
+            }
+
+            window.setTimeout(() => {
+              copyStatus.textContent = "";
+            }, 2500);
+          });
+        });
+
+      updateResults("0 0 * * *");
+    </script>
+  </body>
+</html>

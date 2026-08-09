@@ -1,0 +1,969 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const pageTitle = "Windows Tools";
+
+const description =
+  "Essential Windows, PowerShell and Windows Server generators for administration, troubleshooting, security, Group Policy and automation.";
+
+const tools = [
+  {
+    icon: "💻",
+    name: "PowerShell Command Generator",
+    category: "PowerShell",
+    description:
+      "Generate practical PowerShell commands for everyday Windows and Windows Server administration.",
+    link: "/windows/powershell-generator",
+  },
+  {
+    icon: "⌨️",
+    name: "Windows CMD Generator",
+    category: "Command Prompt",
+    description:
+      "Build common CMD commands for files, networking, processes, services and system tasks.",
+    link: "/windows/command-generator",
+  },
+  {
+    icon: "⚙️",
+    name: "Windows Service Generator",
+    category: "Services",
+    description:
+      "Generate commands to query, start, stop, restart and configure Windows services.",
+    link: "/windows/service-command-generator",
+  },
+  {
+    icon: "🛡️",
+    name: "Windows Firewall Rule Generator",
+    category: "Security",
+    description:
+      "Create inbound and outbound Microsoft Defender Firewall rules with PowerShell.",
+    link: "/windows/firewall-rule-generator",
+  },
+  {
+    icon: "👤",
+    name: "Local User Management Generator",
+    category: "Users & Groups",
+    description:
+      "Generate commands to create, modify, disable and remove local Windows users and groups.",
+    link: "/windows/user-management-generator",
+  },
+  {
+    icon: "🔐",
+    name: "NTFS Permission Generator",
+    category: "Permissions",
+    description:
+      "Build ICACLS commands to grant, remove, reset and verify NTFS file and folder permissions.",
+    link: "/windows/icacls-generator",
+  },
+  {
+    icon: "📋",
+    name: "Event Log Command Generator",
+    category: "Troubleshooting",
+    description:
+      "Generate commands to query, filter and export Windows Event Logs for incident troubleshooting.",
+    link: "/windows/event-log-commands",
+  },
+  {
+    icon: "📁",
+    name: "Robocopy Generator",
+    category: "File Operations",
+    description:
+      "Create reliable Robocopy commands for migrations, mirroring, retries, logging and permissions.",
+    link: "/windows/robocopy-generator",
+  },
+  {
+    icon: "🔄",
+    name: "Group Policy Update Generator",
+    category: "Group Policy",
+    description:
+      "Generate GPUpdate commands to refresh user and computer Group Policy settings.",
+    link: "/windows/gpupdate-generator",
+  },
+  {
+    icon: "📊",
+    name: "Group Policy Result Generator",
+    category: "Group Policy",
+    description:
+      "Generate GPResult commands and HTML reports to verify effective Group Policy settings.",
+    link: "/windows/gpresult-generator",
+  },
+  {
+    icon: "🧰",
+    name: "SFC & DISM Repair Generator",
+    category: "System Repair",
+    description:
+      "Generate SFC and DISM commands to diagnose and repair Windows image and system-file corruption.",
+    link: "/windows/sfc-dism-generator",
+  },
+  {
+    icon: "🖱️",
+    name: "RDP Troubleshooter",
+    category: "Remote Access",
+    description:
+      "Check Remote Desktop services, firewall rules, listening ports and connectivity settings.",
+    link: "/windows/rdp-troubleshooter",
+  },
+  {
+    icon: "🔌",
+    name: "TCP Port Tester",
+    category: "Networking",
+    description:
+      "Generate PowerShell tests for DNS resolution and TCP connectivity to remote hosts and ports.",
+    link: "/windows/tcp-port-tester",
+  },
+  {
+    icon: "💿",
+    name: "Disk Health Checker",
+    category: "Diagnostics",
+    description:
+      "Check disk health, free space, physical-disk status and file-system information from Windows.",
+    link: "/windows/disk-health-checker",
+  },
+  {
+    icon: "🔒",
+    name: "BitLocker Command Generator",
+    category: "Security",
+    description:
+      "Generate BitLocker commands for encryption status, recovery protectors and volume management.",
+    link: "/windows/bitlocker-command-generator",
+  },
+  {
+    icon: "🧩",
+    name: "Windows Feature Installer",
+    category: "Windows Server",
+    description:
+      "Generate PowerShell and DISM commands to inspect, install and remove Windows features and roles.",
+    link: "/windows/windows-feature-installer",
+  },
+  {
+    icon: "🌐",
+    name: "IIS Command Generator",
+    category: "Windows Server",
+    description:
+      "Generate IIS commands for websites, application pools, bindings and service administration.",
+    link: "/windows/iis-command-generator",
+  },
+  {
+    icon: "🧱",
+    name: "Hyper-V Command Generator",
+    category: "Virtualization",
+    description:
+      "Generate Hyper-V commands for virtual machines, switches, checkpoints, disks and networking.",
+    link: "/windows/hyperv-command-generator",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Faster administration",
+    description:
+      "Generate Windows and PowerShell commands instantly for common operational tasks.",
+  },
+  {
+    icon: "🧰",
+    title: "Troubleshooting support",
+    description:
+      "Use practical utilities for services, networking, events, updates and remote access.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy friendly",
+    description:
+      "Most values are processed locally in your browser without requiring registration.",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={description} />
+
+    <meta
+      name="keywords"
+      content="Windows tools, PowerShell tools, Windows Server tools, CMD generator, IIS tools, Hyper-V tools, Microsoft 365 tools, Azure tools, Windows diagnostics, Active Directory tools"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <meta property="og:title" content="Windows Tools | Gokuruvi Tools" />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://www.gokuruvi.com/windows/"
+    />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/windows/"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Free tools for Windows professionals
+            </div>
+
+            <h1>
+              Practical <span>Windows Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Use a curated collection of essential PowerShell and CMD generators for Windows administration, troubleshooting, security, Group Policy, file operations, IIS and Hyper-V.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#windows-tools">
+                Explore Windows Tools
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a class="button button-secondary" href="/#tool-categories">
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{tools.length}</strong>
+                <span>Windows utilities</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>PowerShell</strong>
+                <span>Command automation</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>Server</strong>
+                <span>Administration tools</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="windows-tools">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Available Utilities</span>
+
+            <h2>Windows tools for administration and troubleshooting</h2>
+
+            <p>
+              Choose a focused Windows utility for administration, troubleshooting, security, file operations, Group Policy and Windows Server tasks.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              tools.map((tool) => (
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.name}`}
+                >
+                  <div class="tool-header">
+                    <div class="tool-icon" aria-hidden="true">{tool.icon}</div>
+                    <span class="tool-category">{tool.category}</span>
+                  </div>
+
+                  <h3>{tool.name}</h3>
+                  <p>{tool.description}</p>
+
+                  <span class="open-tool">
+                    Open tool
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+
+            <h2>Built for Windows administrators and engineers</h2>
+
+            <p>
+              Use practical utilities for Windows administration, automation, enterprise
+              server management, Microsoft cloud services and troubleshooting.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div class="benefit-icon" aria-hidden="true">
+                    {benefit.icon}
+                  </div>
+
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start simplifying your Windows tasks</h2>
+
+            <p>
+              Generate reliable Windows commands faster and use focused troubleshooting utilities for common administrator tasks.
+            </p>
+
+            <a
+              class="button cta-button"
+              href="/windows/powershell-generator"
+            >
+              Open PowerShell Generator
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="footer-logo" href="/">
+              <span class="footer-logo-icon" aria-hidden="true">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
+
+            <p>
+              Free Linux, DevOps, Kubernetes, network, cloud, Windows and security
+              utilities for administrators, engineers and IT professionals.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Windows Tools</h3>
+
+            <div class="footer-links">
+              <a href="/windows/powershell-generator">PowerShell Generator</a>
+              <a href="/windows/command-generator">Command Generator</a>
+              <a href="/windows/service-command-generator">Service Generator</a>
+              <a href="/windows/tcp-port-tester">Port Checker</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Administration</h3>
+
+            <div class="footer-links">
+              <a href="/windows/firewall-rule-generator">Firewall Generator</a>
+              <a href="/windows/user-management-generator">User Management</a>
+              <a href="/windows/event-log-commands">Event Log Commands</a>
+              <a href="/windows/rdp-troubleshooter">RDP Troubleshooter</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Categories</h3>
+
+            <div class="footer-links">
+              <a href="/linux/">Linux Tools</a>
+              <a href="/devops/">DevOps Tools</a>
+              <a href="/kubernetes/">Kubernetes Tools</a>
+              <a href="/network/">Network Tools</a>
+              <a href="/cloud/">Cloud Tools</a>
+              <a href="/windows/">Windows Tools</a>
+              <a href="/about/">About</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <a href="/disclaimer/">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f8fafc;
+    color: #172033;
+    font-family:
+      Inter, Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+
+  :global(a) {
+    color: inherit;
+  }
+
+  .container {
+    width: min(100% - 40px, 1180px);
+    margin-inline: auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 105px 0 92px;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.2), transparent 32%),
+      radial-gradient(circle at 88% 25%, rgba(37, 99, 235, 0.2), transparent 34%),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f8fafc 100%);
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+  }
+
+  .hero h1 {
+    margin: 0 auto 22px;
+    color: #0f172a;
+    font-size: clamp(43px, 7vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #2563eb, #0284c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-description {
+    max-width: 790px;
+    margin: 0 auto;
+    color: #475569;
+    font-size: clamp(18px, 2.5vw, 21px);
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 36px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button-primary {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.26);
+  }
+
+  .button-primary:hover {
+    background: #1d4ed8;
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.32);
+  }
+
+  .button-secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  }
+
+  .hero-statistics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 42px;
+  }
+
+  .hero-stat {
+    min-width: 135px;
+  }
+
+  .hero-stat strong {
+    display: block;
+    color: #0f172a;
+    font-size: 25px;
+  }
+
+  .hero-stat span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .section {
+    padding: 92px 0;
+  }
+
+  .section-white {
+    background: #ffffff;
+  }
+
+  .section-heading {
+    max-width: 770px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: clamp(31px, 4vw, 44px);
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .tool-card {
+    position: relative;
+    display: flex;
+    min-height: 310px;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 29px;
+    border: 1px solid #e2e8f0;
+    border-radius: 19px;
+    background: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .tool-card::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card::after {
+    position: absolute;
+    right: -55px;
+    bottom: -65px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.065);
+    content: "";
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 24px 50px rgba(37, 99, 235, 0.14);
+    transform: translateY(-8px);
+  }
+
+  .tool-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .tool-card:hover::after {
+    transform: scale(1.25);
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .tool-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 29px;
+  }
+
+  .tool-category {
+    padding: 5px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .tool-card h3 {
+    margin: 0 0 11px;
+    color: #0f172a;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .tool-card p {
+    flex: 1;
+    margin: 0 0 22px;
+    color: #64748b;
+    line-height: 1.72;
+  }
+
+  .open-tool {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .benefit-card {
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #ffffff;
+  }
+
+  .benefit-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #eff6ff;
+    font-size: 25px;
+  }
+
+  .benefit-card h3 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+  }
+
+  .cta {
+    padding: 0 0 92px;
+  }
+
+  .cta-box {
+    padding: 70px 35px;
+    border-radius: 25px;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.28), transparent 31%),
+      linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 25px 65px rgba(15, 23, 42, 0.2);
+  }
+
+  .cta-box h2 {
+    max-width: 720px;
+    margin: 0 auto 15px;
+    font-size: clamp(30px, 4vw, 45px);
+    line-height: 1.2;
+  }
+
+  .cta-box p {
+    max-width: 670px;
+    margin: 0 auto 29px;
+    color: #cbd5e1;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .cta-button {
+    background: #ffffff;
+    color: #1d4ed8;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 55px;
+    padding: 65px 0 45px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+  }
+
+  .footer-brand p {
+    max-width: 380px;
+    margin: 17px 0 0;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  .footer-title {
+    margin: 0 0 18px;
+    color: #ffffff;
+    font-size: 16px;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-links a:hover {
+    color: #ffffff;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 24px 0;
+    border-top: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1000px) {
+    .tools-grid,
+    .benefits-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero {
+      padding: 78px 0 70px;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .container {
+      width: min(100% - 28px, 1180px);
+    }
+
+    .hero h1 {
+      font-size: 41px;
+      letter-spacing: -1.4px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .button {
+      width: 100%;
+    }
+
+    .tools-grid,
+    .benefits-grid,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-card {
+      min-height: auto;
+      padding: 25px;
+    }
+
+    .cta-box {
+      padding: 52px 23px;
+    }
+  }
+</style>

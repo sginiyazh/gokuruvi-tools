@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="TCP Port Tester" description="Generate PowerShell connectivity tests for DNS resolution and TCP ports on Windows." slug="tcp-port-tester" icon="🔌">
+
+<h2 class="tool-title">TCP connectivity test</h2><div class="form-grid"><div class="field"><label for="host">Hostname or IP</label><input id="host" value="example.com" /></div><div class="field"><label for="port">TCP port</label><input id="port" type="number" min="1" max="65535" value="443" /></div><div class="field full"><div class="checks"><label class="check"><input id="dns" type="checkbox" checked /> Include DNS lookup</label><label class="check"><input id="ping" type="checkbox" /> Include ICMP test</label></div></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate test</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Test-NetConnection -ComputerName 'example.com' -Port 443</pre></div>
+<script>
+
+const h=document.querySelector<HTMLInputElement>('#host')!,p=document.querySelector<HTMLInputElement>('#port')!,dns=document.querySelector<HTMLInputElement>('#dns')!,ping=document.querySelector<HTMLInputElement>('#ping')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const host=h.value.trim().replace(/'/g,"''")||'example.com',port=Math.min(65535,Math.max(1,Number(p.value)||443)),lines=[];if(dns.checked)lines.push(`Resolve-DnsName '${host}' -ErrorAction Continue`);if(ping.checked)lines.push(`Test-Connection -ComputerName '${host}' -Count 2`);lines.push(`Test-NetConnection -ComputerName '${host}' -Port ${port} -InformationLevel Detailed`);o.textContent=lines.join('\n')});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

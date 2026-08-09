@@ -1,0 +1,2996 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Iptables Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate common Linux iptables commands for ports, IP addresses, protocols, NAT, port forwarding, INPUT, OUTPUT and FORWARD chains.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/iptables-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="iptables generator, iptables command generator, Linux firewall command, iptables port forwarding, iptables NAT"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.4);
+        outline-offset: 3px;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 65px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .action-card {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .action-card input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .action-content {
+        display: block;
+        min-height: 116px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #ffffff;
+        text-align: center;
+      }
+
+      .action-card input:checked + .action-content {
+        border-color: var(--primary);
+        background: #eff6ff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+      }
+
+      .action-icon {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 25px;
+      }
+
+      .action-title {
+        display: block;
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .action-description {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input:focus,
+      .field-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .main-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .primary-button {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-block + .result-block {
+        margin-top: 20px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 82px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .copy-all-button {
+        width: 100%;
+        min-height: 45px;
+        margin-top: 16px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .action-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 58px 0 52px;
+        }
+
+        .hero h1 {
+          font-size: 39px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid,
+        .action-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .main-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Iptables Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🧱</div>
+
+            <h1>
+              Iptables Command <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate common Linux <code>iptables</code> commands for ports,
+              source addresses, firewall chains, NAT, masquerading and port
+              forwarding.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Configure your iptables rule</h2>
+
+                <p>
+                  Select a rule type, configure the traffic conditions and copy
+                  the generated commands.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Rule type
+                </h3>
+
+                <div class="action-grid">
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="port"
+                      checked
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔌</span>
+                      <span class="action-title">Port rule</span>
+                      <span class="action-description">
+                        Allow or block a TCP or UDP port.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="source"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🌐</span>
+                      <span class="action-title">Source IP</span>
+                      <span class="action-description">
+                        Allow or block an IP address or subnet.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="established"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔗</span>
+                      <span class="action-title">Established</span>
+                      <span class="action-description">
+                        Allow established and related traffic.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="loopback"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔄</span>
+                      <span class="action-title">Loopback</span>
+                      <span class="action-description">
+                        Allow localhost interface traffic.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="icmp"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">📡</span>
+                      <span class="action-title">ICMP ping</span>
+                      <span class="action-description">
+                        Allow or block incoming ping requests.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="port-forward"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">➡️</span>
+                      <span class="action-title">Port forward</span>
+                      <span class="action-description">
+                        Forward traffic to another IP and port.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="masquerade"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔁</span>
+                      <span class="action-title">Masquerade</span>
+                      <span class="action-description">
+                        Configure source NAT for outgoing traffic.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="list"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">📋</span>
+                      <span class="action-title">List rules</span>
+                      <span class="action-description">
+                        Display current iptables rules.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="rule-type"
+                      value="flush"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🗑️</span>
+                      <span class="action-title">Flush rules</span>
+                      <span class="action-description">
+                        Remove rules from a selected table.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section" id="general-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  General settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="table">
+                      Iptables table
+                    </label>
+
+                    <select class="field-select" id="table">
+                      <option value="filter" selected>filter</option>
+                      <option value="nat">nat</option>
+                      <option value="mangle">mangle</option>
+                      <option value="raw">raw</option>
+                      <option value="security">security</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="chain-field">
+                    <label class="field-label" for="chain">
+                      Chain
+                    </label>
+
+                    <select class="field-select" id="chain">
+                      <option value="INPUT" selected>INPUT</option>
+                      <option value="OUTPUT">OUTPUT</option>
+                      <option value="FORWARD">FORWARD</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="rule-operation-field">
+                    <label class="field-label" for="rule-operation">
+                      Rule operation
+                    </label>
+
+                    <select class="field-select" id="rule-operation">
+                      <option value="append" selected>Append rule (-A)</option>
+                      <option value="insert">Insert rule (-I)</option>
+                      <option value="delete">Delete matching rule (-D)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="position-field" hidden>
+                    <label class="field-label" for="rule-position">
+                      Insert position
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="rule-position"
+                      type="number"
+                      min="1"
+                      value="1"
+                    />
+                  </div>
+
+                  <div class="form-field" id="target-field">
+                    <label class="field-label" for="target">
+                      Target action
+                    </label>
+
+                    <select class="field-select" id="target">
+                      <option value="ACCEPT" selected>ACCEPT</option>
+                      <option value="DROP">DROP</option>
+                      <option value="REJECT">REJECT</option>
+                      <option value="LOG">LOG</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="ip-version">
+                      IP version
+                    </label>
+
+                    <select class="field-select" id="ip-version">
+                      <option value="ipv4" selected>IPv4 — iptables</option>
+                      <option value="ipv6">IPv6 — ip6tables</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="port-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Port rule settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="protocol">
+                      Protocol
+                    </label>
+
+                    <select class="field-select" id="protocol">
+                      <option value="tcp" selected>TCP</option>
+                      <option value="udp">UDP</option>
+                      <option value="sctp">SCTP</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="port-direction">
+                      Port type
+                    </label>
+
+                    <select class="field-select" id="port-direction">
+                      <option value="destination" selected>
+                        Destination port
+                      </option>
+                      <option value="source">Source port</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="port">
+                      Port or range
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="port"
+                      type="text"
+                      value="22"
+                      placeholder="22 or 8000:8100"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="interface">
+                      Network interface
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="interface"
+                      type="text"
+                      placeholder="eth0"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="port-source">
+                      Source IP or subnet
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="port-source"
+                      type="text"
+                      placeholder="192.168.1.0/24"
+                    />
+
+                    <span class="field-help">
+                      Leave empty to allow traffic from any source.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="source-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Source address settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="source-address">
+                      Source IP or subnet
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="source-address"
+                      type="text"
+                      value="192.168.1.100"
+                      placeholder="192.168.1.100 or 192.168.1.0/24"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="source-protocol">
+                      Protocol
+                    </label>
+
+                    <select class="field-select" id="source-protocol">
+                      <option value="">Any protocol</option>
+                      <option value="tcp">TCP</option>
+                      <option value="udp">UDP</option>
+                      <option value="icmp">ICMP</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="source-port">
+                      Destination port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="source-port"
+                      type="text"
+                      placeholder="22"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="established-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Established connection rule
+                </h3>
+
+                <p class="field-help">
+                  This generates a connection tracking rule for
+                  <code>ESTABLISHED,RELATED</code> traffic.
+                </p>
+              </div>
+
+              <div class="form-section" id="loopback-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Loopback rule
+                </h3>
+
+                <p class="field-help">
+                  This generates a rule to allow traffic through the
+                  <code>lo</code> loopback interface.
+                </p>
+              </div>
+
+              <div class="form-section" id="icmp-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  ICMP settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="icmp-type">
+                      ICMP type
+                    </label>
+
+                    <select class="field-select" id="icmp-type">
+                      <option value="echo-request" selected>
+                        echo-request
+                      </option>
+                      <option value="echo-reply">echo-reply</option>
+                      <option value="destination-unreachable">
+                        destination-unreachable
+                      </option>
+                      <option value="time-exceeded">time-exceeded</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="icmp-source">
+                      Source IP or subnet
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="icmp-source"
+                      type="text"
+                      placeholder="192.168.1.0/24"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="forward-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Port forwarding settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="forward-protocol">
+                      Protocol
+                    </label>
+
+                    <select class="field-select" id="forward-protocol">
+                      <option value="tcp" selected>TCP</option>
+                      <option value="udp">UDP</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="incoming-interface">
+                      Incoming interface
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="incoming-interface"
+                      type="text"
+                      value="eth0"
+                      placeholder="eth0"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="listen-port">
+                      Incoming port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="listen-port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      value="8080"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="destination-ip">
+                      Destination IP
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="destination-ip"
+                      type="text"
+                      value="192.168.1.20"
+                      placeholder="192.168.1.20"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="destination-port">
+                      Destination port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="destination-port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      value="80"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="forward-source">
+                      Source restriction
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="forward-source"
+                      type="text"
+                      placeholder="192.168.1.0/24"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="masquerade-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Masquerade settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="outgoing-interface">
+                      Outgoing interface
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="outgoing-interface"
+                      type="text"
+                      value="eth0"
+                      placeholder="eth0"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="masquerade-source">
+                      Source network
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="masquerade-source"
+                      type="text"
+                      placeholder="192.168.10.0/24"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="list-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  List options
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="list-numeric" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Numeric output
+                      </span>
+
+                      <span class="checkbox-description">
+                        Do not resolve hostnames or service names.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="list-line-numbers" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Show line numbers
+                      </span>
+
+                      <span class="checkbox-description">
+                        Display rule numbers for easier deletion.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="list-verbose" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Verbose details
+                      </span>
+
+                      <span class="checkbox-description">
+                        Display interfaces, counters and additional details.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section" id="flush-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Flush settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="flush-chain">
+                      Chain to flush
+                    </label>
+
+                    <select class="field-select" id="flush-chain">
+                      <option value="">All chains</option>
+                      <option value="INPUT">INPUT</option>
+                      <option value="OUTPUT">OUTPUT</option>
+                      <option value="FORWARD">FORWARD</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="common-options-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Command options
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="use-sudo" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Include sudo
+                      </span>
+
+                      <span class="checkbox-description">
+                        Prefix commands with <code>sudo</code>.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item" id="log-option">
+                    <input id="enable-log" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Add log rule first
+                      </span>
+
+                      <span class="checkbox-description">
+                        Generate a LOG rule before DROP or REJECT.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="generate-save" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Generate save command
+                      </span>
+
+                      <span class="checkbox-description">
+                        Include common commands to save rules persistently.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                <div
+                  class="field-grid"
+                  id="log-prefix-section"
+                  style="margin-top: 18px;"
+                  hidden
+                >
+                  <div class="form-field full-width">
+                    <label class="field-label" for="log-prefix">
+                      Log prefix
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="log-prefix"
+                      type="text"
+                      value="IPTABLES-DROPPED: "
+                      placeholder="IPTABLES-DROPPED: "
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Day-to-day presets
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="ssh"
+                  >
+                    Allow SSH
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="http"
+                  >
+                    Allow HTTP
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="https"
+                  >
+                    Allow HTTPS
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="block-ip"
+                  >
+                    Block one IP
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="established"
+                  >
+                    Established traffic
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="loopback"
+                  >
+                    Allow loopback
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="ping"
+                  >
+                    Allow ping
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="list"
+                  >
+                    List rules
+                  </button>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button
+                  class="main-button primary-button"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Iptables Commands
+                </button>
+
+                <button
+                  class="main-button secondary-button"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Generated commands">
+              <div class="result-card">
+                <h2>Generated commands</h2>
+
+                <div class="result-block" id="log-result-block" hidden>
+                  <span class="result-label">Log rule</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="log-command"></span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="log-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block">
+                  <span class="result-label">Main rule</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="main-command">
+                      sudo iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="main-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="additional-result-block" hidden>
+                  <span class="result-label">Additional rule</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="additional-command"></span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="additional-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="sysctl-result-block" hidden>
+                  <span class="result-label">Enable IP forwarding</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="sysctl-command">
+                      sudo sysctl -w net.ipv4.ip_forward=1
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="sysctl-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="save-result-block">
+                  <span class="result-label">
+                    Save rules — RHEL based
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="save-rhel-command">
+                      sudo iptables-save | sudo tee /etc/sysconfig/iptables
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="save-rhel-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="save-debian-result-block">
+                  <span class="result-label">
+                    Save rules — Debian/Ubuntu
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="save-debian-command">
+                      sudo netfilter-persistent save
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="save-debian-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block">
+                  <span class="result-label">Verify rules</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="verify-command">
+                      sudo iptables -t filter -L INPUT -n -v --line-numbers
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="verify-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="copy-all-button"
+                  id="copy-all"
+                  type="button"
+                >
+                  Copy All Commands
+                </button>
+
+                <div class="warning-box" id="warning-box">
+                  Keep an active SSH session while changing remote firewall
+                  rules.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Rule summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Rule type</span>
+                    <strong id="summary-type">Port rule</strong>
+                  </li>
+
+                  <li>
+                    <span>Table</span>
+                    <strong id="summary-table">filter</strong>
+                  </li>
+
+                  <li>
+                    <span>Chain</span>
+                    <strong id="summary-chain">INPUT</strong>
+                  </li>
+
+                  <li>
+                    <span>Target</span>
+                    <strong id="summary-target">ACCEPT</strong>
+                  </li>
+
+                  <li>
+                    <span>IP version</span>
+                    <strong id="summary-ip-version">IPv4</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common iptables commands</h2>
+
+            <p>
+              Use these examples for normal day-to-day Linux firewall
+              administration.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Allow common ports</h3>
+
+              <ul>
+                <li>
+                  <code>iptables -A INPUT -p tcp --dport 22 -j ACCEPT</code>
+                </li>
+
+                <li>
+                  <code>iptables -A INPUT -p tcp --dport 80 -j ACCEPT</code>
+                </li>
+
+                <li>
+                  <code>iptables -A INPUT -p tcp --dport 443 -j ACCEPT</code>
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>View and remove rules</h3>
+
+              <ul>
+                <li>
+                  <code>iptables -L -n -v --line-numbers</code> lists rules.
+                </li>
+
+                <li>
+                  <code>iptables -D INPUT 3</code> removes rule number three.
+                </li>
+
+                <li>
+                  <code>iptables -F</code> flushes rules from the filter table.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Safety recommendations</h3>
+
+              <ul>
+                <li>
+                  Allow SSH before applying a restrictive default policy.
+                </li>
+
+                <li>
+                  Keep a second active session while testing remote changes.
+                </li>
+
+                <li>
+                  Save working rules before restarting the server.
+                </li>
+
+                <li>
+                  Test changes in a maintenance window where possible.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fieldIds = [
+        "table",
+        "chain",
+        "rule-operation",
+        "rule-position",
+        "target",
+        "ip-version",
+        "protocol",
+        "port-direction",
+        "port",
+        "interface",
+        "port-source",
+        "source-address",
+        "source-protocol",
+        "source-port",
+        "icmp-type",
+        "icmp-source",
+        "forward-protocol",
+        "incoming-interface",
+        "listen-port",
+        "destination-ip",
+        "destination-port",
+        "forward-source",
+        "outgoing-interface",
+        "masquerade-source",
+        "flush-chain",
+        "log-prefix",
+      ];
+
+      const checkboxIds = [
+        "use-sudo",
+        "enable-log",
+        "generate-save",
+        "list-numeric",
+        "list-line-numbers",
+        "list-verbose",
+      ];
+
+      const sections = {
+        port: document.getElementById("port-section"),
+        source: document.getElementById("source-section"),
+        established: document.getElementById("established-section"),
+        loopback: document.getElementById("loopback-section"),
+        icmp: document.getElementById("icmp-section"),
+        "port-forward": document.getElementById("forward-section"),
+        masquerade: document.getElementById("masquerade-section"),
+        list: document.getElementById("list-section"),
+        flush: document.getElementById("flush-section"),
+      };
+
+      const mainCommand =
+        document.getElementById("main-command");
+
+      const additionalCommand =
+        document.getElementById("additional-command");
+
+      const logCommand =
+        document.getElementById("log-command");
+
+      const verifyCommand =
+        document.getElementById("verify-command");
+
+      const saveRhelCommand =
+        document.getElementById("save-rhel-command");
+
+      const saveDebianCommand =
+        document.getElementById("save-debian-command");
+
+      const sysctlCommand =
+        document.getElementById("sysctl-command");
+
+      const additionalResultBlock =
+        document.getElementById("additional-result-block");
+
+      const logResultBlock =
+        document.getElementById("log-result-block");
+
+      const sysctlResultBlock =
+        document.getElementById("sysctl-result-block");
+
+      const saveResultBlock =
+        document.getElementById("save-result-block");
+
+      const saveDebianResultBlock =
+        document.getElementById("save-debian-result-block");
+
+      const positionField =
+        document.getElementById("position-field");
+
+      const logPrefixSection =
+        document.getElementById("log-prefix-section");
+
+      const warningBox =
+        document.getElementById("warning-box");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function getRuleType() {
+        return (
+          document.querySelector(
+            'input[name="rule-type"]:checked'
+          )?.value || "port"
+        );
+      }
+
+      function shellQuote(value) {
+        const text = String(value).trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function binary() {
+        return getValue("ip-version") === "ipv6"
+          ? "ip6tables"
+          : "iptables";
+      }
+
+      function prefix() {
+        return isChecked("use-sudo")
+          ? `sudo ${binary()}`
+          : binary();
+      }
+
+      function getOperationFlag() {
+        const operation = getValue("rule-operation");
+
+        if (operation === "insert") {
+          return "-I";
+        }
+
+        if (operation === "delete") {
+          return "-D";
+        }
+
+        return "-A";
+      }
+
+      function buildRuleStart(
+        tableOverride = "",
+        chainOverride = ""
+      ) {
+        const table = tableOverride || getValue("table") || "filter";
+        const chain = chainOverride || getValue("chain") || "INPUT";
+        const operation = getOperationFlag();
+
+        const parts = [
+          prefix(),
+          "-t",
+          table,
+          operation,
+          chain,
+        ];
+
+        if (
+          operation === "-I" &&
+          getValue("rule-position")
+        ) {
+          parts.push(getValue("rule-position"));
+        }
+
+        return parts;
+      }
+
+      function addInterface(parts, chain) {
+        const iface = getValue("interface");
+
+        if (!iface) {
+          return;
+        }
+
+        if (chain === "OUTPUT") {
+          parts.push("-o", iface);
+        } else {
+          parts.push("-i", iface);
+        }
+      }
+
+      function buildPortRule(targetOverride = "") {
+        const chain = getValue("chain") || "INPUT";
+        const protocol = getValue("protocol") || "tcp";
+        const port = getValue("port") || "22";
+        const direction = getValue("port-direction");
+        const source = getValue("port-source");
+        const target =
+          targetOverride || getValue("target") || "ACCEPT";
+
+        const parts = buildRuleStart();
+
+        addInterface(parts, chain);
+
+        if (source) {
+          parts.push("-s", source);
+        }
+
+        parts.push("-p", protocol);
+
+        parts.push(
+          direction === "source" ? "--sport" : "--dport",
+          port
+        );
+
+        parts.push("-j", target);
+
+        return parts.join(" ");
+      }
+
+      function buildSourceRule(targetOverride = "") {
+        const source =
+          getValue("source-address") || "192.168.1.100";
+
+        const protocol = getValue("source-protocol");
+        const port = getValue("source-port");
+
+        const target =
+          targetOverride || getValue("target") || "ACCEPT";
+
+        const parts = buildRuleStart();
+
+        parts.push("-s", source);
+
+        if (protocol) {
+          parts.push("-p", protocol);
+        }
+
+        if (
+          port &&
+          ["tcp", "udp"].includes(protocol)
+        ) {
+          parts.push("--dport", port);
+        }
+
+        parts.push("-j", target);
+
+        return parts.join(" ");
+      }
+
+      function buildEstablishedRule() {
+        const parts = buildRuleStart();
+
+        parts.push(
+          "-m",
+          "conntrack",
+          "--ctstate",
+          "ESTABLISHED,RELATED",
+          "-j",
+          getValue("target") || "ACCEPT"
+        );
+
+        return parts.join(" ");
+      }
+
+      function buildLoopbackRule() {
+        const chain = getValue("chain") || "INPUT";
+        const parts = buildRuleStart();
+
+        parts.push(
+          chain === "OUTPUT" ? "-o" : "-i",
+          "lo",
+          "-j",
+          getValue("target") || "ACCEPT"
+        );
+
+        return parts.join(" ");
+      }
+
+      function buildIcmpRule(targetOverride = "") {
+        const parts = buildRuleStart();
+        const source = getValue("icmp-source");
+
+        parts.push(
+          "-p",
+          getValue("ip-version") === "ipv6"
+            ? "ipv6-icmp"
+            : "icmp"
+        );
+
+        if (source) {
+          parts.push("-s", source);
+        }
+
+        parts.push(
+          getValue("ip-version") === "ipv6"
+            ? "--icmpv6-type"
+            : "--icmp-type",
+          getValue("icmp-type") || "echo-request"
+        );
+
+        parts.push(
+          "-j",
+          targetOverride || getValue("target") || "ACCEPT"
+        );
+
+        return parts.join(" ");
+      }
+
+      function buildPortForwardCommands() {
+        const protocol =
+          getValue("forward-protocol") || "tcp";
+
+        const inputInterface =
+          getValue("incoming-interface");
+
+        const incomingPort =
+          getValue("listen-port") || "8080";
+
+        const destinationIp =
+          getValue("destination-ip") || "192.168.1.20";
+
+        const destinationPort =
+          getValue("destination-port") || "80";
+
+        const source =
+          getValue("forward-source");
+
+        const dnatParts = [
+          prefix(),
+          "-t",
+          "nat",
+          "-A",
+          "PREROUTING",
+        ];
+
+        if (inputInterface) {
+          dnatParts.push("-i", inputInterface);
+        }
+
+        if (source) {
+          dnatParts.push("-s", source);
+        }
+
+        dnatParts.push(
+          "-p",
+          protocol,
+          "--dport",
+          incomingPort,
+          "-j",
+          "DNAT",
+          "--to-destination",
+          `${destinationIp}:${destinationPort}`
+        );
+
+        const forwardParts = [
+          prefix(),
+          "-t",
+          "filter",
+          "-A",
+          "FORWARD",
+        ];
+
+        if (source) {
+          forwardParts.push("-s", source);
+        }
+
+        forwardParts.push(
+          "-p",
+          protocol,
+          "-d",
+          destinationIp,
+          "--dport",
+          destinationPort,
+          "-m",
+          "conntrack",
+          "--ctstate",
+          "NEW,ESTABLISHED,RELATED",
+          "-j",
+          "ACCEPT"
+        );
+
+        return {
+          main: dnatParts.join(" "),
+          additional: forwardParts.join(" "),
+        };
+      }
+
+      function buildMasqueradeRule() {
+        const parts = [
+          prefix(),
+          "-t",
+          "nat",
+          "-A",
+          "POSTROUTING",
+        ];
+
+        const source =
+          getValue("masquerade-source");
+
+        const outputInterface =
+          getValue("outgoing-interface");
+
+        if (source) {
+          parts.push("-s", source);
+        }
+
+        if (outputInterface) {
+          parts.push("-o", outputInterface);
+        }
+
+        parts.push("-j", "MASQUERADE");
+
+        return parts.join(" ");
+      }
+
+      function buildListCommand() {
+        const parts = [
+          prefix(),
+          "-t",
+          getValue("table") || "filter",
+          "-L",
+        ];
+
+        const chain = getValue("chain");
+
+        if (chain) {
+          parts.push(chain);
+        }
+
+        if (isChecked("list-numeric")) {
+          parts.push("-n");
+        }
+
+        if (isChecked("list-verbose")) {
+          parts.push("-v");
+        }
+
+        if (isChecked("list-line-numbers")) {
+          parts.push("--line-numbers");
+        }
+
+        return parts.join(" ");
+      }
+
+      function buildFlushCommand() {
+        const parts = [
+          prefix(),
+          "-t",
+          getValue("table") || "filter",
+          "-F",
+        ];
+
+        const flushChain = getValue("flush-chain");
+
+        if (flushChain) {
+          parts.push(flushChain);
+        }
+
+        return parts.join(" ");
+      }
+
+      function buildLogRule(type) {
+        let rule = "";
+
+        if (type === "port") {
+          rule = buildPortRule("LOG");
+        }
+
+        if (type === "source") {
+          rule = buildSourceRule("LOG");
+        }
+
+        if (type === "icmp") {
+          rule = buildIcmpRule("LOG");
+        }
+
+        if (!rule) {
+          return "";
+        }
+
+        const prefixValue =
+          getValue("log-prefix") || "IPTABLES-DROPPED: ";
+
+        return `${rule} --log-prefix ${shellQuote(prefixValue)} --log-level 4`;
+      }
+
+      function getRuleTypeLabel(type) {
+        const labels = {
+          port: "Port rule",
+          source: "Source IP rule",
+          established: "Established traffic",
+          loopback: "Loopback rule",
+          icmp: "ICMP rule",
+          "port-forward": "Port forwarding",
+          masquerade: "NAT masquerade",
+          list: "List rules",
+          flush: "Flush rules",
+        };
+
+        return labels[type] || "Port rule";
+      }
+
+      function generateCommands() {
+        const type = getRuleType();
+        const table = getValue("table") || "filter";
+        const chain = getValue("chain") || "INPUT";
+        const target = getValue("target") || "ACCEPT";
+
+        positionField.hidden =
+          getValue("rule-operation") !== "insert";
+
+        logPrefixSection.hidden =
+          !isChecked("enable-log");
+
+        logResultBlock.hidden = true;
+        additionalResultBlock.hidden = true;
+        sysctlResultBlock.hidden = true;
+
+        if (type === "port") {
+          mainCommand.textContent = buildPortRule();
+        }
+
+        if (type === "source") {
+          mainCommand.textContent = buildSourceRule();
+        }
+
+        if (type === "established") {
+          mainCommand.textContent =
+            buildEstablishedRule();
+        }
+
+        if (type === "loopback") {
+          mainCommand.textContent =
+            buildLoopbackRule();
+        }
+
+        if (type === "icmp") {
+          mainCommand.textContent =
+            buildIcmpRule();
+        }
+
+        if (type === "port-forward") {
+          const commands =
+            buildPortForwardCommands();
+
+          mainCommand.textContent = commands.main;
+
+          additionalCommand.textContent =
+            commands.additional;
+
+          additionalResultBlock.hidden = false;
+          sysctlResultBlock.hidden = false;
+        }
+
+        if (type === "masquerade") {
+          mainCommand.textContent =
+            buildMasqueradeRule();
+
+          sysctlResultBlock.hidden = false;
+        }
+
+        if (type === "list") {
+          mainCommand.textContent =
+            buildListCommand();
+        }
+
+        if (type === "flush") {
+          mainCommand.textContent =
+            buildFlushCommand();
+        }
+
+        if (
+          isChecked("enable-log") &&
+          ["port", "source", "icmp"].includes(type) &&
+          ["DROP", "REJECT"].includes(target)
+        ) {
+          const command = buildLogRule(type);
+
+          if (command) {
+            logCommand.textContent = command;
+            logResultBlock.hidden = false;
+          }
+        }
+
+        const saveEnabled =
+          isChecked("generate-save") &&
+          !["list"].includes(type);
+
+        saveResultBlock.hidden = !saveEnabled;
+        saveDebianResultBlock.hidden = !saveEnabled;
+
+        const sudoPrefix =
+          isChecked("use-sudo") ? "sudo " : "";
+
+        const currentBinary = binary();
+
+        saveRhelCommand.textContent =
+          `${sudoPrefix}${currentBinary}-save | ${sudoPrefix}tee /etc/sysconfig/${currentBinary}`;
+
+        saveDebianCommand.textContent =
+          `${sudoPrefix}netfilter-persistent save`;
+
+        sysctlCommand.textContent =
+          `${sudoPrefix}sysctl -w net.ipv4.ip_forward=1`;
+
+        verifyCommand.textContent =
+          `${prefix()} -t ${
+            type === "port-forward" ||
+            type === "masquerade"
+              ? "nat"
+              : table
+          } -L -n -v --line-numbers`;
+
+        document.getElementById(
+          "summary-type"
+        ).textContent = getRuleTypeLabel(type);
+
+        document.getElementById(
+          "summary-table"
+        ).textContent =
+          type === "port-forward" ||
+          type === "masquerade"
+            ? "nat"
+            : table;
+
+        document.getElementById(
+          "summary-chain"
+        ).textContent =
+          type === "port-forward"
+            ? "PREROUTING / FORWARD"
+            : type === "masquerade"
+              ? "POSTROUTING"
+              : type === "flush"
+                ? getValue("flush-chain") || "All chains"
+                : chain;
+
+        document.getElementById(
+          "summary-target"
+        ).textContent =
+          ["list", "flush"].includes(type)
+            ? "Not applicable"
+            : type === "port-forward"
+              ? "DNAT / ACCEPT"
+              : type === "masquerade"
+                ? "MASQUERADE"
+                : target;
+
+        document.getElementById(
+          "summary-ip-version"
+        ).textContent =
+          getValue("ip-version") === "ipv6"
+            ? "IPv6"
+            : "IPv4";
+
+        updateWarning(type);
+      }
+
+      function updateWarning(type) {
+        const target = getValue("target");
+        const port = getValue("port");
+        const operation = getValue("rule-operation");
+
+        if (
+          type === "flush"
+        ) {
+          warningBox.textContent =
+            "Danger: flushing rules may remove remote access and expose services. Back up the current rules first.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          type === "port" &&
+          port === "22" &&
+          (
+            target === "DROP" ||
+            target === "REJECT" ||
+            operation === "delete"
+          )
+        ) {
+          warningBox.textContent =
+            "Danger: this SSH rule may disconnect your remote session. Keep another active session or console access available.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          type === "port-forward" ||
+          type === "masquerade"
+        ) {
+          warningBox.textContent =
+            "IP forwarding must be enabled. Verify routing, interfaces and NAT requirements before applying these rules.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else if (type === "list") {
+          warningBox.textContent =
+            "This command only displays the current rules and does not modify the firewall.";
+
+          warningBox.style.borderColor = "#bbf7d0";
+          warningBox.style.background = "#f0fdf4";
+          warningBox.style.color = "#166534";
+        } else {
+          warningBox.textContent =
+            "Keep an active SSH session while changing remote firewall rules and save the configuration after validation.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        }
+      }
+
+      function updateRuleTypeUI() {
+        const type = getRuleType();
+
+        Object.entries(sections).forEach(
+          ([name, section]) => {
+            section.hidden = name !== type;
+          }
+        );
+
+        const normalRule =
+          !["list", "flush", "port-forward", "masquerade"].includes(type);
+
+        document.getElementById(
+          "rule-operation-field"
+        ).hidden = !normalRule;
+
+        document.getElementById(
+          "target-field"
+        ).hidden = !normalRule;
+
+        document.getElementById(
+          "chain-field"
+        ).hidden =
+          ["port-forward", "masquerade"].includes(type);
+
+        document.getElementById(
+          "log-option"
+        ).hidden =
+          !["port", "source", "icmp"].includes(type);
+
+        generateCommands();
+      }
+
+      function resetForm() {
+        document.querySelector(
+          'input[name="rule-type"][value="port"]'
+        ).checked = true;
+
+        const values = {
+          table: "filter",
+          chain: "INPUT",
+          "rule-operation": "append",
+          "rule-position": "1",
+          target: "ACCEPT",
+          "ip-version": "ipv4",
+          protocol: "tcp",
+          "port-direction": "destination",
+          port: "22",
+          interface: "",
+          "port-source": "",
+          "source-address": "192.168.1.100",
+          "source-protocol": "",
+          "source-port": "",
+          "icmp-type": "echo-request",
+          "icmp-source": "",
+          "forward-protocol": "tcp",
+          "incoming-interface": "eth0",
+          "listen-port": "8080",
+          "destination-ip": "192.168.1.20",
+          "destination-port": "80",
+          "forward-source": "",
+          "outgoing-interface": "eth0",
+          "masquerade-source": "",
+          "flush-chain": "",
+          "log-prefix": "IPTABLES-DROPPED: ",
+        };
+
+        Object.entries(values).forEach(
+          ([id, value]) => {
+            const element =
+              document.getElementById(id);
+
+            if (element) {
+              element.value = value;
+            }
+          }
+        );
+
+        document.getElementById(
+          "use-sudo"
+        ).checked = true;
+
+        document.getElementById(
+          "enable-log"
+        ).checked = false;
+
+        document.getElementById(
+          "generate-save"
+        ).checked = true;
+
+        document.getElementById(
+          "list-numeric"
+        ).checked = true;
+
+        document.getElementById(
+          "list-line-numbers"
+        ).checked = true;
+
+        document.getElementById(
+          "list-verbose"
+        ).checked = true;
+
+        updateRuleTypeUI();
+      }
+
+      function selectRuleType(type) {
+        const radio = document.querySelector(
+          `input[name="rule-type"][value="${type}"]`
+        );
+
+        if (radio) {
+          radio.checked = true;
+        }
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "ssh") {
+          selectRuleType("port");
+          document.getElementById("port").value = "22";
+          document.getElementById("protocol").value = "tcp";
+          document.getElementById("target").value = "ACCEPT";
+        }
+
+        if (preset === "http") {
+          selectRuleType("port");
+          document.getElementById("port").value = "80";
+          document.getElementById("protocol").value = "tcp";
+          document.getElementById("target").value = "ACCEPT";
+        }
+
+        if (preset === "https") {
+          selectRuleType("port");
+          document.getElementById("port").value = "443";
+          document.getElementById("protocol").value = "tcp";
+          document.getElementById("target").value = "ACCEPT";
+        }
+
+        if (preset === "block-ip") {
+          selectRuleType("source");
+          document.getElementById(
+            "source-address"
+          ).value = "192.168.1.100";
+
+          document.getElementById(
+            "target"
+          ).value = "DROP";
+
+          document.getElementById(
+            "enable-log"
+          ).checked = true;
+        }
+
+        if (preset === "established") {
+          selectRuleType("established");
+          document.getElementById("target").value = "ACCEPT";
+        }
+
+        if (preset === "loopback") {
+          selectRuleType("loopback");
+          document.getElementById("target").value = "ACCEPT";
+        }
+
+        if (preset === "ping") {
+          selectRuleType("icmp");
+          document.getElementById(
+            "icmp-type"
+          ).value = "echo-request";
+
+          document.getElementById(
+            "target"
+          ).value = "ACCEPT";
+        }
+
+        if (preset === "list") {
+          selectRuleType("list");
+        }
+
+        updateRuleTypeUI();
+      }
+
+      function getAllCommands() {
+        const commands = [];
+
+        if (!logResultBlock.hidden) {
+          commands.push(
+            logCommand.textContent.trim()
+          );
+        }
+
+        commands.push(
+          mainCommand.textContent.trim()
+        );
+
+        if (!additionalResultBlock.hidden) {
+          commands.push(
+            additionalCommand.textContent.trim()
+          );
+        }
+
+        if (!sysctlResultBlock.hidden) {
+          commands.push(
+            sysctlCommand.textContent.trim()
+          );
+        }
+
+        if (!saveResultBlock.hidden) {
+          commands.push(
+            saveRhelCommand.textContent.trim()
+          );
+        }
+
+        commands.push(
+          verifyCommand.textContent.trim()
+        );
+
+        return [
+          ...new Set(commands.filter(Boolean)),
+        ].join("\n");
+      }
+
+      async function copyText(text, message) {
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+
+          copyStatus.textContent =
+            message || "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      document
+        .querySelectorAll('input[name="rule-type"]')
+        .forEach((radio) => {
+          radio.addEventListener(
+            "change",
+            updateRuleTypeUI
+          );
+        });
+
+      fieldIds.forEach((id) => {
+        const element =
+          document.getElementById(id);
+
+        element?.addEventListener(
+          "input",
+          generateCommands
+        );
+
+        element?.addEventListener(
+          "change",
+          generateCommands
+        );
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener(
+            "change",
+            generateCommands
+          );
+      });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId =
+              button.dataset.copyTarget;
+
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(
+              target?.textContent?.trim() ?? "",
+              "Command copied successfully."
+            );
+          });
+        });
+
+      document
+        .getElementById("copy-all")
+        ?.addEventListener("click", () => {
+          copyText(
+            getAllCommands(),
+            "All commands copied successfully."
+          );
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener(
+          "click",
+          generateCommands
+        );
+
+      document
+        .getElementById("reset")
+        ?.addEventListener(
+          "click",
+          resetForm
+        );
+
+      updateRuleTypeUI();
+    </script>
+  </body>
+</html>

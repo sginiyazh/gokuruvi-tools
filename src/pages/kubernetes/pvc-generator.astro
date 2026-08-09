@@ -1,0 +1,1354 @@
+---
+const pageTitle = "Kubernetes PVC Generator | Gokuruvi Tools";
+const description =
+  "Generate Kubernetes PersistentVolumeClaim YAML with access modes, storage class, volume mode, selectors, data source, and optional test Pod.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/pvc-generator"
+    />
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 850px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 18px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 580px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Kubernetes PVC Generator</h1>
+        <p>
+          Generate PersistentVolumeClaim YAML with access modes, storage class,
+          volume mode, selectors, cloning options, and an optional test Pod.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>PVC Configuration</h2>
+            <p class="card-description">
+              Configure the storage request and generate production-ready YAML.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="standard">
+                Standard 10Gi
+              </button>
+              <button class="preset" type="button" data-preset="shared">
+                Shared RWX
+              </button>
+              <button class="preset" type="button" data-preset="block">
+                Block Volume
+              </button>
+            </div>
+
+            <h3 class="section-title">Basic Settings</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="pvcNameInput">PVC name</label>
+                <input
+                  id="pvcNameInput"
+                  type="text"
+                  value="app-data"
+                  maxlength="253"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="namespaceInput">Namespace</label>
+                <input
+                  id="namespaceInput"
+                  type="text"
+                  value="default"
+                  maxlength="63"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="storageSizeInput">Storage size</label>
+                <input
+                  id="storageSizeInput"
+                  type="text"
+                  value="10Gi"
+                  placeholder="Example: 10Gi"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="storageClassInput">StorageClass name</label>
+                <input
+                  id="storageClassInput"
+                  type="text"
+                  value="standard"
+                  placeholder="Leave empty for cluster default"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="accessModeSelect">Access mode</label>
+                <select id="accessModeSelect">
+                  <option value="ReadWriteOnce" selected>
+                    ReadWriteOnce (RWO)
+                  </option>
+                  <option value="ReadOnlyMany">ReadOnlyMany (ROX)</option>
+                  <option value="ReadWriteMany">ReadWriteMany (RWX)</option>
+                  <option value="ReadWriteOncePod">
+                    ReadWriteOncePod (RWOP)
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="volumeModeSelect">Volume mode</label>
+                <select id="volumeModeSelect">
+                  <option value="Filesystem" selected>Filesystem</option>
+                  <option value="Block">Block</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="disableDynamicInput" type="checkbox" />
+              <label for="disableDynamicInput">
+                Disable dynamic provisioning using storageClassName: ""
+              </label>
+            </div>
+
+            <h3 class="section-title">Labels and Annotations</h3>
+
+            <div class="form-group">
+              <label for="labelsInput">Labels</label>
+              <textarea
+                id="labelsInput"
+                placeholder="app=my-application&#10;environment=production"
+              >app=my-application
+environment=production</textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="annotationsInput">Annotations</label>
+              <textarea
+                id="annotationsInput"
+                placeholder="description=Application data volume"
+              ></textarea>
+            </div>
+
+            <h3 class="section-title">Volume Selector</h3>
+
+            <div class="checkbox-item">
+              <input id="selectorEnabledInput" type="checkbox" />
+              <label for="selectorEnabledInput">
+                Match an existing PersistentVolume by labels
+              </label>
+            </div>
+
+            <div id="selectorSection" class="conditional-section">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="selectorLabelsInput">PV match labels</label>
+                <textarea
+                  id="selectorLabelsInput"
+                  placeholder="storage-tier=fast&#10;environment=production"
+                ></textarea>
+              </div>
+            </div>
+
+            <h3 class="section-title">Data Source</h3>
+
+            <div class="checkbox-item">
+              <input id="dataSourceEnabledInput" type="checkbox" />
+              <label for="dataSourceEnabledInput">
+                Clone from another PVC or restore from VolumeSnapshot
+              </label>
+            </div>
+
+            <div id="dataSourceSection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="dataSourceKindSelect">Source kind</label>
+                  <select id="dataSourceKindSelect">
+                    <option value="PersistentVolumeClaim" selected>
+                      PersistentVolumeClaim
+                    </option>
+                    <option value="VolumeSnapshot">VolumeSnapshot</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="dataSourceNameInput">Source name</label>
+                  <input
+                    id="dataSourceNameInput"
+                    type="text"
+                    value="source-pvc"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dataSourceApiGroupInput">API group</label>
+                <input
+                  id="dataSourceApiGroupInput"
+                  type="text"
+                  value=""
+                  placeholder="snapshot.storage.k8s.io for VolumeSnapshot"
+                />
+              </div>
+            </div>
+
+            <h3 class="section-title">Optional Test Pod</h3>
+
+            <div class="checkbox-item">
+              <input id="testPodEnabledInput" type="checkbox" checked />
+              <label for="testPodEnabledInput">
+                Add a Pod that mounts this PVC
+              </label>
+            </div>
+
+            <div id="testPodSection" class="conditional-section active">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="podNameInput">Pod name</label>
+                  <input id="podNameInput" type="text" value="pvc-test-pod" />
+                </div>
+
+                <div class="form-group">
+                  <label for="imageInput">Container image</label>
+                  <input id="imageInput" type="text" value="busybox:1.36" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="mountPathInput">Mount path</label>
+                <input id="mountPathInput" type="text" value="/data" />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate PVC
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated pvc.yaml</h2>
+            <p class="card-description">
+              Review the storage class and access mode before applying.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">Kubernetes PVC YAML</span>
+              <pre id="yamlOutput" class="yaml-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download YAML
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">PVC</span>
+                <span id="resultName" class="result-value">app-data</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Namespace</span>
+                <span id="resultNamespace" class="result-value">default</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Requested storage</span>
+                <span id="resultStorage" class="result-value">10Gi</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Access mode</span>
+                <span id="resultAccessMode" class="result-value">
+                  ReadWriteOnce
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">StorageClass</span>
+                <span id="resultStorageClass" class="result-value">
+                  standard
+                </span>
+              </div>
+            </div>
+
+            <div class="warning">
+              A PVC can remain Pending when the StorageClass does not exist,
+              the requested access mode is unsupported, or no suitable
+              PersistentVolume is available.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Apply and Troubleshoot</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Validate YAML</th>
+                <td>
+                  <code>kubectl apply --dry-run=client -f pvc.yaml</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Apply PVC</th>
+                <td><code>kubectl apply -f pvc.yaml</code></td>
+              </tr>
+              <tr>
+                <th>Check PVC</th>
+                <td><code>kubectl get pvc -n default</code></td>
+              </tr>
+              <tr>
+                <th>Describe PVC</th>
+                <td><code>kubectl describe pvc app-data -n default</code></td>
+              </tr>
+              <tr>
+                <th>List StorageClasses</th>
+                <td><code>kubectl get storageclass</code></td>
+              </tr>
+              <tr>
+                <th>List PersistentVolumes</th>
+                <td><code>kubectl get pv</code></td>
+              </tr>
+              <tr>
+                <th>Delete PVC</th>
+                <td><code>kubectl delete pvc app-data -n default</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          pvcName: document.getElementById("pvcNameInput"),
+          namespace: document.getElementById("namespaceInput"),
+          storageSize: document.getElementById("storageSizeInput"),
+          storageClass: document.getElementById("storageClassInput"),
+          accessMode: document.getElementById("accessModeSelect"),
+          volumeMode: document.getElementById("volumeModeSelect"),
+          disableDynamic: document.getElementById("disableDynamicInput"),
+          labels: document.getElementById("labelsInput"),
+          annotations: document.getElementById("annotationsInput"),
+          selectorEnabled: document.getElementById("selectorEnabledInput"),
+          selectorLabels: document.getElementById("selectorLabelsInput"),
+          dataSourceEnabled: document.getElementById("dataSourceEnabledInput"),
+          dataSourceKind: document.getElementById("dataSourceKindSelect"),
+          dataSourceName: document.getElementById("dataSourceNameInput"),
+          dataSourceApiGroup: document.getElementById(
+            "dataSourceApiGroupInput"
+          ),
+          testPodEnabled: document.getElementById("testPodEnabledInput"),
+          podName: document.getElementById("podNameInput"),
+          image: document.getElementById("imageInput"),
+          mountPath: document.getElementById("mountPathInput")
+        };
+
+        var selectorSection = document.getElementById("selectorSection");
+        var dataSourceSection = document.getElementById("dataSourceSection");
+        var testPodSection = document.getElementById("testPodSection");
+        var yamlOutput = document.getElementById("yamlOutput");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+        var currentYaml = "";
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function isValidResourceName(value) {
+          return (
+            value.length >= 1 &&
+            value.length <= 253 &&
+            /^[a-z0-9]([-.a-z0-9]*[a-z0-9])?$/.test(value)
+          );
+        }
+
+        function isValidNamespace(value) {
+          return (
+            value.length >= 1 &&
+            value.length <= 63 &&
+            /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(value)
+          );
+        }
+
+        function isValidMetadataKey(value) {
+          return (
+            value.length > 0 &&
+            value.length <= 253 &&
+            /^[A-Za-z0-9]([A-Za-z0-9._/-]*[A-Za-z0-9])?$/.test(value)
+          );
+        }
+
+        function isValidQuantity(value) {
+          return /^[0-9]+([.][0-9]+)?([EPTGMK]i?|m)?$/.test(value);
+        }
+
+        function parseKeyValueLines(value) {
+          var result = {};
+          var invalidLines = [];
+          var lines = String(value).split(/\r?\n/);
+
+          lines.forEach(function (originalLine) {
+            var separatorIndex;
+            var key;
+            var itemValue;
+
+            if (!originalLine.trim()) {
+              return;
+            }
+
+            separatorIndex = originalLine.indexOf("=");
+
+            if (separatorIndex <= 0) {
+              invalidLines.push(originalLine);
+              return;
+            }
+
+            key = originalLine.slice(0, separatorIndex).trim();
+            itemValue = originalLine.slice(separatorIndex + 1);
+
+            if (!isValidMetadataKey(key)) {
+              invalidLines.push(originalLine);
+              return;
+            }
+
+            result[key] = itemValue;
+          });
+
+          return {
+            values: result,
+            invalidLines: invalidLines
+          };
+        }
+
+        function quoteYaml(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function addMetadataSection(lines, sectionName, values) {
+          var entries = Object.entries(values);
+
+          if (entries.length === 0) {
+            return;
+          }
+
+          lines.push("  " + sectionName + ":");
+
+          entries.forEach(function (entry) {
+            lines.push("    " + entry[0] + ": " + quoteYaml(entry[1]));
+          });
+        }
+
+        function validateForm() {
+          var labels = parseKeyValueLines(fields.labels.value);
+          var annotations = parseKeyValueLines(fields.annotations.value);
+          var selectorLabels = parseKeyValueLines(
+            fields.selectorLabels.value
+          );
+
+          if (!isValidResourceName(fields.pvcName.value.trim())) {
+            return "PVC name must use lowercase letters, numbers, dots, or hyphens.";
+          }
+
+          if (!isValidNamespace(fields.namespace.value.trim())) {
+            return "Namespace must use lowercase letters, numbers, or hyphens.";
+          }
+
+          if (!isValidQuantity(fields.storageSize.value.trim())) {
+            return "Enter a valid storage quantity such as 10Gi or 500Mi.";
+          }
+
+          if (labels.invalidLines.length > 0) {
+            return "Invalid label: " + labels.invalidLines[0] + ".";
+          }
+
+          if (annotations.invalidLines.length > 0) {
+            return "Invalid annotation: " + annotations.invalidLines[0] + ".";
+          }
+
+          if (
+            fields.selectorEnabled.checked &&
+            selectorLabels.invalidLines.length > 0
+          ) {
+            return "Invalid selector label: " + selectorLabels.invalidLines[0] + ".";
+          }
+
+          if (
+            fields.selectorEnabled.checked &&
+            Object.keys(selectorLabels.values).length === 0
+          ) {
+            return "Add at least one selector label.";
+          }
+
+          if (
+            fields.dataSourceEnabled.checked &&
+            !isValidResourceName(fields.dataSourceName.value.trim())
+          ) {
+            return "Data source name is invalid.";
+          }
+
+          if (
+            fields.testPodEnabled.checked &&
+            !isValidResourceName(fields.podName.value.trim())
+          ) {
+            return "Test Pod name is invalid.";
+          }
+
+          if (
+            fields.testPodEnabled.checked &&
+            !fields.image.value.trim()
+          ) {
+            return "Container image is required.";
+          }
+
+          if (
+            fields.testPodEnabled.checked &&
+            fields.mountPath.value.trim().charAt(0) !== "/"
+          ) {
+            return "Mount path must start with a forward slash.";
+          }
+
+          return "";
+        }
+
+        function generateYaml(showError) {
+          var validationError = validateForm();
+          var pvcName;
+          var namespace;
+          var labels;
+          var annotations;
+          var selectorLabels;
+          var lines;
+          var sourceKind;
+          var sourceApiGroup;
+
+          clearMessage();
+
+          if (validationError) {
+            currentYaml = "";
+            yamlOutput.textContent = validationError;
+
+            if (showError) {
+              showMessage(validationError, "error");
+            }
+
+            return;
+          }
+
+          pvcName = fields.pvcName.value.trim();
+          namespace = fields.namespace.value.trim();
+          labels = parseKeyValueLines(fields.labels.value).values;
+          annotations = parseKeyValueLines(fields.annotations.value).values;
+          selectorLabels = parseKeyValueLines(
+            fields.selectorLabels.value
+          ).values;
+
+          lines = [
+            "apiVersion: v1",
+            "kind: PersistentVolumeClaim",
+            "metadata:",
+            "  name: " + pvcName,
+            "  namespace: " + namespace
+          ];
+
+          addMetadataSection(lines, "labels", labels);
+          addMetadataSection(lines, "annotations", annotations);
+
+          lines.push("spec:");
+          lines.push("  accessModes:");
+          lines.push("    - " + fields.accessMode.value);
+          lines.push("  volumeMode: " + fields.volumeMode.value);
+
+          if (fields.disableDynamic.checked) {
+            lines.push('  storageClassName: ""');
+          } else if (fields.storageClass.value.trim()) {
+            lines.push(
+              "  storageClassName: " + fields.storageClass.value.trim()
+            );
+          }
+
+          lines.push("  resources:");
+          lines.push("    requests:");
+          lines.push("      storage: " + fields.storageSize.value.trim());
+
+          if (fields.selectorEnabled.checked) {
+            lines.push("  selector:");
+            lines.push("    matchLabels:");
+
+            Object.keys(selectorLabels).forEach(function (key) {
+              lines.push(
+                "      " + key + ": " + quoteYaml(selectorLabels[key])
+              );
+            });
+          }
+
+          if (fields.dataSourceEnabled.checked) {
+            sourceKind = fields.dataSourceKind.value;
+            sourceApiGroup = fields.dataSourceApiGroup.value.trim();
+
+            lines.push("  dataSource:");
+            lines.push("    kind: " + sourceKind);
+            lines.push(
+              "    name: " + fields.dataSourceName.value.trim()
+            );
+
+            if (sourceKind === "VolumeSnapshot") {
+              lines.push(
+                "    apiGroup: " +
+                  (sourceApiGroup || "snapshot.storage.k8s.io")
+              );
+            } else {
+              lines.push('    apiGroup: ""');
+            }
+          }
+
+          if (fields.testPodEnabled.checked) {
+            lines.push("---");
+            lines.push("apiVersion: v1");
+            lines.push("kind: Pod");
+            lines.push("metadata:");
+            lines.push("  name: " + fields.podName.value.trim());
+            lines.push("  namespace: " + namespace);
+            lines.push("spec:");
+            lines.push("  containers:");
+            lines.push("    - name: storage-test");
+            lines.push("      image: " + fields.image.value.trim());
+            lines.push('      command: ["sh", "-c", "sleep 3600"]');
+
+            if (fields.volumeMode.value === "Block") {
+              lines.push("      volumeDevices:");
+              lines.push("        - name: data-volume");
+              lines.push("          devicePath: /dev/xvda");
+            } else {
+              lines.push("      volumeMounts:");
+              lines.push("        - name: data-volume");
+              lines.push(
+                "          mountPath: " + fields.mountPath.value.trim()
+              );
+            }
+
+            lines.push("  volumes:");
+            lines.push("    - name: data-volume");
+            lines.push("      persistentVolumeClaim:");
+            lines.push("        claimName: " + pvcName);
+            lines.push("  restartPolicy: Never");
+          }
+
+          currentYaml = lines.join("\n") + "\n";
+          yamlOutput.textContent = currentYaml;
+
+          document.getElementById("resultName").textContent = pvcName;
+          document.getElementById("resultNamespace").textContent = namespace;
+          document.getElementById("resultStorage").textContent =
+            fields.storageSize.value.trim();
+          document.getElementById("resultAccessMode").textContent =
+            fields.accessMode.value;
+          document.getElementById("resultStorageClass").textContent =
+            fields.disableDynamic.checked
+              ? "Dynamic provisioning disabled"
+              : fields.storageClass.value.trim() || "Cluster default";
+        }
+
+        function updateSections() {
+          selectorSection.classList.toggle(
+            "active",
+            fields.selectorEnabled.checked
+          );
+
+          dataSourceSection.classList.toggle(
+            "active",
+            fields.dataSourceEnabled.checked
+          );
+
+          testPodSection.classList.toggle(
+            "active",
+            fields.testPodEnabled.checked
+          );
+
+          generateYaml(false);
+        }
+
+        function updateDataSourceApiGroup() {
+          if (fields.dataSourceKind.value === "VolumeSnapshot") {
+            fields.dataSourceApiGroup.value = "snapshot.storage.k8s.io";
+          } else {
+            fields.dataSourceApiGroup.value = "";
+          }
+
+          generateYaml(false);
+        }
+
+        function applyPreset(preset) {
+          if (preset === "standard") {
+            fields.pvcName.value = "app-data";
+            fields.storageSize.value = "10Gi";
+            fields.storageClass.value = "standard";
+            fields.accessMode.value = "ReadWriteOnce";
+            fields.volumeMode.value = "Filesystem";
+          } else if (preset === "shared") {
+            fields.pvcName.value = "shared-data";
+            fields.storageSize.value = "50Gi";
+            fields.storageClass.value = "nfs";
+            fields.accessMode.value = "ReadWriteMany";
+            fields.volumeMode.value = "Filesystem";
+          } else if (preset === "block") {
+            fields.pvcName.value = "block-data";
+            fields.storageSize.value = "20Gi";
+            fields.storageClass.value = "standard";
+            fields.accessMode.value = "ReadWriteOnce";
+            fields.volumeMode.value = "Block";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.pvcName.value = "app-data";
+          fields.namespace.value = "default";
+          fields.storageSize.value = "10Gi";
+          fields.storageClass.value = "standard";
+          fields.accessMode.value = "ReadWriteOnce";
+          fields.volumeMode.value = "Filesystem";
+          fields.disableDynamic.checked = false;
+          fields.labels.value =
+            "app=my-application\nenvironment=production";
+          fields.annotations.value = "";
+          fields.selectorEnabled.checked = false;
+          fields.selectorLabels.value = "";
+          fields.dataSourceEnabled.checked = false;
+          fields.dataSourceKind.value = "PersistentVolumeClaim";
+          fields.dataSourceName.value = "source-pvc";
+          fields.dataSourceApiGroup.value = "";
+          fields.testPodEnabled.checked = true;
+          fields.podName.value = "pvc-test-pod";
+          fields.image.value = "busybox:1.36";
+          fields.mountPath.value = "/data";
+
+          updateSections();
+          fields.pvcName.focus();
+        }
+
+        function copyYaml() {
+          if (!currentYaml) {
+            showMessage("Generate valid YAML before copying.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(currentYaml)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("PVC YAML copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the YAML manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadYaml() {
+          var pvcName;
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentYaml) {
+            showMessage("Generate valid YAML before downloading.", "error");
+            return;
+          }
+
+          pvcName = fields.pvcName.value.trim() || "pvc";
+          blob = new Blob([currentYaml], {
+            type: "application/yaml;charset=utf-8"
+          });
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+
+          anchor.href = url;
+          anchor.download = pvcName + ".yaml";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("PVC YAML downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateYaml(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyYaml);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadYaml);
+
+        fields.selectorEnabled.addEventListener("change", updateSections);
+        fields.dataSourceEnabled.addEventListener("change", updateSections);
+        fields.testPodEnabled.addEventListener("change", updateSections);
+        fields.dataSourceKind.addEventListener(
+          "change",
+          updateDataSourceApiGroup
+        );
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateYaml(false);
+          });
+
+          if (
+            key !== "selectorEnabled" &&
+            key !== "dataSourceEnabled" &&
+            key !== "testPodEnabled" &&
+            key !== "dataSourceKind"
+          ) {
+            field.addEventListener("change", function () {
+              generateYaml(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "");
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Disk Health Checker" description="Generate PowerShell checks for disk health, capacity, physical disks and file-system status." slug="disk-health-checker" icon="💿">
+
+<h2 class="tool-title">Disk diagnostic command builder</h2><div class="form-grid"><div class="field"><label for="check">Check</label><select id="check"><option value="volume">Volume free space</option><option value="physical">Physical disk health</option><option value="smart">Reliability / SMART counters</option><option value="partition">Partitions</option><option value="chkdsk">File-system scan command</option></select></div><div class="field"><label for="drive">Drive letter</label><input id="drive" value="C" maxlength="2" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate check</button></div><div class="output-wrap"><div class="output-head"><strong>Command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Choose a disk check.</pre></div>
+<script>
+
+const c=document.querySelector<HTMLSelectElement>('#check')!,d=document.querySelector<HTMLInputElement>('#drive')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const drive=(d.value.replace(/[^a-z]/gi,'').slice(0,1)||'C').toUpperCase();const m:Record<string,string>={volume:`Get-Volume -DriveLetter ${drive} | Select DriveLetter,FileSystemLabel,HealthStatus,@{N='SizeGB';E={[math]::Round($_.Size/1GB,2)}},@{N='FreeGB';E={[math]::Round($_.SizeRemaining/1GB,2)}}`,physical:`Get-PhysicalDisk | Select FriendlyName,MediaType,HealthStatus,OperationalStatus,Size | Format-Table -AutoSize`,smart:`Get-PhysicalDisk | Get-StorageReliabilityCounter | Format-List *`,partition:`Get-Partition | Sort DiskNumber,PartitionNumber | Format-Table DiskNumber,PartitionNumber,DriveLetter,Type,Size -AutoSize`,chkdsk:`chkdsk ${drive}: /scan`};o.textContent=m[c.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

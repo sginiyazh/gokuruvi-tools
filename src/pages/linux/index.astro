@@ -1,0 +1,1596 @@
+---
+import Header from "../../components/Header.astro";
+const linuxTools = [
+  {
+    title: "Linux chmod Calculator",
+    description:
+      "Convert Linux read, write, and execute permissions into numeric chmod values.",
+    href: "/linux/chmod-calculator",
+    icon: "🔐",
+    category: "Permissions",
+  },
+  {
+    title: "Cron Expression Generator",
+    description:
+      "Build Linux cron expressions for scheduled commands, scripts, and automated tasks.",
+    href: "/linux/cron-generator",
+    icon: "⏰",
+    category: "Automation",
+  },
+  {
+    title: "Systemd Service Generator",
+    description:
+      "Generate a systemd service unit file for Linux applications and background services.",
+    href: "/linux/systemd-service-generator",
+    icon: "⚙️",
+    category: "Services",
+  },
+  {
+    title: "Ownership Command Generator",
+    description:
+      "Generate chown and chgrp commands to change Linux file and directory ownership.",
+    href: "/linux/ownership-command-generator",
+    icon: "👤",
+    category: "Permissions",
+  },
+  {
+    title: "Permission Converter",
+    description:
+      "Convert symbolic Linux permissions such as rwxr-xr-x into numeric permission values.",
+    href: "/linux/permission-converter",
+    icon: "🔄",
+    category: "Permissions",
+  },
+  {
+    title: "File Finder Command",
+    description:
+      "Build Linux find commands to locate files by name, size, owner, permission, or date.",
+    href: "/linux/file-finder-command",
+    icon: "🔎",
+    category: "Files",
+  },
+  {
+    title: "Tar Command Generator",
+    description:
+      "Generate tar commands to create, extract, compress, and inspect Linux archive files.",
+    href: "/linux/tar-command-generator",
+    icon: "📦",
+    category: "Files",
+  },
+  {
+    title: "SSH Command Builder",
+    description:
+      "Create SSH commands using custom usernames, ports, keys, tunnels, and options.",
+    href: "/linux/ssh-command-builder",
+    icon: "🖥️",
+    category: "Networking",
+  },
+  {
+    title: "Rsync Command Generator",
+    description:
+      "Generate rsync commands for local and remote file synchronization and backups.",
+    href: "/linux/rsync-command-generator",
+    icon: "🔁",
+    category: "Files",
+  },
+  {
+    title: "Useradd Generator",
+    description:
+      "Build Linux useradd commands with home directory, shell, UID, groups, and expiry options.",
+    href: "/linux/useradd-generator",
+    icon: "➕",
+    category: "Users",
+  },
+  {
+    title: "Firewall-cmd Generator",
+    description:
+      "Generate firewalld commands for ports, services, zones, sources, and permanent rules.",
+    href: "/linux/firewall-cmd-generator",
+    icon: "🛡️",
+    category: "Security",
+  },
+  {
+    title: "Iptables Generator",
+    description:
+      "Build iptables rules for ports, protocols, source addresses, and traffic actions.",
+    href: "/linux/iptables-generator",
+    icon: "🔥",
+    category: "Security",
+  },
+  {
+    title: "OpenSSL Command Generator",
+    description:
+      "Generate OpenSSL commands for certificates, private keys, CSRs, and certificate checks.",
+    href: "/linux/openssl-command-generator",
+    icon: "🔏",
+    category: "Security",
+  },
+  {
+    title: "Sed Command Generator",
+    description:
+      "Build sed commands to search, replace, delete, insert, and transform Linux text files.",
+    href: "/linux/sed-command-generator",
+    icon: "📝",
+    category: "Text Processing",
+  },
+];
+
+const featuredTools = linuxTools.slice(0, 3);
+
+const pageTitle = "Free Linux Tools and Command Generators | Gokuruvi Tools";
+
+const pageDescription =
+  "Free Linux tools for chmod permissions, cron expressions, systemd services, SSH, rsync, useradd, firewalld, iptables, OpenSSL, sed, tar, and file management.";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="Linux tools, chmod calculator, cron generator, systemd service generator, SSH command builder, rsync generator, useradd generator, firewall-cmd generator, iptables generator, OpenSSL generator, sed generator"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="canonical" href="https://www.gokuruvi.com/linux" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content="https://www.gokuruvi.com/linux" />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <div class="hero-grid-pattern"></div>
+
+        <div class="container hero-container">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span>/</span>
+            <span>Linux Tools</span>
+          </nav>
+
+          <div class="hero-grid">
+            <div class="hero-content">
+              <span class="eyebrow">Linux administration utilities</span>
+
+              <h1>Free Linux Tools and Command Generators</h1>
+
+              <p>
+                Generate accurate Linux commands, calculate permissions, build
+                service files, configure firewalls, and simplify daily system
+                administration tasks.
+              </p>
+
+              <div class="hero-actions">
+                <a href="#all-tools" class="primary-button">
+                  Explore Linux Tools
+                </a>
+
+                <a href="/" class="secondary-button">
+                  View All Categories
+                </a>
+              </div>
+
+              <div class="hero-stats">
+                <div>
+                  <strong>{linuxTools.length}</strong>
+                  <span>Linux utilities</span>
+                </div>
+
+                <div>
+                  <strong>Free</strong>
+                  <span>No registration</span>
+                </div>
+
+                <div>
+                  <strong>Private</strong>
+                  <span>Browser-based tools</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="terminal-wrapper" aria-hidden="true">
+              <div class="terminal">
+                <div class="terminal-header">
+                  <div class="terminal-buttons">
+                    <span class="terminal-close"></span>
+                    <span class="terminal-minimize"></span>
+                    <span class="terminal-maximize"></span>
+                  </div>
+
+                  <span class="terminal-title">linux@gokuruvi:~</span>
+                </div>
+
+                <div class="terminal-body">
+                  <p>
+                    <span class="prompt">linux@gokuruvi:~$</span>
+                    <span class="command">chmod 755 script.sh</span>
+                  </p>
+
+                  <p>
+                    <span class="prompt">linux@gokuruvi:~$</span>
+                    <span class="command">systemctl status nginx</span>
+                  </p>
+
+                  <p class="output">
+                    ● nginx.service - A high performance web server
+                  </p>
+
+                  <p class="output success">
+                    Active: active (running)
+                  </p>
+
+                  <p>
+                    <span class="prompt">linux@gokuruvi:~$</span>
+                    <span class="command">find /var/log -name "*.log"</span>
+                  </p>
+
+                  <p>
+                    <span class="prompt">linux@gokuruvi:~$</span>
+                    <span class="cursor"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefits-section">
+        <div class="container">
+          <div class="benefits-grid">
+            <article class="benefit-card">
+              <span class="benefit-icon">⚡</span>
+              <div>
+                <h2>Instant Commands</h2>
+                <p>Generate commands immediately without manual formatting.</p>
+              </div>
+            </article>
+
+            <article class="benefit-card">
+              <span class="benefit-icon">✅</span>
+              <div>
+                <h2>Reduce Errors</h2>
+                <p>Avoid syntax mistakes in frequently used Linux commands.</p>
+              </div>
+            </article>
+
+            <article class="benefit-card">
+              <span class="benefit-icon">🔒</span>
+              <div>
+                <h2>Privacy Friendly</h2>
+                <p>Your command information is processed inside the browser.</p>
+              </div>
+            </article>
+
+            <article class="benefit-card">
+              <span class="benefit-icon">📱</span>
+              <div>
+                <h2>Mobile Ready</h2>
+                <p>Use all utilities from desktop, tablet, or mobile devices.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="featured-section">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <span class="section-label">Popular utilities</span>
+              <h2>Featured Linux Tools</h2>
+            </div>
+
+            <a href="#all-tools" class="view-all-link">
+              View all tools <span>→</span>
+            </a>
+          </div>
+
+          <div class="featured-grid">
+            {
+              featuredTools.map((tool, index) => (
+                <a href={tool.href} class="featured-card">
+                  <div class="featured-card-top">
+                    <span class="featured-icon">{tool.icon}</span>
+                    <span class="tool-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  <span class="category-badge">{tool.category}</span>
+
+                  <h3>{tool.title}</h3>
+
+                  <p>{tool.description}</p>
+
+                  <span class="card-link">
+                    Open Tool <span>→</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="tools-section" id="all-tools">
+        <div class="container">
+          <div class="section-heading centered">
+            <div>
+              <span class="section-label">Linux utilities</span>
+              <h2>All Linux Tools</h2>
+
+              <p>
+                Select a Linux tool to calculate permissions, generate commands,
+                configure services, or manage system resources.
+              </p>
+            </div>
+          </div>
+
+          <div class="search-wrapper">
+            <label for="toolSearch" class="visually-hidden">
+              Search Linux tools
+            </label>
+
+            <div class="search-box">
+              <span>🔎</span>
+
+              <input
+                type="search"
+                id="toolSearch"
+                placeholder="Search Linux tools..."
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="tools-grid" id="toolsGrid">
+            {
+              linuxTools.map((tool) => (
+                <article
+                  class="tool-card"
+                  data-tool={`${tool.title} ${tool.description} ${tool.category}`.toLowerCase()}
+                >
+                  <div class="tool-icon">{tool.icon}</div>
+
+                  <div class="tool-content">
+                    <span class="category-badge">{tool.category}</span>
+
+                    <h3>{tool.title}</h3>
+
+                    <p>{tool.description}</p>
+
+                    <a href={tool.href} class="tool-link">
+                      Use Tool <span>→</span>
+                    </a>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+
+          <p class="no-results" id="noResults">
+            No Linux tools were found for your search.
+          </p>
+        </div>
+      </section>
+
+      <section class="information-section">
+        <div class="container information-grid">
+          <div class="information-content">
+            <span class="section-label">Linux administration</span>
+
+            <h2>Simplify everyday Linux tasks</h2>
+
+            <p>
+              Linux commands are powerful, but long command options and complex
+              syntax can lead to mistakes. Gokuruvi Linux Tools helps system
+              administrators generate reliable commands quickly.
+            </p>
+
+            <ul>
+              <li>
+                <span>✓</span>
+                Calculate and convert Linux permissions.
+              </li>
+
+              <li>
+                <span>✓</span>
+                Generate cron and systemd configurations.
+              </li>
+
+              <li>
+                <span>✓</span>
+                Build SSH, rsync, tar, find, and sed commands.
+              </li>
+
+              <li>
+                <span>✓</span>
+                Create firewalld, iptables, and OpenSSL commands.
+              </li>
+            </ul>
+          </div>
+
+          <aside class="category-panel">
+            <span class="section-label">Other categories</span>
+            <h2>Explore more tools</h2>
+
+            <a href="/devops" class="category-link">
+              <span class="category-link-icon">⚙️</span>
+
+              <span>
+                <strong>DevOps Tools</strong>
+                <small>YAML, JSON, Docker, and automation utilities</small>
+              </span>
+
+              <span class="arrow">→</span>
+            </a>
+
+            <a href="/kubernetes" class="category-link">
+              <span class="category-link-icon">☸️</span>
+
+              <span>
+                <strong>Kubernetes Tools</strong>
+                <small>Deployment, service, and ingress generators</small>
+              </span>
+
+              <span class="arrow">→</span>
+            </a>
+
+            <a href="/cloud" class="category-link">
+              <span class="category-link-icon">☁️</span>
+
+              <span>
+                <strong>Cloud Tools</strong>
+                <small>CIDR, subnet, AWS, Azure, and GCP utilities</small>
+              </span>
+
+              <span class="arrow">→</span>
+            </a>
+          </aside>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="container">
+          <div class="cta-box">
+            <div>
+              <span class="cta-label">Gokuruvi Tools</span>
+
+              <h2>Practical utilities for technical professionals</h2>
+
+              <p>
+                Explore free tools for Linux, DevOps, Kubernetes, networking,
+                and cloud administration.
+              </p>
+            </div>
+
+            <a href="/" class="cta-button">Explore All Tools</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script>
+      const searchInput = document.querySelector("#toolSearch");
+      const toolCards = document.querySelectorAll(".tool-card");
+      const noResults = document.querySelector("#noResults");
+
+      searchInput?.addEventListener("input", (event) => {
+        const target = event.target;
+
+        if (!(target instanceof HTMLInputElement)) {
+          return;
+        }
+
+        const searchValue = target.value.toLowerCase().trim();
+        let visibleTools = 0;
+
+        toolCards.forEach((card) => {
+          if (!(card instanceof HTMLElement)) {
+            return;
+          }
+
+          const toolContent = card.dataset.tool ?? "";
+          const isVisible = toolContent.includes(searchValue);
+
+          card.style.display = isVisible ? "flex" : "none";
+
+          if (isVisible) {
+            visibleTools++;
+          }
+        });
+
+        if (noResults instanceof HTMLElement) {
+          noResults.style.display = visibleTools === 0 ? "block" : "none";
+        }
+      });
+
+
+    </script>
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f7f9fc;
+    color: #172033;
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+
+  :global(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .container {
+    width: min(1400px, calc(100% - 28px));
+    margin: 0 auto;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .navbar {
+    position: relative;
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+  }
+
+  .logo {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo-icon {
+    display: grid;
+    width: 39px;
+    height: 39px;
+    place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+  }
+
+  .nav-links a {
+    position: relative;
+    padding: 9px 0;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: #ffffff;
+  }
+
+  .nav-links a:not(.nav-button):hover {
+    transform: translateY(-1px);
+  }
+
+  .nav-links a.active::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: #38bdf8;
+    content: "";
+  }
+
+  .nav-button {
+    padding: 10px 18px !important;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+  }
+
+  .nav-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  .nav-button::after {
+    display: none;
+  }
+
+  .menu-button {
+    display: none;
+    width: 43px;
+    height: 40px;
+    padding: 9px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #1e293b;
+    cursor: pointer;
+  }
+
+  .menu-button span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    margin: 4px 0;
+    border-radius: 999px;
+    background: #ffffff;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 18% 15%,
+        rgba(56, 189, 248, 0.17),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 88% 28%,
+        rgba(37, 99, 235, 0.19),
+        transparent 36%
+      ),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #eef4ff 100%);
+    color: #0f172a;
+  }
+
+  .hero-grid-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 2;
+    padding-top: 30px;
+    padding-bottom: 90px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 42px;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .breadcrumb a:hover {
+    color: #2563eb;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr);
+    align-items: center;
+    gap: 70px;
+  }
+
+  .eyebrow,
+  .section-label,
+  .cta-label {
+    display: inline-block;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    max-width: 760px;
+    margin: 14px 0 20px;
+    font-size: clamp(42px, 6vw, 68px);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+  }
+
+  .hero-content > p {
+    max-width: 680px;
+    margin: 0;
+    color: #475569;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 32px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .cta-button {
+    min-height: 49px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 21px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 750;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .primary-button {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+
+  .secondary-button {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .primary-button:hover,
+  .secondary-button:hover,
+  .cta-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 34px;
+    margin-top: 40px;
+  }
+
+  .hero-stats div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-stats strong {
+    color: #0f172a;
+    font-size: 19px;
+  }
+
+  .hero-stats span {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .terminal {
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 18px;
+    background: rgba(2, 10, 6, 0.78);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+    transform: rotate(1.5deg);
+  }
+
+  .terminal-header {
+    position: relative;
+    min-height: 47px;
+    display: flex;
+    align-items: center;
+    padding: 0 17px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 7px;
+  }
+
+  .terminal-buttons span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+  }
+
+  .terminal-close {
+    background: #ef4444;
+  }
+
+  .terminal-minimize {
+    background: #f59e0b;
+  }
+
+  .terminal-maximize {
+    background: #22c55e;
+  }
+
+  .terminal-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12px;
+  }
+
+  .terminal-body {
+    min-height: 290px;
+    padding: 25px 22px;
+    color: #d1fae5;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .terminal-body p {
+    margin: 0 0 10px;
+  }
+
+  .prompt {
+    color: #2563eb;
+  }
+
+  .command {
+    margin-left: 8px;
+    color: #f8fafc;
+  }
+
+  .output {
+    color: #94a3b8;
+  }
+
+  .output.success {
+    color: #22c55e;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    margin-left: 8px;
+    vertical-align: middle;
+    background: #4ade80;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .benefits-section {
+    position: relative;
+    z-index: 5;
+    margin-top: -38px;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    overflow: hidden;
+    border: 1px solid #e5eaf2;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 18px 55px rgba(20, 35, 70, 0.11);
+  }
+
+  .benefit-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 24px 20px;
+    border-right: 1px solid #edf0f5;
+  }
+
+  .benefit-card:last-child {
+    border-right: 0;
+  }
+
+  .benefit-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: #eff6ff;
+    font-size: 19px;
+  }
+
+  .benefit-card h2 {
+    margin: 0 0 3px;
+    font-size: 14px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #728096;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .featured-section,
+  .tools-section,
+  .information-section,
+  .cta-section {
+    padding: 90px 0;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 32px;
+  }
+
+  .section-heading.centered {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .section-heading h2,
+  .information-content h2,
+  .category-panel h2,
+  .cta-box h2 {
+    margin: 8px 0 0;
+    color: #111827;
+    font-size: clamp(30px, 4vw, 43px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+
+  .section-heading p {
+    max-width: 730px;
+    margin: 14px auto 0;
+    color: #64748b;
+    font-size: 16px;
+  }
+
+  .view-all-link {
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .featured-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 355px;
+    padding: 27px;
+    border: 1px solid #e3e8f1;
+    border-radius: 19px;
+    background: white;
+    box-shadow: 0 12px 35px rgba(24, 39, 75, 0.06);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .featured-card::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    bottom: -80px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.07);
+  }
+
+  .featured-card:hover {
+    transform: translateY(-7px);
+    border-color: #93c5fd;
+    box-shadow: 0 22px 55px rgba(31, 57, 44, 0.13);
+  }
+
+  .featured-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .featured-icon,
+  .tool-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 28px;
+  }
+
+  .tool-number {
+    color: #d7e5dc;
+    font-size: 37px;
+    font-weight: 800;
+  }
+
+  .category-badge {
+    display: inline-flex;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .featured-card h3,
+  .tool-card h3 {
+    margin: 13px 0 10px;
+    color: #172033;
+    font-size: 21px;
+  }
+
+  .featured-card p,
+  .tool-card p {
+    color: #69778c;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .card-link {
+    position: absolute;
+    bottom: 27px;
+    left: 27px;
+    z-index: 2;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .tools-section {
+    background: #f8fafc;
+  }
+
+  .search-wrapper {
+    max-width: 620px;
+    margin: 0 auto 34px;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+  }
+
+  .search-box input {
+    width: 100%;
+    height: 54px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #172033;
+    font: inherit;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .tool-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: white;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 45px rgba(37, 99, 235, 0.11);
+  }
+
+  .tool-icon {
+    flex: 0 0 auto;
+  }
+
+  .tool-content {
+    flex: 1;
+  }
+
+  .tool-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 7px;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .no-results {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+    color: #64748b;
+  }
+
+  .information-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 75px;
+  }
+
+  .information-content > p {
+    max-width: 650px;
+    margin: 20px 0 25px;
+    color: #64748b;
+    font-size: 16px;
+  }
+
+  .information-content ul {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .information-content li {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #344054;
+    font-size: 15px;
+  }
+
+  .information-content li span {
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 800;
+  }
+
+  .category-panel {
+    padding: 28px;
+    border: 1px solid #dfe6ef;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 20px 50px rgba(31, 45, 72, 0.08);
+  }
+
+  .category-panel h2 {
+    margin-bottom: 21px;
+    font-size: 25px;
+  }
+
+  .category-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 0;
+    border-top: 1px solid #edf0f4;
+  }
+
+  .category-link-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #f2f5fa;
+    font-size: 21px;
+  }
+
+  .category-link strong,
+  .category-link small {
+    display: block;
+  }
+
+  .category-link strong {
+    color: #1e293b;
+    font-size: 14px;
+  }
+
+  .category-link small {
+    margin-top: 3px;
+    color: #7a879a;
+    font-size: 11px;
+  }
+
+  .arrow {
+    color: #2563eb;
+    font-weight: 800;
+  }
+
+  .cta-section {
+    padding-top: 20px;
+  }
+
+  .cta-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 35px;
+    padding: 45px;
+    border-radius: 24px;
+    background:
+      radial-gradient(
+        circle at 85% 30%,
+        rgba(56, 189, 248, 0.25),
+        transparent 30%
+      ),
+      linear-gradient(135deg, #0b301c, #15803d);
+    color: white;
+    box-shadow: 0 25px 60px rgba(37, 99, 235, 0.2);
+  }
+
+  .cta-box h2 {
+    max-width: 680px;
+    color: white;
+  }
+
+  .cta-box p {
+    margin: 13px 0 0;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .cta-button {
+    flex: 0 0 auto;
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .site-footer {
+    margin-top: 70px;
+    background: #0f172a;
+    color: white;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 55px;
+    padding-top: 65px;
+    padding-bottom: 50px;
+  }
+
+  .footer-logo .logo-text strong {
+    color: white;
+  }
+
+  .footer-brand p {
+    max-width: 370px;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-column h2 {
+    margin: 0 0 7px;
+    font-size: 14px;
+  }
+
+  .footer-column a {
+    color: #94a3b8;
+    font-size: 13px;
+  }
+
+  .footer-column a:hover {
+    color: white;
+  }
+
+  .footer-bottom {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  @media (max-width: 1120px) {
+    .menu-button {
+      display: block;
+    }
+
+    .nav-links {
+      position: absolute;
+      top: 74px;
+      right: 0;
+      left: 0;
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 15px;
+      max-height: calc(100vh - 90px);
+      overflow-y: auto;
+      border: 1px solid #334155;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: #0f172a;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+    }
+
+    .nav-links.open {
+      display: flex;
+    }
+
+    .nav-links a {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-links a.active::after {
+      display: none;
+    }
+
+    .nav-button {
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .main-nav a {
+      width: 100%;
+      padding: 11px 13px;
+      font-size: 15px;
+    }
+
+    .main-nav a:hover,
+    .main-nav a.active {
+      background: #1e293b;
+      color: #ffffff;
+      transform: none;
+    }
+
+    .main-nav .nav-button {
+      margin: 6px 0 0;
+      padding: 11px 13px;
+      text-align: center;
+    }
+
+    .hero-grid,
+    .information-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .terminal-wrapper {
+      display: none;
+    }
+
+    .benefits-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .benefit-card:nth-child(2) {
+      border-right: 0;
+    }
+
+    .benefit-card:nth-child(-n + 2) {
+      border-bottom: 1px solid #edf0f5;
+    }
+
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-card {
+      min-height: 310px;
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .container {
+      width: min(100% - 28px, 1400px);
+    }
+
+    .hero-container {
+      padding-bottom: 72px;
+    }
+
+    .breadcrumb {
+      margin-bottom: 30px;
+    }
+
+    .hero h1 {
+      font-size: 43px;
+    }
+
+    .hero-content > p {
+      font-size: 16px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .primary-button,
+    .secondary-button {
+      width: 100%;
+    }
+
+    .hero-stats {
+      gap: 20px;
+    }
+
+    .benefits-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .benefit-card {
+      border-right: 0;
+      border-bottom: 1px solid #edf0f5;
+    }
+
+    .benefit-card:last-child {
+      border-bottom: 0;
+    }
+
+    .featured-section,
+    .tools-section,
+    .information-section,
+    .cta-section {
+      padding: 65px 0;
+    }
+
+    .section-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .section-heading.centered {
+      align-items: center;
+    }
+
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-card {
+      flex-direction: column;
+    }
+
+    .cta-box {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 30px 24px;
+    }
+
+    .cta-button {
+      width: 100%;
+    }
+
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 35px;
+    }
+
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    .footer-bottom p {
+      margin: 0;
+    }
+  }
+</style>

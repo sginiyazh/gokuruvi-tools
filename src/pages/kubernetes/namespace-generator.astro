@@ -1,0 +1,1389 @@
+---
+const pageTitle = "Kubernetes Namespace Generator | Gokuruvi Tools";
+const description =
+  "Generate Kubernetes Namespace YAML with labels, annotations, resource quotas, limit ranges, and Pod Security Admission settings.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/kubernetes/namespace-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 850px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 18px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 600px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Kubernetes Namespace Generator</h1>
+        <p>
+          Generate Namespace YAML with labels, annotations, ResourceQuota,
+          LimitRange, and Pod Security Admission settings.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Namespace Configuration</h2>
+            <p class="card-description">
+              Configure the namespace and optional governance resources.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="basic">
+                Basic
+              </button>
+              <button class="preset" type="button" data-preset="development">
+                Development
+              </button>
+              <button class="preset" type="button" data-preset="production">
+                Production
+              </button>
+              <button class="preset" type="button" data-preset="restricted">
+                Restricted
+              </button>
+            </div>
+
+            <h3 class="section-title">Basic Settings</h3>
+
+            <div class="form-group">
+              <label for="namespaceNameInput">Namespace name</label>
+              <input
+                id="namespaceNameInput"
+                type="text"
+                value="my-application"
+                maxlength="63"
+                placeholder="Example: my-application"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="labelsInput">Labels</label>
+              <textarea
+                id="labelsInput"
+                placeholder="environment=production&#10;team=platform"
+              >environment=production
+team=platform</textarea>
+              <p class="help-text">Enter one key=value label per line.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="annotationsInput">Annotations</label>
+              <textarea
+                id="annotationsInput"
+                placeholder="owner=platform-team&#10;description=Application namespace"
+              ></textarea>
+              <p class="help-text">Enter one key=value annotation per line.</p>
+            </div>
+
+            <h3 class="section-title">Pod Security Admission</h3>
+
+            <div class="checkbox-item">
+              <input id="podSecurityEnabledInput" type="checkbox" />
+              <label for="podSecurityEnabledInput">
+                Add Pod Security Admission labels
+              </label>
+            </div>
+
+            <div id="podSecuritySection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="enforceLevelSelect">Enforce level</label>
+                  <select id="enforceLevelSelect">
+                    <option value="privileged">Privileged</option>
+                    <option value="baseline">Baseline</option>
+                    <option value="restricted" selected>Restricted</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="auditLevelSelect">Audit level</label>
+                  <select id="auditLevelSelect">
+                    <option value="privileged">Privileged</option>
+                    <option value="baseline">Baseline</option>
+                    <option value="restricted" selected>Restricted</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="warnLevelSelect">Warn level</label>
+                  <select id="warnLevelSelect">
+                    <option value="privileged">Privileged</option>
+                    <option value="baseline">Baseline</option>
+                    <option value="restricted" selected>Restricted</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="podSecurityVersionInput">Policy version</label>
+                  <input
+                    id="podSecurityVersionInput"
+                    type="text"
+                    value="latest"
+                    placeholder="Example: latest or v1.31"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title">ResourceQuota</h3>
+
+            <div class="checkbox-item">
+              <input id="quotaEnabledInput" type="checkbox" checked />
+              <label for="quotaEnabledInput">
+                Add a ResourceQuota manifest
+              </label>
+            </div>
+
+            <div id="quotaSection" class="conditional-section active">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="quotaNameInput">ResourceQuota name</label>
+                <input
+                  id="quotaNameInput"
+                  type="text"
+                  value="namespace-quota"
+                />
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="requestsCpuInput">Requests CPU</label>
+                  <input id="requestsCpuInput" type="text" value="4" />
+                </div>
+
+                <div class="form-group">
+                  <label for="limitsCpuInput">Limits CPU</label>
+                  <input id="limitsCpuInput" type="text" value="8" />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="requestsMemoryInput">Requests memory</label>
+                  <input id="requestsMemoryInput" type="text" value="8Gi" />
+                </div>
+
+                <div class="form-group">
+                  <label for="limitsMemoryInput">Limits memory</label>
+                  <input id="limitsMemoryInput" type="text" value="16Gi" />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="podsInput">Maximum pods</label>
+                  <input id="podsInput" type="number" min="1" value="20" />
+                </div>
+
+                <div class="form-group">
+                  <label for="servicesInput">Maximum services</label>
+                  <input id="servicesInput" type="number" min="1" value="10" />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="configmapsInput">Maximum ConfigMaps</label>
+                  <input id="configmapsInput" type="number" min="1" value="20" />
+                </div>
+
+                <div class="form-group">
+                  <label for="secretsInput">Maximum Secrets</label>
+                  <input id="secretsInput" type="number" min="1" value="20" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="storageInput">Requested storage</label>
+                <input id="storageInput" type="text" value="100Gi" />
+              </div>
+            </div>
+
+            <h3 class="section-title">LimitRange</h3>
+
+            <div class="checkbox-item">
+              <input id="limitRangeEnabledInput" type="checkbox" checked />
+              <label for="limitRangeEnabledInput">
+                Add a LimitRange manifest
+              </label>
+            </div>
+
+            <div id="limitRangeSection" class="conditional-section active">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="limitRangeNameInput">LimitRange name</label>
+                <input
+                  id="limitRangeNameInput"
+                  type="text"
+                  value="default-container-limits"
+                />
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="defaultRequestCpuInput">Default request CPU</label>
+                  <input
+                    id="defaultRequestCpuInput"
+                    type="text"
+                    value="100m"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="defaultCpuInput">Default limit CPU</label>
+                  <input id="defaultCpuInput" type="text" value="500m" />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="defaultRequestMemoryInput">
+                    Default request memory
+                  </label>
+                  <input
+                    id="defaultRequestMemoryInput"
+                    type="text"
+                    value="128Mi"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="defaultMemoryInput">Default limit memory</label>
+                  <input
+                    id="defaultMemoryInput"
+                    type="text"
+                    value="512Mi"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate YAML
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated namespace.yaml</h2>
+            <p class="card-description">
+              The output may contain Namespace, ResourceQuota, and LimitRange
+              documents.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">Kubernetes YAML</span>
+              <pre id="yamlOutput" class="yaml-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download YAML
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Namespace</span>
+                <span id="resultName" class="result-value">my-application</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">ResourceQuota</span>
+                <span id="resultQuota" class="result-value">Enabled</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">LimitRange</span>
+                <span id="resultLimitRange" class="result-value">Enabled</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Pod Security</span>
+                <span id="resultPodSecurity" class="result-value">Disabled</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Deleting a namespace also deletes namespaced workloads and
+              resources inside it. Review the namespace name before running a
+              delete command.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Apply and Verify</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Validate YAML</th>
+                <td>
+                  <code>
+                    kubectl apply --dry-run=client -f namespace.yaml
+                  </code>
+                </td>
+              </tr>
+              <tr>
+                <th>Apply manifests</th>
+                <td><code>kubectl apply -f namespace.yaml</code></td>
+              </tr>
+              <tr>
+                <th>List namespaces</th>
+                <td><code>kubectl get namespaces</code></td>
+              </tr>
+              <tr>
+                <th>Describe namespace</th>
+                <td>
+                  <code>kubectl describe namespace my-application</code>
+                </td>
+              </tr>
+              <tr>
+                <th>View ResourceQuota</th>
+                <td>
+                  <code>
+                    kubectl get resourcequota -n my-application
+                  </code>
+                </td>
+              </tr>
+              <tr>
+                <th>View LimitRange</th>
+                <td>
+                  <code>kubectl get limitrange -n my-application</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Delete namespace</th>
+                <td>
+                  <code>kubectl delete namespace my-application</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          namespaceName: document.getElementById("namespaceNameInput"),
+          labels: document.getElementById("labelsInput"),
+          annotations: document.getElementById("annotationsInput"),
+          podSecurityEnabled: document.getElementById(
+            "podSecurityEnabledInput"
+          ),
+          enforceLevel: document.getElementById("enforceLevelSelect"),
+          auditLevel: document.getElementById("auditLevelSelect"),
+          warnLevel: document.getElementById("warnLevelSelect"),
+          podSecurityVersion: document.getElementById(
+            "podSecurityVersionInput"
+          ),
+          quotaEnabled: document.getElementById("quotaEnabledInput"),
+          quotaName: document.getElementById("quotaNameInput"),
+          requestsCpu: document.getElementById("requestsCpuInput"),
+          limitsCpu: document.getElementById("limitsCpuInput"),
+          requestsMemory: document.getElementById("requestsMemoryInput"),
+          limitsMemory: document.getElementById("limitsMemoryInput"),
+          pods: document.getElementById("podsInput"),
+          services: document.getElementById("servicesInput"),
+          configmaps: document.getElementById("configmapsInput"),
+          secrets: document.getElementById("secretsInput"),
+          storage: document.getElementById("storageInput"),
+          limitRangeEnabled: document.getElementById(
+            "limitRangeEnabledInput"
+          ),
+          limitRangeName: document.getElementById("limitRangeNameInput"),
+          defaultRequestCpu: document.getElementById(
+            "defaultRequestCpuInput"
+          ),
+          defaultCpu: document.getElementById("defaultCpuInput"),
+          defaultRequestMemory: document.getElementById(
+            "defaultRequestMemoryInput"
+          ),
+          defaultMemory: document.getElementById("defaultMemoryInput")
+        };
+
+        var podSecuritySection = document.getElementById(
+          "podSecuritySection"
+        );
+        var quotaSection = document.getElementById("quotaSection");
+        var limitRangeSection = document.getElementById(
+          "limitRangeSection"
+        );
+        var yamlOutput = document.getElementById("yamlOutput");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+        var currentYaml = "";
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function isValidName(value) {
+          return (
+            value.length >= 1 &&
+            value.length <= 63 &&
+            /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(value)
+          );
+        }
+
+        function isValidMetadataKey(value) {
+          return (
+            value.length > 0 &&
+            value.length <= 253 &&
+            /^[A-Za-z0-9]([A-Za-z0-9._/-]*[A-Za-z0-9])?$/.test(value)
+          );
+        }
+
+        function parseKeyValueLines(value) {
+          var values = {};
+          var invalidLines = [];
+          var lines = String(value).split(/\r?\n/);
+
+          lines.forEach(function (originalLine) {
+            var separatorIndex;
+            var key;
+            var itemValue;
+
+            if (!originalLine.trim()) {
+              return;
+            }
+
+            separatorIndex = originalLine.indexOf("=");
+
+            if (separatorIndex <= 0) {
+              invalidLines.push(originalLine);
+              return;
+            }
+
+            key = originalLine.slice(0, separatorIndex).trim();
+            itemValue = originalLine.slice(separatorIndex + 1);
+
+            if (!isValidMetadataKey(key)) {
+              invalidLines.push(originalLine);
+              return;
+            }
+
+            values[key] = itemValue;
+          });
+
+          return {
+            values: values,
+            invalidLines: invalidLines
+          };
+        }
+
+        function quoteYaml(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function addMetadataSection(lines, sectionName, values) {
+          var entries = Object.entries(values);
+
+          if (entries.length === 0) {
+            return;
+          }
+
+          lines.push("  " + sectionName + ":");
+
+          entries.forEach(function (entry) {
+            lines.push("    " + entry[0] + ": " + quoteYaml(entry[1]));
+          });
+        }
+
+        function validateForm() {
+          var namespaceName = fields.namespaceName.value.trim();
+          var labels = parseKeyValueLines(fields.labels.value);
+          var annotations = parseKeyValueLines(fields.annotations.value);
+
+          if (!isValidName(namespaceName)) {
+            return "Namespace name must use lowercase letters, numbers, and hyphens.";
+          }
+
+          if (labels.invalidLines.length > 0) {
+            return (
+              "Invalid label: " +
+              labels.invalidLines[0] +
+              ". Use key=value format."
+            );
+          }
+
+          if (annotations.invalidLines.length > 0) {
+            return (
+              "Invalid annotation: " +
+              annotations.invalidLines[0] +
+              ". Use key=value format."
+            );
+          }
+
+          if (
+            fields.quotaEnabled.checked &&
+            !isValidName(fields.quotaName.value.trim())
+          ) {
+            return "ResourceQuota name is invalid.";
+          }
+
+          if (
+            fields.limitRangeEnabled.checked &&
+            !isValidName(fields.limitRangeName.value.trim())
+          ) {
+            return "LimitRange name is invalid.";
+          }
+
+          return "";
+        }
+
+        function generateYaml(showError) {
+          var validationError = validateForm();
+          var namespaceName;
+          var labels;
+          var annotations;
+          var lines;
+
+          clearMessage();
+
+          if (validationError) {
+            currentYaml = "";
+            yamlOutput.textContent = validationError;
+
+            if (showError) {
+              showMessage(validationError, "error");
+            }
+
+            return;
+          }
+
+          namespaceName = fields.namespaceName.value.trim();
+          labels = parseKeyValueLines(fields.labels.value).values;
+          annotations = parseKeyValueLines(fields.annotations.value).values;
+
+          if (fields.podSecurityEnabled.checked) {
+            labels["pod-security.kubernetes.io/enforce"] =
+              fields.enforceLevel.value;
+            labels["pod-security.kubernetes.io/audit"] =
+              fields.auditLevel.value;
+            labels["pod-security.kubernetes.io/warn"] =
+              fields.warnLevel.value;
+
+            labels["pod-security.kubernetes.io/enforce-version"] =
+              fields.podSecurityVersion.value.trim() || "latest";
+            labels["pod-security.kubernetes.io/audit-version"] =
+              fields.podSecurityVersion.value.trim() || "latest";
+            labels["pod-security.kubernetes.io/warn-version"] =
+              fields.podSecurityVersion.value.trim() || "latest";
+          }
+
+          lines = [
+            "apiVersion: v1",
+            "kind: Namespace",
+            "metadata:",
+            "  name: " + namespaceName
+          ];
+
+          addMetadataSection(lines, "labels", labels);
+          addMetadataSection(lines, "annotations", annotations);
+
+          if (fields.quotaEnabled.checked) {
+            lines.push("---");
+            lines.push("apiVersion: v1");
+            lines.push("kind: ResourceQuota");
+            lines.push("metadata:");
+            lines.push("  name: " + fields.quotaName.value.trim());
+            lines.push("  namespace: " + namespaceName);
+            lines.push("spec:");
+            lines.push("  hard:");
+            lines.push(
+              "    requests.cpu: " + quoteYaml(fields.requestsCpu.value.trim())
+            );
+            lines.push(
+              "    limits.cpu: " + quoteYaml(fields.limitsCpu.value.trim())
+            );
+            lines.push(
+              "    requests.memory: " +
+                quoteYaml(fields.requestsMemory.value.trim())
+            );
+            lines.push(
+              "    limits.memory: " +
+                quoteYaml(fields.limitsMemory.value.trim())
+            );
+            lines.push("    pods: " + quoteYaml(fields.pods.value));
+            lines.push("    services: " + quoteYaml(fields.services.value));
+            lines.push(
+              "    configmaps: " + quoteYaml(fields.configmaps.value)
+            );
+            lines.push("    secrets: " + quoteYaml(fields.secrets.value));
+            lines.push(
+              "    requests.storage: " +
+                quoteYaml(fields.storage.value.trim())
+            );
+          }
+
+          if (fields.limitRangeEnabled.checked) {
+            lines.push("---");
+            lines.push("apiVersion: v1");
+            lines.push("kind: LimitRange");
+            lines.push("metadata:");
+            lines.push("  name: " + fields.limitRangeName.value.trim());
+            lines.push("  namespace: " + namespaceName);
+            lines.push("spec:");
+            lines.push("  limits:");
+            lines.push("    - type: Container");
+            lines.push("      defaultRequest:");
+            lines.push(
+              "        cpu: " +
+                quoteYaml(fields.defaultRequestCpu.value.trim())
+            );
+            lines.push(
+              "        memory: " +
+                quoteYaml(fields.defaultRequestMemory.value.trim())
+            );
+            lines.push("      default:");
+            lines.push(
+              "        cpu: " + quoteYaml(fields.defaultCpu.value.trim())
+            );
+            lines.push(
+              "        memory: " +
+                quoteYaml(fields.defaultMemory.value.trim())
+            );
+          }
+
+          currentYaml = lines.join("\n") + "\n";
+          yamlOutput.textContent = currentYaml;
+
+          document.getElementById("resultName").textContent = namespaceName;
+          document.getElementById("resultQuota").textContent =
+            fields.quotaEnabled.checked ? "Enabled" : "Disabled";
+          document.getElementById("resultLimitRange").textContent =
+            fields.limitRangeEnabled.checked ? "Enabled" : "Disabled";
+          document.getElementById("resultPodSecurity").textContent =
+            fields.podSecurityEnabled.checked
+              ? fields.enforceLevel.value
+              : "Disabled";
+        }
+
+        function updateSections() {
+          podSecuritySection.classList.toggle(
+            "active",
+            fields.podSecurityEnabled.checked
+          );
+          quotaSection.classList.toggle(
+            "active",
+            fields.quotaEnabled.checked
+          );
+          limitRangeSection.classList.toggle(
+            "active",
+            fields.limitRangeEnabled.checked
+          );
+
+          generateYaml(false);
+        }
+
+        function applyPreset(preset) {
+          if (preset === "basic") {
+            fields.namespaceName.value = "my-application";
+            fields.labels.value = "app=my-application";
+            fields.annotations.value = "";
+            fields.podSecurityEnabled.checked = false;
+            fields.quotaEnabled.checked = false;
+            fields.limitRangeEnabled.checked = false;
+          } else if (preset === "development") {
+            fields.namespaceName.value = "development";
+            fields.labels.value =
+              "environment=development\nteam=platform";
+            fields.annotations.value =
+              "description=Development namespace";
+            fields.podSecurityEnabled.checked = true;
+            fields.enforceLevel.value = "baseline";
+            fields.auditLevel.value = "restricted";
+            fields.warnLevel.value = "restricted";
+            fields.quotaEnabled.checked = true;
+            fields.limitRangeEnabled.checked = true;
+            fields.requestsCpu.value = "4";
+            fields.limitsCpu.value = "8";
+            fields.requestsMemory.value = "8Gi";
+            fields.limitsMemory.value = "16Gi";
+          } else if (preset === "production") {
+            fields.namespaceName.value = "production";
+            fields.labels.value =
+              "environment=production\nteam=platform";
+            fields.annotations.value =
+              "description=Production namespace";
+            fields.podSecurityEnabled.checked = true;
+            fields.enforceLevel.value = "restricted";
+            fields.auditLevel.value = "restricted";
+            fields.warnLevel.value = "restricted";
+            fields.quotaEnabled.checked = true;
+            fields.limitRangeEnabled.checked = true;
+            fields.requestsCpu.value = "16";
+            fields.limitsCpu.value = "32";
+            fields.requestsMemory.value = "32Gi";
+            fields.limitsMemory.value = "64Gi";
+            fields.pods.value = "100";
+            fields.services.value = "30";
+            fields.storage.value = "500Gi";
+          } else if (preset === "restricted") {
+            fields.namespaceName.value = "restricted-workloads";
+            fields.labels.value =
+              "environment=production\nsecurity=restricted";
+            fields.annotations.value =
+              "description=Restricted workload namespace";
+            fields.podSecurityEnabled.checked = true;
+            fields.enforceLevel.value = "restricted";
+            fields.auditLevel.value = "restricted";
+            fields.warnLevel.value = "restricted";
+            fields.quotaEnabled.checked = true;
+            fields.limitRangeEnabled.checked = true;
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.namespaceName.value = "my-application";
+          fields.labels.value =
+            "environment=production\nteam=platform";
+          fields.annotations.value = "";
+          fields.podSecurityEnabled.checked = false;
+          fields.enforceLevel.value = "restricted";
+          fields.auditLevel.value = "restricted";
+          fields.warnLevel.value = "restricted";
+          fields.podSecurityVersion.value = "latest";
+          fields.quotaEnabled.checked = true;
+          fields.quotaName.value = "namespace-quota";
+          fields.requestsCpu.value = "4";
+          fields.limitsCpu.value = "8";
+          fields.requestsMemory.value = "8Gi";
+          fields.limitsMemory.value = "16Gi";
+          fields.pods.value = "20";
+          fields.services.value = "10";
+          fields.configmaps.value = "20";
+          fields.secrets.value = "20";
+          fields.storage.value = "100Gi";
+          fields.limitRangeEnabled.checked = true;
+          fields.limitRangeName.value = "default-container-limits";
+          fields.defaultRequestCpu.value = "100m";
+          fields.defaultCpu.value = "500m";
+          fields.defaultRequestMemory.value = "128Mi";
+          fields.defaultMemory.value = "512Mi";
+
+          updateSections();
+          fields.namespaceName.focus();
+        }
+
+        function copyYaml() {
+          if (!currentYaml) {
+            showMessage("Generate valid YAML before copying.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(currentYaml)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("YAML copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the YAML manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadYaml() {
+          var namespaceName;
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentYaml) {
+            showMessage("Generate valid YAML before downloading.", "error");
+            return;
+          }
+
+          namespaceName =
+            fields.namespaceName.value.trim() || "namespace";
+
+          blob = new Blob([currentYaml], {
+            type: "application/yaml;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = namespaceName + "-namespace.yaml";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("YAML downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateYaml(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyYaml);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadYaml);
+
+        fields.podSecurityEnabled.addEventListener("change", updateSections);
+        fields.quotaEnabled.addEventListener("change", updateSections);
+        fields.limitRangeEnabled.addEventListener(
+          "change",
+          updateSections
+        );
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateYaml(false);
+          });
+
+          if (
+            key !== "podSecurityEnabled" &&
+            key !== "quotaEnabled" &&
+            key !== "limitRangeEnabled"
+          ) {
+            field.addEventListener("change", function () {
+              generateYaml(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "");
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

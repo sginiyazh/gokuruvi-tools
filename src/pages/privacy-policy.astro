@@ -1,0 +1,499 @@
+---
+const pageTitle = "Privacy Policy | Gokuruvi Tools";
+const description =
+  "Privacy Policy for Gokuruvi Tools, including information about cookies, analytics, third-party services, and data entered into online tools.";
+const lastUpdated = "30 July 2026";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/privacy-policy"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.8;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-content {
+        display: flex;
+        width: min(100% - 40px, 1100px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 65px 20px;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.16),
+            transparent 32%
+          ),
+          linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(38px, 7vw, 56px);
+        line-height: 1.15;
+      }
+
+      .hero p {
+        max-width: 700px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .updated {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 7px 13px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #1e40af;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .page-section {
+        padding: 60px 20px 80px;
+      }
+
+      .privacy-card {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: 0 15px 40px rgba(15, 23, 42, 0.07);
+      }
+
+      .intro {
+        margin: 0 0 30px;
+        padding: 18px 20px;
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #1e3a8a;
+      }
+
+      section + section {
+        margin-top: 32px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: 24px;
+      }
+
+      p {
+        margin: 0 0 14px;
+      }
+
+      ul {
+        margin: 12px 0 0;
+        padding-left: 23px;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      .warning {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        background: #fffbeb;
+        color: #92400e;
+      }
+
+      .contact-box {
+        margin-top: 18px;
+        padding: 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        background: #eff6ff;
+      }
+
+      .contact-box p {
+        margin: 0;
+      }
+
+      .page-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      .button-link {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 17px;
+        border-radius: 9px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      footer {
+        padding: 25px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 700px) {
+        .header-content {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .privacy-card {
+          padding: 25px;
+        }
+
+        .page-links {
+          flex-direction: column;
+        }
+
+        .button-link {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-content">
+        <a class="logo" href="/">
+          Gokuruvi Tools
+        </a>
+
+        <nav class="navigation" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/linux">Linux</a>
+          <a href="/devops">DevOps</a>
+          <a href="/kubernetes">Kubernetes</a>
+          <a href="/cloud">Cloud</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Privacy Policy</h1>
+
+        <p>
+          This policy explains what information may be collected when you use
+          Gokuruvi Tools and how that information may be handled.
+        </p>
+
+        <div class="updated">
+          Last updated: {lastUpdated}
+        </div>
+      </section>
+
+      <section class="page-section">
+        <article class="privacy-card">
+          <p class="intro">
+            Gokuruvi Tools respects your privacy. We aim to collect only the
+            limited information required to operate, secure, and improve the
+            website.
+          </p>
+
+          <section>
+            <h2>Information We Collect</h2>
+
+            <p>
+              Gokuruvi Tools may collect limited technical and usage
+              information when you visit the website.
+            </p>
+
+            <ul>
+              <li>Browser type and operating system.</li>
+              <li>Device type and screen size.</li>
+              <li>Pages visited and tools used.</li>
+              <li>Referring website or page.</li>
+              <li>General usage and performance information.</li>
+              <li>Approximate location based on IP address.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Cookies</h2>
+
+            <p>
+              We may use cookies and similar technologies for website
+              functionality, analytics, security, performance, and
+              advertising.
+            </p>
+
+            <p>
+              You can control or remove cookies through your browser settings.
+              Disabling cookies may affect some website features.
+            </p>
+          </section>
+
+          <section>
+            <h2>Analytics and Advertising</h2>
+
+            <p>
+              We may use analytics services to understand how visitors use the
+              website and to improve website content and performance.
+            </p>
+
+            <p>
+              We may also use advertising services. Advertising providers may
+              use cookies or similar technologies according to their own
+              privacy policies.
+            </p>
+          </section>
+
+          <section>
+            <h2>Third-Party Services</h2>
+
+            <p>
+              Gokuruvi Tools may use third-party services for hosting,
+              analytics, advertising, security, contact forms, and website
+              performance.
+            </p>
+
+            <p>
+              These providers may process limited information according to
+              their own terms and privacy policies.
+            </p>
+          </section>
+
+          <section>
+            <h2>Data Entered into Tools</h2>
+
+            <p>
+              Where possible, Gokuruvi Tools processes information directly in
+              your browser. This means the information you enter may remain on
+              your device and may not be sent to our server.
+            </p>
+
+            <div class="warning">
+              <strong>Important:</strong> Do not enter passwords, private keys,
+              access tokens, customer information, confidential documents, or
+              other sensitive information into any online tool.
+            </div>
+          </section>
+
+          <section>
+            <h2>How We Use Information</h2>
+
+            <p>
+              Information collected through the website may be used to:
+            </p>
+
+            <ul>
+              <li>Operate and maintain the website.</li>
+              <li>Improve tools, content, and performance.</li>
+              <li>Understand general website usage.</li>
+              <li>Detect errors, abuse, and security threats.</li>
+              <li>Respond to questions and support requests.</li>
+              <li>Display and measure advertising.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Data Security</h2>
+
+            <p>
+              We use reasonable measures to protect the website and the limited
+              information processed through it.
+            </p>
+
+            <p>
+              However, no internet service or data transmission method can be
+              guaranteed to be completely secure.
+            </p>
+          </section>
+
+          <section>
+            <h2>External Links</h2>
+
+            <p>
+              This website may contain links to external websites. Gokuruvi
+              Tools is not responsible for the privacy, security, or content of
+              third-party websites.
+            </p>
+          </section>
+
+          <section>
+            <h2>Changes to This Policy</h2>
+
+            <p>
+              This Privacy Policy may be updated from time to time. Any changes
+              will be published on this page with an updated revision date.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact</h2>
+
+            <p>
+              For privacy-related questions or requests, contact us using the
+              email address below.
+            </p>
+
+            <div class="contact-box">
+              <p>
+                Email:
+                <a href="mailto:gokuruvisathish@gmail.com">
+                  gokuruvisathish@gmail.com
+                </a>
+              </p>
+            </div>
+          </section>
+
+          <div class="page-links">
+            <a class="button-link primary-button" href="/">
+              ← Return to Homepage
+            </a>
+
+            <a class="button-link secondary-button" href="/terms">
+              Terms & Conditions
+            </a>
+
+            <a class="button-link secondary-button" href="/disclaimer">
+              Disclaimer
+            </a>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+        ·
+        <a href="/privacy-policy">Privacy</a>
+        ·
+        <a href="/terms">Terms</a>
+        ·
+        <a href="/contact">Contact</a>
+      </p>
+    </footer>
+  </body>
+</html>

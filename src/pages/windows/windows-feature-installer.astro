@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Windows Feature Installer" description="Generate PowerShell or DISM commands to inspect, install and remove Windows roles and optional features." slug="windows-feature-installer" icon="🧩">
+
+<h2 class="tool-title">Windows feature command builder</h2><div class="form-grid"><div class="field"><label for="platform">Platform</label><select id="platform"><option value="server">Windows Server</option><option value="client">Windows 10/11</option></select></div><div class="field"><label for="action">Action</label><select id="action"><option value="list">List available</option><option value="install">Install / enable</option><option value="remove">Remove / disable</option></select></div><div class="field full"><label for="feature">Feature / role name</label><input id="feature" value="Web-Server" /></div><div class="field full"><div class="checks"><label class="check"><input id="mgmt" type="checkbox" checked /> Include management tools (Server)</label></div></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>Command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Get-WindowsFeature</pre></div>
+<script>
+
+const p=document.querySelector<HTMLSelectElement>('#platform')!,a=document.querySelector<HTMLSelectElement>('#action')!,f=document.querySelector<HTMLInputElement>('#feature')!,m=document.querySelector<HTMLInputElement>('#mgmt')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const n=f.value.trim().replace(/'/g,"''")||'Web-Server';if(p.value==='server')o.textContent=a.value==='list'?`Get-WindowsFeature | Where-Object InstallState -ne 'Installed'`:a.value==='install'?`Install-WindowsFeature -Name '${n}'${m.checked?' -IncludeManagementTools':''}`:`Uninstall-WindowsFeature -Name '${n}'`;else o.textContent=a.value==='list'?`Get-WindowsOptionalFeature -Online | Sort-Object FeatureName`:a.value==='install'?`Enable-WindowsOptionalFeature -Online -FeatureName '${n}' -All -NoRestart`:`Disable-WindowsOptionalFeature -Online -FeatureName '${n}' -NoRestart`});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

@@ -1,0 +1,1085 @@
+---
+const pageTitle = "Environment File Generator";
+const pageDescription =
+  "Generate clean .env files for Node.js, Docker, APIs and application deployments securely in your browser.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/devops/environment-file-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #15803d;
+        --success-bg: #f0fdf4;
+        --warning: #b45309;
+        --warning-bg: #fffbeb;
+        --danger: #dc2626;
+        --danger-bg: #fef2f2;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #cbd5e1;
+        --editor: #0f172a;
+        --editor-text: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
+          var(--background);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: #0f172a;
+        color: white;
+        padding: 18px 24px;
+      }
+
+      .header-inner {
+        width: min(1280px, 100%);
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .header-link {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      .header-link:hover {
+        color: white;
+      }
+
+      main {
+        width: min(1280px, calc(100% - 32px));
+        margin: 42px auto;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(340px, 460px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .card-title {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .card-description {
+        margin: 0 0 20px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.9rem;
+        font-weight: 750;
+        color: #1e293b;
+      }
+
+      input,
+      select {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 12px;
+        outline: none;
+        background: white;
+        color: var(--text);
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+      }
+
+      .variable-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .variable-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) minmax(140px, 1.2fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+
+      .remove-variable {
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .option-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+        cursor: pointer;
+      }
+
+      .option-item input {
+        width: auto;
+        margin: 0;
+      }
+
+      .option-item span {
+        font-size: 0.88rem;
+        font-weight: 650;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-weight: 750;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: white;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .danger-button {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .output-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .output-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 600px;
+        resize: vertical;
+        border: 1px solid #334155;
+        border-radius: 14px;
+        background: var(--editor);
+        color: var(--editor-text);
+        padding: 18px;
+        font-family:
+          "Cascadia Code", "Fira Code", Consolas, Monaco, monospace;
+        font-size: 14px;
+        line-height: 1.65;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+      }
+
+      .status-box {
+        display: none;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        line-height: 1.55;
+      }
+
+      .status-box.show {
+        display: block;
+      }
+
+      .status-box.success {
+        color: var(--success);
+        background: var(--success-bg);
+        border: 1px solid #86efac;
+      }
+
+      .status-box.warning {
+        color: var(--warning);
+        background: var(--warning-bg);
+        border: 1px solid #fcd34d;
+      }
+
+      .status-box.error {
+        color: var(--danger);
+        background: var(--danger-bg);
+        border: 1px solid #fca5a5;
+      }
+
+      .privacy-note {
+        margin-top: 22px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        line-height: 1.6;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .info-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .info-card h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .info-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      footer {
+        margin-top: 60px;
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--muted);
+        border-top: 1px solid #e2e8f0;
+      }
+
+      @media (max-width: 950px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 450px;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .variable-row {
+          grid-template-columns: 1fr;
+        }
+
+        .remove-variable {
+          width: 100%;
+        }
+
+        .options,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .toolbar button,
+        .output-actions button {
+          flex: 1;
+        }
+
+        .output-toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .output-actions {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <span class="badge">Free DevOps Generator</span>
+
+        <h1>Environment File Generator</h1>
+
+        <p>
+          Generate clean environment configuration files for Node.js, Docker,
+          APIs and production deployments.
+        </p>
+      </section>
+
+      <section class="generator-layout">
+        <article class="card">
+          <h2 class="card-title">Environment configuration</h2>
+
+          <p class="card-description">
+            Select a template or add your own environment variables.
+          </p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="template-select">Template</label>
+
+              <select id="template-select">
+                <option value="node">Node.js Application</option>
+                <option value="astro">Astro Application</option>
+                <option value="docker">Docker Application</option>
+                <option value="api">API Service</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="environment-name">Environment</label>
+
+              <select id="environment-name">
+                <option value="development">Development</option>
+                <option value="testing">Testing</option>
+                <option value="staging">Staging</option>
+                <option value="production">Production</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Environment variables</label>
+
+              <div id="variable-list" class="variable-list"></div>
+            </div>
+
+            <div class="toolbar">
+              <button
+                id="add-variable-button"
+                class="secondary-button"
+                type="button"
+              >
+                Add Variable
+              </button>
+
+              <button
+                id="generate-secret-button"
+                class="secondary-button"
+                type="button"
+              >
+                Add Random Secret
+              </button>
+            </div>
+
+            <div class="options">
+              <label class="option-item">
+                <input id="include-comments" type="checkbox" checked />
+                <span>Include comments</span>
+              </label>
+
+              <label class="option-item">
+                <input id="quote-values" type="checkbox" />
+                <span>Quote values</span>
+              </label>
+
+              <label class="option-item">
+                <input id="sort-variables" type="checkbox" />
+                <span>Sort alphabetically</span>
+              </label>
+
+              <label class="option-item">
+                <input id="mask-secrets" type="checkbox" />
+                <span>Mask secrets in preview</span>
+              </label>
+            </div>
+
+            <div class="toolbar">
+              <button
+                id="generate-button"
+                class="primary-button"
+                type="button"
+              >
+                Generate .env File
+              </button>
+
+              <button
+                id="reset-button"
+                class="secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="output-toolbar">
+            <h2 class="card-title">Generated .env file</h2>
+
+            <div class="output-actions">
+              <button
+                id="copy-button"
+                class="secondary-button"
+                type="button"
+              >
+                Copy
+              </button>
+
+              <button
+                id="download-button"
+                class="secondary-button"
+                type="button"
+              >
+                Download
+              </button>
+
+              <button
+                id="clear-button"
+                class="danger-button"
+                type="button"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            id="environment-output"
+            spellcheck="false"
+            aria-label="Generated environment file"
+          ></textarea>
+
+          <div id="status-box" class="status-box" role="status"></div>
+
+          <div class="privacy-note">
+            <strong>Privacy:</strong> All environment variables are processed
+            locally in your browser. Never commit production secrets or
+            passwords to Git.
+          </div>
+        </article>
+      </section>
+
+      <section class="info-grid">
+        <article class="info-card">
+          <h2>Use .env.example</h2>
+          <p>
+            Store variable names with placeholder values in a .env.example file
+            so developers know which configuration is required.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>Protect secrets</h2>
+          <p>
+            Add .env files to .gitignore and use a secret management service for
+            production credentials.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2>Environment separation</h2>
+          <p>
+            Keep separate configurations for development, testing, staging and
+            production environments.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const templateSelect = document.getElementById("template-select");
+      const environmentName = document.getElementById("environment-name");
+      const variableList = document.getElementById("variable-list");
+
+      const addVariableButton = document.getElementById(
+        "add-variable-button"
+      );
+
+      const generateSecretButton = document.getElementById(
+        "generate-secret-button"
+      );
+
+      const generateButton = document.getElementById("generate-button");
+      const resetButton = document.getElementById("reset-button");
+      const copyButton = document.getElementById("copy-button");
+      const downloadButton = document.getElementById("download-button");
+      const clearButton = document.getElementById("clear-button");
+
+      const includeComments = document.getElementById("include-comments");
+      const quoteValues = document.getElementById("quote-values");
+      const sortVariables = document.getElementById("sort-variables");
+      const maskSecrets = document.getElementById("mask-secrets");
+
+      const environmentOutput = document.getElementById(
+        "environment-output"
+      );
+
+      const statusBox = document.getElementById("status-box");
+
+      const templates = {
+        node: [
+          ["NODE_ENV", "development"],
+          ["PORT", "3000"],
+          ["HOST", "0.0.0.0"],
+          ["APP_NAME", "my-node-app"],
+          ["LOG_LEVEL", "info"]
+        ],
+
+        astro: [
+          ["NODE_ENV", "development"],
+          ["HOST", "0.0.0.0"],
+          ["PORT", "4321"],
+          ["PUBLIC_SITE_URL", "http://localhost:4321"],
+          ["PUBLIC_API_URL", "http://localhost:3000/api"]
+        ],
+
+        docker: [
+          ["COMPOSE_PROJECT_NAME", "my-application"],
+          ["APP_PORT", "3000"],
+          ["APP_ENV", "development"],
+          ["TZ", "Asia/Dubai"],
+          ["RESTART_POLICY", "unless-stopped"]
+        ],
+
+
+        api: [
+          ["NODE_ENV", "development"],
+          ["API_HOST", "0.0.0.0"],
+          ["API_PORT", "3000"],
+          ["API_VERSION", "v1"],
+          ["API_BASE_URL", "http://localhost:3000/api/v1"],
+          ["JWT_SECRET", "change-this-secret"],
+          ["CORS_ORIGIN", "http://localhost:4321"]
+        ],
+
+        custom: []
+      };
+
+      const environmentValues = {
+        development: "development",
+        testing: "test",
+        staging: "staging",
+        production: "production"
+      };
+
+      function showStatus(type, message) {
+        statusBox.className = `status-box show ${type}`;
+        statusBox.textContent = message;
+      }
+
+      function hideStatus() {
+        statusBox.className = "status-box";
+        statusBox.textContent = "";
+      }
+
+      function createVariableRow(key = "", value = "") {
+        const row = document.createElement("div");
+        row.className = "variable-row";
+
+        const keyInput = document.createElement("input");
+        keyInput.type = "text";
+        keyInput.className = "variable-key";
+        keyInput.placeholder = "VARIABLE_NAME";
+        keyInput.value = key;
+        keyInput.spellcheck = false;
+
+        const valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.className = "variable-value";
+        valueInput.placeholder = "value";
+        valueInput.value = value;
+        valueInput.spellcheck = false;
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "remove-variable";
+        removeButton.textContent = "×";
+        removeButton.title = "Remove variable";
+        removeButton.setAttribute("aria-label", "Remove variable");
+
+        removeButton.addEventListener("click", () => {
+          row.remove();
+          generateEnvironmentFile();
+        });
+
+        keyInput.addEventListener("input", () => {
+          keyInput.value = keyInput.value
+            .toUpperCase()
+            .replace(/[^A-Z0-9_]/g, "");
+
+          generateEnvironmentFile();
+        });
+
+        valueInput.addEventListener("input", generateEnvironmentFile);
+
+        row.append(keyInput, valueInput, removeButton);
+        variableList.appendChild(row);
+      }
+
+      function applyTemplate() {
+        variableList.innerHTML = "";
+
+        const selectedTemplate = templates[templateSelect.value] || [];
+
+        selectedTemplate.forEach(([key, value]) => {
+          createVariableRow(key, value);
+        });
+
+        updateEnvironmentValue();
+        generateEnvironmentFile();
+      }
+
+      function updateEnvironmentValue() {
+        const environmentValue =
+          environmentValues[environmentName.value] ||
+          environmentName.value;
+
+        const keys = Array.from(
+          variableList.querySelectorAll(".variable-key")
+        );
+
+        const values = Array.from(
+          variableList.querySelectorAll(".variable-value")
+        );
+
+        keys.forEach((keyInput, index) => {
+          if (
+            ["NODE_ENV", "APP_ENV"].includes(
+              keyInput.value.trim().toUpperCase()
+            )
+          ) {
+            values[index].value = environmentValue;
+          }
+        });
+      }
+
+      function getVariables() {
+        const rows = Array.from(
+          variableList.querySelectorAll(".variable-row")
+        );
+
+        const variables = [];
+
+        rows.forEach((row) => {
+          const key = row
+            .querySelector(".variable-key")
+            .value.trim()
+            .toUpperCase();
+
+          const value = row
+            .querySelector(".variable-value")
+            .value;
+
+          if (key) {
+            variables.push({
+              key,
+              value
+            });
+          }
+        });
+
+        return variables;
+      }
+
+      function validateVariables(variables) {
+        const errors = [];
+        const seenKeys = new Set();
+
+        variables.forEach(({ key }) => {
+          if (!/^[A-Z_][A-Z0-9_]*$/.test(key)) {
+            errors.push(`${key} is not a valid environment variable name.`);
+          }
+
+          if (seenKeys.has(key)) {
+            errors.push(`${key} appears more than once.`);
+          }
+
+          seenKeys.add(key);
+        });
+
+        return errors;
+      }
+
+      function isSecretKey(key) {
+        return /PASSWORD|SECRET|TOKEN|API_KEY|PRIVATE_KEY|ACCESS_KEY|AUTH/i.test(
+          key
+        );
+      }
+
+      function formatValue(key, value) {
+        let formattedValue = value;
+
+        if (maskSecrets.checked && isSecretKey(key) && value) {
+          formattedValue = "********";
+        }
+
+        const mustQuote =
+          quoteValues.checked ||
+          /\s|#|=|"|'|\n/.test(formattedValue);
+
+        if (mustQuote) {
+          return `"${formattedValue
+            .replaceAll("\\", "\\\\")
+            .replaceAll('"', '\\"')
+            .replaceAll("\n", "\\n")}"`;
+        }
+
+        return formattedValue;
+      }
+
+      function getTemplateComment() {
+        const label =
+          templateSelect.options[templateSelect.selectedIndex].text;
+
+        return `# ${label} environment configuration`;
+      }
+
+      function generateEnvironmentFile() {
+        hideStatus();
+
+        let variables = getVariables();
+
+        if (variables.length === 0) {
+          environmentOutput.value = "";
+
+          showStatus(
+            "warning",
+            "Add at least one environment variable."
+          );
+
+          return;
+        }
+
+        const validationErrors = validateVariables(variables);
+
+        if (validationErrors.length > 0) {
+          environmentOutput.value = "";
+
+          showStatus(
+            "error",
+            validationErrors.join(" ")
+          );
+
+          return;
+        }
+
+        if (sortVariables.checked) {
+          variables = [...variables].sort((a, b) =>
+            a.key.localeCompare(b.key)
+          );
+        }
+
+        const lines = [];
+
+        if (includeComments.checked) {
+          lines.push(getTemplateComment());
+          lines.push(
+            `# Environment: ${environmentName.value}`
+          );
+          lines.push(
+            "# Do not commit production secrets to source control."
+          );
+          lines.push("");
+        }
+
+        variables.forEach(({ key, value }) => {
+          lines.push(`${key}=${formatValue(key, value)}`);
+        });
+
+        environmentOutput.value = `${lines.join("\n")}\n`;
+
+        showStatus(
+          "success",
+          `${variables.length} environment variable${
+            variables.length === 1 ? "" : "s"
+          } generated successfully.`
+        );
+      }
+
+      function generateRandomSecret(length = 48) {
+        const characters =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+        const randomValues = new Uint32Array(length);
+
+        crypto.getRandomValues(randomValues);
+
+        return Array.from(randomValues, (value) => {
+          return characters[value % characters.length];
+        }).join("");
+      }
+
+      async function copyText(value) {
+        if (!value.trim()) {
+          showStatus(
+            "warning",
+            "Generate an environment file before copying."
+          );
+
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(value);
+
+          showStatus(
+            "success",
+            "Environment file copied to the clipboard."
+          );
+        } catch {
+          environmentOutput.select();
+          document.execCommand("copy");
+
+          showStatus(
+            "success",
+            "Environment file copied to the clipboard."
+          );
+        }
+      }
+
+      templateSelect.addEventListener("change", applyTemplate);
+
+      environmentName.addEventListener("change", () => {
+        updateEnvironmentValue();
+        generateEnvironmentFile();
+      });
+
+      addVariableButton.addEventListener("click", () => {
+        createVariableRow();
+        generateEnvironmentFile();
+
+        const keyInputs = variableList.querySelectorAll(".variable-key");
+        keyInputs[keyInputs.length - 1]?.focus();
+      });
+
+      generateSecretButton.addEventListener("click", () => {
+        createVariableRow(
+          "APP_SECRET",
+          generateRandomSecret()
+        );
+
+        generateEnvironmentFile();
+      });
+
+      generateButton.addEventListener(
+        "click",
+        generateEnvironmentFile
+      );
+
+      resetButton.addEventListener("click", () => {
+        includeComments.checked = true;
+        quoteValues.checked = false;
+        sortVariables.checked = false;
+        maskSecrets.checked = false;
+
+        applyTemplate();
+      });
+
+      clearButton.addEventListener("click", () => {
+        environmentOutput.value = "";
+        hideStatus();
+      });
+
+      copyButton.addEventListener("click", () => {
+        copyText(environmentOutput.value);
+      });
+
+      downloadButton.addEventListener("click", () => {
+        const value = environmentOutput.value;
+
+        if (!value.trim()) {
+          showStatus(
+            "warning",
+            "Generate an environment file before downloading."
+          );
+
+          return;
+        }
+
+        const blob = new Blob([value], {
+          type: "text/plain;charset=utf-8"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+
+        anchor.href = url;
+        anchor.download = ".env";
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showStatus(
+          "success",
+          ".env file downloaded successfully."
+        );
+      });
+
+      [
+        includeComments,
+        quoteValues,
+        sortVariables,
+        maskSecrets
+      ].forEach((option) => {
+        option.addEventListener("change", generateEnvironmentFile);
+      });
+
+      environmentOutput.addEventListener("keydown", (event) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+
+          const start = environmentOutput.selectionStart;
+          const end = environmentOutput.selectionEnd;
+          const value = environmentOutput.value;
+
+          environmentOutput.value =
+            value.substring(0, start) +
+            "  " +
+            value.substring(end);
+
+          environmentOutput.selectionStart =
+            environmentOutput.selectionEnd =
+              start + 2;
+        }
+      });
+
+      applyTemplate();
+    </script>
+  </body>
+</html>

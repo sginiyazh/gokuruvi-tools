@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Windows Service Generator" description="Generate PowerShell and SC commands to query, start, stop, restart and configure Windows services." slug="service-command-generator" icon="⚙️">
+
+<h2 class="tool-title">Service command builder</h2><div class="form-grid"><div class="field"><label for="svc">Service name</label><input id="svc" value="Spooler" /></div><div class="field"><label for="action">Action</label><select id="action"><option>status</option><option>start</option><option>stop</option><option>restart</option><option>automatic</option><option>manual</option><option>disabled</option></select></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Get-Service -Name 'Spooler'</pre></div>
+<script>
+
+const s=document.querySelector<HTMLInputElement>('#svc')!,a=document.querySelector<HTMLSelectElement>('#action')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const n=s.value.trim().replace(/'/g,"''")||'Spooler';const m:Record<string,string>={status:`Get-Service -Name '${n}' | Format-List Name,DisplayName,Status,StartType`,start:`Start-Service -Name '${n}'`,stop:`Stop-Service -Name '${n}' -Force`,restart:`Restart-Service -Name '${n}' -Force`,automatic:`Set-Service -Name '${n}' -StartupType Automatic`,manual:`Set-Service -Name '${n}' -StartupType Manual`,disabled:`Set-Service -Name '${n}' -StartupType Disabled`};o.textContent=m[a.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

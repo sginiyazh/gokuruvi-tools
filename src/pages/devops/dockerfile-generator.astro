@@ -1,0 +1,1491 @@
+---
+const pageTitle = "Dockerfile Generator";
+const pageDescription =
+  "Generate production-ready Dockerfiles for Node.js, Python, PHP, Java, Nginx, Go, Astro and static websites.";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/devops/dockerfile-generator"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #15803d;
+        --success-bg: #f0fdf4;
+        --warning: #b45309;
+        --warning-bg: #fffbeb;
+        --danger: #dc2626;
+        --danger-bg: #fef2f2;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #cbd5e1;
+        --editor: #0f172a;
+        --editor-text: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
+          var(--background);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: #0f172a;
+        color: white;
+        padding: 18px 24px;
+      }
+
+      .header-inner {
+        width: min(1280px, 100%);
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .header-link {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      .header-link:hover {
+        color: white;
+      }
+
+      main {
+        width: min(1280px, calc(100% - 32px));
+        margin: 42px auto;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 1.1;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .card-title {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label,
+      .section-label {
+        font-size: 0.92rem;
+        font-weight: 750;
+        color: #1e293b;
+      }
+
+      .field-help {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 12px;
+        outline: none;
+        background: white;
+        color: var(--text);
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+        cursor: pointer;
+      }
+
+      .checkbox-item input {
+        width: auto;
+        margin: 0;
+      }
+
+      .checkbox-item span {
+        font-size: 0.9rem;
+        font-weight: 650;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-weight: 750;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: white;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .danger-button {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .output-card {
+        min-width: 0;
+      }
+
+      .output-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .output-title {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .output-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      #dockerfile-output {
+        min-height: 610px;
+        resize: vertical;
+        border: 1px solid #334155;
+        border-radius: 14px;
+        background: var(--editor);
+        color: var(--editor-text);
+        padding: 18px;
+        font-family:
+          "Cascadia Code", "Fira Code", Consolas, Monaco, monospace;
+        font-size: 14px;
+        line-height: 1.65;
+        tab-size: 2;
+      }
+
+      .status-box {
+        display: none;
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        line-height: 1.55;
+      }
+
+      .status-box.show {
+        display: block;
+      }
+
+      .status-box.success {
+        color: var(--success);
+        background: var(--success-bg);
+        border: 1px solid #86efac;
+      }
+
+      .status-box.warning {
+        color: var(--warning);
+        background: var(--warning-bg);
+        border: 1px solid #fcd34d;
+      }
+
+      .status-box.error {
+        color: var(--danger);
+        background: var(--danger-bg);
+        border: 1px solid #fca5a5;
+      }
+
+      .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .tip-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .tip-card h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .tip-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .privacy-note {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        line-height: 1.6;
+      }
+
+      footer {
+        margin-top: 60px;
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--muted);
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        #dockerfile-output {
+          min-height: 520px;
+        }
+      }
+
+      @media (max-width: 700px) {
+        main {
+          margin-top: 28px;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .checkbox-grid,
+        .tips-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-row button,
+        .output-actions button {
+          flex: 1;
+        }
+
+        .output-toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .output-actions {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <span class="badge">Free DevOps Generator</span>
+
+        <h1>Dockerfile Generator</h1>
+
+        <p>
+          Generate a clean Dockerfile for Node.js, Astro, Python, PHP, Java,
+          Nginx, Go or static web applications.
+        </p>
+      </section>
+
+      <section class="generator-layout">
+        <article class="card">
+          <h2 class="card-title">Application settings</h2>
+
+          <p class="card-description">
+            Select your application type and customize the container settings.
+          </p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="app-type">Application type</label>
+
+              <select id="app-type">
+                <option value="node">Node.js</option>
+                <option value="astro">Astro</option>
+                <option value="python">Python</option>
+                <option value="php">PHP Apache</option>
+                <option value="java">Java Maven</option>
+                <option value="nginx">Nginx</option>
+                <option value="go">Go</option>
+                <option value="static">Static website</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="base-image">Base image</label>
+              <input id="base-image" type="text" value="node:22-alpine" />
+            </div>
+
+            <div class="field">
+              <label for="working-directory">Working directory</label>
+              <input id="working-directory" type="text" value="/app" />
+            </div>
+
+            <div class="field">
+              <label for="application-port">Application port</label>
+              <input
+                id="application-port"
+                type="number"
+                min="1"
+                max="65535"
+                value="3000"
+              />
+            </div>
+
+            <div class="field" id="install-command-field">
+              <label for="install-command">Dependency installation command</label>
+              <input
+                id="install-command"
+                type="text"
+                value="npm ci"
+                placeholder="npm ci"
+              />
+            </div>
+
+            <div class="field" id="build-command-field">
+              <label for="build-command">Build command</label>
+              <input
+                id="build-command"
+                type="text"
+                value="npm run build"
+                placeholder="npm run build"
+              />
+            </div>
+
+            <div class="field">
+              <label for="start-command">Start command</label>
+              <input
+                id="start-command"
+                type="text"
+                value="npm start"
+                placeholder="npm start"
+              />
+            </div>
+
+            <div class="field">
+              <label for="copy-source">Source path</label>
+              <input id="copy-source" type="text" value="." />
+              <p class="field-help">
+                The project directory copied into the image.
+              </p>
+            </div>
+
+            <div>
+              <div class="section-label">Options</div>
+
+              <div class="checkbox-grid">
+                <label class="checkbox-item">
+                  <input id="multi-stage" type="checkbox" checked />
+                  <span>Multi-stage build</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="non-root-user" type="checkbox" checked />
+                  <span>Non-root user</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="healthcheck" type="checkbox" checked />
+                  <span>Health check</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="production-env" type="checkbox" checked />
+                  <span>Production environment</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="include-labels" type="checkbox" />
+                  <span>Image labels</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="include-comments" type="checkbox" checked />
+                  <span>Helpful comments</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button id="generate-button" class="primary-button" type="button">
+                Generate Dockerfile
+              </button>
+
+              <button id="reset-button" class="secondary-button" type="button">
+                Reset
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card output-card">
+          <div class="output-toolbar">
+            <h2 class="output-title">Generated Dockerfile</h2>
+
+            <div class="output-actions">
+              <button id="copy-button" class="secondary-button" type="button">
+                Copy
+              </button>
+
+              <button id="download-button" class="secondary-button" type="button">
+                Download
+              </button>
+
+              <button id="clear-button" class="danger-button" type="button">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            id="dockerfile-output"
+            spellcheck="false"
+            aria-label="Generated Dockerfile"
+          ></textarea>
+
+          <div id="status-box" class="status-box" role="status"></div>
+
+          <div class="privacy-note">
+            <strong>Privacy:</strong> Your configuration is processed entirely
+            in your browser and is not uploaded to any server.
+          </div>
+        </article>
+      </section>
+
+      <section class="tips-grid">
+        <article class="tip-card">
+          <h2>Smaller images</h2>
+          <p>
+            Alpine and slim images can reduce the final image size and speed up
+            container deployment.
+          </p>
+        </article>
+
+        <article class="tip-card">
+          <h2>Improved security</h2>
+          <p>
+            Run applications with a non-root user and avoid storing passwords
+            or secrets inside the Dockerfile.
+          </p>
+        </article>
+
+        <article class="tip-card">
+          <h2>Better caching</h2>
+          <p>
+            Copy dependency files before application source code so Docker can
+            reuse cached installation layers.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const appType = document.getElementById("app-type");
+      const baseImage = document.getElementById("base-image");
+      const workingDirectory = document.getElementById("working-directory");
+      const applicationPort = document.getElementById("application-port");
+      const installCommand = document.getElementById("install-command");
+      const buildCommand = document.getElementById("build-command");
+      const startCommand = document.getElementById("start-command");
+      const copySource = document.getElementById("copy-source");
+
+      const installCommandField = document.getElementById(
+        "install-command-field"
+      );
+      const buildCommandField = document.getElementById("build-command-field");
+
+      const multiStage = document.getElementById("multi-stage");
+      const nonRootUser = document.getElementById("non-root-user");
+      const healthcheck = document.getElementById("healthcheck");
+      const productionEnv = document.getElementById("production-env");
+      const includeLabels = document.getElementById("include-labels");
+      const includeComments = document.getElementById("include-comments");
+
+      const generateButton = document.getElementById("generate-button");
+      const resetButton = document.getElementById("reset-button");
+      const copyButton = document.getElementById("copy-button");
+      const downloadButton = document.getElementById("download-button");
+      const clearButton = document.getElementById("clear-button");
+
+      const dockerfileOutput = document.getElementById("dockerfile-output");
+      const statusBox = document.getElementById("status-box");
+
+      const presets = {
+        node: {
+          baseImage: "node:22-alpine",
+          workdir: "/app",
+          port: "3000",
+          install: "npm ci",
+          build: "npm run build",
+          start: "npm start",
+          multiStage: true,
+          nonRoot: true,
+          healthcheck: true,
+          installVisible: true,
+          buildVisible: true
+        },
+
+        astro: {
+          baseImage: "node:22-alpine",
+          workdir: "/app",
+          port: "4321",
+          install: "npm ci",
+          build: "npm run build",
+          start: "node ./dist/server/entry.mjs",
+          multiStage: true,
+          nonRoot: true,
+          healthcheck: true,
+          installVisible: true,
+          buildVisible: true
+        },
+
+        python: {
+          baseImage: "python:3.13-slim",
+          workdir: "/app",
+          port: "8000",
+          install: "pip install --no-cache-dir -r requirements.txt",
+          build: "",
+          start: "python app.py",
+          multiStage: false,
+          nonRoot: true,
+          healthcheck: true,
+          installVisible: true,
+          buildVisible: false
+        },
+
+        php: {
+          baseImage: "php:8.4-apache",
+          workdir: "/var/www/html",
+          port: "80",
+          install: "",
+          build: "",
+          start: "apache2-foreground",
+          multiStage: false,
+          nonRoot: false,
+          healthcheck: true,
+          installVisible: false,
+          buildVisible: false
+        },
+
+        java: {
+          baseImage: "eclipse-temurin:21-jre-alpine",
+          workdir: "/app",
+          port: "8080",
+          install: "./mvnw dependency:go-offline",
+          build: "./mvnw clean package -DskipTests",
+          start: "java -jar app.jar",
+          multiStage: true,
+          nonRoot: true,
+          healthcheck: true,
+          installVisible: true,
+          buildVisible: true
+        },
+
+        nginx: {
+          baseImage: "nginx:1.27-alpine",
+          workdir: "/usr/share/nginx/html",
+          port: "80",
+          install: "",
+          build: "",
+          start: 'nginx -g "daemon off;"',
+          multiStage: false,
+          nonRoot: false,
+          healthcheck: true,
+          installVisible: false,
+          buildVisible: false
+        },
+
+        go: {
+          baseImage: "alpine:3.21",
+          workdir: "/app",
+          port: "8080",
+          install: "go mod download",
+          build: "CGO_ENABLED=0 GOOS=linux go build -o app .",
+          start: "./app",
+          multiStage: true,
+          nonRoot: true,
+          healthcheck: true,
+          installVisible: true,
+          buildVisible: true
+        },
+
+        static: {
+          baseImage: "nginx:1.27-alpine",
+          workdir: "/usr/share/nginx/html",
+          port: "80",
+          install: "",
+          build: "",
+          start: 'nginx -g "daemon off;"',
+          multiStage: false,
+          nonRoot: false,
+          healthcheck: true,
+          installVisible: false,
+          buildVisible: false
+        }
+      };
+
+      function showStatus(type, message) {
+        statusBox.className = `status-box show ${type}`;
+        statusBox.textContent = message;
+      }
+
+      function hideStatus() {
+        statusBox.className = "status-box";
+        statusBox.textContent = "";
+      }
+
+      function dockerCommand(command) {
+        const trimmed = command.trim();
+
+        if (!trimmed) {
+          return "";
+        }
+
+        return `RUN ${trimmed}`;
+      }
+
+      function commandToJson(command) {
+        const trimmed = command.trim();
+
+        if (!trimmed) {
+          return 'CMD ["sh"]';
+        }
+
+        const escaped = trimmed
+          .replaceAll("\\", "\\\\")
+          .replaceAll('"', '\\"');
+
+        return `CMD ["sh", "-c", "${escaped}"]`;
+      }
+
+      function validateInputs() {
+        const errors = [];
+
+        const port = Number(applicationPort.value);
+
+        if (!baseImage.value.trim()) {
+          errors.push("Base image is required.");
+        }
+
+        if (!workingDirectory.value.trim().startsWith("/")) {
+          errors.push("Working directory must start with /.");
+        }
+
+        if (!Number.isInteger(port) || port < 1 || port > 65535) {
+          errors.push("Port must be between 1 and 65535.");
+        }
+
+        if (!startCommand.value.trim()) {
+          errors.push("Start command is required.");
+        }
+
+        return errors;
+      }
+
+      function addComment(lines, text) {
+        if (includeComments.checked) {
+          lines.push(`# ${text}`);
+        }
+      }
+
+      function createHealthcheck(port) {
+        const type = appType.value;
+
+        if (type === "node" || type === "astro") {
+          return `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \\
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${port}/ || exit 1`;
+        }
+
+        if (type === "python") {
+          return `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \\
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${port}/')" || exit 1`;
+        }
+
+        if (type === "java") {
+          return `HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \\
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${port}/ || exit 1`;
+        }
+
+        return `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \\
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${port}/ || exit 1`;
+      }
+
+      function generateNodeDockerfile() {
+        const lines = [];
+        const image = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+        const source = copySource.value.trim() || ".";
+
+        if (multiStage.checked) {
+          addComment(lines, "Build stage");
+          lines.push(`FROM ${image} AS builder`);
+          lines.push("");
+          lines.push(`WORKDIR ${workdir}`);
+          lines.push("");
+
+          addComment(lines, "Copy dependency files first for better caching");
+          lines.push("COPY package*.json ./");
+          lines.push("");
+
+          if (installCommand.value.trim()) {
+            lines.push(dockerCommand(installCommand.value));
+            lines.push("");
+          }
+
+          addComment(lines, "Copy application source");
+          lines.push(`COPY ${source} .`);
+          lines.push("");
+
+          if (buildCommand.value.trim()) {
+            lines.push(dockerCommand(buildCommand.value));
+            lines.push("");
+          }
+
+          addComment(lines, "Production stage");
+          lines.push(`FROM ${image} AS production`);
+          lines.push("");
+          lines.push(`WORKDIR ${workdir}`);
+          lines.push("");
+
+          if (productionEnv.checked) {
+            lines.push("ENV NODE_ENV=production");
+            lines.push("");
+          }
+
+          if (includeLabels.checked) {
+            lines.push('LABEL org.opencontainers.image.title="Application"');
+            lines.push(
+              'LABEL org.opencontainers.image.description="Generated with Gokuruvi Dockerfile Generator"'
+            );
+            lines.push("");
+          }
+
+          lines.push("COPY package*.json ./");
+          lines.push("");
+
+          lines.push("RUN npm ci --omit=dev && npm cache clean --force");
+          lines.push("");
+
+          lines.push(`COPY --from=builder ${workdir}/dist ./dist`);
+          lines.push("");
+
+          if (nonRootUser.checked) {
+            lines.push("RUN addgroup -S appgroup && adduser -S appuser -G appgroup");
+            lines.push(`RUN chown -R appuser:appgroup ${workdir}`);
+            lines.push("USER appuser");
+            lines.push("");
+          }
+
+          lines.push(`EXPOSE ${port}`);
+          lines.push("");
+
+          if (healthcheck.checked) {
+            lines.push(createHealthcheck(port));
+            lines.push("");
+          }
+
+          lines.push(commandToJson(startCommand.value));
+
+          return lines.join("\n");
+        }
+
+        lines.push(`FROM ${image}`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+
+        if (productionEnv.checked) {
+          lines.push("ENV NODE_ENV=production");
+          lines.push("");
+        }
+
+        lines.push("COPY package*.json ./");
+        lines.push("");
+
+        if (installCommand.value.trim()) {
+          lines.push(dockerCommand(installCommand.value));
+          lines.push("");
+        }
+
+        lines.push(`COPY ${source} .`);
+        lines.push("");
+
+        if (buildCommand.value.trim()) {
+          lines.push(dockerCommand(buildCommand.value));
+          lines.push("");
+        }
+
+        if (nonRootUser.checked) {
+          lines.push("RUN addgroup -S appgroup && adduser -S appuser -G appgroup");
+          lines.push(`RUN chown -R appuser:appgroup ${workdir}`);
+          lines.push("USER appuser");
+          lines.push("");
+        }
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generateAstroDockerfile() {
+        const lines = [];
+        const image = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+        const source = copySource.value.trim() || ".";
+
+        addComment(lines, "Build the Astro application");
+        lines.push(`FROM ${image} AS builder`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+        lines.push("COPY package*.json ./");
+        lines.push("");
+        lines.push(dockerCommand(installCommand.value || "npm ci"));
+        lines.push("");
+        lines.push(`COPY ${source} .`);
+        lines.push("");
+        lines.push(dockerCommand(buildCommand.value || "npm run build"));
+        lines.push("");
+
+        addComment(lines, "Run the Astro server");
+        lines.push(`FROM ${image} AS runtime`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+
+        if (productionEnv.checked) {
+          lines.push("ENV NODE_ENV=production");
+          lines.push(`ENV HOST=0.0.0.0`);
+          lines.push(`ENV PORT=${port}`);
+          lines.push("");
+        }
+
+        lines.push("COPY package*.json ./");
+        lines.push("RUN npm ci --omit=dev && npm cache clean --force");
+        lines.push("");
+        lines.push(`COPY --from=builder ${workdir}/dist ./dist`);
+        lines.push("");
+
+        if (nonRootUser.checked) {
+          lines.push("RUN addgroup -S astrogroup && adduser -S astrouser -G astrogroup");
+          lines.push(`RUN chown -R astrouser:astrogroup ${workdir}`);
+          lines.push("USER astrouser");
+          lines.push("");
+        }
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generatePythonDockerfile() {
+        const lines = [];
+        const image = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+        const source = copySource.value.trim() || ".";
+
+        lines.push(`FROM ${image}`);
+        lines.push("");
+        lines.push("ENV PYTHONDONTWRITEBYTECODE=1");
+        lines.push("ENV PYTHONUNBUFFERED=1");
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+
+        if (includeLabels.checked) {
+          lines.push('LABEL org.opencontainers.image.title="Python Application"');
+          lines.push("");
+        }
+
+        addComment(lines, "Install Python dependencies");
+        lines.push("COPY requirements.txt ./");
+        lines.push("");
+        lines.push(
+          dockerCommand(
+            installCommand.value ||
+              "pip install --no-cache-dir -r requirements.txt"
+          )
+        );
+        lines.push("");
+
+        addComment(lines, "Copy application files");
+        lines.push(`COPY ${source} .`);
+        lines.push("");
+
+        if (nonRootUser.checked) {
+          lines.push(
+            "RUN groupadd --system appgroup && useradd --system --gid appgroup appuser"
+          );
+          lines.push(`RUN chown -R appuser:appgroup ${workdir}`);
+          lines.push("USER appuser");
+          lines.push("");
+        }
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generatePhpDockerfile() {
+        const lines = [];
+        const image = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+        const source = copySource.value.trim() || ".";
+
+        lines.push(`FROM ${image}`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+
+        addComment(lines, "Install common PHP extensions");
+        lines.push(
+          "RUN docker-php-ext-install mysqli pdo pdo_mysql"
+        );
+        lines.push("");
+
+        addComment(lines, "Enable Apache rewrite module");
+        lines.push("RUN a2enmod rewrite");
+        lines.push("");
+
+        addComment(lines, "Copy application files");
+        lines.push(`COPY ${source} ${workdir}`);
+        lines.push("");
+        lines.push(`RUN chown -R www-data:www-data ${workdir}`);
+        lines.push("");
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generateJavaDockerfile() {
+        const lines = [];
+        const runtimeImage = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+
+        if (multiStage.checked) {
+          addComment(lines, "Build stage");
+          lines.push("FROM eclipse-temurin:21-jdk-alpine AS builder");
+          lines.push("");
+          lines.push(`WORKDIR ${workdir}`);
+          lines.push("");
+          lines.push("COPY .mvn/ .mvn/");
+          lines.push("COPY mvnw pom.xml ./");
+          lines.push("");
+          lines.push("RUN chmod +x mvnw");
+          lines.push(
+            dockerCommand(
+              installCommand.value || "./mvnw dependency:go-offline"
+            )
+          );
+          lines.push("");
+          lines.push("COPY src ./src");
+          lines.push("");
+          lines.push(
+            dockerCommand(
+              buildCommand.value || "./mvnw clean package -DskipTests"
+            )
+          );
+          lines.push("");
+
+          addComment(lines, "Runtime stage");
+          lines.push(`FROM ${runtimeImage}`);
+          lines.push("");
+          lines.push(`WORKDIR ${workdir}`);
+          lines.push("");
+
+          lines.push(
+            `COPY --from=builder ${workdir}/target/*.jar ${workdir}/app.jar`
+          );
+          lines.push("");
+
+          if (nonRootUser.checked) {
+            lines.push(
+              "RUN addgroup -S appgroup && adduser -S appuser -G appgroup"
+            );
+            lines.push(`RUN chown -R appuser:appgroup ${workdir}`);
+            lines.push("USER appuser");
+            lines.push("");
+          }
+
+          lines.push(`EXPOSE ${port}`);
+          lines.push("");
+
+          if (healthcheck.checked) {
+            lines.push(createHealthcheck(port));
+            lines.push("");
+          }
+
+          lines.push(commandToJson(startCommand.value));
+
+          return lines.join("\n");
+        }
+
+        lines.push(`FROM ${runtimeImage}`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+        lines.push("COPY target/*.jar app.jar");
+        lines.push("");
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generateNginxDockerfile() {
+        const lines = [];
+        const image = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+        const source = copySource.value.trim() || ".";
+
+        lines.push(`FROM ${image}`);
+        lines.push("");
+
+        addComment(lines, "Remove the default Nginx content");
+        lines.push(`RUN rm -rf ${workdir}/*`);
+        lines.push("");
+
+        addComment(lines, "Copy website files");
+        lines.push(`COPY ${source} ${workdir}`);
+        lines.push("");
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generateGoDockerfile() {
+        const lines = [];
+        const runtimeImage = baseImage.value.trim();
+        const workdir = workingDirectory.value.trim();
+        const port = applicationPort.value;
+
+        addComment(lines, "Build stage");
+        lines.push("FROM golang:1.24-alpine AS builder");
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+        lines.push("COPY go.mod go.sum ./");
+        lines.push("");
+        lines.push(dockerCommand(installCommand.value || "go mod download"));
+        lines.push("");
+        lines.push("COPY . .");
+        lines.push("");
+        lines.push(
+          dockerCommand(
+            buildCommand.value ||
+              "CGO_ENABLED=0 GOOS=linux go build -o app ."
+          )
+        );
+        lines.push("");
+
+        addComment(lines, "Runtime stage");
+        lines.push(`FROM ${runtimeImage}`);
+        lines.push("");
+        lines.push(`WORKDIR ${workdir}`);
+        lines.push("");
+        lines.push("RUN apk add --no-cache ca-certificates");
+        lines.push("");
+        lines.push(`COPY --from=builder ${workdir}/app ./app`);
+        lines.push("");
+
+        if (nonRootUser.checked) {
+          lines.push("RUN addgroup -S appgroup && adduser -S appuser -G appgroup");
+          lines.push(`RUN chown -R appuser:appgroup ${workdir}`);
+          lines.push("USER appuser");
+          lines.push("");
+        }
+
+        lines.push(`EXPOSE ${port}`);
+        lines.push("");
+
+        if (healthcheck.checked) {
+          lines.push(createHealthcheck(port));
+          lines.push("");
+        }
+
+        lines.push(commandToJson(startCommand.value));
+
+        return lines.join("\n");
+      }
+
+      function generateDockerfile() {
+        const validationErrors = validateInputs();
+
+        if (validationErrors.length > 0) {
+          showStatus("error", validationErrors.join(" "));
+          return;
+        }
+
+        let dockerfile = "";
+
+        switch (appType.value) {
+          case "node":
+            dockerfile = generateNodeDockerfile();
+            break;
+
+          case "astro":
+            dockerfile = generateAstroDockerfile();
+            break;
+
+          case "python":
+            dockerfile = generatePythonDockerfile();
+            break;
+
+          case "php":
+            dockerfile = generatePhpDockerfile();
+            break;
+
+          case "java":
+            dockerfile = generateJavaDockerfile();
+            break;
+
+          case "nginx":
+          case "static":
+            dockerfile = generateNginxDockerfile();
+            break;
+
+          case "go":
+            dockerfile = generateGoDockerfile();
+            break;
+
+          default:
+            showStatus("error", "Unsupported application type.");
+            return;
+        }
+
+        dockerfileOutput.value = `${dockerfile.trim()}\n`;
+
+        showStatus(
+          "success",
+          "Dockerfile generated successfully. Review the commands before using it in production."
+        );
+      }
+
+      function applyPreset() {
+        const preset = presets[appType.value];
+
+        if (!preset) {
+          return;
+        }
+
+        baseImage.value = preset.baseImage;
+        workingDirectory.value = preset.workdir;
+        applicationPort.value = preset.port;
+        installCommand.value = preset.install;
+        buildCommand.value = preset.build;
+        startCommand.value = preset.start;
+
+        multiStage.checked = preset.multiStage;
+        nonRootUser.checked = preset.nonRoot;
+        healthcheck.checked = preset.healthcheck;
+
+        installCommandField.classList.toggle(
+          "hidden",
+          !preset.installVisible
+        );
+
+        buildCommandField.classList.toggle(
+          "hidden",
+          !preset.buildVisible
+        );
+
+        hideStatus();
+        generateDockerfile();
+      }
+
+      appType.addEventListener("change", applyPreset);
+
+      generateButton.addEventListener("click", generateDockerfile);
+
+      resetButton.addEventListener("click", () => {
+        copySource.value = ".";
+        productionEnv.checked = true;
+        includeLabels.checked = false;
+        includeComments.checked = true;
+
+        applyPreset();
+      });
+
+      clearButton.addEventListener("click", () => {
+        dockerfileOutput.value = "";
+        hideStatus();
+      });
+
+      copyButton.addEventListener("click", async () => {
+        const content = dockerfileOutput.value;
+
+        if (!content.trim()) {
+          showStatus("warning", "Generate a Dockerfile before copying.");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(content);
+
+          showStatus(
+            "success",
+            "Dockerfile copied to the clipboard."
+          );
+        } catch {
+          dockerfileOutput.select();
+          document.execCommand("copy");
+
+          showStatus(
+            "success",
+            "Dockerfile copied to the clipboard."
+          );
+        }
+      });
+
+      downloadButton.addEventListener("click", () => {
+        const content = dockerfileOutput.value;
+
+        if (!content.trim()) {
+          showStatus("warning", "Generate a Dockerfile before downloading.");
+          return;
+        }
+
+        const blob = new Blob([content], {
+          type: "text/plain;charset=utf-8"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+
+        anchor.href = url;
+        anchor.download = "Dockerfile";
+
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        showStatus("success", "Dockerfile downloaded successfully.");
+      });
+
+      dockerfileOutput.addEventListener("keydown", (event) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+
+          const start = dockerfileOutput.selectionStart;
+          const end = dockerfileOutput.selectionEnd;
+          const value = dockerfileOutput.value;
+
+          dockerfileOutput.value =
+            value.substring(0, start) + "  " + value.substring(end);
+
+          dockerfileOutput.selectionStart =
+            dockerfileOutput.selectionEnd =
+              start + 2;
+        }
+      });
+
+      applyPreset();
+    </script>
+  </body>
+</html>

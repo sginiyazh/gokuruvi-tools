@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Group Policy Update Generator" description="Generate GPUpdate commands to refresh user and computer Group Policy settings." slug="gpupdate-generator" icon="🔄">
+
+<h2 class="tool-title">GPUpdate command builder</h2><div class="form-grid"><div class="field"><label for="target">Target</label><select id="target"><option value="">Computer + User</option><option value="computer">Computer only</option><option value="user">User only</option></select></div><div class="field"><label for="wait">Wait seconds</label><input id="wait" type="number" min="0" value="600" /></div><div class="field full"><div class="checks"><label class="check"><input id="force" type="checkbox" checked /> Force reapply</label><label class="check"><input id="boot" type="checkbox" /> Restart if required</label><label class="check"><input id="logoff" type="checkbox" /> Log off if required</label></div></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>Command</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">gpupdate /force</pre></div>
+<script>
+
+const c=(id:string)=>(document.querySelector<HTMLInputElement>('#'+id)!),s=document.querySelector<HTMLSelectElement>('#target')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{let x='gpupdate';if(s.value)x+=` /target:${s.value}`;if(c('force').checked)x+=' /force';x+=` /wait:${Math.max(0,Number(c('wait').value)||0)}`;if(c('boot').checked)x+=' /boot';if(c('logoff').checked)x+=' /logoff';o.textContent=x});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

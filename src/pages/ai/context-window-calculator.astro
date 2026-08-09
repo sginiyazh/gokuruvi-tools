@@ -1,0 +1,46 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/ai-tools.css";
+---
+<Layout title="Context Window Calculator" description="Free context window calculator for AI models. Estimate how much text or code fits within an LLM context window.">
+  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">AI Calculator</span><h1>Model Context Window Calculator</h1><p>Estimate how much of a model context window your text uses and how much room remains for output.</p></div></section>
+  <section class="ai-section"><div class="ai-container">
+    <div class="ai-panel">
+      <div class="ai-grid"><div class="ai-field full"><label for="contextText">Text or code</label><textarea id="contextText" placeholder="Paste text here, or enter tokens manually below..."></textarea></div><div class="ai-field"><label for="manualTokens">Manual token count</label><input id="manualTokens" type="number" min="0" placeholder="e.g. 125000" /></div><div class="ai-field"><label for="contextModel">Context window</label><select id="contextModel"><option value="128000">128K tokens</option><option value="200000">200K tokens</option><option value="400000">400K tokens</option><option value="1000000" selected>1M tokens</option><option value="2000000">2M tokens</option></select></div></div>
+      <div class="ai-results"><div class="ai-stat"><span>Tokens used</span><strong id="usedTokens">0</strong></div><div class="ai-stat"><span>Context used</span><strong id="usedPercent">0%</strong></div><div class="ai-stat"><span>Tokens remaining</span><strong id="remainingTokens">1,000,000</strong></div></div>
+      <div class="ai-meter" aria-label="Context window usage"><span id="contextMeter"></span></div>
+      <div class="ai-note"><strong>Planning tip:</strong> Reserve context space for the response, system instructions, tool schemas and retrieved content.</div>
+    </div>
+  </div></section>
+</Layout>
+<script is:inline>
+(function () {
+  var textEl = document.getElementById('contextText');
+  var manualEl = document.getElementById('manualTokens');
+  var modelEl = document.getElementById('contextModel');
+  var usedEl = document.getElementById('usedTokens');
+  var percentEl = document.getElementById('usedPercent');
+  var remainingEl = document.getElementById('remainingTokens');
+  var meterEl = document.getElementById('contextMeter');
+  function estimate(text) {
+    if (!text || !text.trim()) return 0;
+    var chars = Math.ceil(text.length / 4);
+    var words = Math.ceil(text.trim().split(/\s+/).length * 1.33);
+    return Math.max(1, Math.round((chars + words) / 2));
+  }
+  function calculate() {
+    var limit = modelEl ? Number(modelEl.value) : 1000000;
+    var used = manualEl && manualEl.value.trim() !== '' ? Math.max(0, Number(manualEl.value) || 0) : estimate(textEl ? textEl.value : '');
+    var percent = limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
+    var remaining = Math.max(0, limit - used);
+    if (usedEl) usedEl.textContent = Math.round(used).toLocaleString();
+    if (percentEl) percentEl.textContent = percent.toFixed(2) + '%';
+    if (remainingEl) remainingEl.textContent = Math.round(remaining).toLocaleString();
+    if (meterEl) meterEl.style.width = percent + '%';
+  }
+  if (textEl) textEl.addEventListener('input', calculate);
+  if (manualEl) manualEl.addEventListener('input', calculate);
+  if (modelEl) modelEl.addEventListener('change', calculate);
+  calculate();
+})();
+</script>

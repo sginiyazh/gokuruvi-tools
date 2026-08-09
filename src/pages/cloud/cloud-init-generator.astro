@@ -1,0 +1,1345 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Cloud-Init Generator | Gokuruvi Tools";
+const description =
+  "Generate cloud-init user-data YAML for Linux virtual machines with users, SSH keys, packages, commands, files, hostname, timezone, and reboot options.";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/cloud-init-generator"
+    />
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 880px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .yaml-box {
+        margin-top: 18px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .yaml-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .yaml-output {
+        min-height: 680px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Cloud-Init Generator</h1>
+        <p>
+          Generate cloud-config user-data for Linux virtual machines with
+          hostname, users, SSH keys, packages, files, commands, updates, and
+          reboot settings.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Cloud-Init Configuration</h2>
+            <p class="card-description">
+              Configure your VM initialization settings and generate user-data.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="basic">
+                Basic VM
+              </button>
+              <button class="preset" type="button" data-preset="web">
+                Web Server
+              </button>
+              <button class="preset" type="button" data-preset="docker">
+                Docker Host
+              </button>
+              <button class="preset" type="button" data-preset="secure">
+                Secure SSH
+              </button>
+            </div>
+
+            <h3 class="section-title">System Settings</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="hostnameInput">Hostname</label>
+                <input
+                  id="hostnameInput"
+                  type="text"
+                  value="cloud-vm"
+                  maxlength="63"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="fqdnInput">FQDN</label>
+                <input
+                  id="fqdnInput"
+                  type="text"
+                  value="cloud-vm.example.com"
+                />
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="timezoneInput">Timezone</label>
+                <input
+                  id="timezoneInput"
+                  type="text"
+                  value="Asia/Dubai"
+                  placeholder="Example: Asia/Dubai"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="localeInput">Locale</label>
+                <input
+                  id="localeInput"
+                  type="text"
+                  value="en_US.UTF-8"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="manageEtcHostsInput" type="checkbox" checked />
+              <label for="manageEtcHostsInput">Manage /etc/hosts</label>
+            </div>
+
+            <h3 class="section-title">User and SSH</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="usernameInput">Username</label>
+                <input id="usernameInput" type="text" value="cloudadmin" />
+              </div>
+
+              <div class="form-group">
+                <label for="groupsInput">Additional groups</label>
+                <input
+                  id="groupsInput"
+                  type="text"
+                  value="sudo"
+                  placeholder="Example: sudo,docker"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sshKeyInput">SSH public key</label>
+              <textarea
+                id="sshKeyInput"
+                placeholder="ssh-ed25519 AAAA... user@example"
+              ></textarea>
+            </div>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="shellInput">Login shell</label>
+                <input id="shellInput" type="text" value="/bin/bash" />
+              </div>
+
+              <div class="form-group">
+                <label for="sudoRuleInput">Sudo rule</label>
+                <input
+                  id="sudoRuleInput"
+                  type="text"
+                  value="ALL=(ALL) NOPASSWD:ALL"
+                />
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="sshPasswordAuthInput" type="checkbox" />
+              <label for="sshPasswordAuthInput">
+                Enable SSH password authentication
+              </label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="disableRootInput" type="checkbox" checked />
+              <label for="disableRootInput">Disable direct root login</label>
+            </div>
+
+            <h3 class="section-title">Packages and Updates</h3>
+
+            <div class="form-group">
+              <label for="packagesInput">Packages</label>
+              <textarea
+                id="packagesInput"
+                placeholder="curl&#10;vim&#10;git"
+              >curl
+vim
+git</textarea>
+              <p>Enter one package per line.</p>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="packageUpdateInput" type="checkbox" checked />
+              <label for="packageUpdateInput">
+                Update package metadata
+              </label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="packageUpgradeInput" type="checkbox" />
+              <label for="packageUpgradeInput">
+                Upgrade installed packages
+              </label>
+            </div>
+
+            <h3 class="section-title">Write Files</h3>
+
+            <div class="checkbox-item">
+              <input id="writeFileEnabledInput" type="checkbox" />
+              <label for="writeFileEnabledInput">
+                Add a file using write_files
+              </label>
+            </div>
+
+            <div id="writeFileSection" class="conditional-section">
+              <div class="input-row" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label for="filePathInput">File path</label>
+                  <input
+                    id="filePathInput"
+                    type="text"
+                    value="/etc/motd"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="filePermissionsInput">Permissions</label>
+                  <input
+                    id="filePermissionsInput"
+                    type="text"
+                    value="0644"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label for="fileOwnerInput">Owner</label>
+                  <input
+                    id="fileOwnerInput"
+                    type="text"
+                    value="root:root"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="fileEncodingSelect">Encoding</label>
+                  <select id="fileEncodingSelect">
+                    <option value="" selected>Plain text</option>
+                    <option value="b64">Base64</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="fileContentInput">File content</label>
+                <textarea id="fileContentInput">Managed by cloud-init.</textarea>
+              </div>
+            </div>
+
+            <h3 class="section-title">Commands</h3>
+
+            <div class="form-group">
+              <label for="bootCommandsInput">Boot commands</label>
+              <textarea
+                id="bootCommandsInput"
+                placeholder="echo Boot command executed"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="runCommandsInput">Run commands</label>
+              <textarea
+                id="runCommandsInput"
+                placeholder="systemctl enable --now nginx"
+              >echo "Cloud-init completed" > /tmp/cloud-init-complete</textarea>
+              <p>Enter one shell command per line.</p>
+            </div>
+
+            <h3 class="section-title">Final Settings</h3>
+
+            <div class="form-group">
+              <label for="finalMessageInput">Final message</label>
+              <input
+                id="finalMessageInput"
+                type="text"
+                value="Cloud-init completed successfully."
+              />
+            </div>
+
+            <div class="checkbox-item">
+              <input id="rebootInput" type="checkbox" />
+              <label for="rebootInput">Reboot after cloud-init completes</label>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate User-Data
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated user-data.yaml</h2>
+            <p class="card-description">
+              Review sensitive values and commands before using this file.
+            </p>
+
+            <div class="yaml-box">
+              <span class="yaml-label">Cloud-Init YAML</span>
+              <pre id="yamlOutput" class="yaml-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy YAML
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download user-data
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Hostname</span>
+                <span id="resultHostname" class="result-value">cloud-vm</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">User</span>
+                <span id="resultUser" class="result-value">cloudadmin</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Packages</span>
+                <span id="resultPackages" class="result-value">3</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">SSH password auth</span>
+                <span id="resultPasswordAuth" class="result-value">
+                  Disabled
+                </span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Cloud-init user-data may contain SSH keys, passwords, commands,
+              and other sensitive information. Do not publish it in a public
+              repository.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Cloud-Init Verification Commands</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Validate schema</th>
+                <td><code>cloud-init schema --config-file user-data.yaml</code></td>
+              </tr>
+              <tr>
+                <th>Check status</th>
+                <td><code>cloud-init status --long</code></td>
+              </tr>
+              <tr>
+                <th>View cloud-init log</th>
+                <td><code>sudo tail -f /var/log/cloud-init.log</code></td>
+              </tr>
+              <tr>
+                <th>View output log</th>
+                <td><code>sudo tail -f /var/log/cloud-init-output.log</code></td>
+              </tr>
+              <tr>
+                <th>Clean cloud-init state</th>
+                <td><code>sudo cloud-init clean --logs</code></td>
+              </tr>
+              <tr>
+                <th>Re-run after clean</th>
+                <td><code>sudo reboot</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          hostname: document.getElementById("hostnameInput"),
+          fqdn: document.getElementById("fqdnInput"),
+          timezone: document.getElementById("timezoneInput"),
+          locale: document.getElementById("localeInput"),
+          manageEtcHosts: document.getElementById("manageEtcHostsInput"),
+          username: document.getElementById("usernameInput"),
+          groups: document.getElementById("groupsInput"),
+          sshKey: document.getElementById("sshKeyInput"),
+          shell: document.getElementById("shellInput"),
+          sudoRule: document.getElementById("sudoRuleInput"),
+          sshPasswordAuth: document.getElementById("sshPasswordAuthInput"),
+          disableRoot: document.getElementById("disableRootInput"),
+          packages: document.getElementById("packagesInput"),
+          packageUpdate: document.getElementById("packageUpdateInput"),
+          packageUpgrade: document.getElementById("packageUpgradeInput"),
+          writeFileEnabled: document.getElementById("writeFileEnabledInput"),
+          filePath: document.getElementById("filePathInput"),
+          filePermissions: document.getElementById("filePermissionsInput"),
+          fileOwner: document.getElementById("fileOwnerInput"),
+          fileEncoding: document.getElementById("fileEncodingSelect"),
+          fileContent: document.getElementById("fileContentInput"),
+          bootCommands: document.getElementById("bootCommandsInput"),
+          runCommands: document.getElementById("runCommandsInput"),
+          finalMessage: document.getElementById("finalMessageInput"),
+          reboot: document.getElementById("rebootInput")
+        };
+
+        var writeFileSection = document.getElementById("writeFileSection");
+        var yamlOutput = document.getElementById("yamlOutput");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+        var currentYaml = "";
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function isValidHostname(value) {
+          return (
+            value.length >= 1 &&
+            value.length <= 63 &&
+            /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(value)
+          );
+        }
+
+        function isValidUsername(value) {
+          return /^[a-z_][a-z0-9_-]*[$]?$/.test(value);
+        }
+
+        function splitLines(value) {
+          return String(value)
+            .split(/\r?\n/)
+            .map(function (line) {
+              return line.trim();
+            })
+            .filter(function (line) {
+              return line.length > 0;
+            });
+        }
+
+        function quoteYaml(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function indentBlock(value, spaces) {
+          var prefix = new Array(spaces + 1).join(" ");
+
+          return String(value)
+            .split(/\r?\n/)
+            .map(function (line) {
+              return prefix + line;
+            })
+            .join("\n");
+        }
+
+        function validateForm() {
+          if (!isValidHostname(fields.hostname.value.trim())) {
+            return "Hostname must contain letters, numbers, or hyphens.";
+          }
+
+          if (!isValidUsername(fields.username.value.trim())) {
+            return "Username must start with a lowercase letter or underscore.";
+          }
+
+          if (
+            fields.fqdn.value.trim() &&
+            fields.fqdn.value.trim().indexOf(".") === -1
+          ) {
+            return "FQDN should contain at least one dot.";
+          }
+
+          if (
+            fields.writeFileEnabled.checked &&
+            fields.filePath.value.trim().charAt(0) !== "/"
+          ) {
+            return "File path must start with a forward slash.";
+          }
+
+          if (
+            fields.writeFileEnabled.checked &&
+            !/^[0-7]{4}$/.test(fields.filePermissions.value.trim())
+          ) {
+            return "File permissions must contain four octal digits, such as 0644.";
+          }
+
+          return "";
+        }
+
+        function generateYaml(showError) {
+          var error = validateForm();
+          var hostname;
+          var username;
+          var packages;
+          var groups;
+          var bootCommands;
+          var runCommands;
+          var lines;
+          var fileContent;
+
+          clearMessage();
+
+          if (error) {
+            currentYaml = "";
+            yamlOutput.textContent = error;
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          hostname = fields.hostname.value.trim();
+          username = fields.username.value.trim();
+          packages = splitLines(fields.packages.value);
+          groups = fields.groups.value
+            .split(",")
+            .map(function (group) {
+              return group.trim();
+            })
+            .filter(Boolean);
+          bootCommands = splitLines(fields.bootCommands.value);
+          runCommands = splitLines(fields.runCommands.value);
+
+          lines = [
+            "#cloud-config",
+            "hostname: " + hostname
+          ];
+
+          if (fields.fqdn.value.trim()) {
+            lines.push("fqdn: " + fields.fqdn.value.trim());
+          }
+
+          lines.push(
+            "manage_etc_hosts: " +
+              (fields.manageEtcHosts.checked ? "true" : "false")
+          );
+
+          if (fields.timezone.value.trim()) {
+            lines.push("timezone: " + fields.timezone.value.trim());
+          }
+
+          if (fields.locale.value.trim()) {
+            lines.push("locale: " + fields.locale.value.trim());
+          }
+
+          lines.push(
+            "ssh_pwauth: " +
+              (fields.sshPasswordAuth.checked ? "true" : "false")
+          );
+          lines.push(
+            "disable_root: " +
+              (fields.disableRoot.checked ? "true" : "false")
+          );
+
+          lines.push("users:");
+          lines.push("  - default");
+          lines.push("  - name: " + username);
+
+          if (groups.length > 0) {
+            lines.push("    groups: " + groups.join(", "));
+          }
+
+          if (fields.shell.value.trim()) {
+            lines.push("    shell: " + fields.shell.value.trim());
+          }
+
+          if (fields.sudoRule.value.trim()) {
+            lines.push("    sudo: " + quoteYaml(fields.sudoRule.value.trim()));
+          }
+
+          lines.push("    lock_passwd: true");
+
+          if (fields.sshKey.value.trim()) {
+            lines.push("    ssh_authorized_keys:");
+            lines.push("      - " + quoteYaml(fields.sshKey.value.trim()));
+          }
+
+          lines.push(
+            "package_update: " +
+              (fields.packageUpdate.checked ? "true" : "false")
+          );
+          lines.push(
+            "package_upgrade: " +
+              (fields.packageUpgrade.checked ? "true" : "false")
+          );
+
+          if (packages.length > 0) {
+            lines.push("packages:");
+
+            packages.forEach(function (pkg) {
+              lines.push("  - " + pkg);
+            });
+          }
+
+          if (fields.writeFileEnabled.checked) {
+            fileContent = fields.fileContent.value;
+
+            if (fields.fileEncoding.value === "b64") {
+              try {
+                fileContent = btoa(
+                  unescape(encodeURIComponent(fileContent))
+                );
+              } catch (encodingError) {
+                fileContent = btoa(fileContent);
+              }
+            }
+
+            lines.push("write_files:");
+            lines.push("  - path: " + fields.filePath.value.trim());
+            lines.push(
+              "    permissions: " +
+                quoteYaml(fields.filePermissions.value.trim())
+            );
+            lines.push("    owner: " + fields.fileOwner.value.trim());
+
+            if (fields.fileEncoding.value) {
+              lines.push("    encoding: " + fields.fileEncoding.value);
+            }
+
+            lines.push("    content: |");
+            lines.push(indentBlock(fileContent, 6));
+          }
+
+          if (bootCommands.length > 0) {
+            lines.push("bootcmd:");
+
+            bootCommands.forEach(function (command) {
+              lines.push("  - " + quoteYaml(command));
+            });
+          }
+
+          if (runCommands.length > 0) {
+            lines.push("runcmd:");
+
+            runCommands.forEach(function (command) {
+              lines.push("  - " + quoteYaml(command));
+            });
+          }
+
+          if (fields.finalMessage.value.trim()) {
+            lines.push(
+              "final_message: " +
+                quoteYaml(fields.finalMessage.value.trim())
+            );
+          }
+
+          lines.push(
+            "power_state:",
+            "  mode: " + (fields.reboot.checked ? "reboot" : "poweroff"),
+            "  message: " +
+              quoteYaml(
+                fields.reboot.checked
+                  ? "Rebooting after cloud-init completion."
+                  : "Cloud-init completed without reboot."
+              ),
+            "  timeout: 30",
+            "  condition: " +
+              (fields.reboot.checked ? "true" : "false")
+          );
+
+          currentYaml = lines.join("\n") + "\n";
+          yamlOutput.textContent = currentYaml;
+
+          document.getElementById("resultHostname").textContent = hostname;
+          document.getElementById("resultUser").textContent = username;
+          document.getElementById("resultPackages").textContent =
+            String(packages.length);
+          document.getElementById("resultPasswordAuth").textContent =
+            fields.sshPasswordAuth.checked ? "Enabled" : "Disabled";
+        }
+
+        function updateSections() {
+          writeFileSection.classList.toggle(
+            "active",
+            fields.writeFileEnabled.checked
+          );
+
+          generateYaml(false);
+        }
+
+        function applyPreset(preset) {
+          if (preset === "basic") {
+            fields.hostname.value = "cloud-vm";
+            fields.fqdn.value = "cloud-vm.example.com";
+            fields.username.value = "cloudadmin";
+            fields.groups.value = "sudo";
+            fields.packages.value = "curl\nvim\ngit";
+            fields.runCommands.value =
+              'echo "Cloud-init completed" > /tmp/cloud-init-complete';
+            fields.sshPasswordAuth.checked = false;
+            fields.disableRoot.checked = true;
+          } else if (preset === "web") {
+            fields.hostname.value = "web-server";
+            fields.fqdn.value = "web-server.example.com";
+            fields.username.value = "webadmin";
+            fields.groups.value = "sudo,www-data";
+            fields.packages.value = "nginx\ncurl\nvim";
+            fields.runCommands.value =
+              "systemctl enable --now nginx\n" +
+              'echo "Web server ready" > /var/www/html/index.html';
+            fields.writeFileEnabled.checked = false;
+          } else if (preset === "docker") {
+            fields.hostname.value = "docker-host";
+            fields.fqdn.value = "docker-host.example.com";
+            fields.username.value = "dockeradmin";
+            fields.groups.value = "sudo,docker";
+            fields.packages.value =
+              "docker.io\ndocker-compose-plugin\ncurl\ngit";
+            fields.runCommands.value =
+              "systemctl enable --now docker\n" +
+              "usermod -aG docker dockeradmin";
+            fields.writeFileEnabled.checked = false;
+          } else if (preset === "secure") {
+            fields.hostname.value = "secure-vm";
+            fields.fqdn.value = "secure-vm.example.com";
+            fields.username.value = "secureadmin";
+            fields.groups.value = "sudo";
+            fields.sshPasswordAuth.checked = false;
+            fields.disableRoot.checked = true;
+            fields.packages.value = "fail2ban\nufw\ncurl";
+            fields.runCommands.value =
+              "ufw allow OpenSSH\n" +
+              "ufw --force enable\n" +
+              "systemctl enable --now fail2ban";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.hostname.value = "cloud-vm";
+          fields.fqdn.value = "cloud-vm.example.com";
+          fields.timezone.value = "Asia/Dubai";
+          fields.locale.value = "en_US.UTF-8";
+          fields.manageEtcHosts.checked = true;
+          fields.username.value = "cloudadmin";
+          fields.groups.value = "sudo";
+          fields.sshKey.value = "";
+          fields.shell.value = "/bin/bash";
+          fields.sudoRule.value = "ALL=(ALL) NOPASSWD:ALL";
+          fields.sshPasswordAuth.checked = false;
+          fields.disableRoot.checked = true;
+          fields.packages.value = "curl\nvim\ngit";
+          fields.packageUpdate.checked = true;
+          fields.packageUpgrade.checked = false;
+          fields.writeFileEnabled.checked = false;
+          fields.filePath.value = "/etc/motd";
+          fields.filePermissions.value = "0644";
+          fields.fileOwner.value = "root:root";
+          fields.fileEncoding.value = "";
+          fields.fileContent.value = "Managed by cloud-init.";
+          fields.bootCommands.value = "";
+          fields.runCommands.value =
+            'echo "Cloud-init completed" > /tmp/cloud-init-complete';
+          fields.finalMessage.value =
+            "Cloud-init completed successfully.";
+          fields.reboot.checked = false;
+
+          updateSections();
+          fields.hostname.focus();
+        }
+
+        function copyYaml() {
+          if (!currentYaml) {
+            showMessage("Generate valid cloud-init YAML first.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(currentYaml)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("Cloud-init YAML copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the YAML manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadYaml() {
+          var hostname;
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentYaml) {
+            showMessage("Generate valid cloud-init YAML first.", "error");
+            return;
+          }
+
+          hostname = fields.hostname.value.trim() || "cloud-init";
+          blob = new Blob([currentYaml], {
+            type: "application/yaml;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = hostname + "-user-data.yaml";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("Cloud-init YAML downloaded successfully.", "success");
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateYaml(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyYaml);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadYaml);
+
+        fields.writeFileEnabled.addEventListener("change", updateSections);
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateYaml(false);
+          });
+
+          if (key !== "writeFileEnabled") {
+            field.addEventListener("change", function () {
+              generateYaml(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "");
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

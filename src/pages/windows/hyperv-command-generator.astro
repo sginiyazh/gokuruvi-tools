@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="Hyper-V Command Generator" description="Generate Hyper-V PowerShell commands for virtual machines, switches, checkpoints, disks and networking." slug="hyperv-command-generator" icon="🧱">
+
+<h2 class="tool-title">Hyper-V command builder</h2><div class="form-grid"><div class="field"><label for="action">Action</label><select id="action"><option value="list">List VMs</option><option value="start">Start VM</option><option value="stop">Stop VM</option><option value="checkpoint">Create checkpoint</option><option value="create">Create VM</option><option value="switch">List virtual switches</option></select></div><div class="field"><label for="name">VM name</label><input id="name" value="VM01" /></div><div class="field"><label for="memory">Startup memory (GB)</label><input id="memory" type="number" min="1" value="4" /></div><div class="field"><label for="vhd">VHDX path</label><input id="vhd" value="D:\\VMs\\VM01\\VM01.vhdx" /></div><div class="field full"><label for="switchName">Virtual switch (optional)</label><input id="switchName" placeholder="ExternalSwitch" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Get-VM</pre></div>
+<script>
+
+const v=(id:string)=>(document.querySelector<HTMLInputElement|HTMLSelectElement>('#'+id)!).value;const o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const n=v('name').replace(/'/g,"''"),mem=Math.max(1,Number(v('memory'))||4),vhd=v('vhd').replace(/'/g,"''"),sw=v('switchName').replace(/'/g,"''");const m:Record<string,string>={list:'Get-VM | Format-Table Name,State,CPUUsage,MemoryAssigned,Uptime -AutoSize',start:`Start-VM -Name '${n}'`,stop:`Stop-VM -Name '${n}' -Shutdown`,checkpoint:`Checkpoint-VM -Name '${n}' -SnapshotName 'BeforeChange-' + (Get-Date -Format 'yyyyMMdd-HHmm')`,create:`New-VM -Name '${n}' -Generation 2 -MemoryStartupBytes ${mem}GB -VHDPath '${vhd}'${sw?` -SwitchName '${sw}'`:''}`,switch:'Get-VMSwitch | Format-Table Name,SwitchType,NetAdapterInterfaceDescription -AutoSize'};o.textContent=m[v('action')]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

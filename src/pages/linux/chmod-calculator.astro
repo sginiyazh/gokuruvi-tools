@@ -1,0 +1,1222 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Linux chmod Calculator | Gokuruvi Tools";
+const pageDescription =
+  "Free Linux chmod calculator to convert read, write and execute permissions into numeric and symbolic chmod values.";
+const siteUrl = "https://www.gokuruvi.com/linux/chmod-calculator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="chmod calculator, Linux permissions calculator, chmod 755, chmod 644, file permissions, Linux tools"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      /* Header */
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      /* Breadcrumb */
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      /* Hero */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 75px 0 68px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+        box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      /* Calculator */
+
+      .calculator-section {
+        padding: 75px 0;
+      }
+
+      .calculator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .calculator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .calculator-card {
+        padding: 30px;
+      }
+
+      .calculator-heading {
+        margin-bottom: 28px;
+      }
+
+      .calculator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .calculator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .permissions-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .permissions-table th,
+      .permissions-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+      }
+
+      .permissions-table th:first-child,
+      .permissions-table td:first-child {
+        text-align: left;
+      }
+
+      .permissions-table th {
+        color: var(--dark);
+        font-size: 14px;
+      }
+
+      .permissions-table td:first-child {
+        font-weight: 800;
+      }
+
+      .permission-checkbox {
+        width: 21px;
+        height: 21px;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+
+      .presets {
+        margin-top: 28px;
+      }
+
+      .presets h3 {
+        margin: 0 0 14px;
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset-button {
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        transform: translateY(-1px);
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border: 0;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      /* Results */
+
+      .results-column {
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-group {
+        margin-bottom: 18px;
+      }
+
+      .result-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 56px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #f8fafc;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family:
+          Consolas, "Courier New", monospace;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .numeric-value {
+        font-size: 34px;
+        color: var(--primary-dark);
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      /* Information */
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      .value-list {
+        display: grid;
+        gap: 9px;
+        margin-top: 15px;
+      }
+
+      .value-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+      }
+
+      .value-item strong {
+        color: var(--primary-dark);
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 900px) {
+        .calculator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 60px 0 55px;
+        }
+
+        .hero h1 {
+          font-size: 40px;
+          letter-spacing: -1.3px;
+        }
+
+        .calculator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .permissions-table th,
+        .permissions-table td {
+          padding: 13px 7px;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">chmod Calculator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🔐</div>
+
+            <h1>
+              Linux <span>chmod Calculator</span>
+            </h1>
+
+            <p>
+              Select read, write and execute permissions for the owner, group
+              and others. The calculator instantly generates numeric, symbolic
+              and command-line chmod values.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="calculator-section">
+        <div class="container">
+          <div class="calculator-layout">
+            <div class="calculator-card">
+              <div class="calculator-heading">
+                <h2>Select file permissions</h2>
+
+                <p>
+                  Check the required permissions for each user class.
+                </p>
+              </div>
+
+              <table class="permissions-table">
+                <thead>
+                  <tr>
+                    <th scope="col">User class</th>
+                    <th scope="col">Read (4)</th>
+                    <th scope="col">Write (2)</th>
+                    <th scope="col">Execute (1)</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td>Owner</td>
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="owner-read"
+                        data-class="owner"
+                        data-permission="read"
+                        checked
+                        aria-label="Owner read permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="owner-write"
+                        data-class="owner"
+                        data-permission="write"
+                        checked
+                        aria-label="Owner write permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="owner-execute"
+                        data-class="owner"
+                        data-permission="execute"
+                        checked
+                        aria-label="Owner execute permission"
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>Group</td>
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="group-read"
+                        data-class="group"
+                        data-permission="read"
+                        checked
+                        aria-label="Group read permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="group-write"
+                        data-class="group"
+                        data-permission="write"
+                        aria-label="Group write permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="group-execute"
+                        data-class="group"
+                        data-permission="execute"
+                        checked
+                        aria-label="Group execute permission"
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>Others</td>
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="others-read"
+                        data-class="others"
+                        data-permission="read"
+                        checked
+                        aria-label="Others read permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="others-write"
+                        data-class="others"
+                        data-permission="write"
+                        aria-label="Others write permission"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        class="permission-checkbox"
+                        type="checkbox"
+                        id="others-execute"
+                        data-class="others"
+                        data-permission="execute"
+                        checked
+                        aria-label="Others execute permission"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="presets">
+                <h3>Common permission presets</h3>
+
+                <div class="preset-list">
+                  <button class="preset-button" type="button" data-mode="755">
+                    755
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="644">
+                    644
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="700">
+                    700
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="600">
+                    600
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="775">
+                    775
+                  </button>
+
+                  <button class="preset-button" type="button" data-mode="777">
+                    777
+                  </button>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="select-all"
+                  type="button"
+                >
+                  Select All
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset to 755
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="clear-all"
+                  type="button"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Permission results">
+              <div class="result-card">
+                <h2>Permission results</h2>
+
+                <div class="result-group">
+                  <span class="result-label">Numeric value</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value numeric-value"
+                      id="numeric-result"
+                    >
+                      755
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="numeric-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">Symbolic value</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="symbolic-result">
+                      rwxr-xr-x
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="symbolic-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-group">
+                  <span class="result-label">chmod command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="command-result">
+                      chmod 755 filename
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="command-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>How Linux chmod permissions work</h2>
+
+            <p>
+              Linux permission values are calculated using read, write and
+              execute permission numbers.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Permission values</h3>
+
+              <div class="value-list">
+                <div class="value-item">
+                  <span>Read</span>
+                  <strong>4</strong>
+                </div>
+
+                <div class="value-item">
+                  <span>Write</span>
+                  <strong>2</strong>
+                </div>
+
+                <div class="value-item">
+                  <span>Execute</span>
+                  <strong>1</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="info-card">
+              <h3>Common chmod examples</h3>
+
+              <ul>
+                <li><strong>755:</strong> Owner full access; others read and execute.</li>
+                <li><strong>644:</strong> Owner read and write; others read only.</li>
+                <li><strong>700:</strong> Owner full access; no access for others.</li>
+                <li><strong>600:</strong> Owner read and write only.</li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Example commands</h3>
+
+              <ul>
+                <li><code>chmod 755 script.sh</code></li>
+                <li><code>chmod 644 config.txt</code></li>
+                <li><code>chmod 700 private-directory</code></li>
+                <li><code>chmod -R 755 /var/www/html</code></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const permissionValues = {
+        read: 4,
+        write: 2,
+        execute: 1,
+      };
+
+      const permissionSymbols = {
+        read: "r",
+        write: "w",
+        execute: "x",
+      };
+
+      const userClasses = ["owner", "group", "others"];
+      const permissions = ["read", "write", "execute"];
+
+      const numericResult = document.getElementById("numeric-result");
+      const symbolicResult = document.getElementById("symbolic-result");
+      const commandResult = document.getElementById("command-result");
+      const copyStatus = document.getElementById("copy-status");
+
+      function getCheckbox(userClass, permission) {
+        return document.querySelector(
+          `[data-class="${userClass}"][data-permission="${permission}"]`
+        );
+      }
+
+      function calculatePermissions() {
+        let numeric = "";
+        let symbolic = "";
+
+        userClasses.forEach((userClass) => {
+          let classValue = 0;
+
+          permissions.forEach((permission) => {
+            const checkbox = getCheckbox(userClass, permission);
+            const checked = checkbox?.checked ?? false;
+
+            if (checked) {
+              classValue += permissionValues[permission];
+              symbolic += permissionSymbols[permission];
+            } else {
+              symbolic += "-";
+            }
+          });
+
+          numeric += classValue.toString();
+        });
+
+        if (numericResult) {
+          numericResult.textContent = numeric;
+        }
+
+        if (symbolicResult) {
+          symbolicResult.textContent = symbolic;
+        }
+
+        if (commandResult) {
+          commandResult.textContent = `chmod ${numeric} filename`;
+        }
+      }
+
+      function applyNumericMode(mode) {
+        if (!/^[0-7]{3}$/.test(mode)) {
+          return;
+        }
+
+        userClasses.forEach((userClass, index) => {
+          const digit = Number(mode[index]);
+
+          const values = {
+            read: Boolean(digit & 4),
+            write: Boolean(digit & 2),
+            execute: Boolean(digit & 1),
+          };
+
+          permissions.forEach((permission) => {
+            const checkbox = getCheckbox(userClass, permission);
+
+            if (checkbox) {
+              checkbox.checked = values[permission];
+            }
+          });
+        });
+
+        calculatePermissions();
+      }
+
+      document
+        .querySelectorAll(".permission-checkbox")
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", calculatePermissions);
+        });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const mode = button.dataset.mode;
+
+            if (mode) {
+              applyNumericMode(mode);
+            }
+          });
+        });
+
+      document
+        .getElementById("select-all")
+        ?.addEventListener("click", () => {
+          document
+            .querySelectorAll(".permission-checkbox")
+            .forEach((checkbox) => {
+              checkbox.checked = true;
+            });
+
+          calculatePermissions();
+        });
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", () => {
+          applyNumericMode("755");
+        });
+
+      document
+        .getElementById("clear-all")
+        ?.addEventListener("click", () => {
+          document
+            .querySelectorAll(".permission-checkbox")
+            .forEach((checkbox) => {
+              checkbox.checked = false;
+            });
+
+          calculatePermissions();
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", async () => {
+            const targetId = button.dataset.copyTarget;
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            const text = target?.textContent?.trim() ?? "";
+
+            if (!text) {
+              return;
+            }
+
+            try {
+              await navigator.clipboard.writeText(text);
+
+              if (copyStatus) {
+                copyStatus.textContent = `Copied: ${text}`;
+              }
+            } catch (error) {
+              if (copyStatus) {
+                copyStatus.textContent =
+                  "Copy failed. Please select and copy the value manually.";
+              }
+            }
+
+            window.setTimeout(() => {
+              if (copyStatus) {
+                copyStatus.textContent = "";
+              }
+            }, 2500);
+          });
+        });
+
+      calculatePermissions();
+    </script>
+  </body>
+</html>

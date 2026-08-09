@@ -1,0 +1,65 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const guides = [
+  {
+    title: "Linux Administration Guide",
+    description: "Step-by-step Linux administration tutorials, commands, and best practices.",
+    href: "/linux/",
+  },
+  {
+    title: "DevOps Learning Guide",
+    description: "Docker, YAML, JSON, CI/CD, and automation tutorials.",
+    href: "/devops/",
+  },
+  {
+    title: "Kubernetes Guide",
+    description: "Deployments, Services, Ingress, ConfigMaps, Secrets, and more.",
+    href: "/kubernetes/",
+  },
+  {
+    title: "Networking Guide",
+    description: "Subnetting, DNS, IP addressing, routing, and troubleshooting.",
+    href: "/network/",
+  },
+  {
+    title: "Cloud Guide",
+    description: "AWS, Azure, Cloudflare, Linux cloud administration, and security.",
+    href: "/cloud/",
+  },
+];
+---
+
+<Layout
+  title="Technical Guides"
+  description="Free Linux, DevOps, Kubernetes, Networking, and Cloud learning guides."
+>
+  <section class="page-section">
+    <div class="container">
+      <header class="page-header">
+        <h1>Technical Guides</h1>
+
+        <p>
+          Learn Linux, DevOps, Kubernetes, Networking, and Cloud technologies
+          with practical tutorials and hands-on guides.
+        </p>
+      </header>
+
+      <div class="card-grid">
+        {
+          guides.map((guide) => (
+            <article class="card">
+              <h2>{guide.title}</h2>
+
+              <p>{guide.description}</p>
+
+              <a class="button" href={guide.href}>
+                Explore Guide →
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>

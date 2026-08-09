@@ -1,0 +1,1271 @@
+---
+const pageTitle = "DevOps Tools";
+
+const description =
+  "Free browser-based DevOps tools for YAML, JSON, Docker, Base64, JWT, regular expressions and environment configuration.";
+
+const tools = [
+  {
+    icon: "📝",
+    name: "YAML Validator",
+    category: "Validation",
+    description:
+      "Validate YAML syntax, format documents and convert YAML configuration into JSON.",
+    link: "/devops/yaml-validator",
+  },
+  {
+    icon: "🧩",
+    name: "JSON Validator",
+    category: "Validation",
+    description:
+      "Validate, format and minify JSON documents directly in your browser.",
+    link: "/devops/json-validator",
+  },
+  {
+    icon: "🐳",
+    name: "Docker Run Generator",
+    category: "Docker",
+    description:
+      "Build Docker run commands with ports, volumes, environment variables and restart options.",
+    link: "/devops/docker-run-generator",
+  },
+  {
+    icon: "📦",
+    name: "Docker Compose Validator",
+    category: "Docker",
+    description:
+      "Validate Docker Compose YAML syntax and check its basic service structure.",
+    link: "/devops/docker-compose-validator",
+  },
+  {
+    icon: "🏗️",
+    name: "Dockerfile Generator",
+    category: "Docker",
+    description:
+      "Generate starter Dockerfiles for Node.js, Python and Nginx applications.",
+    link: "/devops/dockerfile-generator",
+  },
+  {
+    icon: "🔐",
+    name: "Base64 Encoder",
+    category: "Encoding",
+    description:
+      "Encode plain text and Unicode content into Base64 format.",
+    link: "/devops/base64-encoder",
+  },
+  {
+    icon: "🔓",
+    name: "Base64 Decoder",
+    category: "Encoding",
+    description:
+      "Decode Base64 values into readable UTF-8 text.",
+    link: "/devops/base64-decoder",
+  },
+  {
+    icon: "🪪",
+    name: "JWT Decoder",
+    category: "Security",
+    description:
+      "Inspect the header and payload of a JSON Web Token without sending it to a server.",
+    link: "/devops/jwt-decoder",
+  },
+  {
+    icon: "🔎",
+    name: "Regex Tester",
+    category: "Development",
+    description:
+      "Test JavaScript regular expressions and inspect matching values and positions.",
+    link: "/devops/regex-tester",
+  },
+  {
+    icon: "⚙️",
+    name: "Environment File Generator",
+    category: "Configuration",
+    description:
+      "Create clean .env configuration files and download them directly.",
+    link: "/devops/env-file-generator",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast results",
+    description:
+      "Generate, validate and format technical content instantly.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy friendly",
+    description:
+      "The tools are designed to process your data inside the browser.",
+  },
+  {
+    icon: "📱",
+    title: "Responsive design",
+    description:
+      "Use every utility from desktop, tablet or mobile devices.",
+  },
+];
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={description} />
+
+    <meta
+      name="keywords"
+      content="DevOps tools, YAML validator, JSON validator, Docker generator, Docker Compose validator, Dockerfile generator, Base64 encoder, JWT decoder, regex tester"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:title"
+      content="Free DevOps Tools | Gokuruvi Tools"
+    />
+
+    <meta property="og:description" content={description} />
+
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://www.gokuruvi.com/devops"
+    />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/devops"
+    />
+
+    <title>{pageTitle} | Gokuruvi Tools</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #eff6ff;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      /* Header */
+
+      :global(html.menu-open) {
+        overflow: hidden;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.98);
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      .header-container {
+        width: min(calc(100% - 40px), 1400px);
+        margin-inline: auto;
+      }
+
+      .navbar {
+        position: relative;
+        display: flex;
+        min-height: 74px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        gap: 11px;
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 11px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 800;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38);
+      }
+
+      .nav-links {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 17px;
+      }
+
+      .nav-link {
+        position: relative;
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        padding: 0;
+        color: #dbe4f0;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .nav-link:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+
+      .nav-link.active {
+        color: #ffffff;
+      }
+
+      .nav-link.active::after {
+        position: absolute;
+        right: 0;
+        bottom: 3px;
+        left: 0;
+        height: 2px;
+        border-radius: 999px;
+        background: var(--secondary);
+        content: "";
+      }
+
+      .nav-button {
+        display: inline-flex;
+        min-height: 44px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 0 19px;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: 0 9px 22px rgba(37, 99, 235, 0.3);
+        transition:
+          background 0.2s ease,
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .nav-button:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 12px 27px rgba(37, 99, 235, 0.38);
+        transform: translateY(-1px);
+      }
+
+      .menu-button {
+        display: none;
+        width: 44px;
+        height: 42px;
+        flex-shrink: 0;
+        padding: 9px;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        background: #1e293b;
+        cursor: pointer;
+      }
+
+      .menu-line {
+        display: block;
+        width: 100%;
+        height: 2px;
+        margin: 4px 0;
+        border-radius: 999px;
+        background: #ffffff;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      .menu-button.open .menu-line:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      .menu-button.open .menu-line:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-button.open .menu-line:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+
+      .menu-button:focus-visible,
+      .logo:focus-visible,
+      .nav-link:focus-visible,
+      .nav-button:focus-visible {
+        outline: 3px solid rgba(56, 189, 248, 0.45);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 1380px) {
+        .navbar {
+          gap: 20px;
+        }
+
+        .nav-links {
+          gap: 13px;
+        }
+
+        .nav-link,
+        .nav-button {
+          font-size: 13px;
+        }
+
+        .nav-button {
+          padding-inline: 16px;
+        }
+      }
+
+      @media (max-width: 1220px) {
+        .menu-button {
+          display: block;
+        }
+
+        .nav-links {
+          position: fixed;
+          top: 74px;
+          right: 0;
+          left: 0;
+          display: flex;
+          visibility: hidden;
+          max-height: calc(100vh - 74px);
+          overflow-y: auto;
+          padding: 16px 20px 22px;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 5px;
+          border-top: 1px solid #263247;
+          background: rgba(15, 23, 42, 0.995);
+          box-shadow: 0 24px 45px rgba(15, 23, 42, 0.38);
+          opacity: 0;
+          transform: translateY(-12px);
+          pointer-events: none;
+          transition:
+            opacity 0.2s ease,
+            transform 0.2s ease,
+            visibility 0.2s ease;
+        }
+
+        .nav-links.open {
+          visibility: visible;
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
+        .nav-link {
+          width: 100%;
+          min-height: 46px;
+          padding: 0 14px;
+          border-radius: 9px;
+          font-size: 15px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+          background: #1e293b;
+          color: #ffffff;
+          transform: none;
+        }
+
+        .nav-link.active {
+          box-shadow: inset 3px 0 0 var(--secondary);
+        }
+
+        .nav-link.active::after {
+          display: none;
+        }
+
+        .nav-button {
+          width: 100%;
+          min-height: 48px;
+          margin-top: 7px;
+          font-size: 15px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .header-container {
+          width: min(calc(100% - 24px), 1400px);
+        }
+
+        .navbar {
+          min-height: 66px;
+        }
+
+        .logo {
+          gap: 9px;
+          font-size: 18px;
+        }
+
+        .logo-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 9px;
+          font-size: 18px;
+        }
+
+        .menu-button {
+          width: 42px;
+          height: 40px;
+        }
+
+        .nav-links {
+          top: 66px;
+          max-height: calc(100vh - 66px);
+          padding: 13px 12px 18px;
+        }
+      }
+
+      /* Hero */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 105px 0 92px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.2),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 88% 25%,
+            rgba(37, 99, 235, 0.2),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 52%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(
+            rgba(37, 99, 235, 0.045) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.045) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        mask-image: linear-gradient(to bottom, black, transparent);
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 24px;
+        padding: 8px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 800;
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+      }
+
+      .hero h1 {
+        margin: 0 auto 22px;
+        color: var(--dark);
+        font-size: clamp(43px, 7vw, 72px);
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-description {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: clamp(18px, 2.5vw, 21px);
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 36px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 50px;
+        padding: 0 23px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.26);
+      }
+
+      .button-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 16px 38px rgba(37, 99, 235, 0.32);
+      }
+
+      .button-secondary {
+        border-color: #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+      }
+
+      .button-secondary:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+      }
+
+      .hero-statistics {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-top: 42px;
+      }
+
+      .hero-stat {
+        min-width: 130px;
+      }
+
+      .hero-stat strong {
+        display: block;
+        color: var(--dark);
+        font-size: 25px;
+      }
+
+      .hero-stat span {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      /* Sections */
+
+      .section {
+        padding: 92px 0;
+      }
+
+      .section-white {
+        background: #ffffff;
+      }
+
+      .section-heading {
+        max-width: 770px;
+        margin: 0 auto 54px;
+        text-align: center;
+      }
+
+      .section-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1.7px;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: clamp(31px, 4vw, 44px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      /* Tool cards */
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .tool-card {
+        position: relative;
+        display: flex;
+        min-height: 310px;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 29px;
+        border: 1px solid var(--border);
+        border-radius: 19px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .tool-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--secondary)
+        );
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      .tool-card::after {
+        content: "";
+        position: absolute;
+        right: -55px;
+        bottom: -65px;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.065);
+        transition: transform 0.3s ease;
+      }
+
+      .tool-card:hover {
+        transform: translateY(-8px);
+        border-color: #93c5fd;
+        box-shadow: 0 24px 50px rgba(37, 99, 235, 0.14);
+      }
+
+      .tool-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .tool-card:hover::after {
+        transform: scale(1.25);
+      }
+
+      .tool-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .tool-icon {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 15px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #e0f2fe
+        );
+        font-size: 29px;
+      }
+
+      .tool-category {
+        padding: 5px 10px;
+        border: 1px solid #dbeafe;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .tool-card h3 {
+        margin: 0 0 11px;
+        color: var(--dark);
+        font-size: 22px;
+        line-height: 1.3;
+      }
+
+      .tool-card p {
+        flex: 1;
+        margin: 0 0 22px;
+        color: var(--muted);
+        line-height: 1.72;
+      }
+
+      .open-tool {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 850;
+      }
+
+      .open-tool span {
+        transition: transform 0.2s ease;
+      }
+
+      .tool-card:hover .open-tool span {
+        transform: translateX(4px);
+      }
+
+      /* Benefits */
+
+      .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .benefit-card {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: #ffffff;
+      }
+
+      .benefit-icon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 20px;
+        border-radius: 14px;
+        background: var(--primary-light);
+        font-size: 25px;
+      }
+
+      .benefit-card h3 {
+        margin: 0 0 9px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .benefit-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* CTA */
+
+      .cta {
+        padding: 0 0 92px;
+      }
+
+      .cta-box {
+        position: relative;
+        overflow: hidden;
+        padding: 70px 35px;
+        border-radius: 25px;
+        background:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(56, 189, 248, 0.28),
+            transparent 31%
+          ),
+          linear-gradient(135deg, #0f172a, #1e3a8a);
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 25px 65px rgba(15, 23, 42, 0.2);
+      }
+
+      .cta-box h2 {
+        max-width: 720px;
+        margin: 0 auto 15px;
+        font-size: clamp(30px, 4vw, 45px);
+        line-height: 1.2;
+      }
+
+      .cta-box p {
+        max-width: 670px;
+        margin: 0 auto 29px;
+        color: #cbd5e1;
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      .cta-button {
+        background: #ffffff;
+        color: var(--primary-dark);
+      }
+
+      .cta-button:hover {
+        background: #eff6ff;
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+        gap: 55px;
+        padding: 65px 0 45px;
+      }
+
+      .footer-brand p {
+        max-width: 380px;
+        margin: 17px 0 0;
+        color: #94a3b8;
+        line-height: 1.75;
+      }
+
+      .footer-title {
+        margin: 0 0 18px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 24px 0;
+        border-top: 1px solid #334155;
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-bottom-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-bottom-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1000px) {
+        .tools-grid,
+        .benefits-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .hero {
+          padding: 78px 0 70px;
+        }
+
+        .section {
+          padding: 72px 0;
+        }
+
+        .footer-bottom {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 41px;
+          letter-spacing: -1.4px;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero-statistics {
+          gap: 20px;
+        }
+
+        .tools-grid,
+        .benefits-grid,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-card {
+          min-height: auto;
+          padding: 25px;
+        }
+
+        .cta-box {
+          padding: 52px 23px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot"></span>
+              Free tools for DevOps professionals
+            </div>
+
+            <h1>
+              Practical <span>DevOps Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Validate configuration files, generate Docker resources, encode
+              data, inspect tokens and simplify common development and
+              operations tasks.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#devops-tools">
+                Explore DevOps Tools
+                <span>→</span>
+              </a>
+
+              <a class="button button-secondary" href="/">
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{tools.length}</strong>
+                <span>Free tools</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>100%</strong>
+                <span>Browser based</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>0</strong>
+                <span>Registration required</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="devops-tools">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Available Utilities</span>
+
+            <h2>DevOps tools for everyday engineering work</h2>
+
+            <p>
+              Choose a tool to validate configuration, create container
+              resources, transform data or debug application values.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              tools.map((tool) => (
+                <a class="tool-card" href={tool.link}>
+                  <div class="tool-header">
+                    <div class="tool-icon">{tool.icon}</div>
+                    <span class="tool-category">{tool.category}</span>
+                  </div>
+
+                  <h3>{tool.name}</h3>
+
+                  <p>{tool.description}</p>
+
+                  <span class="open-tool">
+                    Open tool
+                    <span>→</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+
+            <h2>Simple tools designed for engineers</h2>
+
+            <p>
+              Complete common DevOps tasks quickly without installing
+              additional applications or creating an account.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div class="benefit-icon">{benefit.icon}</div>
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start simplifying your DevOps tasks</h2>
+
+            <p>
+              Validate YAML and JSON, generate Docker resources, test regular
+              expressions and inspect encoded data using free online tools.
+            </p>
+
+            <a
+              class="button cta-button"
+              href="/devops/yaml-validator"
+            >
+              Open YAML Validator
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+    <script>
+      const menuButton =
+        document.querySelector<HTMLButtonElement>(".menu-button");
+
+      const navigation =
+        document.querySelector<HTMLElement>(".nav-links");
+
+      const setMenuState = (isOpen: boolean) => {
+        navigation?.classList.toggle("open", isOpen);
+        menuButton?.classList.toggle("open", isOpen);
+        menuButton?.setAttribute("aria-expanded", String(isOpen));
+        menuButton?.setAttribute(
+          "aria-label",
+          isOpen ? "Close navigation menu" : "Open navigation menu",
+        );
+        document.documentElement.classList.toggle("menu-open", isOpen);
+      };
+
+      menuButton?.addEventListener("click", () => {
+        const isOpen = !navigation?.classList.contains("open");
+        setMenuState(isOpen);
+      });
+
+      navigation?.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => setMenuState(false));
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+
+        if (!(target instanceof Node)) {
+          return;
+        }
+
+        if (
+          navigation?.classList.contains("open") &&
+          !navigation.contains(target) &&
+          !menuButton?.contains(target)
+        ) {
+          setMenuState(false);
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setMenuState(false);
+          menuButton?.focus();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 1220) {
+          setMenuState(false);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1520 @@
+---
+import Header from "../components/Header.astro";
+
+const categories = [
+  {
+    icon: "🐧",
+    title: "Linux Tools",
+    description:
+      "Permission calculators, cron generators, systemd tools and useful Linux administration utilities.",
+    link: "/linux",
+    button: "Browse Linux Tools",
+  },
+  {
+    icon: "🎯",
+    title: "Linux Interview Q&A",
+    description:
+      "Production-focused Linux scenario questions with practical troubleshooting answers and verification steps.",
+    link: "/interview-qa",
+    button: "Practice Linux Scenarios",
+  },
+  {
+    icon: "⚙️",
+    title: "DevOps Tools",
+    description:
+      "Utilities for Docker, YAML, JSON, CI/CD pipelines and DevOps automation.",
+    link: "/devops",
+    button: "Browse DevOps Tools",
+  },
+  {
+    icon: "☸️",
+    title: "Kubernetes Tools",
+    description:
+      "Generate Kubernetes YAML files, commands and configuration templates.",
+    link: "/kubernetes",
+    button: "Browse Kubernetes Tools",
+  },
+  {
+    icon: "🌐",
+    title: "Network Tools",
+    description:
+      "Subnet calculators, IP address tools, DNS utilities and network troubleshooting tools.",
+    link: "/network",
+    button: "Browse Network Tools",
+  },
+  {
+    icon: "☁️",
+    title: "Cloud Tools",
+    description:
+      "Practical utilities for AWS, Microsoft Azure, Google Cloud, Terraform and cloud engineers.",
+    link: "/cloud",
+    button: "Browse Cloud Tools",
+  },
+  {
+    icon: "🛡️",
+    title: "Security Tools",
+    description:
+      "SSL, hashing, JWT, certificate, password and cybersecurity utilities for secure operations.",
+    link: "/security",
+    button: "Browse Security Tools",
+  },
+  {
+    icon: "🤖",
+    title: "AI Tools",
+    description:
+      "Prompt generators, command explainers and practical AI utilities for technical professionals.",
+    link: "/ai",
+    button: "Browse AI Tools",
+  },
+  {
+    icon: "🪟",
+    title: "Windows Tools",
+    description:
+      "PowerShell, Active Directory, registry and Windows system administration utilities.",
+    link: "/windows",
+    button: "Browse Windows Tools",
+  },
+];
+
+const featuredTools = [
+  {
+    icon: "🔐",
+    title: "Linux chmod Calculator",
+    description:
+      "Convert Linux read, write and execute permissions into numeric chmod values.",
+    link: "/linux/chmod-calculator",
+    category: "Linux",
+  },
+  {
+    icon: "⏰",
+    title: "Cron Expression Generator",
+    description:
+      "Create Linux cron schedules using a simple and easy visual generator.",
+    link: "/linux/cron-generator",
+    category: "Linux",
+  },
+  {
+    icon: "✅",
+    title: "YAML Validator",
+    description:
+      "Validate, format and troubleshoot YAML configuration files directly in your browser.",
+    link: "/devops/yaml-validator",
+    category: "DevOps",
+  },
+  {
+    icon: "🌍",
+    title: "Subnet Calculator",
+    description:
+      "Calculate network address, broadcast address, subnet mask and available hosts.",
+    link: "/network/subnet-calculator",
+    category: "Network",
+  },
+  {
+    icon: "🚀",
+    title: "Kubernetes Deployment Generator",
+    description:
+      "Generate Kubernetes Deployment YAML with replicas, images and container ports.",
+    link: "/kubernetes/deployment-generator",
+    category: "Kubernetes",
+  },
+  {
+    icon: "☁️",
+    title: "Cloud-init Generator",
+    description:
+      "Generate cloud-init YAML configurations for Linux cloud virtual machines.",
+    link: "/cloud/cloud-init-generator",
+    category: "Cloud",
+  },
+];
+
+const recentlyUpdatedTools = [
+  {
+    icon: "☁️",
+    title: "Cloud-init Generator",
+    description:
+      "Generate cloud-init YAML configurations for Linux virtual machines, users, packages, SSH keys and startup commands.",
+    link: "/cloud/cloud-init-generator",
+    category: "Cloud",
+    status: "Updated",
+    updatedDate: "July 31, 2026",
+  },
+  {
+    icon: "👤",
+    title: "Linux Useradd Generator",
+    description:
+      "Generate Linux useradd commands with shell, groups, home directory and account expiry options.",
+    link: "/linux/useradd-generator",
+    category: "Linux",
+    status: "New",
+    updatedDate: "July 30, 2026",
+  },
+  {
+    icon: "🐳",
+    title: "Docker Compose Validator",
+    description:
+      "Validate Docker Compose YAML and identify common syntax and configuration issues.",
+    link: "/devops/docker-compose-validator",
+    category: "DevOps",
+    status: "New",
+    updatedDate: "July 30, 2026",
+  },
+  {
+    icon: "🔑",
+    title: "JWT Decoder",
+    description:
+      "Decode JWT headers and payloads locally in your browser without uploading token data.",
+    link: "/devops/jwt-decoder",
+    category: "DevOps",
+    status: "Updated",
+    updatedDate: "July 29, 2026",
+  },
+];
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast and Simple",
+    description:
+      "Use every tool directly from your browser without complicated configuration.",
+  },
+  {
+    icon: "🔒",
+    title: "Privacy Friendly",
+    description:
+      "Your input is processed locally in your browser whenever the selected tool supports client-side processing.",
+  },
+  {
+    icon: "💯",
+    title: "Free to Use",
+    description:
+      "Access practical Linux, DevOps, Kubernetes, network and cloud tools without registration.",
+  },
+  {
+    icon: "📱",
+    title: "Mobile Friendly",
+    description:
+      "Use Gokuruvi Tools from your desktop, tablet or mobile device.",
+  },
+  {
+    icon: "🧰",
+    title: "Built for Engineers",
+    description:
+      "Practical utilities created for system administrators, network engineers and DevOps professionals.",
+  },
+  {
+    icon: "🚀",
+    title: "More Tools Coming",
+    description:
+      "New administration, automation, networking and cloud utilities will be added regularly.",
+  },
+];
+
+const siteUrl = "https://www.gokuruvi.com/";
+const pageTitle =
+  "Linux, DevOps, Cloud, Security and IT Tools | Gokuruvi";
+const pageDescription =
+  "Free Linux, DevOps, Kubernetes, network, cloud, security, AI and Windows tools plus scenario-based Linux interview questions for IT professionals.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="Linux tools, Linux interview questions, DevOps tools, Kubernetes tools, network tools, cloud tools, security tools, AI tools, Windows tools"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+
+    <meta name="robots" content="index, follow" />
+
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link
+      rel="apple-touch-icon"
+      href="/apple-touch-icon.png"
+    />
+
+    <meta
+      property="og:title"
+      content="Linux, DevOps, Cloud, Security and IT Tools"
+    />
+
+    <meta
+      property="og:description"
+      content={pageDescription}
+    />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:url" content={siteUrl} />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta
+      property="og:image:alt"
+      content="Gokuruvi Tools for Linux, DevOps, Kubernetes, network, cloud, security, AI and Windows professionals"
+    />
+
+    <meta
+      property="og:site_name"
+      content="Gokuruvi Tools"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:title" content={pageTitle} />
+
+    <meta
+      name="twitter:description"
+      content={pageDescription}
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-soft: #eff6ff;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --dark-light: #1e293b;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --maximum-width: 1180px;
+
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      body,
+      button,
+      input,
+      textarea,
+      select {
+        font-family:
+          Inter, Arial, Helvetica, sans-serif;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.2);
+        transform: translateY(-160%);
+        transition: transform 0.2s ease;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 4px;
+        border-radius: 6px;
+      }
+
+      /* Hero */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 105px 0 95px;
+        background:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(56, 189, 248, 0.18),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 90% 30%,
+            rgba(37, 99, 235, 0.2),
+            transparent 35%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        pointer-events: none;
+        background-image:
+          linear-gradient(
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.04) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent
+        );
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 980px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 8px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+      }
+
+      .hero h1 {
+        max-width: 980px;
+        margin: 0 auto 24px;
+        color: var(--dark);
+        font-size: clamp(42px, 7vw, 72px);
+        line-height: 1.08;
+        letter-spacing: -2.5px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-description {
+        max-width: 820px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: clamp(18px, 2.5vw, 21px);
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 36px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 0 23px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+      }
+
+      .button-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.32);
+      }
+
+      .button-secondary {
+        border-color: #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      .button-secondary:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+      }
+
+      .hero-features {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 25px;
+        margin-top: 40px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .hero-feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .check {
+        color: var(--success);
+        font-size: 17px;
+      }
+
+      /* Sections */
+
+      .section {
+        padding: 90px 0;
+      }
+
+      .section-white {
+        background: #ffffff;
+      }
+
+      .section-heading {
+        max-width: 780px;
+        margin: 0 auto 52px;
+        text-align: center;
+      }
+
+      .section-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 16px;
+        color: var(--dark);
+        font-size: clamp(31px, 4vw, 43px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      /* Categories */
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .category-card {
+        position: relative;
+        display: flex;
+        min-height: 320px;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .category-card::after {
+        position: absolute;
+        right: -40px;
+        bottom: -55px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.07);
+        content: "";
+        transition: transform 0.3s ease;
+      }
+
+      .category-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 22px 45px rgba(37, 99, 235, 0.13);
+        transform: translateY(-7px);
+      }
+
+      .category-card:hover::after {
+        transform: scale(1.25);
+      }
+
+      .category-icon {
+        display: grid;
+        width: 57px;
+        height: 57px;
+        place-items: center;
+        margin-bottom: 23px;
+        border-radius: 15px;
+        background: var(--primary-soft);
+        font-size: 29px;
+      }
+
+      .category-card h3 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: 22px;
+      }
+
+      .category-card p {
+        flex: 1;
+        margin: 0 0 22px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .category-link {
+        position: relative;
+        z-index: 1;
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      /* Featured tools */
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .tool-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: var(--card);
+        text-decoration: none;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.045);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .tool-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 18px 38px rgba(37, 99, 235, 0.11);
+        transform: translateY(-5px);
+      }
+
+      .tool-icon {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        place-items: center;
+        border-radius: 13px;
+        background: linear-gradient(
+          135deg,
+          #eff6ff,
+          #e0f2fe
+        );
+        font-size: 25px;
+      }
+
+      .tool-content {
+        flex: 1;
+      }
+
+      .tool-category {
+        display: inline-flex;
+        margin-bottom: 7px;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+      }
+
+      .tool-content h3 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .tool-content p {
+        margin: 0 0 15px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .open-tool {
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      /* Recently updated tools */
+
+      .recently-updated {
+        background: #f8fafc;
+      }
+
+      .updated-tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .updated-tool-card {
+        display: flex;
+        min-height: 285px;
+        padding: 28px;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: #ffffff;
+        color: inherit;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .updated-tool-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 20px 42px rgba(37, 99, 235, 0.12);
+        transform: translateY(-5px);
+      }
+
+      .updated-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 16px;
+      }
+
+      .update-badge {
+        display: inline-flex;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .update-badge.new {
+        border: 1px solid #86efac;
+        background: #f0fdf4;
+        color: #15803d;
+      }
+
+      .update-badge.updated {
+        border: 1px solid #bfdbfe;
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .updated-tool-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 21px;
+      }
+
+      .updated-tool-card p {
+        flex: 1;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .updated-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 22px;
+        padding-top: 17px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .updated-card-footer strong {
+        color: var(--primary);
+        font-size: 14px;
+      }
+
+      /* Benefits */
+
+      .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .benefit-card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .benefit-icon {
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        margin-bottom: 18px;
+        border-radius: 13px;
+        background: var(--primary-soft);
+        font-size: 23px;
+      }
+
+      .benefit-card h3 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .benefit-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* CTA */
+
+      .cta {
+        padding: 0 0 90px;
+      }
+
+      .cta-box {
+        position: relative;
+        overflow: hidden;
+        padding: 68px 35px;
+        border-radius: 24px;
+        background:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(56, 189, 248, 0.25),
+            transparent 30%
+          ),
+          linear-gradient(
+            135deg,
+            #0f172a,
+            #1e3a8a
+          );
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
+      }
+
+      .cta-box h2 {
+        max-width: 720px;
+        margin: 0 auto 15px;
+        font-size: clamp(30px, 4vw, 44px);
+        line-height: 1.2;
+      }
+
+      .cta-box p {
+        max-width: 700px;
+        margin: 0 auto 28px;
+        color: #cbd5e1;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .cta-button {
+        background: #ffffff;
+        color: var(--primary-dark);
+      }
+
+      .cta-button:hover {
+        background: #eff6ff;
+      }
+
+      /* Footer */
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+        gap: 55px;
+        padding: 65px 0 45px;
+      }
+
+      .footer-brand p {
+        max-width: 380px;
+        margin: 17px 0 0;
+        color: #94a3b8;
+        line-height: 1.75;
+      }
+
+      .footer-title {
+        margin: 0 0 18px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 24px 0;
+        border-top: 1px solid #334155;
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-bottom-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-bottom-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1120px) {
+        .nav-links {
+          gap: 18px;
+        }
+
+        .category-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .benefits-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .footer-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 820px) {
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+
+        .nav-button {
+          padding: 7px 13px;
+        }
+
+        .hero {
+          padding: 75px 0 70px;
+        }
+
+        .hero h1 {
+          letter-spacing: -1.5px;
+        }
+
+        .section {
+          padding: 70px 0;
+        }
+
+        .tools-grid,
+        .updated-tools-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-bottom {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 40px;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero-features {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .category-grid,
+        .benefits-grid,
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .category-card {
+          min-height: auto;
+          padding: 25px;
+        }
+
+        .tool-card {
+          padding: 23px;
+        }
+
+        .cta-box {
+          padding: 50px 23px;
+        }
+
+        .updated-card-footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Free online tools for IT professionals
+            </div>
+
+            <h1>
+              Linux, DevOps, Cloud,
+              <span>Security and IT Tools</span>
+            </h1>
+
+            <p class="hero-description">
+              Free, fast and practical utilities for Linux administrators,
+              DevOps engineers, Kubernetes users, network engineers, cloud
+              professionals, security engineers, cloud engineers and Windows administrators.
+            </p>
+
+            <div class="hero-actions">
+              <a
+                class="button button-primary"
+                href="#featured-tools"
+              >
+                Explore Free Tools
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a
+                class="button button-secondary"
+                href="#tool-categories"
+              >
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-features">
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                No registration
+              </div>
+
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Free to use
+              </div>
+
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Privacy friendly
+              </div>
+
+              <div class="hero-feature">
+                <span class="check" aria-hidden="true">✓</span>
+                Mobile responsive
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section recently-updated" id="recently-updated">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Latest Improvements</span>
+
+            <h2>Recently Updated Tools</h2>
+
+            <p>
+              Discover newly added tools and the latest improvements available on
+              Gokuruvi Tools.
+            </p>
+          </div>
+
+          <div class="updated-tools-grid">
+            {
+              recentlyUpdatedTools.map((tool) => (
+                <a
+                  class="updated-tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.title}`}
+                >
+                  <div class="updated-card-header">
+                    <div class="tool-icon" aria-hidden="true">
+                      {tool.icon}
+                    </div>
+
+                    <span
+                      class:list={[
+                        "update-badge",
+                        {
+                          new: tool.status === "New",
+                          updated: tool.status === "Updated",
+                        },
+                      ]}
+                    >
+                      {tool.status}
+                    </span>
+                  </div>
+
+                  <span class="tool-category">{tool.category}</span>
+
+                  <h3>{tool.title}</h3>
+
+                  <p>{tool.description}</p>
+
+                  <div class="updated-card-footer">
+                    <span>Updated {tool.updatedDate}</span>
+                    <strong>Open tool →</strong>
+                  </div>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section section-white"
+        id="tool-categories"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">
+              Tool Categories
+            </span>
+
+            <h2>Everything you need in one place</h2>
+
+            <p>
+              Browse practical tools created for system administration,
+              networking, automation, containers, Kubernetes, cloud,
+              security, AI and Windows operations.
+            </p>
+          </div>
+
+          <div class="category-grid">
+            {
+              categories.map((category) => (
+                <a
+                  class="category-card"
+                  href={category.link}
+                  aria-label={category.button}
+                >
+                  <div
+                    class="category-icon"
+                    aria-hidden="true"
+                  >
+                    {category.icon}
+                  </div>
+
+                  <h3>{category.title}</h3>
+
+                  <p>{category.description}</p>
+
+                  <span class="category-link">
+                    {category.button} →
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section"
+        id="featured-tools"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">
+              Featured Tools
+            </span>
+
+            <h2>Popular administration and engineering tools</h2>
+
+            <p>
+              Save time with practical generators, validators and calculators
+              for Linux, DevOps, Kubernetes, network, cloud, security,
+              AI and Windows tasks.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              featuredTools.map((tool) => (
+                <a
+                  class="tool-card"
+                  href={tool.link}
+                  aria-label={`Open ${tool.title}`}
+                >
+                  <div
+                    class="tool-icon"
+                    aria-hidden="true"
+                  >
+                    {tool.icon}
+                  </div>
+
+                  <div class="tool-content">
+                    <span class="tool-category">
+                      {tool.category}
+                    </span>
+
+                    <h3>{tool.title}</h3>
+
+                    <p>{tool.description}</p>
+
+                    <span class="open-tool">
+                      Open tool →
+                    </span>
+                  </div>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">
+              Why Gokuruvi
+            </span>
+
+            <h2>Designed for administrators and engineers</h2>
+
+            <p>
+              Simple, practical and reliable tools that help you complete
+              everyday technical tasks faster.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            {
+              benefits.map((benefit) => (
+                <article class="benefit-card">
+                  <div
+                    class="benefit-icon"
+                    aria-hidden="true"
+                  >
+                    {benefit.icon}
+                  </div>
+
+                  <h3>{benefit.title}</h3>
+
+                  <p>{benefit.description}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>
+              Start using free IT administration tools
+            </h2>
+
+            <p>
+              Explore practical utilities for Linux permissions, DevOps
+              configuration, Kubernetes manifests, network calculations, cloud,
+              security, cloud, AI and Windows administration.
+            </p>
+
+            <a
+              class="button cta-button"
+              href="#tool-categories"
+            >
+              Explore All Tool Categories
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="logo" href="/">
+              <span class="logo-icon" aria-hidden="true">G</span>
+              <span>Gokuruvi Tools</span>
+            </a>
+
+            <p>
+              Free Linux, DevOps, Kubernetes, network, cloud, security, AI and
+              Windows utilities for IT professionals.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="footer-title">
+              Tool Categories
+            </h3>
+
+            <div class="footer-links">
+              <a href="/linux">Linux Tools</a>
+              <a href="/interview-qa">Linux Interview Q&A</a>
+              <a href="/devops">DevOps Tools</a>
+              <a href="/kubernetes">Kubernetes Tools</a>
+              <a href="/network">Network Tools</a>
+              <a href="/cloud">Cloud Tools</a>
+              <a href="/security">Security Tools</a>
+              <a href="/ai">AI Tools</a>
+              <a href="/windows">Windows Tools</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">
+              Popular Tools
+            </h3>
+
+            <div class="footer-links">
+              <a href="/linux/chmod-calculator">
+                chmod Calculator
+              </a>
+
+              <a href="/linux/cron-generator">
+                Cron Generator
+              </a>
+
+              <a href="/devops/yaml-validator">
+                YAML Validator
+              </a>
+
+              <a href="/network/subnet-calculator">
+                Subnet Calculator
+              </a>
+
+              <a href="/cloud/cloud-init-generator">
+                Cloud-init Generator
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Company</h3>
+
+            <div class="footer-links">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy-policy">Privacy Policy</a>
+              <a href="/terms">Terms</a>
+              <a href="/disclaimer">Disclaimer</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
+          </span>
+
+          <div class="footer-bottom-links">
+            <a href="/privacy-policy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/disclaimer">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

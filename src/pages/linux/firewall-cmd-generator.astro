@@ -1,0 +1,2252 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Firewall-cmd Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate common firewalld firewall-cmd commands for ports, services, sources, rich rules, masquerading and permanent configuration.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/firewall-cmd-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="firewall-cmd generator, firewalld command generator, open port firewalld, rich rule generator, Linux firewall command"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.4);
+        outline-offset: 3px;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 65px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .action-card {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .action-card input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .action-content {
+        display: block;
+        min-height: 115px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #ffffff;
+        text-align: center;
+      }
+
+      .action-card input:checked + .action-content {
+        border-color: var(--primary);
+        background: #eff6ff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+      }
+
+      .action-icon {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 25px;
+      }
+
+      .action-title {
+        display: block;
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .action-description {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input,
+      .field-select {
+        min-height: 48px;
+        padding: 0 13px;
+      }
+
+      .field-textarea {
+        min-height: 92px;
+        padding: 12px 13px;
+        resize: vertical;
+      }
+
+      .field-input:focus,
+      .field-select:focus,
+      .field-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .main-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .primary-button {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-block + .result-block {
+        margin-top: 20px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 82px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .copy-all-button {
+        width: 100%;
+        min-height: 45px;
+        margin-top: 16px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .action-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 58px 0 52px;
+        }
+
+        .hero h1 {
+          font-size: 39px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid,
+        .action-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .main-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Firewall-cmd Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">🛡️</div>
+
+            <h1>
+              Firewall-cmd <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate common Linux <code>firewall-cmd</code> commands for
+              opening ports, enabling services, allowing source networks,
+              creating rich rules and managing firewalld zones.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Configure your firewall rule</h2>
+
+                <p>
+                  Select an action, enter the required values and copy the
+                  generated firewalld commands.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Select action
+                </h3>
+
+                <div class="action-grid">
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="port"
+                      checked
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔌</span>
+                      <span class="action-title">Port</span>
+                      <span class="action-description">
+                        Add or remove a TCP/UDP port.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="service"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">⚙️</span>
+                      <span class="action-title">Service</span>
+                      <span class="action-description">
+                        Enable a predefined firewalld service.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="source"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🌐</span>
+                      <span class="action-title">Source</span>
+                      <span class="action-description">
+                        Add or remove an IP or subnet.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="rich-rule"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">📜</span>
+                      <span class="action-title">Rich rule</span>
+                      <span class="action-description">
+                        Allow or reject traffic with conditions.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="masquerade"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔁</span>
+                      <span class="action-title">Masquerade</span>
+                      <span class="action-description">
+                        Enable or disable network address translation.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="firewall-action"
+                      value="query"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔎</span>
+                      <span class="action-title">Query zone</span>
+                      <span class="action-description">
+                        Display active firewall configuration.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  General settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="zone">
+                      Firewall zone
+                    </label>
+
+                    <select class="field-select" id="zone">
+                      <option value="public" selected>public</option>
+                      <option value="internal">internal</option>
+                      <option value="external">external</option>
+                      <option value="trusted">trusted</option>
+                      <option value="work">work</option>
+                      <option value="home">home</option>
+                      <option value="dmz">dmz</option>
+                      <option value="block">block</option>
+                      <option value="drop">drop</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="operation">
+                      Operation
+                    </label>
+
+                    <select class="field-select" id="operation">
+                      <option value="add" selected>Add or enable</option>
+                      <option value="remove">Remove or disable</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="port-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Port settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="port">
+                      Port or port range
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="port"
+                      type="text"
+                      value="8080"
+                      placeholder="8080 or 8000-8100"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="protocol">
+                      Protocol
+                    </label>
+
+                    <select class="field-select" id="protocol">
+                      <option value="tcp" selected>TCP</option>
+                      <option value="udp">UDP</option>
+                      <option value="sctp">SCTP</option>
+                      <option value="dccp">DCCP</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="service-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Service settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="service">
+                      Firewalld service
+                    </label>
+
+                    <select class="field-select" id="service">
+                      <option value="ssh" selected>ssh</option>
+                      <option value="http">http</option>
+                      <option value="https">https</option>
+                      <option value="dns">dns</option>
+                      <option value="dhcp">dhcp</option>
+                      <option value="dhcpv6-client">dhcpv6-client</option>
+                      <option value="ftp">ftp</option>
+                      <option value="smtp">smtp</option>
+                      <option value="samba">samba</option>
+                      <option value="nfs">nfs</option>
+                      <option value="mountd">mountd</option>
+                      <option value="rpc-bind">rpc-bind</option>
+                      <option value="cockpit">cockpit</option>
+                    </select>
+
+                    <span class="field-help">
+                      Available service names depend on the installed firewalld
+                      service definitions.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="source-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Source settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="source">
+                      Source IP or subnet
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="source"
+                      type="text"
+                      value="192.168.1.0/24"
+                      placeholder="192.168.1.0/24"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="rich-rule-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Rich rule settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="rich-family">
+                      Address family
+                    </label>
+
+                    <select class="field-select" id="rich-family">
+                      <option value="ipv4" selected>IPv4</option>
+                      <option value="ipv6">IPv6</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="rich-action">
+                      Rule action
+                    </label>
+
+                    <select class="field-select" id="rich-action">
+                      <option value="accept" selected>accept</option>
+                      <option value="reject">reject</option>
+                      <option value="drop">drop</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="rich-source">
+                      Source IP or subnet
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="rich-source"
+                      type="text"
+                      value="192.168.1.10"
+                      placeholder="192.168.1.10 or 192.168.1.0/24"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="rich-type">
+                      Match type
+                    </label>
+
+                    <select class="field-select" id="rich-type">
+                      <option value="port" selected>Port</option>
+                      <option value="service">Service</option>
+                      <option value="source-only">Source only</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="rich-port-field">
+                    <label class="field-label" for="rich-port">
+                      Destination port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="rich-port"
+                      type="text"
+                      value="22"
+                      placeholder="22"
+                    />
+                  </div>
+
+                  <div class="form-field" id="rich-protocol-field">
+                    <label class="field-label" for="rich-protocol">
+                      Protocol
+                    </label>
+
+                    <select class="field-select" id="rich-protocol">
+                      <option value="tcp" selected>TCP</option>
+                      <option value="udp">UDP</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field full-width" id="rich-service-field" hidden>
+                    <label class="field-label" for="rich-service">
+                      Service
+                    </label>
+
+                    <select class="field-select" id="rich-service">
+                      <option value="ssh" selected>ssh</option>
+                      <option value="http">http</option>
+                      <option value="https">https</option>
+                      <option value="dns">dns</option>
+                      <option value="ftp">ftp</option>
+                      <option value="smtp">smtp</option>
+                      <option value="samba">samba</option>
+                      <option value="nfs">nfs</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="masquerade-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Masquerade settings
+                </h3>
+
+                <p class="field-help">
+                  Masquerading is commonly used when the Linux server acts as a
+                  router or NAT gateway.
+                </p>
+              </div>
+
+              <div class="form-section" id="query-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Query settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="query-type">
+                      Information to display
+                    </label>
+
+                    <select class="field-select" id="query-type">
+                      <option value="list-all" selected>
+                        List zone configuration
+                      </option>
+                      <option value="list-ports">List ports</option>
+                      <option value="list-services">List services</option>
+                      <option value="list-rich-rules">List rich rules</option>
+                      <option value="get-active-zones">Get active zones</option>
+                      <option value="get-default-zone">Get default zone</option>
+                      <option value="state">Check firewalld state</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="command-options-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Command options
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="permanent" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Permanent configuration
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>--permanent</code> and generate a reload
+                        command.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="runtime-too" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Apply immediately
+                      </span>
+
+                      <span class="checkbox-description">
+                        Generate an additional runtime command before reload.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="timeout-enabled" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Temporary rule timeout
+                      </span>
+
+                      <span class="checkbox-description">
+                        Automatically remove a runtime rule after a period.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="use-sudo" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Include sudo
+                      </span>
+
+                      <span class="checkbox-description">
+                        Prefix firewall commands with <code>sudo</code>.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                <div
+                  class="field-grid"
+                  id="timeout-section"
+                  style="margin-top: 18px;"
+                  hidden
+                >
+                  <div class="form-field">
+                    <label class="field-label" for="timeout">
+                      Timeout
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="timeout"
+                      type="text"
+                      value="30m"
+                      placeholder="30m, 1h or 3600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Day-to-day presets
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="ssh"
+                  >
+                    Allow SSH
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="web"
+                  >
+                    Allow HTTP/HTTPS
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="custom-port"
+                  >
+                    Open TCP 8080
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="source-ssh"
+                  >
+                    SSH from one IP
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="remove-port"
+                  >
+                    Close TCP 8080
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="list"
+                  >
+                    List public zone
+                  </button>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button
+                  class="main-button primary-button"
+                  id="generate"
+                  type="button"
+                >
+                  Generate Firewall Commands
+                </button>
+
+                <button
+                  class="main-button secondary-button"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Generated commands">
+              <div class="result-card">
+                <h2>Generated commands</h2>
+
+                <div class="result-block">
+                  <span class="result-label">Main command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="main-command">
+                      sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="main-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="runtime-block" hidden>
+                  <span class="result-label">Apply immediately</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="runtime-command"></span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="runtime-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="reload-block">
+                  <span class="result-label">Reload firewalld</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="reload-command">
+                      sudo firewall-cmd --reload
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="reload-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="verify-block">
+                  <span class="result-label">Verify configuration</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="verify-command">
+                      sudo firewall-cmd --zone=public --list-all
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="verify-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="copy-all-button"
+                  id="copy-all"
+                  type="button"
+                >
+                  Copy All Commands
+                </button>
+
+                <div class="warning-box" id="warning-box">
+                  Confirm that opening this port is approved and required before
+                  applying the firewall rule.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Rule summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Action type</span>
+                    <strong id="summary-action">Port</strong>
+                  </li>
+
+                  <li>
+                    <span>Operation</span>
+                    <strong id="summary-operation">Add</strong>
+                  </li>
+
+                  <li>
+                    <span>Zone</span>
+                    <strong id="summary-zone">public</strong>
+                  </li>
+
+                  <li>
+                    <span>Rule</span>
+                    <strong id="summary-rule">8080/tcp</strong>
+                  </li>
+
+                  <li>
+                    <span>Permanent</span>
+                    <strong id="summary-permanent">Enabled</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common firewalld commands</h2>
+
+            <p>
+              Use these commands for normal day-to-day Linux firewall
+              administration.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Open ports and services</h3>
+
+              <ul>
+                <li>
+                  <code>firewall-cmd --add-port=8080/tcp</code> opens a runtime
+                  port.
+                </li>
+
+                <li>
+                  <code>firewall-cmd --add-service=https</code> allows HTTPS.
+                </li>
+
+                <li>
+                  Add <code>--permanent</code> to save a rule permanently.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Check configuration</h3>
+
+              <ul>
+                <li>
+                  <code>firewall-cmd --state</code> checks the service state.
+                </li>
+
+                <li>
+                  <code>firewall-cmd --get-active-zones</code> shows active
+                  zones.
+                </li>
+
+                <li>
+                  <code>firewall-cmd --zone=public --list-all</code> displays
+                  the zone configuration.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Important safety notes</h3>
+
+              <ul>
+                <li>
+                  Keep an active SSH session when changing remote firewall
+                  rules.
+                </li>
+
+                <li>
+                  Add the required SSH rule before removing an existing access
+                  rule.
+                </li>
+
+                <li>
+                  Run <code>firewall-cmd --reload</code> after permanent
+                  changes.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fieldIds = [
+        "zone",
+        "operation",
+        "port",
+        "protocol",
+        "service",
+        "source",
+        "rich-family",
+        "rich-action",
+        "rich-source",
+        "rich-type",
+        "rich-port",
+        "rich-protocol",
+        "rich-service",
+        "query-type",
+        "timeout",
+      ];
+
+      const checkboxIds = [
+        "permanent",
+        "runtime-too",
+        "timeout-enabled",
+        "use-sudo",
+      ];
+
+      const sections = {
+        port: document.getElementById("port-section"),
+        service: document.getElementById("service-section"),
+        source: document.getElementById("source-section"),
+        "rich-rule": document.getElementById("rich-rule-section"),
+        masquerade: document.getElementById("masquerade-section"),
+        query: document.getElementById("query-section"),
+      };
+
+      const mainCommand = document.getElementById("main-command");
+      const runtimeCommand = document.getElementById("runtime-command");
+      const reloadCommand = document.getElementById("reload-command");
+      const verifyCommand = document.getElementById("verify-command");
+
+      const runtimeBlock = document.getElementById("runtime-block");
+      const reloadBlock = document.getElementById("reload-block");
+      const verifyBlock = document.getElementById("verify-block");
+
+      const timeoutSection = document.getElementById("timeout-section");
+      const commandOptionsSection =
+        document.getElementById("command-options-section");
+
+      const richTypeInput = document.getElementById("rich-type");
+      const richPortField = document.getElementById("rich-port-field");
+      const richProtocolField =
+        document.getElementById("rich-protocol-field");
+      const richServiceField =
+        document.getElementById("rich-service-field");
+
+      const warningBox = document.getElementById("warning-box");
+      const copyStatus = document.getElementById("copy-status");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function getFirewallAction() {
+        return (
+          document.querySelector(
+            'input[name="firewall-action"]:checked'
+          )?.value || "port"
+        );
+      }
+
+      function shellQuote(value) {
+        const text = String(value).trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function prefix() {
+        return isChecked("use-sudo")
+          ? "sudo firewall-cmd"
+          : "firewall-cmd";
+      }
+
+      function getActionLabel(action) {
+        const labels = {
+          port: "Port",
+          service: "Service",
+          source: "Source",
+          "rich-rule": "Rich rule",
+          masquerade: "Masquerade",
+          query: "Query zone",
+        };
+
+        return labels[action] || "Port";
+      }
+
+      function updateActionUI() {
+        const action = getFirewallAction();
+
+        Object.entries(sections).forEach(([name, section]) => {
+          section.hidden = name !== action;
+        });
+
+        commandOptionsSection.hidden = action === "query";
+
+        updateRichRuleFields();
+        generateCommands();
+      }
+
+      function updateRichRuleFields() {
+        const type = richTypeInput.value;
+
+        richPortField.hidden = type !== "port";
+        richProtocolField.hidden = type !== "port";
+        richServiceField.hidden = type !== "service";
+      }
+
+      function buildRichRule() {
+        const family = getValue("rich-family") || "ipv4";
+        const source = getValue("rich-source");
+        const type = getValue("rich-type");
+        const action = getValue("rich-action") || "accept";
+
+        const parts = [`rule family="${family}"`];
+
+        if (source) {
+          parts.push(`source address="${source}"`);
+        }
+
+        if (type === "port") {
+          const port = getValue("rich-port") || "22";
+          const protocol = getValue("rich-protocol") || "tcp";
+
+          parts.push(`port port="${port}" protocol="${protocol}"`);
+        }
+
+        if (type === "service") {
+          const service = getValue("rich-service") || "ssh";
+          parts.push(`service name="${service}"`);
+        }
+
+        parts.push(action);
+
+        return parts.join(" ");
+      }
+
+      function buildQueryCommand() {
+        const queryType = getValue("query-type");
+        const zone = getValue("zone") || "public";
+        const base = prefix();
+
+        const queryCommands = {
+          "list-all": `${base} --zone=${zone} --list-all`,
+          "list-ports": `${base} --zone=${zone} --list-ports`,
+          "list-services": `${base} --zone=${zone} --list-services`,
+          "list-rich-rules": `${base} --zone=${zone} --list-rich-rules`,
+          "get-active-zones": `${base} --get-active-zones`,
+          "get-default-zone": `${base} --get-default-zone`,
+          state: `${base} --state`,
+        };
+
+        return queryCommands[queryType] || queryCommands["list-all"];
+      }
+
+      function buildRuleCommand(permanentMode) {
+        const action = getFirewallAction();
+        const operation = getValue("operation") || "add";
+        const zone = getValue("zone") || "public";
+        const base = [prefix()];
+
+        if (permanentMode) {
+          base.push("--permanent");
+        }
+
+        base.push(`--zone=${zone}`);
+
+        const timeout =
+          isChecked("timeout-enabled") &&
+          !permanentMode &&
+          operation === "add"
+            ? getValue("timeout")
+            : "";
+
+        if (action === "port") {
+          const port = getValue("port") || "8080";
+          const protocol = getValue("protocol") || "tcp";
+
+          base.push(`--${operation}-port=${port}/${protocol}`);
+        }
+
+        if (action === "service") {
+          const service = getValue("service") || "ssh";
+          base.push(`--${operation}-service=${service}`);
+        }
+
+        if (action === "source") {
+          const source = getValue("source") || "192.168.1.0/24";
+          base.push(`--${operation}-source=${source}`);
+        }
+
+        if (action === "rich-rule") {
+          const rule = buildRichRule();
+          base.push(`--${operation}-rich-rule=${shellQuote(rule)}`);
+        }
+
+        if (action === "masquerade") {
+          base.push(
+            operation === "add"
+              ? "--add-masquerade"
+              : "--remove-masquerade"
+          );
+        }
+
+        if (timeout) {
+          base.push(`--timeout=${timeout}`);
+        }
+
+        return base.join(" ");
+      }
+
+      function getRuleSummary() {
+        const action = getFirewallAction();
+
+        if (action === "port") {
+          return `${getValue("port") || "8080"}/${
+            getValue("protocol") || "tcp"
+          }`;
+        }
+
+        if (action === "service") {
+          return getValue("service") || "ssh";
+        }
+
+        if (action === "source") {
+          return getValue("source") || "192.168.1.0/24";
+        }
+
+        if (action === "rich-rule") {
+          return buildRichRule();
+        }
+
+        if (action === "masquerade") {
+          return "IP masquerading";
+        }
+
+        return getValue("query-type").replaceAll("-", " ");
+      }
+
+      function generateCommands() {
+        const action = getFirewallAction();
+        const permanent = isChecked("permanent");
+        const runtimeToo = isChecked("runtime-too");
+        const zone = getValue("zone") || "public";
+        const operation = getValue("operation") || "add";
+
+        timeoutSection.hidden = !isChecked("timeout-enabled");
+
+        if (action === "query") {
+          mainCommand.textContent = buildQueryCommand();
+          runtimeBlock.hidden = true;
+          reloadBlock.hidden = true;
+          verifyBlock.hidden = true;
+        } else {
+          mainCommand.textContent = buildRuleCommand(permanent);
+
+          runtimeBlock.hidden = !(
+            permanent &&
+            runtimeToo
+          );
+
+          if (!runtimeBlock.hidden) {
+            runtimeCommand.textContent = buildRuleCommand(false);
+          }
+
+          reloadBlock.hidden = !permanent;
+
+          reloadCommand.textContent =
+            `${prefix()} --reload`;
+
+          verifyBlock.hidden = false;
+
+          verifyCommand.textContent =
+            `${prefix()} --zone=${zone} --list-all`;
+        }
+
+        document.getElementById(
+          "summary-action"
+        ).textContent = getActionLabel(action);
+
+        document.getElementById(
+          "summary-operation"
+        ).textContent =
+          action === "query"
+            ? "Display"
+            : operation === "add"
+              ? "Add"
+              : "Remove";
+
+        document.getElementById(
+          "summary-zone"
+        ).textContent =
+          action === "query" &&
+          ["get-active-zones", "get-default-zone", "state"].includes(
+            getValue("query-type")
+          )
+            ? "All zones"
+            : zone;
+
+        document.getElementById(
+          "summary-rule"
+        ).textContent = getRuleSummary();
+
+        document.getElementById(
+          "summary-permanent"
+        ).textContent =
+          action === "query"
+            ? "Not applicable"
+            : permanent
+              ? "Enabled"
+              : "Runtime only";
+
+        if (
+          action === "port" &&
+          operation === "remove" &&
+          ["22", "2222"].includes(getValue("port")) &&
+          getValue("protocol") === "tcp"
+        ) {
+          warningBox.textContent =
+            "Danger: removing the SSH port may disconnect your remote session. Confirm another access method before applying this rule.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          action === "service" &&
+          operation === "remove" &&
+          getValue("service") === "ssh"
+        ) {
+          warningBox.textContent =
+            "Danger: removing the SSH service may disconnect your remote session.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          action === "rich-rule" &&
+          getValue("rich-action") === "drop"
+        ) {
+          warningBox.textContent =
+            "Review the source address carefully. A drop rule can silently block required network access.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else if (action === "query") {
+          warningBox.textContent =
+            "This command only displays firewalld information and does not modify the firewall.";
+
+          warningBox.style.borderColor = "#bbf7d0";
+          warningBox.style.background = "#f0fdf4";
+          warningBox.style.color = "#166534";
+        } else if (permanent) {
+          warningBox.textContent =
+            "Permanent rules require firewall-cmd --reload before they become active, unless you also apply the runtime command.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else {
+          warningBox.textContent =
+            "This is a runtime-only rule and will be lost after firewalld restarts.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        }
+      }
+
+      function resetForm() {
+        document.querySelector(
+          'input[name="firewall-action"][value="port"]'
+        ).checked = true;
+
+        const values = {
+          zone: "public",
+          operation: "add",
+          port: "8080",
+          protocol: "tcp",
+          service: "ssh",
+          source: "192.168.1.0/24",
+          "rich-family": "ipv4",
+          "rich-action": "accept",
+          "rich-source": "192.168.1.10",
+          "rich-type": "port",
+          "rich-port": "22",
+          "rich-protocol": "tcp",
+          "rich-service": "ssh",
+          "query-type": "list-all",
+          timeout: "30m",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        document.getElementById("permanent").checked = true;
+        document.getElementById("runtime-too").checked = false;
+        document.getElementById("timeout-enabled").checked = false;
+        document.getElementById("use-sudo").checked = true;
+
+        updateActionUI();
+      }
+
+      function selectAction(action) {
+        const radio = document.querySelector(
+          `input[name="firewall-action"][value="${action}"]`
+        );
+
+        if (radio) {
+          radio.checked = true;
+        }
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "ssh") {
+          selectAction("service");
+          document.getElementById("service").value = "ssh";
+        }
+
+        if (preset === "web") {
+          selectAction("service");
+          document.getElementById("service").value = "https";
+          document.getElementById("runtime-too").checked = true;
+        }
+
+        if (preset === "custom-port") {
+          selectAction("port");
+          document.getElementById("port").value = "8080";
+          document.getElementById("protocol").value = "tcp";
+        }
+
+        if (preset === "source-ssh") {
+          selectAction("rich-rule");
+          document.getElementById("rich-family").value = "ipv4";
+          document.getElementById("rich-source").value = "192.168.1.10";
+          document.getElementById("rich-type").value = "service";
+          document.getElementById("rich-service").value = "ssh";
+          document.getElementById("rich-action").value = "accept";
+        }
+
+        if (preset === "remove-port") {
+          selectAction("port");
+          document.getElementById("operation").value = "remove";
+          document.getElementById("port").value = "8080";
+          document.getElementById("protocol").value = "tcp";
+        }
+
+        if (preset === "list") {
+          selectAction("query");
+          document.getElementById("query-type").value = "list-all";
+          document.getElementById("zone").value = "public";
+        }
+
+        updateActionUI();
+      }
+
+      function getAllCommands() {
+        const commands = [];
+
+        commands.push(mainCommand.textContent.trim());
+
+        if (!runtimeBlock.hidden) {
+          commands.push(runtimeCommand.textContent.trim());
+        }
+
+        if (!reloadBlock.hidden) {
+          commands.push(reloadCommand.textContent.trim());
+        }
+
+        if (!verifyBlock.hidden) {
+          commands.push(verifyCommand.textContent.trim());
+        }
+
+        return [...new Set(commands.filter(Boolean))].join("\n");
+      }
+
+      async function copyText(text, message) {
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copyStatus.textContent =
+            message || "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      document
+        .querySelectorAll('input[name="firewall-action"]')
+        .forEach((radio) => {
+          radio.addEventListener("change", updateActionUI);
+        });
+
+      fieldIds.forEach((id) => {
+        const element = document.getElementById(id);
+
+        element?.addEventListener("input", generateCommands);
+
+        element?.addEventListener("change", () => {
+          if (id === "rich-type") {
+            updateRichRuleFields();
+          }
+
+          generateCommands();
+        });
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener("change", generateCommands);
+      });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.dataset.copyTarget;
+
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(
+              target?.textContent?.trim() ?? "",
+              "Command copied successfully."
+            );
+          });
+        });
+
+      document
+        .getElementById("copy-all")
+        ?.addEventListener("click", () => {
+          copyText(
+            getAllCommands(),
+            "All firewall commands copied successfully."
+          );
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateCommands);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      updateActionUI();
+    </script>
+  </body>
+</html>

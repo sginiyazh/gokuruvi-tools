@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="RDP Troubleshooter" description="Generate a focused PowerShell checklist for Remote Desktop services, firewall, port and configuration." slug="rdp-troubleshooter" icon="🖱️">
+
+<h2 class="tool-title">RDP diagnostic checklist</h2><div class="form-grid"><div class="field"><label for="host">Remote host</label><input id="host" placeholder="server01" /></div><div class="field"><label for="port">RDP port</label><input id="port" type="number" value="3389" min="1" max="65535" /></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate diagnostics</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell checklist</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Enter a remote host or leave blank for local checks.</pre></div>
+<script>
+
+const h=document.querySelector<HTMLInputElement>('#host')!,p=document.querySelector<HTMLInputElement>('#port')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const host=h.value.trim().replace(/'/g,"''"),port=Math.min(65535,Math.max(1,Number(p.value)||3389));o.textContent=host?`Resolve-DnsName '${host}' -ErrorAction Continue\nTest-NetConnection -ComputerName '${host}' -Port ${port} -InformationLevel Detailed\nTest-Connection -ComputerName '${host}' -Count 2`:`Get-Service TermService | Format-List Name,Status,StartType\nGet-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue\nGet-NetFirewallRule -DisplayGroup 'Remote Desktop' | Select DisplayName,Enabled,Direction,Action\nGet-ItemProperty 'HKLM:\\System\\CurrentControlSet\\Control\\Terminal Server' -Name fDenyTSConnections`});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

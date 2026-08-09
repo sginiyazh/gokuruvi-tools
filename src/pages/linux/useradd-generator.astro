@@ -1,0 +1,2022 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Linux Useradd Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate commonly used Linux useradd commands with username, groups, home directory, shell, UID, expiry date and sudo access.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/useradd-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="Linux useradd generator, useradd command, create Linux user, add user to group, Linux sudo user"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 800;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 65px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .required {
+        color: var(--danger);
+      }
+
+      .field-input,
+      .field-select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input:focus,
+      .field-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-input.invalid {
+        border-color: var(--danger);
+        background: #fef2f2;
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .error-message {
+        display: block;
+        min-height: 18px;
+        margin-top: 5px;
+        color: var(--danger);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .action-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .action-primary {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .action-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .action-secondary {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .action-secondary:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-block + .result-block {
+        margin-top: 20px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 82px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        background: #334155;
+      }
+
+      .copy-all-button {
+        width: 100%;
+        min-height: 45px;
+        margin-top: 16px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-all-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      .footer-links a:hover {
+        color: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero {
+          padding: 58px 0 52px;
+        }
+
+        .hero h1 {
+          font-size: 39px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-row {
+          flex-direction: column;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/linux">Linux Tools</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Useradd Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true">👤</div>
+
+            <h1>
+              Useradd Command <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate commonly used Linux <code>useradd</code>,
+              <code>passwd</code> and group commands for day-to-day user
+              administration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Create a Linux user command</h2>
+
+                <p>
+                  Enter the account details and select only the options required
+                  for the new user.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Basic account details
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="username">
+                      Username <span class="required">*</span>
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="username"
+                      type="text"
+                      value="newuser"
+                      placeholder="newuser"
+                      autocomplete="off"
+                    />
+
+                    <span class="field-help">
+                      Use lowercase letters, numbers, hyphens and underscores.
+                    </span>
+
+                    <span
+                      class="error-message"
+                      id="username-error"
+                    ></span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="comment">
+                      Full name or comment
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="comment"
+                      type="text"
+                      placeholder="New Application User"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="shell">
+                      Login shell
+                    </label>
+
+                    <select class="field-select" id="shell">
+                      <option value="/bin/bash" selected>
+                        /bin/bash
+                      </option>
+
+                      <option value="/bin/sh">
+                        /bin/sh
+                      </option>
+
+                      <option value="/bin/zsh">
+                        /bin/zsh
+                      </option>
+
+                      <option value="/sbin/nologin">
+                        /sbin/nologin
+                      </option>
+
+                      <option value="/usr/sbin/nologin">
+                        /usr/sbin/nologin
+                      </option>
+
+                      <option value="/bin/false">
+                        /bin/false
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="uid">
+                      User ID
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="uid"
+                      type="number"
+                      min="1"
+                      placeholder="1005"
+                    />
+
+                    <span class="field-help">
+                      Leave empty to assign the next available UID.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Group settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="primary-group">
+                      Primary group
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="primary-group"
+                      type="text"
+                      placeholder="developers"
+                    />
+
+                    <span class="field-help">
+                      The group must already exist.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="additional-groups">
+                      Additional groups
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="additional-groups"
+                      type="text"
+                      placeholder="docker,developers"
+                    />
+
+                    <span class="field-help">
+                      Enter multiple groups separated by commas.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Home directory and expiry
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="home-directory">
+                      Custom home directory
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="home-directory"
+                      type="text"
+                      placeholder="/home/newuser"
+                    />
+
+                    <span class="field-help">
+                      Leave empty to use the system default.
+                    </span>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="expiry-date">
+                      Account expiry date
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="expiry-date"
+                      type="date"
+                    />
+
+                    <span class="field-help">
+                      Optional format: YYYY-MM-DD.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">4</span>
+                  Common options
+                </h3>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input id="create-home" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Create home directory
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-m</code> to create the user's home directory.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="system-user" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        System account
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add <code>-r</code> for a service or application account.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="set-password" type="checkbox" checked />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Generate password command
+                      </span>
+
+                      <span class="checkbox-description">
+                        Generate a separate interactive
+                        <code>passwd</code> command.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="sudo-access" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Grant sudo access
+                      </span>
+
+                      <span class="checkbox-description">
+                        Add the user to the appropriate administrative group.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="checkbox-item">
+                    <input id="force-password-change" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Change password at first login
+                      </span>
+
+                      <span class="checkbox-description">
+                        Generate <code>chage -d 0</code> for the new user.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                <div
+                  class="field-grid"
+                  id="sudo-group-section"
+                  style="margin-top: 18px;"
+                  hidden
+                >
+                  <div class="form-field">
+                    <label class="field-label" for="sudo-group">
+                      Administrative group
+                    </label>
+
+                    <select class="field-select" id="sudo-group">
+                      <option value="wheel" selected>
+                        wheel — RHEL, CentOS, Rocky, AlmaLinux
+                      </option>
+
+                      <option value="sudo">
+                        sudo — Ubuntu and Debian
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">5</span>
+                  Day-to-day presets
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="normal"
+                  >
+                    Normal user
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="rhel-admin"
+                  >
+                    RHEL admin
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="ubuntu-admin"
+                  >
+                    Ubuntu admin
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="service"
+                  >
+                    Service account
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="docker"
+                  >
+                    Docker user
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="temporary"
+                  >
+                    Temporary user
+                  </button>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button
+                  class="action-button action-primary"
+                  id="generate"
+                  type="button"
+                >
+                  Generate User Commands
+                </button>
+
+                <button
+                  class="action-button action-secondary"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column" aria-label="Generated commands">
+              <div class="result-card">
+                <h2>Generated commands</h2>
+
+                <div class="result-block">
+                  <span class="result-label">
+                    Create user
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="useradd-result">
+                      sudo useradd -m -s '/bin/bash' 'newuser'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="useradd-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="password-result-block">
+                  <span class="result-label">
+                    Set password
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="password-result">
+                      sudo passwd 'newuser'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="password-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="sudo-result-block" hidden>
+                  <span class="result-label">
+                    Grant sudo access
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="sudo-result">
+                      sudo usermod -aG 'wheel' 'newuser'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="sudo-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div class="result-block" id="chage-result-block" hidden>
+                  <span class="result-label">
+                    Force password change
+                  </span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="chage-result">
+                      sudo chage -d 0 'newuser'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="chage-result"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="copy-all-button"
+                  id="copy-all"
+                  type="button"
+                >
+                  Copy All Commands
+                </button>
+
+                <div class="warning-box" id="warning-box">
+                  Confirm that the selected groups already exist before running
+                  the command.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Account summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Username</span>
+                    <strong id="summary-username">newuser</strong>
+                  </li>
+
+                  <li>
+                    <span>Shell</span>
+                    <strong id="summary-shell">/bin/bash</strong>
+                  </li>
+
+                  <li>
+                    <span>Home directory</span>
+                    <strong id="summary-home">System default</strong>
+                  </li>
+
+                  <li>
+                    <span>Primary group</span>
+                    <strong id="summary-group">Default user group</strong>
+                  </li>
+
+                  <li>
+                    <span>Sudo access</span>
+                    <strong id="summary-sudo">Disabled</strong>
+                  </li>
+
+                  <li>
+                    <span>Account type</span>
+                    <strong id="summary-type">Regular user</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common Linux user management commands</h2>
+
+            <p>
+              Use these commands for common day-to-day Linux account
+              administration.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Create and configure a user</h3>
+
+              <ul>
+                <li>
+                  <code>useradd -m username</code> creates a user with a home
+                  directory.
+                </li>
+
+                <li>
+                  <code>passwd username</code> sets the user's password.
+                </li>
+
+                <li>
+                  <code>usermod -aG group username</code> adds the user to a
+                  group.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Check user information</h3>
+
+              <ul>
+                <li>
+                  <code>id username</code> displays UID and group membership.
+                </li>
+
+                <li>
+                  <code>getent passwd username</code> displays the account
+                  entry.
+                </li>
+
+                <li>
+                  <code>groups username</code> displays all user groups.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Account maintenance</h3>
+
+              <ul>
+                <li>
+                  <code>passwd -l username</code> locks the password.
+                </li>
+
+                <li>
+                  <code>passwd -u username</code> unlocks the password.
+                </li>
+
+                <li>
+                  <code>chage -l username</code> displays password ageing
+                  information.
+                </li>
+
+                <li>
+                  <code>userdel -r username</code> removes the user and home
+                  directory.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const fieldIds = [
+        "username",
+        "comment",
+        "shell",
+        "uid",
+        "primary-group",
+        "additional-groups",
+        "home-directory",
+        "expiry-date",
+        "sudo-group",
+      ];
+
+      const checkboxIds = [
+        "create-home",
+        "system-user",
+        "set-password",
+        "sudo-access",
+        "force-password-change",
+      ];
+
+      const usernameInput =
+        document.getElementById("username");
+
+      const usernameError =
+        document.getElementById("username-error");
+
+      const sudoAccessInput =
+        document.getElementById("sudo-access");
+
+      const sudoGroupSection =
+        document.getElementById("sudo-group-section");
+
+      const passwordResultBlock =
+        document.getElementById("password-result-block");
+
+      const sudoResultBlock =
+        document.getElementById("sudo-result-block");
+
+      const chageResultBlock =
+        document.getElementById("chage-result-block");
+
+      const useraddResult =
+        document.getElementById("useradd-result");
+
+      const passwordResult =
+        document.getElementById("password-result");
+
+      const sudoResult =
+        document.getElementById("sudo-result");
+
+      const chageResult =
+        document.getElementById("chage-result");
+
+      const warningBox =
+        document.getElementById("warning-box");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function shellQuote(value) {
+        const text = String(value).trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function validateUsername(username) {
+        if (!username) {
+          return {
+            valid: false,
+            message: "Username is required.",
+          };
+        }
+
+        if (username.length > 32) {
+          return {
+            valid: false,
+            message: "Username should not exceed 32 characters.",
+          };
+        }
+
+        if (!/^[a-z_][a-z0-9_-]*\$?$/.test(username)) {
+          return {
+            valid: false,
+            message:
+              "Use lowercase letters, numbers, underscores or hyphens.",
+          };
+        }
+
+        return {
+          valid: true,
+          message: "",
+        };
+      }
+
+      function normalizeGroups(value) {
+        return [
+          ...new Set(
+            value
+              .split(",")
+              .map((group) => group.trim())
+              .filter(Boolean)
+          ),
+        ].join(",");
+      }
+
+      function updateSudoSection() {
+        sudoGroupSection.hidden = !sudoAccessInput.checked;
+      }
+
+      function generateCommands() {
+        const username = getValue("username");
+        const usernameValidation =
+          validateUsername(username);
+
+        usernameInput.classList.toggle(
+          "invalid",
+          !usernameValidation.valid
+        );
+
+        usernameError.textContent =
+          usernameValidation.message;
+
+        const safeUsername =
+          usernameValidation.valid
+            ? username
+            : "username";
+
+        const command = ["sudo", "useradd"];
+
+        if (isChecked("system-user")) {
+          command.push("-r");
+        }
+
+        if (isChecked("create-home")) {
+          command.push("-m");
+        } else {
+          command.push("-M");
+        }
+
+        const comment = getValue("comment");
+
+        if (comment) {
+          command.push("-c", shellQuote(comment));
+        }
+
+        const shell = getValue("shell");
+
+        if (shell) {
+          command.push("-s", shellQuote(shell));
+        }
+
+        const uid = getValue("uid");
+
+        if (uid) {
+          command.push("-u", uid);
+        }
+
+        const primaryGroup =
+          getValue("primary-group");
+
+        if (primaryGroup) {
+          command.push("-g", shellQuote(primaryGroup));
+        }
+
+        const additionalGroups =
+          normalizeGroups(getValue("additional-groups"));
+
+        if (additionalGroups) {
+          command.push("-G", shellQuote(additionalGroups));
+        }
+
+        const homeDirectory =
+          getValue("home-directory");
+
+        if (homeDirectory) {
+          command.push("-d", shellQuote(homeDirectory));
+        }
+
+        const expiryDate =
+          getValue("expiry-date");
+
+        if (expiryDate) {
+          command.push("-e", shellQuote(expiryDate));
+        }
+
+        command.push(shellQuote(safeUsername));
+
+        useraddResult.textContent = command.join(" ");
+
+        passwordResult.textContent =
+          `sudo passwd ${shellQuote(safeUsername)}`;
+
+        const sudoGroup =
+          getValue("sudo-group") || "wheel";
+
+        sudoResult.textContent =
+          `sudo usermod -aG ${shellQuote(
+            sudoGroup
+          )} ${shellQuote(safeUsername)}`;
+
+        chageResult.textContent =
+          `sudo chage -d 0 ${shellQuote(safeUsername)}`;
+
+        passwordResultBlock.hidden =
+          !isChecked("set-password");
+
+        sudoResultBlock.hidden =
+          !isChecked("sudo-access");
+
+        chageResultBlock.hidden =
+          !isChecked("force-password-change");
+
+        updateSudoSection();
+
+        document.getElementById(
+          "summary-username"
+        ).textContent = safeUsername;
+
+        document.getElementById(
+          "summary-shell"
+        ).textContent = shell || "System default";
+
+        document.getElementById(
+          "summary-home"
+        ).textContent = homeDirectory
+          ? homeDirectory
+          : isChecked("create-home")
+            ? "System default"
+            : "Not created";
+
+        document.getElementById(
+          "summary-group"
+        ).textContent =
+          primaryGroup || "Default user group";
+
+        document.getElementById(
+          "summary-sudo"
+        ).textContent =
+          isChecked("sudo-access")
+            ? `Enabled via ${sudoGroup}`
+            : "Disabled";
+
+        document.getElementById(
+          "summary-type"
+        ).textContent =
+          isChecked("system-user")
+            ? "System account"
+            : "Regular user";
+
+        if (!usernameValidation.valid) {
+          warningBox.textContent =
+            "Enter a valid username before running the generated command.";
+
+          warningBox.style.borderColor = "#fecaca";
+          warningBox.style.background = "#fef2f2";
+          warningBox.style.color = "#991b1b";
+        } else if (
+          isChecked("system-user") &&
+          shell !== "/sbin/nologin" &&
+          shell !== "/usr/sbin/nologin" &&
+          shell !== "/bin/false"
+        ) {
+          warningBox.textContent =
+            "A system account normally uses /sbin/nologin, /usr/sbin/nologin or /bin/false.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else if (
+          primaryGroup ||
+          additionalGroups ||
+          isChecked("sudo-access")
+        ) {
+          warningBox.textContent =
+            "Confirm that the primary, additional and administrative groups already exist.";
+
+          warningBox.style.borderColor = "#fde68a";
+          warningBox.style.background = "#fffbeb";
+          warningBox.style.color = "#92400e";
+        } else {
+          warningBox.textContent =
+            "Review the username, shell and home directory before running the command.";
+
+          warningBox.style.borderColor = "#bbf7d0";
+          warningBox.style.background = "#f0fdf4";
+          warningBox.style.color = "#166534";
+        }
+      }
+
+      function resetForm() {
+        const values = {
+          username: "newuser",
+          comment: "",
+          shell: "/bin/bash",
+          uid: "",
+          "primary-group": "",
+          "additional-groups": "",
+          "home-directory": "",
+          "expiry-date": "",
+          "sudo-group": "wheel",
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.value = value;
+          }
+        });
+
+        document.getElementById(
+          "create-home"
+        ).checked = true;
+
+        document.getElementById(
+          "system-user"
+        ).checked = false;
+
+        document.getElementById(
+          "set-password"
+        ).checked = true;
+
+        document.getElementById(
+          "sudo-access"
+        ).checked = false;
+
+        document.getElementById(
+          "force-password-change"
+        ).checked = false;
+
+        generateCommands();
+      }
+
+      function getFutureDate(days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+
+        return date.toISOString().split("T")[0];
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "normal") {
+          document.getElementById("username").value =
+            "newuser";
+
+          document.getElementById("comment").value =
+            "New Linux User";
+        }
+
+        if (preset === "rhel-admin") {
+          document.getElementById("username").value =
+            "linuxadmin";
+
+          document.getElementById("comment").value =
+            "Linux Administrator";
+
+          document.getElementById(
+            "sudo-access"
+          ).checked = true;
+
+          document.getElementById(
+            "sudo-group"
+          ).value = "wheel";
+
+          document.getElementById(
+            "force-password-change"
+          ).checked = true;
+        }
+
+        if (preset === "ubuntu-admin") {
+          document.getElementById("username").value =
+            "linuxadmin";
+
+          document.getElementById("comment").value =
+            "Linux Administrator";
+
+          document.getElementById(
+            "sudo-access"
+          ).checked = true;
+
+          document.getElementById(
+            "sudo-group"
+          ).value = "sudo";
+
+          document.getElementById(
+            "force-password-change"
+          ).checked = true;
+        }
+
+        if (preset === "service") {
+          document.getElementById("username").value =
+            "appsvc";
+
+          document.getElementById("comment").value =
+            "Application Service Account";
+
+          document.getElementById("shell").value =
+            "/sbin/nologin";
+
+          document.getElementById(
+            "system-user"
+          ).checked = true;
+
+          document.getElementById(
+            "set-password"
+          ).checked = false;
+        }
+
+        if (preset === "docker") {
+          document.getElementById("username").value =
+            "devuser";
+
+          document.getElementById("comment").value =
+            "Docker Application User";
+
+          document.getElementById(
+            "additional-groups"
+          ).value = "docker";
+        }
+
+        if (preset === "temporary") {
+          document.getElementById("username").value =
+            "tempuser";
+
+          document.getElementById("comment").value =
+            "Temporary Support User";
+
+          document.getElementById(
+            "expiry-date"
+          ).value = getFutureDate(30);
+
+          document.getElementById(
+            "force-password-change"
+          ).checked = true;
+        }
+
+        generateCommands();
+      }
+
+      function getAllCommands() {
+        const commands = [];
+
+        commands.push(
+          useraddResult.textContent.trim()
+        );
+
+        if (!passwordResultBlock.hidden) {
+          commands.push(
+            passwordResult.textContent.trim()
+          );
+        }
+
+        if (!sudoResultBlock.hidden) {
+          commands.push(
+            sudoResult.textContent.trim()
+          );
+        }
+
+        if (!chageResultBlock.hidden) {
+          commands.push(
+            chageResult.textContent.trim()
+          );
+        }
+
+        return commands.filter(Boolean).join("\n");
+      }
+
+      async function copyText(text, successMessage) {
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+
+          copyStatus.textContent =
+            successMessage || "Command copied successfully.";
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please select and copy the command manually.";
+        }
+
+        window.setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      fieldIds.forEach((id) => {
+        const element = document.getElementById(id);
+
+        element?.addEventListener(
+          "input",
+          generateCommands
+        );
+
+        element?.addEventListener(
+          "change",
+          generateCommands
+        );
+      });
+
+      checkboxIds.forEach((id) => {
+        document
+          .getElementById(id)
+          ?.addEventListener(
+            "change",
+            generateCommands
+          );
+      });
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const preset = button.dataset.preset;
+
+            if (preset) {
+              loadPreset(preset);
+            }
+          });
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId =
+              button.dataset.copyTarget;
+
+            const target = targetId
+              ? document.getElementById(targetId)
+              : null;
+
+            copyText(
+              target?.textContent?.trim() ?? "",
+              "Command copied successfully."
+            );
+          });
+        });
+
+      document
+        .getElementById("copy-all")
+        ?.addEventListener("click", () => {
+          copyText(
+            getAllCommands(),
+            "All commands copied successfully."
+          );
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener(
+          "click",
+          generateCommands
+        );
+
+      document
+        .getElementById("reset")
+        ?.addEventListener(
+          "click",
+          resetForm
+        );
+
+      generateCommands();
+    </script>
+  </body>
+</html>

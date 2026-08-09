@@ -1,0 +1,25 @@
+{
+  "name": "gokuruvi-tools",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "generate-types": "wrangler types"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/cloudflare": "^14.1.6",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.1.4",
+    "js-yaml": "^5.2.2",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.115.0",
+    "yaml": "^2.9.0"
+  }
+}

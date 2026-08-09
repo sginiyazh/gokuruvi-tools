@@ -1,0 +1,19 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="PowerShell Command Generator" description="Generate practical PowerShell commands for common Windows administration and troubleshooting tasks." slug="powershell-generator" icon="💻">
+
+<h2 class="tool-title">Build a PowerShell command</h2><p class="tool-subtitle">Choose a task and enter the required value.</p>
+<div class="form-grid"><div class="field"><label for="task">Task</label><select id="task"><option value="proc">Find process</option><option value="svc">Get service</option><option value="file">Find large files</option><option value="ip">Network configuration</option><option value="disk">Disk free space</option><option value="restart">Restart computer</option></select></div><div class="field"><label for="value">Name / path / size (GB)</label><input id="value" placeholder="e.g. spooler, C:\\Data, 2" /></div></div>
+<div class="actions"><button class="btn btn-primary" id="generate">Generate command</button><button class="btn btn-secondary" id="clear">Clear</button></div>
+<div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Select a task and click Generate command.</pre></div>
+<script>
+
+const task=document.querySelector<HTMLSelectElement>('#task')!, value=document.querySelector<HTMLInputElement>('#value')!, out=document.querySelector<HTMLElement>('#output')!;
+function esc(s:string){return s.replace(/'/g,"''")}
+document.querySelector('#generate')?.addEventListener('click',()=>{const v=esc(value.value.trim()); const map:Record<string,string>={proc:`Get-Process -Name '${v||'powershell'}' -ErrorAction SilentlyContinue | Format-Table Id,ProcessName,CPU,WorkingSet -AutoSize`,svc:`Get-Service -Name '${v||'Spooler'}' | Format-List Name,DisplayName,Status,StartType`,file:`Get-ChildItem -Path '${v&&isNaN(Number(v))?v:'C:\\'}' -File -Recurse -ErrorAction SilentlyContinue | Where-Object Length -gt ${!isNaN(Number(v))&&v?Number(v):1}GB | Sort-Object Length -Descending | Select-Object -First 50 FullName,@{N='SizeGB';E={[math]::Round($_.Length/1GB,2)}}`,ip:`Get-NetIPConfiguration | Format-List InterfaceAlias,IPv4Address,IPv4DefaultGateway,DNSServer`,disk:`Get-Volume | Where-Object DriveLetter | Select-Object DriveLetter,FileSystemLabel,@{N='SizeGB';E={[math]::Round($_.Size/1GB,2)}},@{N='FreeGB';E={[math]::Round($_.SizeRemaining/1GB,2)}}`,restart:`Restart-Computer -ComputerName '${v||'localhost'}' -Force`}; out.textContent=map[task.value]});
+document.querySelector('#clear')?.addEventListener('click',()=>{value.value='';out.textContent='Select a task and click Generate command.'});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

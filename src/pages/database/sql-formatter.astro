@@ -1,0 +1,58 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout title="SQL Formatter" description="Format common SQL statements for easier reading, review and troubleshooting."><section class="tool-hero"><span class="eyebrow">Database Tool</span><h1>SQL Formatter</h1><p>Format common SQL statements for easier reading, review and troubleshooting.</p></section><div class="wrap"><a class="back" href="/database/">← Back to Database Tools</a><section class="card"><h2>Format SQL</h2><div class="field"><label for="sql">SQL statement</label><textarea id="sql" placeholder="select id,name from users where active=1 order by name"></textarea></div><div class="actions"><button id="go">Format SQL</button><button id="copy" class="secondary">Copy</button></div><div class="result"><pre id="out">—</pre></div></section></div><script>
+  const input = document.querySelector<HTMLTextAreaElement>("#sql");
+  const output = document.querySelector<HTMLElement>("#out");
+  const formatButton = document.querySelector<HTMLButtonElement>("#go");
+  const copyButton = document.querySelector<HTMLButtonElement>("#copy");
+
+  const majorKeywords = [
+    "SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "HAVING", "LIMIT",
+    "INSERT INTO", "VALUES", "UPDATE", "SET", "DELETE FROM",
+    "LEFT JOIN", "RIGHT JOIN", "INNER JOIN", "FULL JOIN", "CROSS JOIN", "JOIN"
+  ];
+
+  const keywordPattern = [
+    ...majorKeywords,
+    "ON", "AND", "OR", "AS", "DISTINCT", "UNION", "UNION ALL",
+    "CASE", "WHEN", "THEN", "ELSE", "END", "IN", "IS", "NULL", "NOT", "LIKE"
+  ];
+
+  const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const formatSql = (value: string) => {
+    let sql = value.replace(/\s+/g, " ").trim();
+    if (!sql) return "";
+
+    for (const keyword of keywordPattern.sort((a, b) => b.length - a.length)) {
+      const pattern = escapeRegex(keyword).replace(/\ /g, "\\s+");
+      sql = sql.replace(new RegExp(`\\b${pattern}\\b`, "gi"), keyword);
+    }
+
+    for (const keyword of majorKeywords.sort((a, b) => b.length - a.length)) {
+      const pattern = escapeRegex(keyword).replace(/\ /g, "\\s+");
+      sql = sql.replace(new RegExp(`\\s*\\b${pattern}\\b\\s*`, "g"), `\n${keyword} `);
+    }
+
+    sql = sql.replace(/\s+\b(AND|OR)\b\s+/g, "\n  $1 ");
+    sql = sql.replace(/,\s*/g, ", ");
+
+    return sql.trim();
+  };
+
+  formatButton?.addEventListener("click", () => {
+    if (output) output.textContent = formatSql(input?.value ?? "");
+  });
+
+  copyButton?.addEventListener("click", async () => {
+    const text = output?.textContent ?? "";
+    if (!text || text === "—") return;
+    await navigator.clipboard.writeText(text);
+    const original = copyButton.textContent;
+    copyButton.textContent = "Copied";
+    setTimeout(() => { copyButton.textContent = original; }, 1200);
+  });
+</script><style>
+.tool-hero{padding:62px 20px 42px;background:linear-gradient(135deg,#eff6ff,#f8fafc);text-align:center}.eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}.tool-hero h1{margin:14px 0 10px;color:#0f172a;font-size:clamp(34px,5vw,52px);line-height:1.1}.tool-hero p{max-width:760px;margin:0 auto;color:#64748b;font-size:17px}.wrap{width:min(calc(100% - 32px),960px);margin:38px auto 72px}.back{display:inline-block;margin-bottom:18px;color:#2563eb;font-weight:750;text-decoration:none}.card{padding:28px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.07)}h2{margin:0 0 8px;color:#0f172a}.muted{color:#64748b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{margin-top:16px}label{display:block;margin-bottom:7px;color:#0f172a;font-weight:750}input,select,textarea{width:100%;min-height:48px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a}textarea{min-height:160px;resize:vertical}input:focus,select:focus,textarea:focus{outline:3px solid rgba(37,99,235,.14);border-color:#2563eb}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}button{min-height:46px;padding:10px 17px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.secondary{background:#e2e8f0;color:#0f172a}.result{margin-top:20px;padding:17px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff;overflow-wrap:anywhere}.result pre{margin:0;white-space:pre-wrap;word-break:break-word}.good{color:#15803d}.warn{color:#b45309}.bad{color:#b91c1c}.checklist{display:grid;gap:9px;margin-top:12px}.item{padding:10px 12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}.small{font-size:13px;color:#64748b}@media(max-width:700px){.grid{grid-template-columns:1fr}.card{padding:20px}}
+</style></Layout>

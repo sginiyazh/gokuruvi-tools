@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="BitLocker Command Generator" description="Generate BitLocker status, encryption, protector and recovery-key commands for Windows volumes." slug="bitlocker-command-generator" icon="🔒">
+
+<h2 class="tool-title">BitLocker command builder</h2><div class="form-grid"><div class="field"><label for="drive">Drive</label><input id="drive" value="C:" maxlength="3" /></div><div class="field"><label for="action">Action</label><select id="action"><option value="status">Show status</option><option value="protectors">List key protectors</option><option value="recovery">Show recovery password</option><option value="enable">Enable with recovery password</option><option value="suspend">Suspend protection</option><option value="resume">Resume protection</option></select></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Get-BitLockerVolume -MountPoint 'C:'</pre></div>
+<script>
+
+const d=document.querySelector<HTMLInputElement>('#drive')!,a=document.querySelector<HTMLSelectElement>('#action')!,o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const x=((d.value.match(/[A-Za-z]/)||['C'])[0].toUpperCase()+':');const m:Record<string,string>={status:`Get-BitLockerVolume -MountPoint '${x}' | Format-List *`,protectors:`(Get-BitLockerVolume -MountPoint '${x}').KeyProtector`,recovery:`(Get-BitLockerVolume -MountPoint '${x}').KeyProtector | Where-Object KeyProtectorType -eq 'RecoveryPassword' | Select-Object KeyProtectorId,RecoveryPassword`,enable:`Enable-BitLocker -MountPoint '${x}' -EncryptionMethod XtsAes256 -UsedSpaceOnly -RecoveryPasswordProtector`,suspend:`Suspend-BitLocker -MountPoint '${x}' -RebootCount 1`,resume:`Resume-BitLocker -MountPoint '${x}'`};o.textContent=m[a.value]});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

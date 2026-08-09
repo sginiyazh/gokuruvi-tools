@@ -1,0 +1,2553 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "OpenSSL Command Generator | Gokuruvi Tools";
+const pageDescription =
+  "Generate common OpenSSL commands for private keys, CSRs, certificates, PKCS12 conversion, certificate verification, TLS testing and random passwords.";
+const siteUrl =
+  "https://www.gokuruvi.com/linux/openssl-command-generator";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+
+    <meta
+      name="keywords"
+      content="OpenSSL command generator, CSR generator, private key generator, certificate checker, PKCS12 converter, TLS checker"
+    />
+
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <meta
+      property="og:image"
+      content="https://www.gokuruvi.com/og-image.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #38bdf8;
+        --dark: #0f172a;
+        --text: #172033;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --maximum-width: 1180px;
+
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: var(--background);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code,
+      pre {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--maximum-width));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.97);
+        backdrop-filter: blur(12px);
+      }
+
+      .navbar {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 21px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .logo-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary)
+        );
+        color: #ffffff;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .nav-links a {
+        color: #e2e8f0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #ffffff;
+      }
+
+      .nav-button {
+        padding: 10px 18px;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #ffffff !important;
+      }
+
+      .breadcrumb-section {
+        border-bottom: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 15px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 65px;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.18),
+            transparent 31%
+          ),
+          radial-gradient(
+            circle at 88% 35%,
+            rgba(37, 99, 235, 0.17),
+            transparent 34%
+          ),
+          linear-gradient(
+            145deg,
+            #f8fafc 0%,
+            #eff6ff 50%,
+            #f8fafc 100%
+          );
+      }
+
+      .hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-icon {
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        margin: 0 auto 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 36px;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: clamp(40px, 7vw, 62px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          #0284c7
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        max-width: 780px;
+        margin: 0 auto;
+        color: #475569;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .generator-section {
+        padding: 75px 0;
+      }
+
+      .generator-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.85fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .generator-card,
+      .result-card,
+      .info-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      }
+
+      .generator-card {
+        padding: 30px;
+      }
+
+      .generator-heading {
+        margin-bottom: 28px;
+      }
+
+      .generator-heading h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+        font-size: 27px;
+      }
+
+      .generator-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .section-number {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .action-card {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .action-card input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .action-content {
+        display: block;
+        min-height: 120px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #ffffff;
+        text-align: center;
+      }
+
+      .action-card input:checked + .action-content {
+        border-color: var(--primary);
+        background: #eff6ff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+      }
+
+      .action-icon {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 25px;
+      }
+
+      .action-title {
+        display: block;
+        color: var(--dark);
+        font-weight: 800;
+      }
+
+      .action-description {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+
+      .form-field.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .field-input,
+      .field-select {
+        min-height: 48px;
+        padding: 0 13px;
+      }
+
+      .field-textarea {
+        min-height: 95px;
+        padding: 12px 13px;
+        resize: vertical;
+      }
+
+      .field-input:focus,
+      .field-select:focus,
+      .field-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      }
+
+      .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+      }
+
+      .checkbox-title {
+        display: block;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .checkbox-description {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .preset-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .preset-button {
+        min-height: 41px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .preset-button:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      .main-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .primary-button {
+        border: 0;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .results-column {
+        position: sticky;
+        top: 95px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .result-card {
+        padding: 26px;
+      }
+
+      .result-card h2 {
+        margin: 0 0 20px;
+        color: var(--dark);
+        font-size: 23px;
+      }
+
+      .result-block + .result-block {
+        margin-top: 20px;
+      }
+
+      .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .result-output {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 82px;
+        padding: 15px;
+        border: 1px solid #334155;
+        border-radius: 11px;
+        background: #0b1220;
+      }
+
+      .result-value {
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .copy-all-button {
+        width: 100%;
+        min-height: 45px;
+        margin-top: 16px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .warning-box {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 11px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 14px;
+      }
+
+      .status-message {
+        min-height: 22px;
+        margin-top: 12px;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-list strong {
+        color: var(--dark);
+        text-align: right;
+      }
+
+      .info-section {
+        padding: 0 0 85px;
+      }
+
+      .section-heading {
+        max-width: 760px;
+        margin: 0 auto 45px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(30px, 4vw, 42px);
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .info-card {
+        padding: 27px;
+      }
+
+      .info-card h3 {
+        margin: 0 0 10px;
+        color: var(--dark);
+        font-size: 20px;
+      }
+
+      .info-card p,
+      .info-card li {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .info-card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+      }
+
+      footer {
+        background: var(--dark);
+        color: #cbd5e1;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 28px 0;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+      }
+
+      @media (max-width: 980px) {
+        .generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .results-column {
+          position: static;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar {
+          min-height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          flex-wrap: wrap;
+          gap: 15px 20px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .action-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .container {
+          width: min(100% - 28px, var(--maximum-width));
+        }
+
+        .hero h1 {
+          font-size: 39px;
+          letter-spacing: -1.3px;
+        }
+
+        .generator-card,
+        .result-card {
+          padding: 22px;
+        }
+
+        .field-grid,
+        .checkbox-grid,
+        .action-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .main-button {
+          width: 100%;
+        }
+
+        .result-output {
+          flex-direction: column;
+        }
+
+        .summary-list li {
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .summary-list strong {
+          text-align: left;
+        }
+
+        .footer-content {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <Header />
+
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span>/</span>
+          <a href="/linux">Linux Tools</a>
+          <span>/</span>
+          <span>OpenSSL Command Generator</span>
+        </nav>
+      </div>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-icon">🔐</div>
+
+            <h1>
+              OpenSSL Command <span>Generator</span>
+            </h1>
+
+            <p>
+              Generate common OpenSSL commands for private keys, certificate
+              signing requests, self-signed certificates, certificate
+              verification, format conversion and TLS testing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="generator-section">
+        <div class="container">
+          <div class="generator-layout">
+            <div class="generator-card">
+              <div class="generator-heading">
+                <h2>Choose an OpenSSL task</h2>
+                <p>
+                  Select a common task and enter the required certificate or
+                  key information.
+                </p>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">1</span>
+                  Task
+                </h3>
+
+                <div class="action-grid">
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="task"
+                      value="private-key"
+                      checked
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔑</span>
+                      <span class="action-title">Private key</span>
+                      <span class="action-description">
+                        Generate RSA or EC private keys.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="csr" />
+
+                    <span class="action-content">
+                      <span class="action-icon">📝</span>
+                      <span class="action-title">Generate CSR</span>
+                      <span class="action-description">
+                        Create a certificate signing request.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="task"
+                      value="self-signed"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">📜</span>
+                      <span class="action-title">Self-signed</span>
+                      <span class="action-description">
+                        Generate a private key and certificate.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input
+                      type="radio"
+                      name="task"
+                      value="view-certificate"
+                    />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔎</span>
+                      <span class="action-title">View certificate</span>
+                      <span class="action-description">
+                        Display certificate details and dates.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="verify-match" />
+
+                    <span class="action-content">
+                      <span class="action-icon">✅</span>
+                      <span class="action-title">Verify matching</span>
+                      <span class="action-description">
+                        Check certificate, key and CSR matching.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="convert" />
+
+                    <span class="action-content">
+                      <span class="action-icon">🔄</span>
+                      <span class="action-title">Convert format</span>
+                      <span class="action-description">
+                        Convert PEM, DER and PKCS#12 files.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="tls-test" />
+
+                    <span class="action-content">
+                      <span class="action-icon">🌐</span>
+                      <span class="action-title">TLS connection</span>
+                      <span class="action-description">
+                        Test a remote HTTPS or TLS endpoint.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="password-hash" />
+
+                    <span class="action-content">
+                      <span class="action-icon">#️⃣</span>
+                      <span class="action-title">Password hash</span>
+                      <span class="action-description">
+                        Generate a SHA-512 password hash.
+                      </span>
+                    </span>
+                  </label>
+
+                  <label class="action-card">
+                    <input type="radio" name="task" value="random" />
+
+                    <span class="action-content">
+                      <span class="action-icon">🎲</span>
+                      <span class="action-title">Random value</span>
+                      <span class="action-description">
+                        Generate random hexadecimal or Base64 data.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section" id="private-key-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Private key settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="key-type">
+                      Key type
+                    </label>
+
+                    <select class="field-select" id="key-type">
+                      <option value="rsa" selected>RSA</option>
+                      <option value="ec">Elliptic Curve</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="rsa-size-field">
+                    <label class="field-label" for="rsa-size">
+                      RSA key size
+                    </label>
+
+                    <select class="field-select" id="rsa-size">
+                      <option value="2048">2048 bits</option>
+                      <option value="3072">3072 bits</option>
+                      <option value="4096" selected>4096 bits</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field" id="ec-curve-field" hidden>
+                    <label class="field-label" for="ec-curve">
+                      EC curve
+                    </label>
+
+                    <select class="field-select" id="ec-curve">
+                      <option value="prime256v1" selected>
+                        prime256v1
+                      </option>
+                      <option value="secp384r1">secp384r1</option>
+                      <option value="secp521r1">secp521r1</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="key-file">
+                      Private key filename
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="key-file"
+                      type="text"
+                      value="server.key"
+                      placeholder="server.key"
+                    />
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 18px;">
+                  <label class="checkbox-item">
+                    <input id="encrypt-key" type="checkbox" />
+
+                    <span>
+                      <span class="checkbox-title">
+                        Encrypt private key
+                      </span>
+
+                      <span class="checkbox-description">
+                        Protect the private key with AES-256 encryption.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section" id="csr-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  CSR settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="csr-key-file">
+                      Private key file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="csr-key-file"
+                      value="server.key"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="csr-file">
+                      CSR output file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="csr-file"
+                      value="server.csr"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="common-name">
+                      Common name
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="common-name"
+                      value="www.example.com"
+                      placeholder="www.example.com"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="country">
+                      Country
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="country"
+                      value="AE"
+                      maxlength="2"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="state">
+                      State
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="state"
+                      value="Dubai"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="locality">
+                      City
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="locality"
+                      value="Dubai"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="organization">
+                      Organization
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="organization"
+                      value="Gokuruvi"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="organizational-unit">
+                      Organizational unit
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="organizational-unit"
+                      value="IT"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="email">
+                      Email
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="email"
+                      type="email"
+                      placeholder="admin@example.com"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="san-list">
+                      Subject Alternative Names
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="san-list"
+                      value="www.example.com,example.com"
+                      placeholder="www.example.com,example.com,192.168.1.10"
+                    />
+
+                    <span class="field-help">
+                      Enter DNS names or IP addresses separated by commas.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="self-signed-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Self-signed certificate settings
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="self-key-file">
+                      Private key file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="self-key-file"
+                      value="server.key"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="self-cert-file">
+                      Certificate file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="self-cert-file"
+                      value="server.crt"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="self-days">
+                      Validity days
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="self-days"
+                      type="number"
+                      min="1"
+                      value="365"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="self-common-name">
+                      Common name
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="self-common-name"
+                      value="www.example.com"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="self-san-list">
+                      Subject Alternative Names
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="self-san-list"
+                      value="www.example.com,example.com"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="view-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Certificate inspection
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="view-file">
+                      Certificate file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="view-file"
+                      value="server.crt"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="view-format">
+                      Certificate format
+                    </label>
+
+                    <select class="field-select" id="view-format">
+                      <option value="pem" selected>PEM</option>
+                      <option value="der">DER</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="verify-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Matching files
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="verify-cert">
+                      Certificate file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="verify-cert"
+                      value="server.crt"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="verify-key">
+                      Private key file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="verify-key"
+                      value="server.key"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label class="field-label" for="verify-csr">
+                      CSR file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="verify-csr"
+                      value="server.csr"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="convert-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Certificate conversion
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="conversion-type">
+                      Conversion
+                    </label>
+
+                    <select class="field-select" id="conversion-type">
+                      <option value="pem-to-der" selected>
+                        PEM certificate to DER
+                      </option>
+                      <option value="der-to-pem">
+                        DER certificate to PEM
+                      </option>
+                      <option value="pfx-to-pem">
+                        PFX/P12 to PEM
+                      </option>
+                      <option value="pfx-to-cert">
+                        Extract certificate from PFX
+                      </option>
+                      <option value="pfx-to-key">
+                        Extract private key from PFX
+                      </option>
+                      <option value="pem-to-pfx">
+                        Certificate and key to PFX
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="input-file">
+                      Input file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="input-file"
+                      value="server.crt"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="output-file">
+                      Output file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="output-file"
+                      value="server.der"
+                    />
+                  </div>
+
+                  <div class="form-field" id="convert-key-field" hidden>
+                    <label class="field-label" for="convert-key">
+                      Private key file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="convert-key"
+                      value="server.key"
+                    />
+                  </div>
+
+                  <div class="form-field" id="chain-file-field" hidden>
+                    <label class="field-label" for="chain-file">
+                      CA chain file
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="chain-file"
+                      placeholder="ca-chain.crt"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="tls-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Remote TLS connection
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="tls-host">
+                      Hostname
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="tls-host"
+                      value="www.example.com"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="tls-port">
+                      Port
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="tls-port"
+                      type="number"
+                      value="443"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="tls-version">
+                      TLS version
+                    </label>
+
+                    <select class="field-select" id="tls-version">
+                      <option value="" selected>Automatic</option>
+                      <option value="-tls1_2">TLS 1.2</option>
+                      <option value="-tls1_3">TLS 1.3</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="tls-servername">
+                      SNI server name
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="tls-servername"
+                      value="www.example.com"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="password-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Password hash
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field full-width">
+                    <label class="field-label" for="hash-password">
+                      Password
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="hash-password"
+                      type="password"
+                      placeholder="Enter password"
+                    />
+
+                    <span class="field-help">
+                      For better security, leave this empty and enter the
+                      password interactively in the terminal.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section" id="random-section" hidden>
+                <h3 class="form-section-title">
+                  <span class="section-number">2</span>
+                  Random value
+                </h3>
+
+                <div class="field-grid">
+                  <div class="form-field">
+                    <label class="field-label" for="random-format">
+                      Output format
+                    </label>
+
+                    <select class="field-select" id="random-format">
+                      <option value="hex" selected>Hexadecimal</option>
+                      <option value="base64">Base64</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="field-label" for="random-bytes">
+                      Number of bytes
+                    </label>
+
+                    <input
+                      class="field-input"
+                      id="random-bytes"
+                      type="number"
+                      min="1"
+                      value="32"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-number">3</span>
+                  Common presets
+                </h3>
+
+                <div class="preset-list">
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="rsa-key"
+                  >
+                    RSA 4096 key
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="csr"
+                  >
+                    Website CSR
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="self-signed"
+                  >
+                    Self-signed cert
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="expiry"
+                  >
+                    Check expiry
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="tls"
+                  >
+                    Test HTTPS
+                  </button>
+
+                  <button
+                    class="preset-button"
+                    type="button"
+                    data-preset="random"
+                  >
+                    Random password
+                  </button>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button
+                  class="main-button primary-button"
+                  id="generate"
+                  type="button"
+                >
+                  Generate OpenSSL Commands
+                </button>
+
+                <button
+                  class="main-button secondary-button"
+                  id="reset"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <aside class="results-column">
+              <div class="result-card">
+                <h2>Generated commands</h2>
+
+                <div class="result-block">
+                  <span class="result-label">Main command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="main-command">
+                      openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out 'server.key'
+                    </span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="main-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="result-block"
+                  id="secondary-block"
+                  hidden
+                >
+                  <span class="result-label">Additional command</span>
+
+                  <div class="result-output">
+                    <span
+                      class="result-value"
+                      id="secondary-command"
+                    ></span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="secondary-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  class="result-block"
+                  id="third-block"
+                  hidden
+                >
+                  <span class="result-label">Verification command</span>
+
+                  <div class="result-output">
+                    <span class="result-value" id="third-command"></span>
+
+                    <button
+                      class="copy-button"
+                      type="button"
+                      data-copy-target="third-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="copy-all-button"
+                  id="copy-all"
+                  type="button"
+                >
+                  Copy All Commands
+                </button>
+
+                <div class="warning-box" id="warning-box">
+                  Protect private key files and restrict permissions with
+                  chmod 600.
+                </div>
+
+                <div
+                  class="status-message"
+                  id="copy-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="result-card">
+                <h2>Task summary</h2>
+
+                <ul class="summary-list">
+                  <li>
+                    <span>Task</span>
+                    <strong id="summary-task">Generate private key</strong>
+                  </li>
+
+                  <li>
+                    <span>Input</span>
+                    <strong id="summary-input">Not required</strong>
+                  </li>
+
+                  <li>
+                    <span>Output</span>
+                    <strong id="summary-output">server.key</strong>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Common OpenSSL commands</h2>
+
+            <p>
+              Use these commands for common certificate and TLS administration.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <article class="info-card">
+              <h3>Inspect certificates</h3>
+
+              <ul>
+                <li>
+                  <code>openssl x509 -in server.crt -text -noout</code>
+                </li>
+
+                <li>
+                  <code>openssl x509 -in server.crt -dates -noout</code>
+                </li>
+
+                <li>
+                  <code>openssl x509 -in server.crt -subject -issuer -noout</code>
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>Verify private keys</h3>
+
+              <ul>
+                <li>
+                  <code>openssl pkey -in server.key -check</code>
+                </li>
+
+                <li>
+                  <code>openssl rsa -in server.key -noout -modulus</code>
+                </li>
+
+                <li>
+                  Keep private keys readable only by authorised users.
+                </li>
+              </ul>
+            </article>
+
+            <article class="info-card">
+              <h3>TLS testing</h3>
+
+              <ul>
+                <li>
+                  <code>openssl s_client -connect host:443 -servername host</code>
+                </li>
+
+                <li>
+                  Use <code>-tls1_2</code> or <code>-tls1_3</code> to test a
+                  specific protocol.
+                </li>
+
+                <li>
+                  Review the certificate chain and verification return code.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      const sectionMap = {
+        "private-key": document.getElementById("private-key-section"),
+        csr: document.getElementById("csr-section"),
+        "self-signed": document.getElementById("self-signed-section"),
+        "view-certificate": document.getElementById("view-section"),
+        "verify-match": document.getElementById("verify-section"),
+        convert: document.getElementById("convert-section"),
+        "tls-test": document.getElementById("tls-section"),
+        "password-hash": document.getElementById("password-section"),
+        random: document.getElementById("random-section"),
+      };
+
+      const mainCommand =
+        document.getElementById("main-command");
+
+      const secondaryCommand =
+        document.getElementById("secondary-command");
+
+      const thirdCommand =
+        document.getElementById("third-command");
+
+      const secondaryBlock =
+        document.getElementById("secondary-block");
+
+      const thirdBlock =
+        document.getElementById("third-block");
+
+      const warningBox =
+        document.getElementById("warning-box");
+
+      const copyStatus =
+        document.getElementById("copy-status");
+
+      const rsaSizeField =
+        document.getElementById("rsa-size-field");
+
+      const ecCurveField =
+        document.getElementById("ec-curve-field");
+
+      const convertKeyField =
+        document.getElementById("convert-key-field");
+
+      const chainFileField =
+        document.getElementById("chain-file-field");
+
+      function getValue(id) {
+        return document.getElementById(id)?.value?.trim() ?? "";
+      }
+
+      function isChecked(id) {
+        return Boolean(document.getElementById(id)?.checked);
+      }
+
+      function getTask() {
+        return (
+          document.querySelector(
+            'input[name="task"]:checked'
+          )?.value || "private-key"
+        );
+      }
+
+      function shellQuote(value) {
+        const text = String(value).trim();
+
+        if (!text) {
+          return "''";
+        }
+
+        return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function buildSubject() {
+        const entries = [
+          ["C", getValue("country")],
+          ["ST", getValue("state")],
+          ["L", getValue("locality")],
+          ["O", getValue("organization")],
+          ["OU", getValue("organizational-unit")],
+          ["CN", getValue("common-name")],
+          ["emailAddress", getValue("email")],
+        ];
+
+        return entries
+          .filter(([, value]) => value)
+          .map(([key, value]) => `/${key}=${value}`)
+          .join("");
+      }
+
+      function buildSanExtension(value) {
+        const entries = value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .map((item) => {
+            const isIp =
+              /^(\d{1,3}\.){3}\d{1,3}$/.test(item) ||
+              item.includes(":");
+
+            return isIp ? `IP:${item}` : `DNS:${item}`;
+          });
+
+        return entries.length
+          ? `subjectAltName=${entries.join(",")}`
+          : "";
+      }
+
+      function setSummary(task, input, output) {
+        document.getElementById(
+          "summary-task"
+        ).textContent = task;
+
+        document.getElementById(
+          "summary-input"
+        ).textContent = input;
+
+        document.getElementById(
+          "summary-output"
+        ).textContent = output;
+      }
+
+      function generatePrivateKey() {
+        const keyType = getValue("key-type");
+        const keyFile = getValue("key-file") || "server.key";
+
+        if (keyType === "ec") {
+          mainCommand.textContent =
+            `openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:${
+              getValue("ec-curve") || "prime256v1"
+            } -out ${shellQuote(keyFile)}`;
+        } else {
+          const encryption = isChecked("encrypt-key")
+            ? " -aes-256-cbc"
+            : "";
+
+          mainCommand.textContent =
+            `openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${
+              getValue("rsa-size") || "4096"
+            }${encryption} -out ${shellQuote(keyFile)}`;
+        }
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `chmod 600 ${shellQuote(keyFile)}`;
+
+        thirdBlock.hidden = false;
+        thirdCommand.textContent =
+          `openssl pkey -in ${shellQuote(keyFile)} -check`;
+
+        setSummary(
+          "Generate private key",
+          "Not required",
+          keyFile
+        );
+
+        warningBox.textContent =
+          "Store private keys securely and restrict access with chmod 600.";
+      }
+
+      function generateCsr() {
+        const keyFile =
+          getValue("csr-key-file") || "server.key";
+
+        const csrFile =
+          getValue("csr-file") || "server.csr";
+
+        const subject =
+          buildSubject() || "/CN=www.example.com";
+
+        const san =
+          buildSanExtension(getValue("san-list"));
+
+        const extension = san
+          ? ` -addext ${shellQuote(san)}`
+          : "";
+
+        mainCommand.textContent =
+          `openssl req -new -key ${shellQuote(
+            keyFile
+          )} -out ${shellQuote(
+            csrFile
+          )} -subj ${shellQuote(subject)}${extension}`;
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `openssl req -in ${shellQuote(
+            csrFile
+          )} -text -noout`;
+
+        thirdBlock.hidden = true;
+
+        setSummary(
+          "Generate CSR",
+          keyFile,
+          csrFile
+        );
+
+        warningBox.textContent =
+          "Verify the common name and Subject Alternative Names before submitting the CSR to a certificate authority.";
+      }
+
+      function generateSelfSigned() {
+        const keyFile =
+          getValue("self-key-file") || "server.key";
+
+        const certFile =
+          getValue("self-cert-file") || "server.crt";
+
+        const commonName =
+          getValue("self-common-name") || "www.example.com";
+
+        const days =
+          getValue("self-days") || "365";
+
+        const san =
+          buildSanExtension(getValue("self-san-list"));
+
+        const extension = san
+          ? ` -addext ${shellQuote(san)}`
+          : "";
+
+        mainCommand.textContent =
+          `openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout ${shellQuote(
+            keyFile
+          )} -out ${shellQuote(
+            certFile
+          )} -days ${days} -subj ${shellQuote(
+            `/CN=${commonName}`
+          )}${extension}`;
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `chmod 600 ${shellQuote(keyFile)}`;
+
+        thirdBlock.hidden = false;
+        thirdCommand.textContent =
+          `openssl x509 -in ${shellQuote(
+            certFile
+          )} -text -noout`;
+
+        setSummary(
+          "Self-signed certificate",
+          "Generated private key",
+          certFile
+        );
+
+        warningBox.textContent =
+          "Self-signed certificates are not trusted automatically by browsers or external clients.";
+      }
+
+      function generateViewCertificate() {
+        const file =
+          getValue("view-file") || "server.crt";
+
+        const format =
+          getValue("view-format") === "der"
+            ? " -inform DER"
+            : "";
+
+        mainCommand.textContent =
+          `openssl x509${format} -in ${shellQuote(
+            file
+          )} -text -noout`;
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `openssl x509${format} -in ${shellQuote(
+            file
+          )} -dates -subject -issuer -serial -fingerprint -sha256 -noout`;
+
+        thirdBlock.hidden = false;
+        thirdCommand.textContent =
+          `openssl x509${format} -in ${shellQuote(
+            file
+          )} -checkend 2592000 -noout`;
+
+        setSummary(
+          "View certificate",
+          file,
+          "Terminal output"
+        );
+
+        warningBox.textContent =
+          "The checkend command returns a non-zero status when the certificate expires within 30 days.";
+      }
+
+      function generateVerifyMatch() {
+        const cert =
+          getValue("verify-cert") || "server.crt";
+
+        const key =
+          getValue("verify-key") || "server.key";
+
+        const csr =
+          getValue("verify-csr") || "server.csr";
+
+        mainCommand.textContent =
+          `openssl x509 -in ${shellQuote(
+            cert
+          )} -pubkey -noout | openssl sha256`;
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `openssl pkey -in ${shellQuote(
+            key
+          )} -pubout | openssl sha256`;
+
+        thirdBlock.hidden = false;
+        thirdCommand.textContent =
+          `openssl req -in ${shellQuote(
+            csr
+          )} -pubkey -noout | openssl sha256`;
+
+        setSummary(
+          "Verify matching files",
+          `${cert}, ${key}, ${csr}`,
+          "SHA-256 values"
+        );
+
+        warningBox.textContent =
+          "The SHA-256 output must be identical for the certificate, private key and CSR.";
+      }
+
+      function generateConversion() {
+        const type = getValue("conversion-type");
+        const input =
+          getValue("input-file") || "server.crt";
+
+        const output =
+          getValue("output-file") || "server.der";
+
+        const key =
+          getValue("convert-key") || "server.key";
+
+        const chain = getValue("chain-file");
+
+        const commands = {
+          "pem-to-der":
+            `openssl x509 -in ${shellQuote(
+              input
+            )} -outform DER -out ${shellQuote(output)}`,
+
+          "der-to-pem":
+            `openssl x509 -inform DER -in ${shellQuote(
+              input
+            )} -outform PEM -out ${shellQuote(output)}`,
+
+          "pfx-to-pem":
+            `openssl pkcs12 -in ${shellQuote(
+              input
+            )} -out ${shellQuote(output)}`,
+
+          "pfx-to-cert":
+            `openssl pkcs12 -in ${shellQuote(
+              input
+            )} -clcerts -nokeys -out ${shellQuote(output)}`,
+
+          "pfx-to-key":
+            `openssl pkcs12 -in ${shellQuote(
+              input
+            )} -nocerts -nodes -out ${shellQuote(output)}`,
+
+          "pem-to-pfx":
+            `openssl pkcs12 -export -out ${shellQuote(
+              output
+            )} -inkey ${shellQuote(
+              key
+            )} -in ${shellQuote(input)}${
+              chain
+                ? ` -certfile ${shellQuote(chain)}`
+                : ""
+            }`,
+        };
+
+        mainCommand.textContent =
+          commands[type] || commands["pem-to-der"];
+
+        secondaryBlock.hidden =
+          type !== "pfx-to-key";
+
+        if (type === "pfx-to-key") {
+          secondaryCommand.textContent =
+            `chmod 600 ${shellQuote(output)}`;
+        }
+
+        thirdBlock.hidden = true;
+
+        setSummary(
+          "Convert certificate format",
+          input,
+          output
+        );
+
+        warningBox.textContent =
+          type === "pfx-to-key"
+            ? "The extracted private key is unencrypted. Restrict permissions immediately."
+            : "Verify the converted file before replacing any production certificate.";
+      }
+
+      function generateTlsTest() {
+        const host =
+          getValue("tls-host") || "www.example.com";
+
+        const port =
+          getValue("tls-port") || "443";
+
+        const serverName =
+          getValue("tls-servername") || host;
+
+        const version = getValue("tls-version");
+
+        mainCommand.textContent =
+          `openssl s_client -connect ${host}:${port} -servername ${serverName}${
+            version ? ` ${version}` : ""
+          } -showcerts`;
+
+        secondaryBlock.hidden = false;
+        secondaryCommand.textContent =
+          `echo | openssl s_client -connect ${host}:${port} -servername ${serverName} 2>/dev/null | openssl x509 -dates -subject -issuer -noout`;
+
+        thirdBlock.hidden = true;
+
+        setSummary(
+          "Test TLS connection",
+          `${host}:${port}`,
+          "TLS handshake details"
+        );
+
+        warningBox.textContent =
+          "Check the verification return code, certificate chain, hostname and expiry dates.";
+      }
+
+      function generatePasswordHash() {
+        const password = getValue("hash-password");
+
+        mainCommand.textContent = password
+          ? `openssl passwd -6 ${shellQuote(password)}`
+          : "openssl passwd -6";
+
+        secondaryBlock.hidden = true;
+        thirdBlock.hidden = true;
+
+        setSummary(
+          "Generate password hash",
+          password ? "Provided password" : "Interactive input",
+          "SHA-512 crypt hash"
+        );
+
+        warningBox.textContent =
+          password
+            ? "The password will appear in shell history. Interactive input is safer."
+            : "OpenSSL will request the password securely without displaying it.";
+      }
+
+      function generateRandom() {
+        const format =
+          getValue("random-format") || "hex";
+
+        const bytes =
+          getValue("random-bytes") || "32";
+
+        mainCommand.textContent =
+          `openssl rand -${format} ${bytes}`;
+
+        secondaryBlock.hidden = true;
+        thirdBlock.hidden = true;
+
+        setSummary(
+          "Generate random value",
+          `${bytes} random bytes`,
+          format.toUpperCase()
+        );
+
+        warningBox.textContent =
+          "Use sufficiently long random values for passwords, secrets, tokens and encryption keys.";
+      }
+
+      function generateCommands() {
+        secondaryBlock.hidden = true;
+        thirdBlock.hidden = true;
+
+        const task = getTask();
+
+        if (task === "private-key") {
+          generatePrivateKey();
+        }
+
+        if (task === "csr") {
+          generateCsr();
+        }
+
+        if (task === "self-signed") {
+          generateSelfSigned();
+        }
+
+        if (task === "view-certificate") {
+          generateViewCertificate();
+        }
+
+        if (task === "verify-match") {
+          generateVerifyMatch();
+        }
+
+        if (task === "convert") {
+          generateConversion();
+        }
+
+        if (task === "tls-test") {
+          generateTlsTest();
+        }
+
+        if (task === "password-hash") {
+          generatePasswordHash();
+        }
+
+        if (task === "random") {
+          generateRandom();
+        }
+      }
+
+      function updateTaskUI() {
+        const task = getTask();
+
+        Object.entries(sectionMap).forEach(
+          ([name, section]) => {
+            section.hidden = name !== task;
+          }
+        );
+
+        generateCommands();
+      }
+
+      function updateKeyType() {
+        const keyType = getValue("key-type");
+
+        rsaSizeField.hidden = keyType !== "rsa";
+        ecCurveField.hidden = keyType !== "ec";
+
+        generateCommands();
+      }
+
+      function updateConversionFields() {
+        const type = getValue("conversion-type");
+
+        convertKeyField.hidden =
+          type !== "pem-to-pfx";
+
+        chainFileField.hidden =
+          type !== "pem-to-pfx";
+
+        const outputSuggestions = {
+          "pem-to-der": "server.der",
+          "der-to-pem": "server.pem",
+          "pfx-to-pem": "server.pem",
+          "pfx-to-cert": "server.crt",
+          "pfx-to-key": "server.key",
+          "pem-to-pfx": "server.pfx",
+        };
+
+        document.getElementById(
+          "output-file"
+        ).value = outputSuggestions[type] || "output.pem";
+
+        generateCommands();
+      }
+
+      function selectTask(task) {
+        const radio = document.querySelector(
+          `input[name="task"][value="${task}"]`
+        );
+
+        if (radio) {
+          radio.checked = true;
+        }
+      }
+
+      function resetForm() {
+        selectTask("private-key");
+
+        document.getElementById("key-type").value = "rsa";
+        document.getElementById("rsa-size").value = "4096";
+        document.getElementById("ec-curve").value = "prime256v1";
+        document.getElementById("key-file").value = "server.key";
+        document.getElementById("encrypt-key").checked = false;
+
+        document.getElementById("csr-key-file").value = "server.key";
+        document.getElementById("csr-file").value = "server.csr";
+        document.getElementById("common-name").value = "www.example.com";
+        document.getElementById("country").value = "AE";
+        document.getElementById("state").value = "Dubai";
+        document.getElementById("locality").value = "Dubai";
+        document.getElementById("organization").value = "Gokuruvi";
+        document.getElementById("organizational-unit").value = "IT";
+        document.getElementById("email").value = "";
+        document.getElementById("san-list").value =
+          "www.example.com,example.com";
+
+        updateKeyType();
+        updateTaskUI();
+      }
+
+      function loadPreset(preset) {
+        resetForm();
+
+        if (preset === "rsa-key") {
+          selectTask("private-key");
+          document.getElementById("key-type").value = "rsa";
+          document.getElementById("rsa-size").value = "4096";
+        }
+
+        if (preset === "csr") {
+          selectTask("csr");
+        }
+
+        if (preset === "self-signed") {
+          selectTask("self-signed");
+        }
+
+        if (preset === "expiry") {
+          selectTask("view-certificate");
+        }
+
+        if (preset === "tls") {
+          selectTask("tls-test");
+        }
+
+        if (preset === "random") {
+          selectTask("random");
+          document.getElementById("random-format").value = "base64";
+          document.getElementById("random-bytes").value = "32";
+        }
+
+        updateTaskUI();
+      }
+
+      function getAllCommands() {
+        const commands = [
+          mainCommand.textContent.trim(),
+        ];
+
+        if (!secondaryBlock.hidden) {
+          commands.push(
+            secondaryCommand.textContent.trim()
+          );
+        }
+
+        if (!thirdBlock.hidden) {
+          commands.push(
+            thirdCommand.textContent.trim()
+          );
+        }
+
+        return commands.filter(Boolean).join("\n");
+      }
+
+      async function copyText(text, message) {
+        try {
+          await navigator.clipboard.writeText(text);
+          copyStatus.textContent = message;
+        } catch {
+          copyStatus.textContent =
+            "Copy failed. Please copy the command manually.";
+        }
+
+        setTimeout(() => {
+          copyStatus.textContent = "";
+        }, 2500);
+      }
+
+      document
+        .querySelectorAll('input[name="task"]')
+        .forEach((radio) => {
+          radio.addEventListener("change", updateTaskUI);
+        });
+
+      document
+        .querySelectorAll("input, select, textarea")
+        .forEach((element) => {
+          if (element.name !== "task") {
+            element.addEventListener("input", generateCommands);
+            element.addEventListener("change", generateCommands);
+          }
+        });
+
+      document
+        .getElementById("key-type")
+        ?.addEventListener("change", updateKeyType);
+
+      document
+        .getElementById("conversion-type")
+        ?.addEventListener("change", updateConversionFields);
+
+      document
+        .querySelectorAll(".preset-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            loadPreset(button.dataset.preset);
+          });
+        });
+
+      document
+        .querySelectorAll(".copy-button")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const target =
+              document.getElementById(
+                button.dataset.copyTarget
+              );
+
+            copyText(
+              target?.textContent?.trim() || "",
+              "Command copied successfully."
+            );
+          });
+        });
+
+      document
+        .getElementById("copy-all")
+        ?.addEventListener("click", () => {
+          copyText(
+            getAllCommands(),
+            "All commands copied successfully."
+          );
+        });
+
+      document
+        .getElementById("generate")
+        ?.addEventListener("click", generateCommands);
+
+      document
+        .getElementById("reset")
+        ?.addEventListener("click", resetForm);
+
+      updateKeyType();
+      updateConversionFields();
+      updateTaskUI();
+    </script>
+  </body>
+</html>

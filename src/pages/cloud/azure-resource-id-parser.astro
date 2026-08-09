@@ -1,0 +1,1083 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Azure Resource ID Parser | Gokuruvi Tools";
+const description =
+  "Parse and validate Azure resource IDs into subscription, resource group, provider namespace, resource types, resource names, parent resources, and JSON.";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/azure-resource-id-parser"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1180px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #eff6ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1180px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      textarea,
+      input {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 165px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      textarea:focus,
+      input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 22px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .status {
+        display: inline-flex;
+        margin-bottom: 18px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .status.valid {
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .status.invalid {
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .resource-chain {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .chain-item {
+        padding: 13px 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #ffffff;
+      }
+
+      .chain-item strong {
+        color: var(--primary-dark);
+      }
+
+      .code-box {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 330px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .warning {
+        margin-top: 20px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1180px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 900px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-item.full {
+          grid-column: auto;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Azure Resource ID Parser</h1>
+        <p>
+          Parse an Azure resource ID into subscription, resource group,
+          provider namespace, resource type, resource name, parent resources,
+          scope, and JSON.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Enter an Azure Resource ID</h2>
+            <p class="card-description">
+              Paste a complete Azure resource ID or choose a sample resource.
+            </p>
+
+            <div class="preset-buttons">
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/rg-production/providers/Microsoft.Compute/virtualMachines/app-vm-01"
+              >
+                Virtual Machine
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-production/subnets/app-subnet"
+              >
+                Subnet
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/rg-storage/providers/Microsoft.Storage/storageAccounts/gokuruvistorage"
+              >
+                Storage Account
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/rg-web/providers/Microsoft.Web/sites/gokuruvi-app/slots/staging"
+              >
+                App Service Slot
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/subscriptions/11111111-2222-3333-4444-555555555555/providers/Microsoft.Authorization/policyAssignments/security-baseline"
+              >
+                Subscription Scope
+              </button>
+
+              <button
+                class="preset"
+                type="button"
+                data-resource-id="/providers/Microsoft.Management/managementGroups/platform/providers/Microsoft.Authorization/policyAssignments/guardrails"
+              >
+                Management Group
+              </button>
+            </div>
+
+            <div class="form-group" style="margin-top: 22px;">
+              <label for="resourceIdInput">Azure resource ID</label>
+              <textarea
+                id="resourceIdInput"
+                spellcheck="false"
+                placeholder="/subscriptions/SUBSCRIPTION_ID/resourceGroups/RESOURCE_GROUP/providers/NAMESPACE/TYPE/NAME"
+              >/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/rg-production/providers/Microsoft.Compute/virtualMachines/app-vm-01</textarea>
+            </div>
+
+            <div class="button-row">
+              <button id="parseButton" class="button primary-button" type="button">
+                Parse Resource ID
+              </button>
+
+              <button id="copyIdButton" class="button secondary-button" type="button">
+                Copy Resource ID
+              </button>
+
+              <button id="clearButton" class="button secondary-button" type="button">
+                Clear
+              </button>
+            </div>
+
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <div class="warning">
+              Azure resource IDs are case-insensitive, but preserving the
+              original casing is useful when reviewing names and provider
+              namespaces. Some IDs are subscription-scoped, management-group
+              scoped, tenant-scoped, or use nested resource types.
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Parsed Resource ID</h2>
+            <p class="card-description">
+              The parser detects the Azure scope and separates provider,
+              resource type, resource name, and nested resource components.
+            </p>
+
+            <span id="statusBadge" class="status valid">Valid Resource ID</span>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Scope</span>
+                <span id="scopeResult" class="result-value">Resource group</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Subscription ID</span>
+                <span id="subscriptionResult" class="result-value">
+                  11111111-2222-3333-4444-555555555555
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource group</span>
+                <span id="resourceGroupResult" class="result-value">
+                  rg-production
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Management group</span>
+                <span id="managementGroupResult" class="result-value">
+                  (not included)
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Provider namespace</span>
+                <span id="providerResult" class="result-value">
+                  Microsoft.Compute
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource type</span>
+                <span id="resourceTypeResult" class="result-value">
+                  virtualMachines
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Resource name</span>
+                <span id="resourceNameResult" class="result-value">
+                  app-vm-01
+                </span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Nested depth</span>
+                <span id="depthResult" class="result-value">1</span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Full resource type</span>
+                <span id="fullTypeResult" class="result-value">
+                  Microsoft.Compute/virtualMachines
+                </span>
+              </div>
+
+              <div class="result-item full">
+                <span class="result-label">Parent resource ID</span>
+                <span id="parentIdResult" class="result-value">
+                  (no parent resource)
+                </span>
+              </div>
+            </div>
+
+            <div id="resourceChain" class="resource-chain"></div>
+
+            <div class="code-box">
+              <span class="code-label">Parsed JSON</span>
+              <pre id="jsonOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button id="copyJsonButton" class="button primary-button" type="button">
+                Copy JSON
+              </button>
+
+              <button id="downloadButton" class="button secondary-button" type="button">
+                Download JSON
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Azure Resource ID Structure</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Resource-group scope</th>
+                <td>
+                  <code>/subscriptions/SUBSCRIPTION_ID/resourceGroups/RESOURCE_GROUP/providers/NAMESPACE/TYPE/NAME</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Subscription scope</th>
+                <td>
+                  <code>/subscriptions/SUBSCRIPTION_ID/providers/NAMESPACE/TYPE/NAME</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Nested resource</th>
+                <td>
+                  <code>/providers/NAMESPACE/PARENT_TYPE/PARENT_NAME/CHILD_TYPE/CHILD_NAME</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Management-group scope</th>
+                <td>
+                  <code>/providers/Microsoft.Management/managementGroups/GROUP_NAME/providers/NAMESPACE/TYPE/NAME</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Azure CLI show resource</th>
+                <td><code>az resource show --ids RESOURCE_ID</code></td>
+              </tr>
+              <tr>
+                <th>Azure CLI list resources</th>
+                <td><code>az resource list --resource-group RESOURCE_GROUP --output table</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var resourceIdInput = document.getElementById("resourceIdInput");
+        var message = document.getElementById("message");
+        var jsonOutput = document.getElementById("jsonOutput");
+        var statusBadge = document.getElementById("statusBadge");
+        var resourceChain = document.getElementById("resourceChain");
+        var currentResult = null;
+
+        var resultFields = {
+          scope: document.getElementById("scopeResult"),
+          subscriptionId: document.getElementById("subscriptionResult"),
+          resourceGroup: document.getElementById("resourceGroupResult"),
+          managementGroup: document.getElementById(
+            "managementGroupResult"
+          ),
+          providerNamespace: document.getElementById("providerResult"),
+          resourceType: document.getElementById("resourceTypeResult"),
+          resourceName: document.getElementById("resourceNameResult"),
+          depth: document.getElementById("depthResult"),
+          fullResourceType: document.getElementById("fullTypeResult"),
+          parentResourceId: document.getElementById("parentIdResult")
+        };
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function normalizeResourceId(value) {
+          var normalized = value.trim();
+
+          if (!normalized.startsWith("/")) {
+            normalized = "/" + normalized;
+          }
+
+          return normalized.replace(/\/+/g, "/").replace(/\/$/, "");
+        }
+
+        function validateResourceId(value) {
+          var normalized;
+          var segments;
+          var providerIndex;
+
+          if (!value.trim()) {
+            return "Enter an Azure resource ID.";
+          }
+
+          normalized = normalizeResourceId(value);
+          segments = normalized.split("/").filter(Boolean);
+          providerIndex = segments
+            .map(function (segment) {
+              return segment.toLowerCase();
+            })
+            .lastIndexOf("providers");
+
+          if (segments.length < 3) {
+            return "The resource ID does not contain enough path segments.";
+          }
+
+          if (providerIndex < 0) {
+            return 'The resource ID must contain a "providers" segment.';
+          }
+
+          if (!segments[providerIndex + 1]) {
+            return "Provider namespace is missing.";
+          }
+
+          if (!segments[providerIndex + 2]) {
+            return "Resource type is missing.";
+          }
+
+          if (!segments[providerIndex + 3]) {
+            return "Resource name is missing.";
+          }
+
+          if ((segments.length - providerIndex - 2) % 2 !== 0) {
+            return "Resource type and resource name segments must appear in pairs.";
+          }
+
+          return "";
+        }
+
+        function findSegment(segments, name) {
+          var lowerName = name.toLowerCase();
+          var index = segments.findIndex(function (segment) {
+            return segment.toLowerCase() === lowerName;
+          });
+
+          return index >= 0 ? segments[index + 1] || "" : "";
+        }
+
+        function detectScope(segments, providerIndex) {
+          var lower = segments.map(function (segment) {
+            return segment.toLowerCase();
+          });
+
+          if (lower.indexOf("managementgroups") >= 0) {
+            return "Management group";
+          }
+
+          if (lower.indexOf("resourcegroups") >= 0) {
+            return "Resource group";
+          }
+
+          if (lower.indexOf("subscriptions") >= 0) {
+            return "Subscription";
+          }
+
+          if (providerIndex === 0) {
+            return "Tenant or provider";
+          }
+
+          return "Unknown";
+        }
+
+        function buildParentResourceId(
+          normalized,
+          providerIndex,
+          resourcePairs
+        ) {
+          var segments = normalized.split("/").filter(Boolean);
+          var parentSegments;
+
+          if (resourcePairs.length <= 1) {
+            return "";
+          }
+
+          parentSegments = segments.slice(
+            0,
+            providerIndex + 2 + (resourcePairs.length - 1) * 2
+          );
+
+          return "/" + parentSegments.join("/");
+        }
+
+        function parseResourceId(showSuccess) {
+          var rawValue = resourceIdInput.value;
+          var error = validateResourceId(rawValue);
+          var normalized;
+          var segments;
+          var lowerSegments;
+          var providerIndex;
+          var providerNamespace;
+          var resourceSegments;
+          var resourcePairs = [];
+          var index;
+          var scope;
+          var parentResourceId;
+
+          clearMessage();
+
+          if (error) {
+            currentResult = null;
+            statusBadge.textContent = "Invalid Resource ID";
+            statusBadge.className = "status invalid";
+
+            Object.keys(resultFields).forEach(function (key) {
+              resultFields[key].textContent = "—";
+            });
+
+            resourceChain.innerHTML = "";
+            jsonOutput.textContent = error;
+
+            if (showSuccess) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          normalized = normalizeResourceId(rawValue);
+          segments = normalized.split("/").filter(Boolean);
+          lowerSegments = segments.map(function (segment) {
+            return segment.toLowerCase();
+          });
+          providerIndex = lowerSegments.lastIndexOf("providers");
+          providerNamespace = segments[providerIndex + 1];
+          resourceSegments = segments.slice(providerIndex + 2);
+
+          for (index = 0; index < resourceSegments.length; index += 2) {
+            resourcePairs.push({
+              type: resourceSegments[index],
+              name: resourceSegments[index + 1],
+              fullType:
+                providerNamespace +
+                "/" +
+                resourceSegments
+                  .filter(function (_, resourceIndex) {
+                    return resourceIndex % 2 === 0 && resourceIndex <= index;
+                  })
+                  .join("/")
+            });
+          }
+
+          scope = detectScope(segments, providerIndex);
+          parentResourceId = buildParentResourceId(
+            normalized,
+            providerIndex,
+            resourcePairs
+          );
+
+          currentResult = {
+            resourceId: normalized,
+            scope: scope,
+            subscriptionId: findSegment(segments, "subscriptions"),
+            resourceGroup: findSegment(segments, "resourceGroups"),
+            managementGroup: findSegment(segments, "managementGroups"),
+            providerNamespace: providerNamespace,
+            resourceType: resourcePairs[resourcePairs.length - 1].type,
+            resourceName: resourcePairs[resourcePairs.length - 1].name,
+            fullResourceType:
+              providerNamespace +
+              "/" +
+              resourcePairs
+                .map(function (item) {
+                  return item.type;
+                })
+                .join("/"),
+            nestedDepth: resourcePairs.length,
+            parentResourceId: parentResourceId,
+            resources: resourcePairs
+          };
+
+          statusBadge.textContent = "Valid Resource ID";
+          statusBadge.className = "status valid";
+
+          resultFields.scope.textContent = currentResult.scope;
+          resultFields.subscriptionId.textContent =
+            currentResult.subscriptionId || "(not included)";
+          resultFields.resourceGroup.textContent =
+            currentResult.resourceGroup || "(not included)";
+          resultFields.managementGroup.textContent =
+            currentResult.managementGroup || "(not included)";
+          resultFields.providerNamespace.textContent =
+            currentResult.providerNamespace;
+          resultFields.resourceType.textContent =
+            currentResult.resourceType;
+          resultFields.resourceName.textContent =
+            currentResult.resourceName;
+          resultFields.depth.textContent =
+            String(currentResult.nestedDepth);
+          resultFields.fullResourceType.textContent =
+            currentResult.fullResourceType;
+          resultFields.parentResourceId.textContent =
+            currentResult.parentResourceId || "(no parent resource)";
+
+          resourceChain.innerHTML = "";
+
+          currentResult.resources.forEach(function (resource, resourceIndex) {
+            var item = document.createElement("div");
+            item.className = "chain-item";
+            item.innerHTML =
+              "<strong>Level " +
+              (resourceIndex + 1) +
+              ":</strong> " +
+              resource.type +
+              " / " +
+              resource.name;
+            resourceChain.appendChild(item);
+          });
+
+          jsonOutput.textContent = JSON.stringify(currentResult, null, 2);
+
+          if (showSuccess) {
+            showMessage("Azure resource ID parsed successfully.", "success");
+          }
+        }
+
+        function copyText(text, successMessage) {
+          if (!text) {
+            showMessage("There is no content to copy.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(text)
+            .then(function () {
+              showMessage(successMessage, "success");
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the content manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadJson() {
+          var blob;
+          var url;
+          var anchor;
+
+          if (!currentResult) {
+            showMessage(
+              "Parse a valid Azure resource ID before downloading.",
+              "error"
+            );
+            return;
+          }
+
+          blob = new Blob(
+            [JSON.stringify(currentResult, null, 2) + "\n"],
+            { type: "application/json;charset=utf-8" }
+          );
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "parsed-azure-resource-id.json";
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage("Parsed resource ID JSON downloaded.", "success");
+        }
+
+        document
+          .getElementById("parseButton")
+          .addEventListener("click", function () {
+            parseResourceId(true);
+          });
+
+        document
+          .getElementById("copyIdButton")
+          .addEventListener("click", function () {
+            copyText(
+              normalizeResourceId(resourceIdInput.value),
+              "Azure resource ID copied successfully."
+            );
+          });
+
+        document
+          .getElementById("copyJsonButton")
+          .addEventListener("click", function () {
+            copyText(
+              currentResult ? JSON.stringify(currentResult, null, 2) : "",
+              "Parsed JSON copied successfully."
+            );
+          });
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadJson);
+
+        document
+          .getElementById("clearButton")
+          .addEventListener("click", function () {
+            resourceIdInput.value = "";
+            parseResourceId(false);
+            resourceIdInput.focus();
+          });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            resourceIdInput.value =
+              button.getAttribute("data-resource-id") || "";
+            parseResourceId(true);
+          });
+        });
+
+        resourceIdInput.addEventListener("input", function () {
+          parseResourceId(false);
+        });
+
+        parseResourceId(false);
+      });
+    </script>
+  </body>
+</html>

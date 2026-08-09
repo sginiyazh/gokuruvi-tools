@@ -1,0 +1,1445 @@
+---
+import Header from "../../components/Header.astro";
+const pageTitle = "Terraform Variables Generator | Gokuruvi Tools";
+const description =
+  "Generate Terraform variable blocks, terraform.tfvars entries, validations, descriptions, defaults, sensitive flags, and nullable settings.";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.gokuruvi.com/cloud/terraform-variables-generator"
+    />
+
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        --primary: #6d28d9;
+        --primary-dark: #5b21b6;
+        --dark: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --background: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --success-text: #166534;
+        --error-bg: #fef2f2;
+        --error-border: #fecaca;
+        --error-text: #b91c1c;
+        --warning-bg: #fffbeb;
+        --warning-border: #fde68a;
+        --warning-text: #92400e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .site-header {
+        background: var(--dark);
+      }
+
+      .header-inner {
+        display: flex;
+        width: min(100% - 40px, 1200px);
+        min-height: 70px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .navigation a {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .navigation a:hover,
+      .navigation a.active {
+        color: #ffffff;
+      }
+
+      .hero {
+        padding: 56px 20px;
+        background: linear-gradient(135deg, #f5f3ff, #f8fafc);
+        text-align: center;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        color: var(--dark);
+        font-size: clamp(34px, 6vw, 54px);
+      }
+
+      .hero p {
+        max-width: 900px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .page-section {
+        padding: 48px 20px 80px;
+      }
+
+      .tool-layout {
+        display: grid;
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .card {
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        color: var(--dark);
+      }
+
+      .card-description {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 28px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--dark);
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: var(--dark);
+        outline: none;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.13);
+      }
+
+      .checkbox-item {
+        display: flex;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #f8fafc;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .checkbox-item input {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+      }
+
+      .conditional-section {
+        display: none;
+      }
+
+      .conditional-section.active {
+        display: block;
+      }
+
+      .preset-buttons,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .preset {
+        padding: 8px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .preset:hover {
+        border-color: var(--primary);
+        background: #f5f3ff;
+        color: var(--primary-dark);
+      }
+
+      .button-row {
+        margin-top: 24px;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-button {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .secondary-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: var(--dark);
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        display: block;
+        border: 1px solid var(--error-border);
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .message.success {
+        display: block;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .tab-button {
+        padding: 9px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--dark);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .tab-button.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .code-box {
+        margin-top: 14px;
+        padding: 22px;
+        border-radius: 12px;
+        background: var(--dark);
+      }
+
+      .code-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .code-output {
+        min-height: 580px;
+        margin: 0;
+        overflow: auto;
+        color: #e2e8f0;
+        white-space: pre;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .result-grid {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .result-item {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .result-label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .result-value {
+        display: block;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 800;
+      }
+
+      .warning {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        font-size: 14px;
+      }
+
+      .reference-section {
+        width: min(100%, 1200px);
+        margin: 30px auto 0;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .reference-section h2 {
+        margin-top: 0;
+        color: var(--dark);
+      }
+
+      .reference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .reference-table th,
+      .reference-table td {
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .reference-table th {
+        background: #f1f5f9;
+      }
+
+      .reference-table code {
+        color: var(--primary-dark);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 26px 20px;
+        background: var(--dark);
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .tool-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 17px 0;
+        }
+
+        .input-row,
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .reference-section {
+          padding: 21px;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .reference-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <h1>Terraform Variables Generator</h1>
+        <p>
+          Generate Terraform variable blocks, tfvars entries, validation rules,
+          descriptions, defaults, sensitive flags, nullable settings, and
+          example usage.
+        </p>
+      </section>
+
+      <section class="page-section">
+        <div class="tool-layout">
+          <section class="card">
+            <h2>Variable Configuration</h2>
+            <p class="card-description">
+              Configure a Terraform input variable and generate variables.tf,
+              terraform.tfvars, and example references.
+            </p>
+
+            <div class="preset-buttons">
+              <button class="preset" type="button" data-preset="string">
+                String
+              </button>
+              <button class="preset" type="button" data-preset="number">
+                Number
+              </button>
+              <button class="preset" type="button" data-preset="boolean">
+                Boolean
+              </button>
+              <button class="preset" type="button" data-preset="list">
+                List
+              </button>
+              <button class="preset" type="button" data-preset="map">
+                Map
+              </button>
+              <button class="preset" type="button" data-preset="object">
+                Object
+              </button>
+              <button class="preset" type="button" data-preset="secret">
+                Sensitive
+              </button>
+            </div>
+
+            <h3 class="section-title">Basic Settings</h3>
+
+            <div class="input-row">
+              <div class="form-group">
+                <label for="nameInput">Variable name</label>
+                <input
+                  id="nameInput"
+                  type="text"
+                  value="environment"
+                  placeholder="Example: environment"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="typeSelect">Variable type</label>
+                <select id="typeSelect">
+                  <option value="string" selected>string</option>
+                  <option value="number">number</option>
+                  <option value="bool">bool</option>
+                  <option value="list(string)">list(string)</option>
+                  <option value="set(string)">set(string)</option>
+                  <option value="map(string)">map(string)</option>
+                  <option value="object">object(...)</option>
+                  <option value="tuple">tuple(...)</option>
+                  <option value="any">any</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="descriptionInput">Description</label>
+              <textarea id="descriptionInput">Deployment environment name.</textarea>
+            </div>
+
+            <div id="customTypeSection" class="conditional-section">
+              <div class="form-group">
+                <label for="customTypeInput">Custom type expression</label>
+                <textarea
+                  id="customTypeInput"
+                  placeholder='object({&#10;  name    = string&#10;  enabled = bool&#10;})'
+                >object(&#123;
+  name    = string
+  enabled = bool
+&#125;)</textarea>
+              </div>
+            </div>
+
+            <h3 class="section-title">Default and tfvars Values</h3>
+
+            <div class="checkbox-item">
+              <input id="includeDefaultInput" type="checkbox" checked />
+              <label for="includeDefaultInput">Include a default value</label>
+            </div>
+
+            <div id="defaultSection" class="conditional-section active">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="defaultValueInput">Default value</label>
+                <textarea id="defaultValueInput">production</textarea>
+                <p>
+                  Enter the value without quotes for simple strings. Complex
+                  values can use Terraform HCL syntax.
+                </p>
+              </div>
+            </div>
+
+            <div class="checkbox-item">
+              <input id="includeTfvarsInput" type="checkbox" checked />
+              <label for="includeTfvarsInput">
+                Generate terraform.tfvars entry
+              </label>
+            </div>
+
+            <div id="tfvarsSection" class="conditional-section active">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="tfvarsValueInput">tfvars value</label>
+                <textarea id="tfvarsValueInput">production</textarea>
+              </div>
+            </div>
+
+            <h3 class="section-title">Variable Options</h3>
+
+            <div class="checkbox-item">
+              <input id="sensitiveInput" type="checkbox" />
+              <label for="sensitiveInput">Mark variable as sensitive</label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="nullableInput" type="checkbox" checked />
+              <label for="nullableInput">Allow null values</label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="ephemeralInput" type="checkbox" />
+              <label for="ephemeralInput">
+                Mark variable as ephemeral
+              </label>
+            </div>
+
+            <h3 class="section-title">Validation Rule</h3>
+
+            <div class="checkbox-item">
+              <input id="validationEnabledInput" type="checkbox" />
+              <label for="validationEnabledInput">
+                Add a validation block
+              </label>
+            </div>
+
+            <div id="validationSection" class="conditional-section">
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="conditionInput">Validation condition</label>
+                <textarea id="conditionInput">contains(["dev", "test", "production"], var.environment)</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="errorMessageInput">Error message</label>
+                <textarea id="errorMessageInput">Environment must be dev, test, or production.</textarea>
+              </div>
+            </div>
+
+            <h3 class="section-title">Output Options</h3>
+
+            <div class="checkbox-item">
+              <input id="includeOutputInput" type="checkbox" />
+              <label for="includeOutputInput">
+                Generate an output block
+              </label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="includeExampleInput" type="checkbox" checked />
+              <label for="includeExampleInput">
+                Include an example reference
+              </label>
+            </div>
+
+            <div class="checkbox-item" style="margin-top: 10px;">
+              <input id="includeCommentsInput" type="checkbox" checked />
+              <label for="includeCommentsInput">
+                Include explanatory comments
+              </label>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="generateButton"
+                class="button primary-button"
+                type="button"
+              >
+                Generate Variables
+              </button>
+
+              <button
+                id="resetButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              id="message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section class="card">
+            <h2>Generated Terraform Files</h2>
+            <p class="card-description">
+              Switch between variables.tf, terraform.tfvars, and example usage.
+            </p>
+
+            <div class="tabs">
+              <button
+                class="tab-button active"
+                type="button"
+                data-tab="variables"
+              >
+                variables.tf
+              </button>
+              <button
+                class="tab-button"
+                type="button"
+                data-tab="tfvars"
+              >
+                terraform.tfvars
+              </button>
+              <button
+                class="tab-button"
+                type="button"
+                data-tab="example"
+              >
+                Example usage
+              </button>
+            </div>
+
+            <div class="code-box">
+              <span id="codeLabel" class="code-label">variables.tf</span>
+              <pre id="codeOutput" class="code-output"></pre>
+            </div>
+
+            <div class="button-row">
+              <button
+                id="copyButton"
+                class="button primary-button"
+                type="button"
+              >
+                Copy Current
+              </button>
+
+              <button
+                id="downloadButton"
+                class="button secondary-button"
+                type="button"
+              >
+                Download Current
+              </button>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Variable</span>
+                <span id="resultName" class="result-value">environment</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Type</span>
+                <span id="resultType" class="result-value">string</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Default</span>
+                <span id="resultDefault" class="result-value">Included</span>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">Sensitive</span>
+                <span id="resultSensitive" class="result-value">No</span>
+              </div>
+            </div>
+
+            <div class="warning">
+              Do not commit real passwords, tokens, keys, or other secrets to
+              terraform.tfvars. Use environment variables, secret managers, or
+              protected CI/CD variables.
+            </div>
+          </section>
+        </div>
+
+        <section class="reference-section">
+          <h2>Terraform Variable Commands and Usage</h2>
+
+          <table class="reference-table">
+            <tbody>
+              <tr>
+                <th>Use a tfvars file</th>
+                <td><code>terraform plan -var-file="production.tfvars"</code></td>
+              </tr>
+              <tr>
+                <th>Pass a variable directly</th>
+                <td><code>terraform plan -var="environment=production"</code></td>
+              </tr>
+              <tr>
+                <th>Use an environment variable</th>
+                <td><code>export TF_VAR_environment=production</code></td>
+              </tr>
+              <tr>
+                <th>Format Terraform files</th>
+                <td><code>terraform fmt -recursive</code></td>
+              </tr>
+              <tr>
+                <th>Validate configuration</th>
+                <td><code>terraform validate</code></td>
+              </tr>
+              <tr>
+                <th>Open Terraform console</th>
+                <td><code>terraform console</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", function () {
+        var fields = {
+          name: document.getElementById("nameInput"),
+          type: document.getElementById("typeSelect"),
+          description: document.getElementById("descriptionInput"),
+          customType: document.getElementById("customTypeInput"),
+          includeDefault: document.getElementById("includeDefaultInput"),
+          defaultValue: document.getElementById("defaultValueInput"),
+          includeTfvars: document.getElementById("includeTfvarsInput"),
+          tfvarsValue: document.getElementById("tfvarsValueInput"),
+          sensitive: document.getElementById("sensitiveInput"),
+          nullable: document.getElementById("nullableInput"),
+          ephemeral: document.getElementById("ephemeralInput"),
+          validationEnabled: document.getElementById(
+            "validationEnabledInput"
+          ),
+          condition: document.getElementById("conditionInput"),
+          errorMessage: document.getElementById("errorMessageInput"),
+          includeOutput: document.getElementById("includeOutputInput"),
+          includeExample: document.getElementById("includeExampleInput"),
+          includeComments: document.getElementById("includeCommentsInput")
+        };
+
+        var customTypeSection = document.getElementById(
+          "customTypeSection"
+        );
+        var defaultSection = document.getElementById("defaultSection");
+        var tfvarsSection = document.getElementById("tfvarsSection");
+        var validationSection = document.getElementById(
+          "validationSection"
+        );
+
+        var codeOutput = document.getElementById("codeOutput");
+        var codeLabel = document.getElementById("codeLabel");
+        var message = document.getElementById("message");
+        var copyButton = document.getElementById("copyButton");
+
+        var activeTab = "variables";
+        var outputs = {
+          variables: "",
+          tfvars: "",
+          example: ""
+        };
+
+        function showMessage(text, type) {
+          message.textContent = text;
+          message.className = "message " + type;
+        }
+
+        function clearMessage() {
+          message.textContent = "";
+          message.className = "message";
+        }
+
+        function quoteHcl(value) {
+          return (
+            '"' +
+            String(value)
+              .replace(/\\/g, "\\\\")
+              .replace(/"/g, '\\"')
+              .replace(/\r/g, "\\r")
+              .replace(/\n/g, "\\n") +
+            '"'
+          );
+        }
+
+        function isValidIdentifier(value) {
+          return /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value);
+        }
+
+        function getTypeExpression() {
+          if (
+            fields.type.value === "object" ||
+            fields.type.value === "tuple"
+          ) {
+            return fields.customType.value.trim();
+          }
+
+          return fields.type.value;
+        }
+
+        function formatValue(rawValue) {
+          var type = fields.type.value;
+          var value = rawValue.trim();
+
+          if (!value) {
+            return "null";
+          }
+
+          if (type === "string") {
+            return quoteHcl(value);
+          }
+
+          if (type === "number") {
+            return value;
+          }
+
+          if (type === "bool") {
+            return value.toLowerCase() === "true" ? "true" : "false";
+          }
+
+          return value;
+        }
+
+        function validateForm() {
+          var typeExpression = getTypeExpression();
+          var defaultValue = fields.defaultValue.value.trim();
+          var tfvarsValue = fields.tfvarsValue.value.trim();
+
+          if (!isValidIdentifier(fields.name.value.trim())) {
+            return "Variable name is invalid.";
+          }
+
+          if (
+            (fields.type.value === "object" ||
+              fields.type.value === "tuple") &&
+            !typeExpression
+          ) {
+            return "Custom type expression is required.";
+          }
+
+          if (
+            fields.type.value === "number" &&
+            fields.includeDefault.checked &&
+            defaultValue &&
+            Number.isNaN(Number(defaultValue))
+          ) {
+            return "Default value must be a valid number.";
+          }
+
+          if (
+            fields.type.value === "bool" &&
+            fields.includeDefault.checked &&
+            defaultValue &&
+            !/^(true|false)$/i.test(defaultValue)
+          ) {
+            return "Boolean default must be true or false.";
+          }
+
+          if (
+            fields.type.value === "number" &&
+            fields.includeTfvars.checked &&
+            tfvarsValue &&
+            Number.isNaN(Number(tfvarsValue))
+          ) {
+            return "tfvars value must be a valid number.";
+          }
+
+          if (
+            fields.type.value === "bool" &&
+            fields.includeTfvars.checked &&
+            tfvarsValue &&
+            !/^(true|false)$/i.test(tfvarsValue)
+          ) {
+            return "Boolean tfvars value must be true or false.";
+          }
+
+          if (
+            fields.validationEnabled.checked &&
+            !fields.condition.value.trim()
+          ) {
+            return "Validation condition is required.";
+          }
+
+          if (
+            fields.validationEnabled.checked &&
+            !fields.errorMessage.value.trim()
+          ) {
+            return "Validation error message is required.";
+          }
+
+          return "";
+        }
+
+        function buildVariablesFile() {
+          var name = fields.name.value.trim();
+          var typeExpression = getTypeExpression();
+          var lines = [];
+
+          if (fields.includeComments.checked) {
+            lines.push("# Input variable definition");
+          }
+
+          lines.push('variable "' + name + '" {');
+          lines.push("  type = " + typeExpression);
+
+          if (fields.description.value.trim()) {
+            lines.push(
+              "  description = " +
+                quoteHcl(fields.description.value.trim())
+            );
+          }
+
+          if (fields.includeDefault.checked) {
+            lines.push(
+              "  default = " +
+                formatValue(fields.defaultValue.value)
+            );
+          }
+
+          if (fields.sensitive.checked) {
+            lines.push("  sensitive = true");
+          }
+
+          if (!fields.nullable.checked) {
+            lines.push("  nullable = false");
+          }
+
+          if (fields.ephemeral.checked) {
+            lines.push("  ephemeral = true");
+          }
+
+          if (fields.validationEnabled.checked) {
+            lines.push("");
+            lines.push("  validation {");
+            lines.push(
+              "    condition     = " + fields.condition.value.trim()
+            );
+            lines.push(
+              "    error_message = " +
+                quoteHcl(fields.errorMessage.value.trim())
+            );
+            lines.push("  }");
+          }
+
+          lines.push("}");
+
+          if (fields.includeOutput.checked) {
+            lines.push("");
+
+            if (fields.includeComments.checked) {
+              lines.push("# Optional output");
+            }
+
+            lines.push('output "' + name + '" {');
+            lines.push("  value = var." + name);
+
+            if (fields.sensitive.checked) {
+              lines.push("  sensitive = true");
+            }
+
+            lines.push("}");
+          }
+
+          return lines.join("\n") + "\n";
+        }
+
+        function buildTfvarsFile() {
+          var name = fields.name.value.trim();
+          var lines = [];
+
+          if (!fields.includeTfvars.checked) {
+            return "# terraform.tfvars generation is disabled.\n";
+          }
+
+          if (fields.includeComments.checked) {
+            lines.push("# Variable value");
+          }
+
+          lines.push(
+            name + " = " + formatValue(fields.tfvarsValue.value)
+          );
+
+          return lines.join("\n") + "\n";
+        }
+
+        function buildExampleFile() {
+          var name = fields.name.value.trim();
+          var lines = [];
+
+          if (!fields.includeExample.checked) {
+            return "# Example usage generation is disabled.\n";
+          }
+
+          if (fields.includeComments.checked) {
+            lines.push("# Reference the variable in a resource or module");
+          }
+
+          lines.push("locals {");
+          lines.push("  selected_" + name + " = var." + name);
+          lines.push("}");
+          lines.push("");
+
+          lines.push("# Command-line examples");
+          lines.push(
+            '# terraform plan -var="' +
+              name +
+              "=" +
+              fields.tfvarsValue.value.trim() +
+              '"'
+          );
+          lines.push(
+            "# export TF_VAR_" +
+              name +
+              "=" +
+              fields.tfvarsValue.value.trim()
+          );
+
+          return lines.join("\n") + "\n";
+        }
+
+        function renderActiveTab() {
+          var labels = {
+            variables: "variables.tf",
+            tfvars: "terraform.tfvars",
+            example: "Example usage"
+          };
+
+          codeLabel.textContent = labels[activeTab];
+          codeOutput.textContent = outputs[activeTab];
+        }
+
+        function generateCode(showError) {
+          var error = validateForm();
+
+          clearMessage();
+
+          if (error) {
+            outputs.variables = error;
+            outputs.tfvars = error;
+            outputs.example = error;
+            renderActiveTab();
+
+            if (showError) {
+              showMessage(error, "error");
+            }
+
+            return;
+          }
+
+          outputs.variables = buildVariablesFile();
+          outputs.tfvars = buildTfvarsFile();
+          outputs.example = buildExampleFile();
+
+          renderActiveTab();
+
+          document.getElementById("resultName").textContent =
+            fields.name.value.trim();
+          document.getElementById("resultType").textContent =
+            getTypeExpression();
+          document.getElementById("resultDefault").textContent =
+            fields.includeDefault.checked ? "Included" : "Required";
+          document.getElementById("resultSensitive").textContent =
+            fields.sensitive.checked ? "Yes" : "No";
+        }
+
+        function updateSections() {
+          customTypeSection.classList.toggle(
+            "active",
+            fields.type.value === "object" ||
+              fields.type.value === "tuple"
+          );
+
+          defaultSection.classList.toggle(
+            "active",
+            fields.includeDefault.checked
+          );
+
+          tfvarsSection.classList.toggle(
+            "active",
+            fields.includeTfvars.checked
+          );
+
+          validationSection.classList.toggle(
+            "active",
+            fields.validationEnabled.checked
+          );
+
+          generateCode(false);
+        }
+
+        function applyPreset(preset) {
+          if (preset === "string") {
+            fields.name.value = "environment";
+            fields.type.value = "string";
+            fields.description.value = "Deployment environment name.";
+            fields.defaultValue.value = "production";
+            fields.tfvarsValue.value = "production";
+            fields.validationEnabled.checked = true;
+            fields.condition.value =
+              'contains(["dev", "test", "production"], var.environment)';
+            fields.errorMessage.value =
+              "Environment must be dev, test, or production.";
+            fields.sensitive.checked = false;
+          } else if (preset === "number") {
+            fields.name.value = "instance_count";
+            fields.type.value = "number";
+            fields.description.value = "Number of instances to create.";
+            fields.defaultValue.value = "2";
+            fields.tfvarsValue.value = "3";
+            fields.validationEnabled.checked = true;
+            fields.condition.value = "var.instance_count >= 1";
+            fields.errorMessage.value =
+              "Instance count must be at least 1.";
+            fields.sensitive.checked = false;
+          } else if (preset === "boolean") {
+            fields.name.value = "enable_audit_logging";
+            fields.type.value = "bool";
+            fields.description.value =
+              "Enable audit logging for the deployment.";
+            fields.defaultValue.value = "true";
+            fields.tfvarsValue.value = "true";
+            fields.validationEnabled.checked = false;
+            fields.sensitive.checked = false;
+          } else if (preset === "list") {
+            fields.name.value = "availability_zones";
+            fields.type.value = "list(string)";
+            fields.description.value =
+              "Availability zones used by the deployment.";
+            fields.defaultValue.value =
+              '["me-central-1a", "me-central-1b"]';
+            fields.tfvarsValue.value =
+              '["me-central-1a", "me-central-1b"]';
+            fields.validationEnabled.checked = false;
+            fields.sensitive.checked = false;
+          } else if (preset === "map") {
+            fields.name.value = "common_tags";
+            fields.type.value = "map(string)";
+            fields.description.value = "Common resource tags.";
+            fields.defaultValue.value =
+              '{\n  Environment = "production"\n  ManagedBy   = "terraform"\n}';
+            fields.tfvarsValue.value =
+              '{\n  Environment = "production"\n  Owner       = "platform-team"\n}';
+            fields.validationEnabled.checked = false;
+            fields.sensitive.checked = false;
+          } else if (preset === "object") {
+            fields.name.value = "server";
+            fields.type.value = "object";
+            fields.customType.value =
+              "object({\n" +
+              "  name      = string\n" +
+              "  cpu       = number\n" +
+              "  memory_gb = number\n" +
+              "  enabled   = bool\n" +
+              "})";
+            fields.description.value = "Server configuration object.";
+            fields.defaultValue.value =
+              '{\n  name      = "app-server"\n  cpu       = 4\n  memory_gb = 8\n  enabled   = true\n}';
+            fields.tfvarsValue.value =
+              '{\n  name      = "production-app"\n  cpu       = 8\n  memory_gb = 16\n  enabled   = true\n}';
+            fields.validationEnabled.checked = false;
+            fields.sensitive.checked = false;
+          } else if (preset === "secret") {
+            fields.name.value = "api_token";
+            fields.type.value = "string";
+            fields.description.value = "API authentication token.";
+            fields.defaultValue.value = "";
+            fields.tfvarsValue.value = "replace-with-secret";
+            fields.includeDefault.checked = false;
+            fields.sensitive.checked = true;
+            fields.nullable.checked = false;
+            fields.validationEnabled.checked = true;
+            fields.condition.value = "length(var.api_token) >= 16";
+            fields.errorMessage.value =
+              "API token must contain at least 16 characters.";
+          }
+
+          updateSections();
+        }
+
+        function resetGenerator() {
+          fields.name.value = "environment";
+          fields.type.value = "string";
+          fields.description.value = "Deployment environment name.";
+          fields.customType.value =
+            "object({\n  name    = string\n  enabled = bool\n})";
+          fields.includeDefault.checked = true;
+          fields.defaultValue.value = "production";
+          fields.includeTfvars.checked = true;
+          fields.tfvarsValue.value = "production";
+          fields.sensitive.checked = false;
+          fields.nullable.checked = true;
+          fields.ephemeral.checked = false;
+          fields.validationEnabled.checked = false;
+          fields.condition.value =
+            'contains(["dev", "test", "production"], var.environment)';
+          fields.errorMessage.value =
+            "Environment must be dev, test, or production.";
+          fields.includeOutput.checked = false;
+          fields.includeExample.checked = true;
+          fields.includeComments.checked = true;
+
+          activeTab = "variables";
+
+          document.querySelectorAll(".tab-button").forEach(function (button) {
+            button.classList.toggle(
+              "active",
+              button.getAttribute("data-tab") === activeTab
+            );
+          });
+
+          updateSections();
+          fields.name.focus();
+        }
+
+        function copyCurrent() {
+          var current = outputs[activeTab];
+
+          if (!current) {
+            showMessage("Generate valid Terraform code first.", "error");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(current)
+            .then(function () {
+              var originalText = copyButton.textContent;
+              copyButton.textContent = "Copied!";
+              showMessage("Terraform code copied successfully.", "success");
+
+              window.setTimeout(function () {
+                copyButton.textContent = originalText;
+              }, 1500);
+            })
+            .catch(function () {
+              showMessage(
+                "Clipboard access failed. Copy the code manually.",
+                "error"
+              );
+            });
+        }
+
+        function downloadCurrent() {
+          var filenames = {
+            variables: "variables.tf",
+            tfvars: "terraform.tfvars",
+            example: "variable-example.tf"
+          };
+          var current = outputs[activeTab];
+          var blob;
+          var url;
+          var anchor;
+
+          if (!current) {
+            showMessage("Generate valid Terraform code first.", "error");
+            return;
+          }
+
+          blob = new Blob([current], {
+            type: "text/plain;charset=utf-8"
+          });
+
+          url = URL.createObjectURL(blob);
+          anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filenames[activeTab];
+
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showMessage(
+            filenames[activeTab] + " downloaded successfully.",
+            "success"
+          );
+        }
+
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", function () {
+            generateCode(true);
+          });
+
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetGenerator);
+
+        copyButton.addEventListener("click", copyCurrent);
+
+        document
+          .getElementById("downloadButton")
+          .addEventListener("click", downloadCurrent);
+
+        fields.type.addEventListener("change", updateSections);
+        fields.includeDefault.addEventListener("change", updateSections);
+        fields.includeTfvars.addEventListener("change", updateSections);
+        fields.validationEnabled.addEventListener("change", updateSections);
+
+        Object.keys(fields).forEach(function (key) {
+          var field = fields[key];
+
+          field.addEventListener("input", function () {
+            generateCode(false);
+          });
+
+          if (
+            key !== "type" &&
+            key !== "includeDefault" &&
+            key !== "includeTfvars" &&
+            key !== "validationEnabled"
+          ) {
+            field.addEventListener("change", function () {
+              generateCode(false);
+            });
+          }
+        });
+
+        document.querySelectorAll(".preset").forEach(function (button) {
+          button.addEventListener("click", function () {
+            applyPreset(button.getAttribute("data-preset") || "string");
+          });
+        });
+
+        document.querySelectorAll(".tab-button").forEach(function (button) {
+          button.addEventListener("click", function () {
+            activeTab = button.getAttribute("data-tab") || "variables";
+
+            document
+              .querySelectorAll(".tab-button")
+              .forEach(function (tabButton) {
+                tabButton.classList.toggle(
+                  "active",
+                  tabButton === button
+                );
+              });
+
+            renderActiveTab();
+          });
+        });
+
+        updateSections();
+      });
+    </script>
+  </body>
+</html>

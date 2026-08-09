@@ -1,0 +1,725 @@
+---
+import Header from "../../components/Header.astro";
+
+const cloudTools = [
+  {
+    icon: "☁️",
+    title: "Cloud-init Generator",
+    description:
+      "Generate cloud-init YAML configurations for Ubuntu, RHEL, Debian and other Linux cloud virtual machines.",
+    link: "/cloud/cloud-init-generator",
+    badge: "Cloud VM",
+  },
+  {
+    icon: "🏗️",
+    title: "Terraform Provider Generator",
+    description:
+      "Generate Terraform provider blocks for AWS, Azure, Google Cloud, OCI and Huawei Cloud.",
+    link: "/cloud/terraform-provider-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "📦",
+    title: "Terraform Backend Generator",
+    description:
+      "Create remote backend configurations for Amazon S3, Azure Storage, Google Cloud Storage and Terraform Cloud.",
+    link: "/cloud/terraform-backend-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "📝",
+    title: "Terraform Variables Generator",
+    description:
+      "Generate variables.tf and terraform.tfvars content for Terraform infrastructure projects.",
+    link: "/cloud/terraform-variables-generator",
+    badge: "Terraform",
+  },
+  {
+    icon: "🔐",
+    title: "AWS IAM Policy Generator",
+    description:
+      "Create AWS IAM policy documents for users, groups, roles and supported AWS services.",
+    link: "/cloud/aws-iam-policy-generator",
+    badge: "AWS",
+  },
+  {
+    icon: "🛡️",
+    title: "AWS Security Group Generator",
+    description:
+      "Generate inbound and outbound AWS Security Group rules for EC2 and cloud workloads.",
+    link: "/cloud/aws-security-group-generator",
+    badge: "AWS",
+  },
+  {
+    icon: "🌐",
+    title: "Azure NSG Generator",
+    description:
+      "Create Azure Network Security Group rules with ports, protocols, priorities and source or destination settings.",
+    link: "/cloud/azure-nsg-generator",
+    badge: "Azure",
+  },
+  {
+    icon: "🔎",
+    title: "AWS ARN Parser",
+    description:
+      "Parse and validate AWS Amazon Resource Names into partition, service, region, account and resource values.",
+    link: "/cloud/aws-arn-parser",
+    badge: "AWS",
+  },
+  {
+    icon: "📋",
+    title: "Azure Resource ID Parser",
+    description:
+      "Parse Azure Resource IDs into subscription, resource group, provider, resource type and resource name.",
+    link: "/cloud/azure-resource-id-parser",
+    badge: "Azure",
+  },
+];
+
+const featuredTools = cloudTools.slice(0, 4);
+
+const pageTitle = "Free Cloud Tools for AWS, Azure and Terraform | Gokuruvi";
+const pageDescription =
+  "Free cloud engineering tools for AWS, Microsoft Azure, Terraform and Linux cloud administrators. Generate cloud-init, IAM policies, security rules and Terraform configuration.";
+const siteUrl = "https://www.gokuruvi.com/cloud";
+import Footer from "../../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={pageDescription} />
+    <meta name="author" content="Gokuruvi Tools" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content="Gokuruvi Tools" />
+
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{pageTitle}</title>
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              Free tools for cloud engineers
+            </div>
+
+            <h1>Practical <span>Cloud Tools</span></h1>
+
+            <p class="hero-description">
+              Generate cloud-init configurations, Terraform templates, AWS IAM
+              policies, security rules, cost estimates and Azure resource
+              information using simple browser-based utilities.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#cloud-tools">
+                Explore Cloud Tools <span aria-hidden="true">→</span>
+              </a>
+
+              <a class="button button-secondary" href="/#tool-categories">
+                Browse All Categories
+              </a>
+            </div>
+
+            <div class="hero-statistics">
+              <div class="hero-stat">
+                <strong>{cloudTools.length}</strong>
+                <span>Free cloud tools</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>AWS</strong>
+                <span>IAM and security tools</span>
+              </div>
+
+              <div class="hero-stat">
+                <strong>Azure</strong>
+                <span>NSG and resource tools</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Featured Utilities</span>
+            <h2>Popular tools for everyday cloud administration</h2>
+            <p>
+              Start with commonly used generators for cloud virtual machines,
+              Terraform projects, AWS and Azure.
+            </p>
+          </div>
+
+          <div class="featured-grid">
+            {
+              featuredTools.map((tool) => (
+                <a class="featured-card" href={tool.link}>
+                  <div class="featured-icon" aria-hidden="true">{tool.icon}</div>
+                  <span class="tool-badge">{tool.badge}</span>
+                  <h3>{tool.title}</h3>
+                  <p>{tool.description}</p>
+                  <span class="open-tool">Open tool <span>→</span></span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="cloud-tools">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">All Cloud Tools</span>
+            <h2>Cloud generators, parsers and calculators</h2>
+            <p>
+              Select a utility for AWS, Azure, Terraform or Linux cloud
+              administration.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            {
+              cloudTools.map((tool) => (
+                <a class="tool-card" href={tool.link}>
+                  <div class="tool-header">
+                    <div class="tool-icon" aria-hidden="true">{tool.icon}</div>
+                    <span class="tool-badge">{tool.badge}</span>
+                  </div>
+
+                  <h3>{tool.title}</h3>
+                  <p>{tool.description}</p>
+                  <span class="open-tool">Open tool <span>→</span></span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-white">
+        <div class="container">
+          <div class="section-heading">
+            <span class="section-label">Why Gokuruvi</span>
+            <h2>Built for practical cloud engineering tasks</h2>
+            <p>
+              Create reusable cloud configurations faster and reduce repetitive
+              manual work.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            <article class="benefit-card">
+              <div class="benefit-icon">⚡</div>
+              <h3>Generate Faster</h3>
+              <p>Create cloud and Terraform configurations without writing every line manually.</p>
+            </article>
+
+            <article class="benefit-card">
+              <div class="benefit-icon">🧰</div>
+              <h3>Practical Outputs</h3>
+              <p>Copy generated YAML, JSON and Terraform blocks into your projects.</p>
+            </article>
+
+            <article class="benefit-card">
+              <div class="benefit-icon">🔒</div>
+              <h3>Privacy Friendly</h3>
+              <p>Use browser-based tools without registration for common cloud tasks.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <div class="cta-box">
+            <h2>Start building cloud configurations faster</h2>
+            <p>
+              Use free generators and parsers for AWS, Azure, Terraform and
+              Linux cloud virtual machines.
+            </p>
+
+            <a class="button cta-button" href="/cloud/cloud-init-generator">
+              Open Cloud-init Generator <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(*) { box-sizing: border-box; }
+  :global(html) { scroll-behavior: smooth; }
+  :global(body) {
+    margin: 0;
+    background: #f8fafc;
+    color: #172033;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+  :global(a) { color: inherit; }
+
+  .container {
+    width: min(100% - 40px, 1180px);
+    margin-inline: auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 105px 0 92px;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(56,189,248,.2), transparent 32%),
+      radial-gradient(circle at 88% 25%, rgba(37,99,235,.2), transparent 34%),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f8fafc 100%);
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(rgba(37,99,235,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: rgba(255,255,255,.86);
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22,163,74,.12);
+  }
+
+  .hero h1 {
+    margin: 0 auto 22px;
+    color: #0f172a;
+    font-size: clamp(43px, 7vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #2563eb, #0284c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-description {
+    max-width: 790px;
+    margin: auto;
+    color: #475569;
+    font-size: clamp(18px, 2.5vw, 21px);
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 36px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 23px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: .2s ease;
+  }
+
+  .button:hover { transform: translateY(-2px); }
+  .button-primary {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 12px 30px rgba(37,99,235,.26);
+  }
+  .button-secondary {
+    border-color: #cbd5e1;
+    background: white;
+    color: #0f172a;
+  }
+
+  .hero-statistics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 42px;
+  }
+
+  .hero-stat { min-width: 145px; }
+  .hero-stat strong {
+    display: block;
+    color: #0f172a;
+    font-size: 25px;
+  }
+  .hero-stat span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .section { padding: 92px 0; }
+  .section-white { background: white; }
+
+  .section-heading {
+    max-width: 770px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: clamp(31px, 4vw, 44px);
+    line-height: 1.2;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 22px;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 24px;
+  }
+
+  .featured-card,
+  .tool-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 19px;
+    background: white;
+    text-decoration: none;
+    box-shadow: 0 12px 35px rgba(15,23,42,.06);
+    transition: .25s ease;
+  }
+
+  .featured-card { min-height: 315px; }
+  .tool-card { min-height: 310px; }
+
+  .featured-card:hover,
+  .tool-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 24px 50px rgba(37,99,235,.14);
+    transform: translateY(-8px);
+  }
+
+  .featured-icon,
+  .tool-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    font-size: 29px;
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .featured-card .tool-badge {
+    align-self: flex-start;
+    margin: 18px 0 0;
+  }
+
+  .tool-badge {
+    padding: 5px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .featured-card h3,
+  .tool-card h3 {
+    margin: 16px 0 11px;
+    color: #0f172a;
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .featured-card p,
+  .tool-card p {
+    flex: 1;
+    margin: 0 0 22px;
+    color: #64748b;
+    line-height: 1.72;
+  }
+
+  .open-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 24px;
+  }
+
+  .benefit-card {
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: white;
+  }
+
+  .benefit-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #eff6ff;
+    font-size: 25px;
+  }
+
+  .benefit-card h3 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .benefit-card p {
+    margin: 0;
+    color: #64748b;
+  }
+
+  .cta { padding: 0 0 92px; }
+  .cta-box {
+    padding: 70px 35px;
+    border-radius: 25px;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(56,189,248,.28), transparent 31%),
+      linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    text-align: center;
+    box-shadow: 0 25px 65px rgba(15,23,42,.2);
+  }
+
+  .cta-box h2 {
+    max-width: 720px;
+    margin: 0 auto 15px;
+    font-size: clamp(30px, 4vw, 45px);
+  }
+
+  .cta-box p {
+    max-width: 670px;
+    margin: 0 auto 29px;
+    color: #cbd5e1;
+    font-size: 18px;
+  }
+
+  .cta-button {
+    background: white;
+    color: #1d4ed8;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3,1fr);
+    gap: 55px;
+    padding: 65px 0 45px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: white;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .footer-logo-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+  }
+
+  .footer-brand p {
+    max-width: 380px;
+    margin: 17px 0 0;
+    color: #94a3b8;
+  }
+
+  .footer-title {
+    margin: 0 0 18px;
+    color: white;
+    font-size: 16px;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 24px 0;
+    border-top: 1px solid #334155;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1050px) {
+    .featured-grid,
+    .tools-grid,
+    .benefits-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 78px 0 70px; }
+    .section { padding: 72px 0; }
+    .footer-bottom { flex-direction: column; }
+  }
+
+  @media (max-width: 560px) {
+    .container { width: min(100% - 28px, 1180px); }
+    .hero h1 { font-size: 41px; letter-spacing: -1.4px; }
+    .hero-actions { flex-direction: column; }
+    .button { width: 100%; }
+
+    .featured-grid,
+    .tools-grid,
+    .benefits-grid,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-card,
+    .tool-card {
+      min-height: auto;
+      padding: 25px;
+    }
+
+    .cta-box { padding: 52px 23px; }
+  }
+</style>

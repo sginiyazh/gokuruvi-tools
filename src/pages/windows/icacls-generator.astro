@@ -1,0 +1,13 @@
+---
+import WindowsToolShell from "../../components/WindowsToolShell.astro";
+---
+<WindowsToolShell title="NTFS Permission Generator" description="Build ICACLS commands to grant, remove, reset and inspect NTFS file and folder permissions." slug="icacls-generator" icon="🔐">
+
+<h2 class="tool-title">NTFS permission builder</h2><div class="form-grid"><div class="field full"><label for="path">File or folder path</label><input id="path" value="C:\\Data" /></div><div class="field"><label for="principal">User / group</label><input id="principal" value="DOMAIN\\FileUsers" /></div><div class="field"><label for="perm">Permission</label><select id="perm"><option value="R">Read</option><option value="RX">Read & execute</option><option value="M">Modify</option><option value="F">Full control</option></select></div><div class="field"><label for="action">Action</label><select id="action"><option value="grant">Grant</option><option value="remove">Remove</option><option value="verify">View ACL</option><option value="reset">Reset</option></select></div><div class="field"><label for="inherit">Apply to</label><select id="inherit"><option value="tree">Folder, subfolders and files</option><option value="this">This item only</option></select></div></div><div class="actions"><button class="btn btn-primary" id="generate">Generate</button></div><div class="output-wrap"><div class="output-head"><strong>ICACLS</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Configure permissions above.</pre></div>
+<script>
+
+const val=(id:string)=>(document.querySelector<HTMLInputElement|HTMLSelectElement>('#'+id)!).value;const o=document.querySelector<HTMLElement>('#output')!;document.querySelector('#generate')?.addEventListener('click',()=>{const p=val('path').replace(/"/g,''),u=val('principal').replace(/"/g,''), inh=val('inherit')==='tree'?'(OI)(CI)':'';const a=val('action');o.textContent=a==='grant'?`icacls "${p}" /grant "${u}:${inh}${val('perm')}" /T /C`:a==='remove'?`icacls "${p}" /remove "${u}" /T /C`:a==='reset'?`icacls "${p}" /reset /T /C`:`icacls "${p}"`});
+const copyBtn=document.querySelector<HTMLButtonElement>("#copy");
+copyBtn?.addEventListener("click",async()=>{const out=document.querySelector<HTMLElement>("#output")?.textContent||""; if(out){await navigator.clipboard.writeText(out); copyBtn.textContent="Copied!"; setTimeout(()=>copyBtn.textContent="Copy",1200)}});
+</script>
+</WindowsToolShell>

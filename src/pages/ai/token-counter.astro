@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/ai-tools.css";
+---
+<Layout title="Token Counter & Cost Estimator" description="Free AI token counter and cost estimator for GPT, Claude and Gemini. Estimate prompt tokens and API cost in your browser.">
+  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">AI Calculator</span><h1>Token Counter & Cost Estimator</h1><p>Estimate prompt tokens and approximate API cost locally in your browser. No signup or API key required.</p></div></section>
+  <section class="ai-section"><div class="ai-container">
+    <div class="ai-panel">
+      <div class="ai-grid">
+        <div class="ai-field full"><label for="promptText">Prompt or text</label><textarea id="promptText" placeholder="Paste your prompt, code or document text here..."></textarea><span class="ai-muted">Token count is approximate. Exact tokenization differs by model.</span></div>
+        <div class="ai-field"><label for="modelSelect">Model</label><select id="modelSelect"><option value="gpt5">GPT-5</option><option value="sonnet5">Claude Sonnet 5</option><option value="opus5">Claude Opus 5</option><option value="gemini">Gemini</option></select></div>
+        <div class="ai-field"><label for="outputTokens">Expected output tokens</label><input id="outputTokens" type="number" min="0" step="100" value="1000" /></div>
+      </div>
+      <div class="ai-actions"><button class="ai-button" id="calculateBtn" type="button">Calculate</button><button class="ai-button secondary" id="clearBtn" type="button">Clear</button></div>
+      <div class="ai-results" aria-live="polite"><div class="ai-stat"><span>Estimated input tokens</span><strong id="tokenResult">0</strong></div><div class="ai-stat"><span>Estimated input cost</span><strong id="inputCost">$0.000000</strong></div><div class="ai-stat"><span>Estimated total cost</span><strong id="totalCost">$0.000000</strong></div></div>
+    </div>
+    <div class="ai-note"><strong>Important:</strong> Prices are planning references and can change. Verify current provider pricing before production budgeting.</div>
+    <div class="ai-info"><h2>Privacy-friendly estimate</h2><p>Your text is processed in the browser. This tool does not send the prompt to an AI provider.</p></div>
+  </div></section>
+</Layout>
+<script is:inline>
+(function () {
+  var prices = { gpt5: { input: 1.25, output: 10 }, sonnet5: { input: 3, output: 15 }, opus5: { input: 5, output: 25 }, gemini: { input: 1.25, output: 10 } };
+  var promptEl = document.getElementById('promptText');
+  var modelEl = document.getElementById('modelSelect');
+  var outputEl = document.getElementById('outputTokens');
+  var tokenEl = document.getElementById('tokenResult');
+  var inputCostEl = document.getElementById('inputCost');
+  var totalCostEl = document.getElementById('totalCost');
+  function estimateTokens(text) {
+    if (!text || !text.trim()) return 0;
+    var chars = Math.ceil(text.length / 4);
+    var words = Math.ceil(text.trim().split(/\s+/).length * 1.33);
+    return Math.max(1, Math.round((chars + words) / 2));
+  }
+  function calculate() {
+    var tokens = estimateTokens(promptEl ? promptEl.value : '');
+    var key = modelEl ? modelEl.value : 'gpt5';
+    var price = prices[key] || prices.gpt5;
+    var outputTokens = outputEl ? Math.max(0, Number(outputEl.value) || 0) : 0;
+    var inputCost = (tokens / 1000000) * price.input;
+    var totalCost = inputCost + (outputTokens / 1000000) * price.output;
+    if (tokenEl) tokenEl.textContent = tokens.toLocaleString();
+    if (inputCostEl) inputCostEl.textContent = '$' + inputCost.toFixed(6);
+    if (totalCostEl) totalCostEl.textContent = '$' + totalCost.toFixed(6);
+  }
+  if (document.getElementById('calculateBtn')) document.getElementById('calculateBtn').addEventListener('click', calculate);
+  if (promptEl) promptEl.addEventListener('input', calculate);
+  if (modelEl) modelEl.addEventListener('change', calculate);
+  if (outputEl) outputEl.addEventListener('input', calculate);
+  if (document.getElementById('clearBtn')) document.getElementById('clearBtn').addEventListener('click', function () { if (promptEl) promptEl.value = ''; calculate(); });
+  calculate();
+})();
+</script>
