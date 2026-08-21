@@ -3,63 +3,162 @@ import Layout from "../../layouts/Layout.astro";
 
 const guides = [
   {
-    title: "Linux Administration Guide",
-    description: "Step-by-step Linux administration tutorials, commands, and best practices.",
-    href: "/linux/",
+    title: "The Linux Server Troubleshooting Guide",
+    description:
+      "A step-by-step method for diagnosing boot failures, high load, full disks, and unresponsive services on any Linux server, with the exact commands to run at each step.",
+    href: "/guides/linux-server-troubleshooting/",
+    category: "Linux",
+    readTime: "14 min read",
+    icon: "🐧",
   },
   {
-    title: "DevOps Learning Guide",
-    description: "Docker, YAML, JSON, CI/CD, and automation tutorials.",
-    href: "/devops/",
+    title: "Building a Production-Ready CI/CD Pipeline",
+    description:
+      "Design a pipeline that goes from commit to production safely: build, test, scan, deploy, and roll back, with the guardrails that keep a bad change from reaching users.",
+    href: "/guides/cicd-pipeline-guide/",
+    category: "DevOps",
+    readTime: "13 min read",
+    icon: "🔁",
   },
   {
-    title: "Kubernetes Guide",
-    description: "Deployments, Services, Ingress, ConfigMaps, Secrets, and more.",
-    href: "/kubernetes/",
+    title: "Kubernetes Deployment Guide: Zero to Production",
+    description:
+      "Take an application from a single Deployment manifest to a resilient, observable, autoscaling workload — covering probes, resource limits, rollouts, and common failure modes.",
+    href: "/guides/kubernetes-deployment-guide/",
+    category: "Kubernetes",
+    readTime: "16 min read",
+    icon: "☸️",
   },
   {
-    title: "Networking Guide",
-    description: "Subnetting, DNS, IP addressing, routing, and troubleshooting.",
-    href: "/network/",
+    title: "Networking & Subnetting Fundamentals",
+    description:
+      "Understand IP addressing, subnet masks, CIDR notation, and routing well enough to design a subnet plan and troubleshoot connectivity issues with confidence.",
+    href: "/guides/networking-fundamentals/",
+    category: "Networking",
+    readTime: "15 min read",
+    icon: "🌐",
   },
   {
-    title: "Cloud Guide",
-    description: "AWS, Azure, Cloudflare, Linux cloud administration, and security.",
-    href: "/cloud/",
+    title: "Cloud Migration & Landing Zone Guide",
+    description:
+      "Plan a cloud migration that does not turn into a fire drill: account structure, network design, data migration strategy, and a cutover plan with a real rollback path.",
+    href: "/guides/cloud-migration-guide/",
+    category: "Cloud",
+    readTime: "13 min read",
+    icon: "☁️",
+  },
+  {
+    title: "Linux Server Security Hardening Guide",
+    description:
+      "A practical hardening checklist covering SSH, users and sudo, the firewall, updates, and auditing — the changes that matter most for an internet-facing server.",
+    href: "/guides/linux-security-hardening/",
+    category: "Security",
+    readTime: "14 min read",
+    icon: "🔒",
   },
 ];
+
+const categories = [...new Set(guides.map((guide) => guide.category))];
 ---
 
 <Layout
   title="Technical Guides"
-  description="Free Linux, DevOps, Kubernetes, Networking, and Cloud learning guides."
+  description="In-depth, practical guides for Linux administration, CI/CD pipelines, Kubernetes deployments, networking fundamentals, cloud migration, and Linux security hardening."
 >
-  <section class="page-section">
-    <div class="container">
-      <header class="page-header">
-        <h1>Technical Guides</h1>
+  <section class="hero">
+    <div class="container hero-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>›</span><span>Guides</span>
+      </nav>
+      <span class="eyebrow">Learn by doing</span>
+      <h1>Technical Guides</h1>
+      <p>
+        Long-form, practical guides for Linux, DevOps, Kubernetes,
+        networking, cloud, and security — written to be followed step by
+        step, not just read once. Every guide links to the free tools on
+        this site where they save you time.
+      </p>
+    </div>
+  </section>
 
+  <section class="guide-list container">
+    <div class="guide-grid">
+      {
+        guides.map((guide) => (
+          <a class="guide-card" href={guide.href}>
+            <div class="guide-card-top">
+              <span class="guide-icon" aria-hidden="true">{guide.icon}</span>
+              <span class="guide-category">{guide.category}</span>
+            </div>
+            <h2>{guide.title}</h2>
+            <p>{guide.description}</p>
+            <div class="guide-card-footer">
+              <span class="read-time">{guide.readTime}</span>
+              <span class="read-link">Read guide →</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="more-help container">
+    <div class="more-help-inner">
+      <div>
+        <h2>Looking for something more specific?</h2>
         <p>
-          Learn Linux, DevOps, Kubernetes, Networking, and Cloud technologies
-          with practical tutorials and hands-on guides.
+          For quick, scenario-based troubleshooting questions across seven
+          technology domains, try the Interview Q&amp;A library — or jump
+          straight into the tool categories below.
         </p>
-      </header>
-
-      <div class="card-grid">
-        {
-          guides.map((guide) => (
-            <article class="card">
-              <h2>{guide.title}</h2>
-
-              <p>{guide.description}</p>
-
-              <a class="button" href={guide.href}>
-                Explore Guide →
-              </a>
-            </article>
-          ))
-        }
+      </div>
+      <div class="more-help-links">
+        <a href="/interview-qa/">Interview Q&amp;A →</a>
+        {categories.map((category) => {
+          const guide = guides.find((g) => g.category === category);
+          return <a href={guide?.href}>{category} →</a>;
+        })}
       </div>
     </div>
   </section>
 </Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 1180px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 72px 0 64px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; max-width: 780px; }
+  .breadcrumb { display: flex; gap: 9px; align-items: center; margin-bottom: 20px; color: #9fb2cc; font-size: .9rem; }
+  .breadcrumb a { text-decoration: none; color: inherit; }
+  .breadcrumb a:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 18px; font-size: clamp(2.35rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -.04em; }
+  .hero p { margin: 0; color: #c8d5e7; font-size: 1.08rem; line-height: 1.8; }
+
+  .guide-list { padding: 60px 0 20px; }
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+  .guide-card { display: flex; flex-direction: column; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(15, 23, 42, .05); text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+  .guide-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(15, 23, 42, .1); border-color: #93b8f5; }
+  .guide-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .guide-icon { font-size: 1.7rem; }
+  .guide-category { padding: 4px 10px; border-radius: 999px; background: #eaf2ff; color: #1d4ed8; font-size: .72rem; font-weight: 800; letter-spacing: .03em; }
+  .guide-card h2 { margin: 0 0 10px; color: #111827; font-size: 1.18rem; line-height: 1.35; }
+  .guide-card p { margin: 0; flex-grow: 1; color: #5f6b7c; font-size: .93rem; line-height: 1.65; }
+  .guide-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1px solid #edf2f7; }
+  .read-time { color: #8291a3; font-size: .78rem; font-weight: 700; }
+  .read-link { color: #2563eb; font-size: .85rem; font-weight: 800; }
+
+  .more-help { padding: 50px 0 90px; }
+  .more-help-inner { display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; padding: 32px; border: 1px solid #dbe4f0; border-radius: 18px; background: #f6f9fd; }
+  .more-help-inner > div:first-child { max-width: 420px; }
+  .more-help h2 { margin: 0 0 10px; color: #111827; font-size: 1.3rem; }
+  .more-help p { margin: 0; color: #5f6b7c; line-height: 1.7; }
+  .more-help-links { display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
+  .more-help-links a { display: inline-flex; align-items: center; padding: 9px 15px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-size: .85rem; font-weight: 800; text-decoration: none; }
+  .more-help-links a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 54px 0; }
+    .more-help-inner { flex-direction: column; }
+  }
+</style>

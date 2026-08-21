@@ -1,0 +1,232 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Networking & Subnetting Fundamentals"
+  description="Understand IP addressing, subnet masks, CIDR notation, and routing well enough to design a subnet plan and troubleshoot connectivity issues with confidence."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/guides/">← Back to Guides</a>
+      <span class="eyebrow">Networking · Guide</span>
+      <h1>Networking &amp; Subnetting Fundamentals</h1>
+      <p>
+        Subnetting is arithmetic, not magic — once the binary clicks, you
+        can design a network plan and troubleshoot connectivity issues
+        without reaching for a calculator every time.
+      </p>
+      <div class="meta"><span>15 min read</span><span>·</span><span>Covers IPv4 — the concepts extend directly to IPv6</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#addresses">What an IP address actually is</a></li>
+        <li><a href="#masks">Subnet masks and CIDR notation</a></li>
+        <li><a href="#sizing">Sizing a subnet for how many hosts you need</a></li>
+        <li><a href="#planning">Planning a subnet layout</a></li>
+        <li><a href="#routing">How routing decides where a packet goes</a></li>
+        <li><a href="#private">Private ranges, NAT, and why they matter</a></li>
+        <li><a href="#troubleshoot">Troubleshooting connectivity step by step</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="addresses">What an IP address actually is</h2>
+    <p>
+      An IPv4 address is a 32-bit number, almost always written as four
+      decimal numbers from 0–255 separated by dots — for example
+      <code>192.168.1.10</code>. Each of those four numbers is one byte
+      (8 bits), so the whole address is 4 × 8 = 32 bits. Every device on a
+      network needs a unique address within that network, the same way
+      every house on a street needs a unique number.
+    </p>
+    <p>
+      What makes subnetting confusing at first is that an IP address by
+      itself doesn't tell you which part identifies the network and which
+      part identifies the specific device. That's what the subnet mask is
+      for.
+    </p>
+
+    <h2 id="masks">Subnet masks and CIDR notation</h2>
+    <p>
+      A subnet mask is also a 32-bit number, but instead of an address it
+      describes a split point: a run of 1 bits for the network portion,
+      followed by a run of 0 bits for the host portion. CIDR notation
+      writes this as a slash and a number — the count of leading 1 bits —
+      instead of writing out the whole mask.
+    </p>
+    <pre><code>10.0.1.0/24
+  means the mask 255.255.255.0
+  the first 24 bits identify the network
+  the last 8 bits identify the host within it</code></pre>
+    <p>
+      With a /24, the first three numbers (24 bits = three full bytes) are
+      the network, and the last number (8 bits) is the host — giving you
+      256 possible values (0–255) for that last octet. Two of those are
+      always reserved: the all-zeros address is the network address
+      itself, and the all-ones address is the broadcast address. That
+      leaves 254 usable addresses for actual devices in a /24.
+    </p>
+    <p>
+      The general formula: a subnet with <code>h</code> host bits gives
+      you 2 to the power of <code>h</code>, minus 2, usable addresses.
+    </p>
+
+    <h2 id="sizing">Sizing a subnet for how many hosts you need</h2>
+    <p>
+      Work backward from how many devices you actually need to fit, then
+      round up to the nearest power of two:
+    </p>
+    <pre><code>/30 = 2 host bits  = 4 addresses,  2 usable  (point-to-point links)
+/29 = 3 host bits  = 8 addresses,  6 usable
+/28 = 4 host bits  = 16 addresses, 14 usable
+/27 = 5 host bits  = 32 addresses, 30 usable
+/26 = 6 host bits  = 64 addresses, 62 usable
+/25 = 7 host bits  = 128 addresses, 126 usable
+/24 = 8 host bits  = 256 addresses, 254 usable</code></pre>
+    <p>
+      A common mistake is sizing a subnet for exactly today's device
+      count. Leave real headroom — a /24 that starts with 40 devices and
+      grows steadily will run out of room eventually, and re-subnetting a
+      live network later is far more disruptive than starting one size
+      larger.
+    </p>
+
+    <h2 id="planning">Planning a subnet layout</h2>
+    <p>
+      When you subnet a larger block into smaller pieces, each subnet's
+      network address is a multiple of its own size. Subnetting
+      <code>10.0.0.0/16</code> into /24s gives you
+      <code>10.0.0.0/24</code>, <code>10.0.1.0/24</code>,
+      <code>10.0.2.0/24</code>, and so on — each one exactly 256
+      addresses apart. This predictability is what makes CIDR notation
+      genuinely usable for planning instead of just descriptive.
+    </p>
+    <p>
+      A layout that scales well for most small-to-medium environments:
+    </p>
+    <ul>
+      <li>One /24 (or larger) per environment or location — production, staging, each office site.</li>
+      <li>Reserve the first handful of addresses in every subnet for gateways and infrastructure.</li>
+      <li>Keep a written record of what's assigned where — an unmanaged IP plan is how two teams end up assigning the same address to different devices.</li>
+    </ul>
+
+    <h2 id="routing">How routing decides where a packet goes</h2>
+    <p>
+      Every device keeps a routing table that answers one question for
+      each outgoing packet: does the destination live on my local
+      network, or does it need to go through a gateway? The device
+      compares the destination address against its own subnet mask — if
+      the destination falls within the same network, it sends the packet
+      directly; otherwise, it forwards it to the default gateway, which
+      repeats the same decision.
+    </p>
+    <pre><code>ip route
+ip route get 8.8.8.8</code></pre>
+    <p>
+      <code>ip route get</code> is the fastest way to answer "which
+      interface and gateway will this specific destination actually use"
+      without reading through the whole routing table by hand.
+    </p>
+
+    <h2 id="private">Private ranges, NAT, and why they matter</h2>
+    <p>
+      Three IPv4 ranges are reserved for private, non-internet-routable
+      use — you'll see these constantly in home and corporate networks:
+    </p>
+    <pre><code>10.0.0.0/8       (10.0.0.0 - 10.255.255.255)
+172.16.0.0/12    (172.16.0.0 - 172.31.255.255)
+192.168.0.0/16   (192.168.0.0 - 192.168.255.255)</code></pre>
+    <p>
+      Devices using these addresses can't be reached directly from the
+      public internet — a router performs Network Address Translation
+      (NAT), rewriting outbound packets to use its own public address and
+      tracking which internal device each response belongs to. This is
+      exactly why two devices with the addresses
+      <code>192.168.1.10/24</code> and <code>192.168.1.11/24</code> can
+      reach each other directly, but two devices on different, unrelated
+      <code>192.168.1.0/24</code> networks at two different homes can't —
+      the address only has meaning within its own local network.
+    </p>
+
+    <h2 id="troubleshoot">Troubleshooting connectivity step by step</h2>
+    <p>
+      When a device can't reach something, work outward in layers instead
+      of guessing:
+    </p>
+    <pre><code>ip addr show
+ip route
+ping &lt;gateway&gt;
+ping 1.1.1.1
+dig example.com</code></pre>
+    <ol>
+      <li><strong>Confirm the device has a valid address and mask</strong> for the network it's on.</li>
+      <li><strong>Ping the gateway.</strong> If this fails, the problem is local — a cable, a switch port, or a misconfigured address.</li>
+      <li><strong>Ping a known-good public IP</strong> (not a hostname yet). If this fails but the gateway ping succeeded, the problem is upstream of your local network.</li>
+      <li><strong>If the IP ping works but a hostname doesn't</strong>, the problem is DNS, not routing — don't waste time checking routes at this point.</li>
+    </ol>
+    <p>
+      Two devices on different subnets, like <code>192.168.10.10/24</code>
+      and <code>192.168.11.10/24</code>, cannot talk directly no matter
+      how "close" their addresses look — they're on entirely different
+      /24 networks and need a router between them, by design.
+    </p>
+
+    <div class="related-tools">
+      <h2>Related tools on this site</h2>
+      <p>Put this guide into practice with these free tools:</p>
+      <ul>
+        <li><a href="/network/subnet-calculator">Subnet Calculator</a></li>
+        <li><a href="/network/cidr-calculator">CIDR Calculator</a></li>
+        <li><a href="/network/ip-calculator">IP Calculator</a></li>
+        <li><a href="/network/dns-checker">DNS Checker</a></li>
+        <li><a href="/interview-qa/#questions">Network Scenario Interview Q&amp;A</a></li>
+      </ul>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
+  .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
+  .article-wrap li { margin-bottom: 6px; }
+  .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
+  .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
+  .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+
+  .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
+  .related-tools h2 { margin: 0 0 6px; }
+  .related-tools p { margin: 0; }
+  .related-tools ul { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .related-tools li { margin: 0; }
+  .related-tools a { display: block; padding: 12px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .9rem; text-decoration: none; }
+  .related-tools a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>

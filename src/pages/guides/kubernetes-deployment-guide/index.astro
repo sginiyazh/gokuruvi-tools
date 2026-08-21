@@ -1,0 +1,289 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Kubernetes Deployment Guide: Zero to Production"
+  description="Take an application from a single Deployment manifest to a resilient, observable, autoscaling workload — covering probes, resource limits, rollouts, and common failure modes."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/guides/">← Back to Guides</a>
+      <span class="eyebrow">Kubernetes · Guide</span>
+      <h1>Kubernetes Deployment Guide: Zero to Production</h1>
+      <p>
+        A working Deployment manifest and a production-ready one look
+        similar on the surface. The difference is a handful of fields
+        that determine whether your application survives a bad day.
+      </p>
+      <div class="meta"><span>16 min read</span><span>·</span><span>Assumes a working cluster and kubectl access</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#minimal">Start with a minimal Deployment</a></li>
+        <li><a href="#probes">Add health probes before anything else</a></li>
+        <li><a href="#resources">Set resource requests and limits</a></li>
+        <li><a href="#rollouts">Configure a safe rollout strategy</a></li>
+        <li><a href="#service">Expose it with a Service</a></li>
+        <li><a href="#scaling">Add autoscaling once you have real traffic data</a></li>
+        <li><a href="#failures">Failure modes to know before they happen</a></li>
+        <li><a href="#checklist">The production-readiness checklist</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="minimal">Start with a minimal Deployment</h2>
+    <p>
+      Every Kubernetes workload starts as a Deployment, which manages a
+      set of identical Pods and handles replacing them when they fail or
+      when you roll out a new version.
+    </p>
+    <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: registry.example.com/myapp:1.4.0</code></pre>
+    <p>
+      This runs, but it isn't production-ready yet. Kubernetes has no way
+      to know if the application inside the container is actually healthy,
+      no limit on how much CPU or memory it can consume, and no defined
+      strategy for how a new version replaces the old one. Each of the
+      following sections closes one of those gaps.
+    </p>
+
+    <h2 id="probes">Add health probes before anything else</h2>
+    <p>
+      Without probes, Kubernetes only knows whether the container process
+      is running — not whether the application inside it is actually
+      working. A hung process that never crashes will keep receiving
+      traffic forever unless a probe tells Kubernetes otherwise.
+    </p>
+    <pre><code>          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20</code></pre>
+    <p>
+      The readiness probe controls whether the Pod receives traffic — a
+      Pod that fails readiness is pulled out of the Service's endpoints
+      without being killed, which is exactly what you want during a slow
+      startup or a temporary downstream outage. The liveness probe
+      controls whether the Pod gets restarted. Give the liveness probe a
+      longer <code>initialDelaySeconds</code> than readiness, so a slow
+      startup doesn't get mistaken for a hang and trigger a restart loop.
+    </p>
+    <p>
+      For applications with a genuinely long startup time — loading a
+      large cache, running migrations — add a <code>startupProbe</code>
+      too, so the liveness probe doesn't start counting failures before
+      the app has even finished initializing.
+    </p>
+
+    <h2 id="resources">Set resource requests and limits</h2>
+    <p>
+      Without requests, the scheduler has no idea how much CPU or memory a
+      Pod actually needs, which leads to overcrowded nodes. Without
+      limits, one misbehaving Pod can starve every other workload on the
+      same node.
+    </p>
+    <pre><code>          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi</code></pre>
+    <p>
+      Set requests based on what the application actually uses under
+      normal load — check with <code>kubectl top pod</code> after it's
+      been running for a while, rather than guessing. A memory limit set
+      too low results in the container being OOMKilled repeatedly, which
+      shows up as unexplained restarts unless you specifically check the
+      termination reason.
+    </p>
+    <pre><code>kubectl get pod myapp-xxx -o jsonpath="&lbrace;.status.containerStatuses[*].lastState.terminated.reason&rbrace;"</code></pre>
+
+    <h2 id="rollouts">Configure a safe rollout strategy</h2>
+    <p>
+      The default <code>RollingUpdate</code> strategy replaces Pods
+      gradually, but its default tolerances aren't always what you want
+      for a small deployment. Be explicit:
+    </p>
+    <pre><code>  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1</code></pre>
+    <p>
+      <code>maxUnavailable: 0</code> means Kubernetes must bring up a new,
+      healthy Pod before removing an old one — you never drop below your
+      desired replica count during a deploy, at the cost of briefly
+      running one extra Pod (<code>maxSurge: 1</code>). For a Deployment
+      with very few replicas, this matters far more than it does at large
+      scale, where losing one Pod out of fifty is unnoticeable.
+    </p>
+    <p>
+      Watch a rollout in real time and be ready to stop it before it
+      finishes if something looks wrong:
+    </p>
+    <pre><code>kubectl rollout status deployment/myapp
+kubectl rollout undo deployment/myapp</code></pre>
+
+    <h2 id="service">Expose it with a Service</h2>
+    <p>
+      A Deployment alone isn't reachable — a Service provides a stable
+      address and load-balances across whichever Pods are currently ready.
+    </p>
+    <pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  selector:
+    app: myapp
+  ports:
+    - port: 80
+      targetPort: 8080</code></pre>
+    <p>
+      The <code>selector</code> here must match the Pod template's labels
+      exactly — a mismatched selector is one of the most common causes of
+      "the Service exists but no traffic reaches the Pods," and it fails
+      silently with no error message. Confirm it's wired up correctly:
+    </p>
+    <pre><code>kubectl get endpoints myapp</code></pre>
+    <p>
+      If that command returns an empty list, the selector doesn't match
+      any Ready Pods — check the labels on both sides before looking
+      anywhere else.
+    </p>
+
+    <h2 id="scaling">Add autoscaling once you have real traffic data</h2>
+    <p>
+      Don't guess at autoscaling thresholds before you've observed real
+      usage — start with a fixed replica count, gather a few days or weeks
+      of <code>kubectl top pod</code> data under real traffic, then set a
+      HorizontalPodAutoscaler based on what you actually saw:
+    </p>
+    <pre><code>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70</code></pre>
+    <p>
+      Remember that autoscaling has a startup lag — a new Pod still needs
+      to pull its image, start, and pass its readiness probe before it
+      can absorb traffic. For workloads with sudden, predictable traffic
+      spikes, keep <code>minReplicas</code> high enough to absorb the
+      first minute of a spike before the autoscaler catches up.
+    </p>
+
+    <h2 id="failures">Failure modes to know before they happen</h2>
+    <p>
+      A few patterns account for most Kubernetes incidents:
+    </p>
+    <ul>
+      <li><strong>CrashLoopBackOff</strong> is a retry state, not the root cause — always check <code>kubectl logs &lt;pod&gt; --previous</code> to see why the last attempt actually died.</li>
+      <li><strong>Pending Pods</strong> usually mean insufficient cluster resources, an unmatched node selector, or an unbound PersistentVolumeClaim — <code>kubectl describe pod</code> names the exact reason under Events.</li>
+      <li><strong>A node going NotReady</strong> behaves very differently for stateful workloads than for this stateless Deployment — a StatefulSet Pod won't be rescheduled automatically the way this Deployment's Pods will.</li>
+    </ul>
+
+    <h2 id="checklist">The production-readiness checklist</h2>
+    <p>
+      Before calling a Deployment production-ready, confirm each of these:
+    </p>
+    <ul>
+      <li>Readiness and liveness probes are configured and tested under a real failure.</li>
+      <li>Resource requests reflect actual observed usage, and limits prevent one Pod from starving the node.</li>
+      <li>The rollout strategy has been chosen deliberately, not left at the default.</li>
+      <li>A PodDisruptionBudget exists if the workload can't tolerate losing more than one Pod at a time during a voluntary drain.</li>
+      <li>You've run <code>kubectl rollout undo</code> at least once, successfully, before you needed it for real.</li>
+    </ul>
+
+    <div class="related-tools">
+      <h2>Related tools on this site</h2>
+      <p>Put this guide into practice with these free tools:</p>
+      <ul>
+        <li><a href="/kubernetes/">Kubernetes Manifest Generators</a></li>
+        <li><a href="/devops/yaml-validator">YAML Validator</a></li>
+        <li><a href="/interview-qa/#questions">Kubernetes Scenario Interview Q&amp;A</a></li>
+      </ul>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
+  .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
+  .article-wrap li { margin-bottom: 6px; }
+  .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
+  .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
+  .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+
+  .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
+  .related-tools h2 { margin: 0 0 6px; }
+  .related-tools p { margin: 0; }
+  .related-tools ul { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .related-tools li { margin: 0; }
+  .related-tools a { display: block; padding: 12px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .9rem; text-decoration: none; }
+  .related-tools a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>

@@ -1,0 +1,316 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="The Linux Server Troubleshooting Guide"
+  description="A step-by-step method for diagnosing boot failures, high load, full disks, and unresponsive services on any Linux server, with the exact commands to run at each step."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/guides/">← Back to Guides</a>
+      <span class="eyebrow">Linux · Guide</span>
+      <h1>The Linux Server Troubleshooting Guide</h1>
+      <p>
+        A repeatable method for finding the real cause of a Linux problem
+        instead of guessing — with the exact commands to run at each step,
+        for the failures that actually take down production servers.
+      </p>
+      <div class="meta"><span>14 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#method">The method: evidence before action</a></li>
+        <li><a href="#boot">A server won't boot or drops to emergency mode</a></li>
+        <li><a href="#cpu">CPU usage is pinned at 100%</a></li>
+        <li><a href="#memory">The server is out of memory or swapping</a></li>
+        <li><a href="#disk">A filesystem is full</a></li>
+        <li><a href="#service">A systemd service won't start</a></li>
+        <li><a href="#network">The server has network connectivity problems</a></li>
+        <li><a href="#habits">Build the habit: capture evidence, not just fixes</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="method">The method: evidence before action</h2>
+    <p>
+      Most bad outcomes on a production server come from acting before
+      understanding. Rebooting a server that's in a bad state destroys the
+      exact evidence you need to find the root cause. Killing a process
+      because it's using a lot of CPU doesn't tell you why it started doing
+      that, and the same failure often comes back an hour later.
+    </p>
+    <p>
+      The method that works, regardless of what's actually broken, is
+      always the same four steps:
+    </p>
+    <ol>
+      <li><strong>Confirm scope.</strong> Is this one host, one service, or a whole subnet? Don't fix a DNS problem as if it were a disk problem.</li>
+      <li><strong>Collect evidence.</strong> Logs, resource usage, process state, and recent changes — before you touch anything.</li>
+      <li><strong>Make the smallest safe change.</strong> Fix the specific thing the evidence points to, not everything that looks suspicious.</li>
+      <li><strong>Verify and document.</strong> Confirm the fix actually worked, and write down what happened so the next person — or you, at 3 a.m. next month — doesn't start from zero.</li>
+    </ol>
+    <p>
+      The rest of this guide applies that method to the failures that show
+      up most often on real servers.
+    </p>
+
+    <h2 id="boot">A server won't boot or drops to emergency mode</h2>
+    <p>
+      Systemd drops you into emergency or rescue mode when something it
+      considers essential — usually a filesystem mount — failed. The
+      temptation is to reboot again and hope it fixes itself. It won't; the
+      same failure will happen again. Instead, read what actually failed.
+    </p>
+    <pre><code>systemctl --failed
+journalctl -xb
+lsblk -f
+cat /etc/fstab</code></pre>
+    <p>
+      <code>systemctl --failed</code> lists every unit that didn't come up
+      cleanly. <code>journalctl -xb</code> shows the boot log for the
+      current boot with explanations attached to error codes.
+      <code>lsblk -f</code> shows you what block devices and filesystems
+      actually exist right now, which you then compare against
+      <code>/etc/fstab</code> — the most common cause of an emergency-mode
+      boot is an fstab entry pointing at a UUID or device that no longer
+      exists, often after a disk was resized, cloned, or replaced.
+    </p>
+    <p>
+      Test a fix without rebooting first:
+    </p>
+    <pre><code>mount -a
+systemctl daemon-reload</code></pre>
+    <p>
+      If <code>mount -a</code> succeeds with no errors, correct the fstab
+      entry and only then continue the boot with <code>systemctl
+      default</code>, or reboot to prove it's fixed for good.
+    </p>
+
+    <h2 id="cpu">CPU usage is pinned at 100%</h2>
+    <p>
+      Before touching anything, find out whether this is one runaway
+      process, many processes competing for CPU, or the system spending
+      its time waiting on I/O instead of computing — because
+      <code>top</code>'s headline number doesn't tell you which.
+    </p>
+    <pre><code>uptime
+top
+ps -eo pid,ppid,user,%cpu,%mem,stat,etime,cmd --sort=-%cpu | head</code></pre>
+    <p>
+      <code>uptime</code> gives you the 1/5/15-minute load average — compare
+      it against <code>nproc</code> to know whether the load is actually
+      high relative to how many CPUs the box has. In <code>top</code>, press
+      <code>1</code> to see per-core usage; if only one core is saturated
+      while others are idle, you're likely looking at a single-threaded
+      process, not a systemic problem.
+    </p>
+    <p>
+      Once you've identified the process, don't kill it yet. Check what it
+      was doing and correlate with recent changes:
+    </p>
+    <pre><code>top -H -p &lt;PID&gt;
+journalctl --since '-15 min'</code></pre>
+    <p>
+      <code>top -H</code> shows individual threads inside that process,
+      which is often the difference between "the whole application is
+      slow" and "one worker thread is stuck in a loop." Only after you
+      understand what's happening should you decide whether to restart the
+      service — and if you do, capture a snapshot first
+      (<code>ps</code> output, or a <code>perf</code>/<code>strace</code>
+      capture if you have the tooling) so the next occurrence has more
+      evidence to work with.
+    </p>
+
+    <h2 id="memory">The server is out of memory or swapping</h2>
+    <p>
+      Linux deliberately uses "free" RAM for filesystem cache, so the
+      <code>free</code> column in <code>free -h</code> almost always looks
+      low — that's normal, not a problem. What actually matters is the
+      <code>available</code> column and whether the kernel is actively
+      swapping.
+    </p>
+    <pre><code>free -h
+vmstat 1
+ps -eo pid,user,%mem,rss,vsz,cmd --sort=-rss | head</code></pre>
+    <p>
+      In <code>vmstat 1</code>, watch the <code>si</code> and
+      <code>so</code> columns (swap in/swap out). If they're consistently
+      non-zero while the application feels slow, the system is under real
+      memory pressure. If swap usage is high but <code>si</code>/<code>so</code>
+      are near zero, that swap is just old, inactive data sitting there —
+      not an active problem.
+    </p>
+    <p>
+      If a process was killed, the kernel log tells you exactly which one
+      and why:
+    </p>
+    <pre><code>journalctl -k | grep -i -E 'oom|out of memory'</code></pre>
+    <p>
+      Use that to identify the actual memory consumer from the
+      <code>ps</code> output above before deciding whether to add memory,
+      fix a leak, or set a resource limit so a single process can't take
+      the whole host down again.
+    </p>
+
+    <h2 id="disk">A filesystem is full</h2>
+    <p>
+      Protect service stability first — a full root filesystem can stop
+      logging, break package operations, and crash applications that can't
+      write temp files. Find out which filesystem is actually full, not
+      just that disk usage looks high somewhere:
+    </p>
+    <pre><code>df -hT
+df -i</code></pre>
+    <p>
+      Check inodes as well as blocks — a filesystem can report plenty of
+      free space while still refusing to create new files because it ran
+      out of inodes, usually from a huge number of tiny files.
+    </p>
+    <p>
+      Find what's actually consuming the space:
+    </p>
+    <pre><code>du -xhd1 / | sort -h
+find / -xdev -type f -size +1G -ls</code></pre>
+    <p>
+      If <code>du</code> and <code>df</code> disagree — <code>df</code>
+      says full but <code>du</code> can't account for the space — the
+      classic cause is a deleted file that's still open by a running
+      process. The directory entry is gone so <code>du</code> can't see
+      it, but the blocks stay allocated until the process closes the file.
+      Find it with:
+    </p>
+    <pre><code>lsof +L1</code></pre>
+    <p>
+      That lists open files with a link count of zero — deleted-but-open
+      files. Restarting the owning service (or reopening its log file, for
+      applications that support that) releases the space immediately.
+    </p>
+
+    <h2 id="service">A systemd service won't start</h2>
+    <p>
+      Read the status and journal before doing anything else — the exit
+      code and the last few log lines almost always point straight at the
+      cause:
+    </p>
+    <pre><code>systemctl status &lt;service&gt; --no-pager -l
+journalctl -u &lt;service&gt; -b --no-pager</code></pre>
+    <p>
+      If the reason isn't obvious from the logs, check exactly how the
+      unit is configured to start, and as which user:
+    </p>
+    <pre><code>systemctl cat &lt;service&gt;
+systemctl show &lt;service&gt; -p User -p Group -p ExecStart</code></pre>
+    <p>
+      A large share of "it just won't start" cases come down to running
+      the exact <code>ExecStart</code> command by hand, as the configured
+      user, to see the real error instead of systemd's generic failure
+      message:
+    </p>
+    <pre><code>sudo -u &lt;user&gt; &lt;the ExecStart command&gt;</code></pre>
+    <p>
+      If you edited the unit file itself, remember that
+      <code>systemctl daemon-reload</code> is required before systemd will
+      pick up the change — a very common reason a fix "doesn't work" even
+      though the file is correct.
+    </p>
+
+    <h2 id="network">The server has network connectivity problems</h2>
+    <p>
+      Separate "can't route to it" from "DNS won't resolve it" from "can
+      route and resolve, but nothing is listening" — they have completely
+      different fixes, and testing them out of order wastes time.
+    </p>
+    <pre><code>ping -c 3 &lt;gateway&gt;
+ping -c 3 1.1.1.1
+dig example.com
+ss -lntp</code></pre>
+    <p>
+      If you can ping an IP address but not a hostname, it's DNS, not
+      routing — check the resolver configuration
+      (<code>resolvectl status</code>) rather than touching routes. If a
+      service is supposedly running but nothing external can reach it,
+      confirm it's actually listening on the interface you expect with
+      <code>ss -lntp</code> before assuming it's a firewall problem — a
+      service bound only to <code>127.0.0.1</code> will never accept
+      external connections no matter what the firewall allows.
+    </p>
+    <p>
+      Once the process is confirmed listening on the right address, test
+      locally first, then from a remote client, to isolate the host from
+      the network path:
+    </p>
+    <pre><code>curl -v http://127.0.0.1:&lt;port&gt;/
+nc -vz &lt;server&gt; &lt;port&gt;</code></pre>
+
+    <h2 id="habits">Build the habit: capture evidence, not just fixes</h2>
+    <p>
+      The single biggest difference between a team that firefights forever
+      and one that gets calmer over time is whether they write down what
+      actually happened. "Reboot fixed it" is a recovery action, not a
+      root cause — if you can't explain the trigger, say so explicitly and
+      add the logging or monitoring that would catch it next time.
+    </p>
+    <p>
+      A short, honest incident note — what broke, what you found, what you
+      changed, what you'd add to catch it earlier — is worth more than a
+      perfect fix with no record of how you got there.
+    </p>
+
+    <div class="related-tools">
+      <h2>Related tools on this site</h2>
+      <p>Put this guide into practice with these free tools:</p>
+      <ul>
+        <li><a href="/linux/cron-generator">Cron Expression Generator</a></li>
+        <li><a href="/linux/systemd-service-generator">Systemd Service Generator</a></li>
+        <li><a href="/linux/permission-converter">Permission Converter</a></li>
+        <li><a href="/interview-qa/#questions">Linux Scenario Interview Q&amp;A</a></li>
+      </ul>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
+  .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
+  .article-wrap li { margin-bottom: 6px; }
+  .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
+  .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
+  .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+
+  .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
+  .related-tools h2 { margin: 0 0 6px; }
+  .related-tools p { margin: 0; }
+  .related-tools ul { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .related-tools li { margin: 0; }
+  .related-tools a { display: block; padding: 12px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .9rem; text-decoration: none; }
+  .related-tools a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>

@@ -1,0 +1,220 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Building a Production-Ready CI/CD Pipeline"
+  description="Design a CI/CD pipeline that goes from commit to production safely: build, test, scan, deploy, and roll back, with the guardrails that keep a bad change from reaching users."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/guides/">← Back to Guides</a>
+      <span class="eyebrow">DevOps · Guide</span>
+      <h1>Building a Production-Ready CI/CD Pipeline</h1>
+      <p>
+        A pipeline that just runs is easy to build. A pipeline that
+        catches problems before your users do, and lets you recover
+        quickly when one slips through, takes deliberate design.
+      </p>
+      <div class="meta"><span>13 min read</span><span>·</span><span>Tool-agnostic — applies to Jenkins, GitHub Actions, GitLab CI, and others</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#stages">The five stages every pipeline needs</a></li>
+        <li><a href="#build">Build: produce one immutable artifact</a></li>
+        <li><a href="#test">Test: fail fast, in the right order</a></li>
+        <li><a href="#scan">Scan: catch known vulnerabilities before deploy</a></li>
+        <li><a href="#deploy">Deploy: progressive rollout, not a big bang</a></li>
+        <li><a href="#rollback">Rollback: decide the criteria before you need them</a></li>
+        <li><a href="#secrets">Handling secrets without leaking them</a></li>
+        <li><a href="#speed">Keeping the pipeline fast enough that people trust it</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="stages">The five stages every pipeline needs</h2>
+    <p>
+      Regardless of which CI/CD platform you use, a production-grade
+      pipeline separates into five stages that each answer a different
+      question: build (does the code compile into something?), test (does
+      it work?), scan (is it safe to run?), deploy (is it live?), and
+      verify (did the deployment actually succeed?). Skipping straight
+      from build to deploy is how untested, unscanned code reaches
+      production.
+    </p>
+
+    <h2 id="build">Build: produce one immutable artifact</h2>
+    <p>
+      The single most important rule of the build stage: build the
+      artifact once, then promote that exact same artifact through every
+      later environment. Never rebuild from source at each stage — a
+      "rebuild" between staging and production, even from the same commit,
+      can produce a subtly different artifact if a dependency was
+      re-resolved or a base image moved.
+    </p>
+    <pre><code>docker build -t myapp:$GIT_SHA .
+docker push registry.example.com/myapp:$GIT_SHA</code></pre>
+    <p>
+      Tag by commit SHA, not by a mutable label like <code>latest</code> or
+      even a version number that could be reused. Every later stage
+      references that exact tag, so "what's actually running in
+      production" is always answerable with a single command instead of a
+      guess.
+    </p>
+
+    <h2 id="test">Test: fail fast, in the right order</h2>
+    <p>
+      Order your test stages from fastest and cheapest to slowest and most
+      expensive, and stop on the first failure. There's no reason to spend
+      twenty minutes on integration tests if a linter would have caught
+      the problem in five seconds.
+    </p>
+    <ol>
+      <li><strong>Static analysis and linting</strong> — seconds, catches syntax and style issues.</li>
+      <li><strong>Unit tests</strong> — fast, isolated, no external dependencies.</li>
+      <li><strong>Integration tests</strong> — slower, exercises real dependencies like a database.</li>
+      <li><strong>End-to-end tests</strong> — slowest, but proves the whole system works together.</li>
+    </ol>
+    <p>
+      Run independent test suites in parallel where your CI platform
+      supports it — sharding a large test suite across several runners is
+      usually the single biggest speed win available without touching a
+      line of test code.
+    </p>
+
+    <h2 id="scan">Scan: catch known vulnerabilities before deploy</h2>
+    <p>
+      A dependency or container scan belongs in the pipeline, not as a
+      separate quarterly audit — by the time a quarterly scan finds a
+      critical CVE, it may have already been running in production for
+      months. Set the gate to block on high-confidence, high-severity
+      findings only; a scanner that blocks every build on low-severity
+      noise gets disabled by frustrated engineers within a month, which is
+      worse than not having it at all.
+    </p>
+    <pre><code># container image scan
+trivy image registry.example.com/myapp:$GIT_SHA
+
+# dependency scan
+npm audit --audit-level=high</code></pre>
+
+    <h2 id="deploy">Deploy: progressive rollout, not a big bang</h2>
+    <p>
+      Deploying to 100% of traffic at once means 100% of your users find
+      out about a bad release at the same time. A progressive rollout —
+      canary, blue-green, or a simple rolling update with health checks —
+      contains the blast radius of anything that gets past your tests and
+      scans.
+    </p>
+    <p>
+      Whatever strategy you choose, the deploy stage must be able to
+      answer one question automatically: is the new version actually
+      healthy? A deployment that reports "success" because the process
+      started, without checking that it's actually serving correct
+      responses, is not a deployment you can trust.
+    </p>
+    <pre><code>kubectl rollout status deployment/myapp --timeout=120s
+curl -f https://myapp.example.com/healthz</code></pre>
+
+    <h2 id="rollback">Rollback: decide the criteria before you need them</h2>
+    <p>
+      Define what "this deployment failed" means before you ship, not
+      while you're staring at a dashboard during an incident. A concrete
+      threshold — error rate above X%, p99 latency above Y ms, health
+      check failing for more than Z seconds — turns a stressful judgment
+      call into a checklist.
+    </p>
+    <pre><code>kubectl rollout undo deployment/myapp</code></pre>
+    <p>
+      Practice the rollback path in a non-incident, so the first time your
+      team runs it isn't also the first time they've ever run it. A
+      rollback procedure that's only ever been tested in theory has a way
+      of not working exactly when you need it most.
+    </p>
+
+    <h2 id="secrets">Handling secrets without leaking them</h2>
+    <p>
+      Secrets belong in a dedicated secrets manager, injected into the
+      pipeline at runtime — never committed to the repository, never
+      baked into the built image, and never printed to build logs. If a
+      secret ever does reach a log or a commit, rotating it is not
+      optional: treat it as compromised the moment it's exposed, because
+      build logs and git history are effectively permanent and often
+      readable by more people than you'd expect.
+    </p>
+    <pre><code># reference a secret at runtime, don't hardcode it
+export DB_PASSWORD=$(vault kv get -field=password secret/myapp/db)</code></pre>
+
+    <h2 id="speed">Keeping the pipeline fast enough that people trust it</h2>
+    <p>
+      A slow pipeline gets worked around — engineers start batching
+      changes, skipping tests locally, or merging without waiting for CI,
+      all of which quietly erode the safety the pipeline was supposed to
+      provide. Watch pipeline duration as a metric over time, not just
+      whether it passes, and treat a steadily growing build time as a
+      problem to fix, not a fact of life.
+    </p>
+    <p>
+      Caching dependency downloads and Docker layers, and running
+      independent stages in parallel, are usually enough to keep even a
+      large pipeline under ten minutes without cutting any real safety
+      checks.
+    </p>
+
+    <div class="related-tools">
+      <h2>Related tools on this site</h2>
+      <p>Put this guide into practice with these free tools:</p>
+      <ul>
+        <li><a href="/devops/docker-compose-validator">Docker Compose Validator</a></li>
+        <li><a href="/devops/dockerfile-generator">Dockerfile Generator</a></li>
+        <li><a href="/devops/yaml-validator">YAML Validator</a></li>
+        <li><a href="/interview-qa/#questions">DevOps Scenario Interview Q&amp;A</a></li>
+      </ul>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
+  .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
+  .article-wrap li { margin-bottom: 6px; }
+  .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
+  .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
+  .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+
+  .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
+  .related-tools h2 { margin: 0 0 6px; }
+  .related-tools p { margin: 0; }
+  .related-tools ul { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .related-tools li { margin: 0; }
+  .related-tools a { display: block; padding: 12px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .9rem; text-decoration: none; }
+  .related-tools a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>

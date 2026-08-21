@@ -1,0 +1,238 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Linux Server Security Hardening Guide"
+  description="A practical hardening checklist covering SSH, users and sudo, the firewall, updates, and auditing — the changes that matter most for an internet-facing server."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/guides/">← Back to Guides</a>
+      <span class="eyebrow">Security · Guide</span>
+      <h1>Linux Server Security Hardening Guide</h1>
+      <p>
+        A small number of changes account for most of the real-world risk
+        reduction on an internet-facing Linux server. This guide covers
+        those first, in the order that matters most.
+      </p>
+      <div class="meta"><span>14 min read</span><span>·</span><span>Applies to RHEL, Ubuntu, and Debian-based systems</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#ssh">Lock down SSH first</a></li>
+        <li><a href="#users">Users, sudo, and least privilege</a></li>
+        <li><a href="#firewall">Configure the firewall with a default-deny policy</a></li>
+        <li><a href="#updates">Keep the system patched, deliberately</a></li>
+        <li><a href="#auditing">Turn on auditing before you need it</a></li>
+        <li><a href="#filesystem">File permissions and the setuid trap</a></li>
+        <li><a href="#monitoring">Monitor for the things that matter</a></li>
+        <li><a href="#mindset">The mindset: assume compromise, limit blast radius</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="ssh">Lock down SSH first</h2>
+    <p>
+      SSH is almost always the first thing an attacker probes on an
+      internet-facing server, and it's usually the highest-value target —
+      compromise it and they have a shell. A handful of changes remove
+      most of the risk:
+    </p>
+    <pre><code># /etc/ssh/sshd_config
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AllowUsers deploy admin</code></pre>
+    <p>
+      Disabling root login and password authentication in favor of
+      key-based auth alone eliminates the entire category of brute-force
+      login attempts that fill up auth logs on any public server. Restart
+      the service and validate the config before you disconnect your
+      current session, so a typo doesn't lock you out:
+    </p>
+    <pre><code>sshd -t
+systemctl restart sshd</code></pre>
+    <p>
+      If SSH doesn't need to be reachable from the entire internet,
+      restrict it at the network layer too — a security group, firewall
+      rule, or VPN requirement that limits SSH to known source ranges
+      closes off the exposure entirely rather than just hardening the
+      authentication on top of it.
+    </p>
+
+    <h2 id="users">Users, sudo, and least privilege</h2>
+    <p>
+      Every account and every sudo grant is something an attacker can use
+      if it's ever compromised, so audit both regularly rather than
+      letting them accumulate.
+    </p>
+    <pre><code>sudo -l -U &lt;user&gt;
+grep -R --line-number -E '^[^#].*&lt;user&gt;|%&lt;group&gt;' /etc/sudoers /etc/sudoers.d</code></pre>
+    <p>
+      Avoid broad wildcard rules like granting a user
+      <code>ALL=(ALL) NOPASSWD: ALL</code> when they only need to restart
+      one specific service. A narrow rule limits what an attacker can do
+      even if that specific account is compromised — the whole point of
+      least privilege is containing damage, not just preventing the
+      initial access.
+    </p>
+    <p>
+      Always edit sudoers with <code>visudo</code>, never a plain text
+      editor — it validates syntax before saving, and a broken sudoers
+      file can lock every user out of sudo simultaneously.
+    </p>
+
+    <h2 id="firewall">Configure the firewall with a default-deny policy</h2>
+    <p>
+      Start from "deny everything," then explicitly allow only what the
+      server actually needs to serve — not the other way around. A
+      default-allow firewall with a growing list of blocks is much easier
+      to accidentally leave a hole in.
+    </p>
+    <pre><code>firewall-cmd --list-all
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload</code></pre>
+    <p>
+      Review the active rule set periodically, not just when you add
+      something new — a rule added for a one-time debugging session two
+      years ago, and never removed, is a common finding in real security
+      reviews.
+    </p>
+
+    <h2 id="updates">Keep the system patched, deliberately</h2>
+    <p>
+      Unpatched, known vulnerabilities remain one of the most common
+      initial access vectors — not because they're sophisticated, but
+      because they're easy to scan for at scale. Patching deliberately
+      means having a process, not hoping someone remembers:
+    </p>
+    <pre><code>dnf check-update
+dnf updateinfo list security</code></pre>
+    <p>
+      For critical, actively exploited vulnerabilities, don't wait for
+      the next scheduled maintenance window — assess exposure quickly and
+      expedite the patch. For routine updates, a predictable weekly or
+      monthly cadence, tested in staging first, beats both "patch
+      immediately with no testing" and "patch whenever we get around to
+      it."
+    </p>
+
+    <h2 id="auditing">Turn on auditing before you need it</h2>
+    <p>
+      By the time you need to answer "who changed this file" or "who
+      accessed this system," it's too late to start logging — auditing
+      has to already be running. At minimum, enable centralized,
+      tamper-resistant logging for authentication events and privileged
+      commands:
+    </p>
+    <pre><code>journalctl -u sshd --since today
+journalctl _COMM=sudo --since today</code></pre>
+    <p>
+      Ship logs off the host to a separate system the same user can't
+      write to — locally stored logs on a compromised host can be altered
+      or deleted by whoever compromised it, which defeats the purpose of
+      having them.
+    </p>
+
+    <h2 id="filesystem">File permissions and the suid trap</h2>
+    <p>
+      Never use <code>chmod 777</code> as a way to "just make the error go
+      away" — it's a diagnostic shortcut that trades a temporary
+      inconvenience for a much larger, permanent risk. If a permission
+      error persists after correct ownership and mode bits, the real
+      cause is usually SELinux context, an ACL, or a parent directory's
+      execute permission, not an insufficiently open mode.
+    </p>
+    <pre><code>namei -l /path/to/file
+getfacl /path/to/file
+find / -xdev -perm -4000 -type f 2&gt;/dev/null</code></pre>
+    <p>
+      That last command lists every setuid binary on the system — files
+      that run with the file owner's privileges (often root) regardless
+      of who executes them. Periodically review this list; an
+      unrecognized setuid binary is a serious finding worth investigating
+      immediately, not something to dismiss.
+    </p>
+
+    <h2 id="monitoring">Monitor for the things that matter</h2>
+    <p>
+      A flood of low-value alerts trains people to ignore all of them,
+      including the one that matters. Prioritize detection for the
+      patterns that actually indicate compromise:
+    </p>
+    <ul>
+      <li>A spike in failed logins across many accounts in a short window — a likely password-spraying attempt.</li>
+      <li>A successful login from an unusual location immediately following a run of failures.</li>
+      <li>New entries in the setuid binary list, or unexpected changes to <code>/etc/passwd</code>, <code>/etc/shadow</code>, or <code>/etc/sudoers</code>.</li>
+      <li>Outbound connections from a server that has no reason to be initiating them.</li>
+    </ul>
+
+    <h2 id="mindset">The mindset: assume compromise, limit blast radius</h2>
+    <p>
+      Hardening isn't a single checklist you complete once — it's a set
+      of habits that assume any individual control could eventually fail,
+      and focus on limiting what happens next if it does. A server with
+      strong SSH configuration, least-privilege sudo, a tight firewall,
+      current patches, and real logging isn't unbreakable — but it turns
+      a routine automated scan into a dead end, and it gives you the
+      evidence you need if something more serious does get through.
+    </p>
+
+    <div class="related-tools">
+      <h2>Related tools on this site</h2>
+      <p>Put this guide into practice with these free tools:</p>
+      <ul>
+        <li><a href="/security/">Security Tools</a></li>
+        <li><a href="/security/password-strength-checker">Password Strength Checker</a></li>
+        <li><a href="/security/security-headers-analyzer">Security Headers Analyzer</a></li>
+        <li><a href="/interview-qa/#questions">Security Scenario Interview Q&amp;A</a></li>
+      </ul>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
+  .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
+  .article-wrap li { margin-bottom: 6px; }
+  .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
+  .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
+  .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+
+  .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
+  .related-tools h2 { margin: 0 0 6px; }
+  .related-tools p { margin: 0; }
+  .related-tools ul { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .related-tools li { margin: 0; }
+  .related-tools a { display: block; padding: 12px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .9rem; text-decoration: none; }
+  .related-tools a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>
