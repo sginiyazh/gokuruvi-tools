@@ -387,6 +387,7 @@ const isActive = (href: string) => {
 
     .gokuruvi-nav-links {
       position: fixed;
+      z-index: 1000;
       top: 68px;
       right: 0;
       left: 0;
@@ -399,7 +400,8 @@ const isActive = (href: string) => {
       align-items: stretch;
       gap: 5px;
       border-top: 1px solid #263247;
-      background: rgba(15, 23, 42, 0.995);
+      background: #0f172a;
+      isolation: isolate;
       box-shadow: 0 24px 45px rgba(15, 23, 42, 0.38);
       opacity: 0;
       transform: translateY(-12px);
