@@ -33,6 +33,41 @@ const IPV4_PATTERN =
 const HOSTNAME_PATTERN =
   /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 
+// Cloudflare's own published IPv4 ranges (https://www.cloudflare.com/ips-v4/).
+// Workers' TCP Sockets API refuses to connect() to Cloudflare's own network,
+// so a target behind Cloudflare (a huge share of the modern web, including
+// this site itself) must be reported as "unverifiable" rather than "closed" -
+// otherwise every Cloudflare-fronted host would falsely look closed/down.
+const CLOUDFLARE_IPV4_RANGES: Array<[string, number]> = [
+  ["173.245.48.0", 20],
+  ["103.21.244.0", 22],
+  ["103.22.200.0", 22],
+  ["103.31.4.0", 22],
+  ["141.101.64.0", 18],
+  ["108.162.192.0", 18],
+  ["190.93.240.0", 20],
+  ["188.114.96.0", 20],
+  ["197.234.240.0", 22],
+  ["198.41.128.0", 17],
+  ["162.158.0.0", 15],
+  ["104.16.0.0", 13],
+  ["104.24.0.0", 14],
+  ["172.64.0.0", 13],
+  ["131.0.72.0", 22],
+];
+
+function ipv4ToInt(ip: string): number {
+  return ip.split(".").reduce((acc, part) => (acc << 8) + Number(part), 0) >>> 0;
+}
+
+function isCloudflareIPv4(ip: string): boolean {
+  const target = ipv4ToInt(ip);
+  return CLOUDFLARE_IPV4_RANGES.some(([base, prefix]) => {
+    const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+    return (target & mask) === (ipv4ToInt(base) & mask);
+  });
+}
+
 function jsonResponse(data: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
@@ -117,6 +152,22 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const service = SERVICE_NAMES[port] ?? "Unknown";
+
+    if (isCloudflareIPv4(resolvedIp)) {
+      return jsonResponse({
+        host,
+        port,
+        service,
+        status: "unknown",
+        open: null,
+        message:
+          "This host is served through Cloudflare's network. Cloudflare blocks this checker from opening TCP connections to its own infrastructure, so an open/closed result can't be verified for this destination. This does not mean the port is down - try checking a non-Cloudflare-fronted host or IP instead.",
+        responseTimeMs: 0,
+        checkedAt: new Date().toISOString(),
+      });
+    }
+
     const startedAt = Date.now();
     let open = false;
 
@@ -137,7 +188,8 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({
       host,
       port,
-      service: SERVICE_NAMES[port] ?? "Unknown",
+      service,
+      status: open ? "open" : "closed",
       open,
       responseTimeMs: Date.now() - startedAt,
       checkedAt: new Date().toISOString(),

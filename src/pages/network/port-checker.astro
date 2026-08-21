@@ -309,6 +309,13 @@ import Footer from "../../components/Footer.astro";
         color: var(--success-text);
       }
 
+      .message.warning {
+        display: block;
+        border: 1px solid var(--warning-border);
+        background: var(--warning-bg);
+        color: var(--warning-text);
+      }
+
       .result-placeholder {
         padding: 48px 20px;
         color: var(--muted);
@@ -372,6 +379,12 @@ import Footer from "../../components/Footer.astro";
         border: 1px solid var(--error-border);
         background: var(--error-bg);
         color: var(--error-text);
+      }
+
+      .status-panel.unknown {
+        border: 1px solid var(--warning-border);
+        background: var(--warning-bg);
+        color: var(--warning-text);
       }
 
       .status-icon {
@@ -914,20 +927,30 @@ import Footer from "../../components/Footer.astro";
         const statusPanel =
           document.getElementById("statusPanel");
 
+        const isUnknown = data.status === "unknown";
         const isOpen = data.open === true;
 
-        statusPanel.className =
-          `status-panel ${isOpen ? "open" : "closed"}`;
+        statusPanel.className = `status-panel ${
+          isUnknown ? "unknown" : isOpen ? "open" : "closed"
+        }`;
 
-        document.getElementById("statusIcon").textContent =
-          isOpen ? "✅" : "❌";
+        document.getElementById("statusIcon").textContent = isUnknown
+          ? "⚠️"
+          : isOpen
+          ? "✅"
+          : "❌";
 
-        document.getElementById("statusTitle").textContent =
-          isOpen ? "Port Is Open" : "Port Is Closed";
+        document.getElementById("statusTitle").textContent = isUnknown
+          ? "Result Not Verifiable"
+          : isOpen
+          ? "Port Is Open"
+          : "Port Is Closed";
 
         document.getElementById(
           "statusDescription"
-        ).textContent = isOpen
+        ).textContent = isUnknown
+          ? data.message
+          : isOpen
           ? `${data.host}:${data.port} accepted the TCP connection.`
           : `${data.host}:${data.port} did not accept the TCP connection.`;
 
@@ -940,15 +963,25 @@ import Footer from "../../components/Footer.astro";
         document.getElementById("resultService").textContent =
           data.service;
 
-        document.getElementById("resultStatus").textContent =
-          isOpen ? "Open" : "Closed or filtered";
+        document.getElementById("resultStatus").textContent = isUnknown
+          ? "Unknown (behind Cloudflare)"
+          : isOpen
+          ? "Open"
+          : "Closed or filtered";
 
-        document.getElementById("resultTime").textContent =
-          `${data.responseTimeMs} ms`;
+        document.getElementById("resultTime").textContent = isUnknown
+          ? "N/A"
+          : `${data.responseTimeMs} ms`;
 
         document.getElementById(
           "resultCheckedAt"
         ).textContent = new Date(data.checkedAt).toLocaleString();
+
+        const statusText = isUnknown
+          ? "Unknown (behind Cloudflare)"
+          : isOpen
+          ? "Open"
+          : "Closed or filtered";
 
         currentResult = [
           "TCP Port Check",
@@ -957,8 +990,10 @@ import Footer from "../../components/Footer.astro";
           `Port: ${data.port}`,
           `Service: ${data.service}`,
           `Protocol: TCP`,
-          `Status: ${isOpen ? "Open" : "Closed or filtered"}`,
-          `Response Time: ${data.responseTimeMs} ms`,
+          `Status: ${statusText}`,
+          isUnknown
+            ? `Note: ${data.message}`
+            : `Response Time: ${data.responseTimeMs} ms`,
           `Checked At: ${new Date(data.checkedAt).toLocaleString()}`,
         ].join("\n");
 
@@ -966,8 +1001,10 @@ import Footer from "../../components/Footer.astro";
         results.classList.add("active");
 
         showMessage(
-          "Port check completed successfully.",
-          "success"
+          isUnknown
+            ? "Port check completed, but the result could not be verified."
+            : "Port check completed successfully.",
+          isUnknown ? "warning" : "success"
         );
       }
 
