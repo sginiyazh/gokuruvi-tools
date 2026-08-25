@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout title="VM Sizing & Cluster Capacity Calculator" description="Estimate how many virtual machines a vSphere cluster can support based on host specs, overcommit ratios and HA reserve.">
+  <section class="tool-hero"><span class="eyebrow">VMware Tool</span><h1>VM Sizing &amp; Cluster Capacity Calculator</h1><p>Estimate how many VMs a vSphere cluster can realistically support, accounting for CPU/RAM overcommit ratios and an N+1 HA host reserve.</p></section>
+  <div class="wrap">
+    <a class="back" href="/vmware/">← Back to VMware Tools</a>
+    <section class="card">
+      <h2>Cluster and host specs</h2>
+      <div class="grid">
+        <div class="field"><label for="hostCount">Number of hosts in cluster</label><input id="hostCount" type="number" min="1" value="4" /></div>
+        <div class="field"><label for="haReserve">HA reserve hosts (N+1, N+2...)</label><input id="haReserve" type="number" min="0" value="1" /></div>
+        <div class="field"><label for="hostCpuCores">Physical CPU cores per host</label><input id="hostCpuCores" type="number" min="1" value="32" /></div>
+        <div class="field"><label for="hostRam">RAM per host (GB)</label><input id="hostRam" type="number" min="1" value="512" /></div>
+        <div class="field"><label for="cpuOvercommit">vCPU:pCPU overcommit ratio</label><input id="cpuOvercommit" type="number" min="1" step="0.5" value="4" /></div>
+        <div class="field"><label for="ramOvercommit">vRAM:pRAM overcommit ratio</label><input id="ramOvercommit" type="number" min="1" step="0.1" value="1.25" /></div>
+      </div>
+      <h2 class="section-gap">Per-VM sizing</h2>
+      <div class="grid">
+        <div class="field"><label for="vmVcpu">vCPUs per VM</label><input id="vmVcpu" type="number" min="1" value="4" /></div>
+        <div class="field"><label for="vmRam">RAM per VM (GB)</label><input id="vmRam" type="number" min="1" value="16" /></div>
+      </div>
+      <div class="actions"><button id="vmwareSizingCalc">Calculate Capacity</button></div>
+      <div class="result" id="vmwareSizingResult" hidden>
+        <div class="checklist" id="vmwareSizingList"></div>
+        <p class="small">This is planning-level guidance, not a guarantee. Actual density also depends on NUMA topology, storage IOPS, network throughput and real workload behavior — validate with a pilot before committing a design.</p>
+      </div>
+    </section>
+  </div>
+  <script>
+    const sizingButton = document.querySelector<HTMLButtonElement>("#vmwareSizingCalc");
+    const sizingResult = document.querySelector<HTMLElement>("#vmwareSizingResult");
+    const sizingList = document.querySelector<HTMLElement>("#vmwareSizingList");
+
+    function numVal(id: string, fallback: number): number {
+      const el = document.querySelector<HTMLInputElement>("#" + id);
+      const value = Number(el?.value);
+      return Number.isFinite(value) && value >= 0 ? value : fallback;
+    }
+
+    function row(label: string, value: string): string {
+      return `<div class="item"><strong>${label}:</strong> ${value}</div>`;
+    }
+
+    sizingButton?.addEventListener("click", () => {
+      const hostCount = numVal("hostCount", 4);
+      const haReserve = numVal("haReserve", 1);
+      const hostCpuCores = numVal("hostCpuCores", 32);
+      const hostRam = numVal("hostRam", 512);
+      const cpuOvercommit = numVal("cpuOvercommit", 4);
+      const ramOvercommit = numVal("ramOvercommit", 1.25);
+      const vmVcpu = numVal("vmVcpu", 4) || 1;
+      const vmRam = numVal("vmRam", 16) || 1;
+
+      const usableHosts = Math.max(0, hostCount - haReserve);
+      const totalPhysicalCpu = usableHosts * hostCpuCores;
+      const totalPhysicalRam = usableHosts * hostRam;
+      const effectiveVcpuCapacity = totalPhysicalCpu * cpuOvercommit;
+      const effectiveVramCapacity = totalPhysicalRam * ramOvercommit;
+
+      const vmsByCpu = Math.floor(effectiveVcpuCapacity / vmVcpu);
+      const vmsByRam = Math.floor(effectiveVramCapacity / vmRam);
+      const maxVms = Math.min(vmsByCpu, vmsByRam);
+      const bottleneck = vmsByCpu < vmsByRam ? "CPU" : vmsByRam < vmsByCpu ? "RAM" : "CPU and RAM (balanced)";
+
+      if (sizingList) {
+        sizingList.innerHTML = [
+          row("Usable hosts after HA reserve", `${usableHosts} of ${hostCount}`),
+          row("Effective vCPU capacity", `${effectiveVcpuCapacity.toLocaleString()} vCPUs`),
+          row("Effective usable vRAM capacity", `${effectiveVramCapacity.toLocaleString()} GB`),
+          row("Maximum VMs supported", `${maxVms.toLocaleString()} VMs`),
+          row("Limiting resource", bottleneck),
+          row("VMs possible if only CPU-bound", `${vmsByCpu.toLocaleString()}`),
+          row("VMs possible if only RAM-bound", `${vmsByRam.toLocaleString()}`),
+        ].join("");
+      }
+      if (sizingResult) sizingResult.hidden = false;
+    });
+  </script>
+<style>
+.tool-hero{padding:62px 20px 42px;background:linear-gradient(135deg,#eff6ff,#f8fafc);text-align:center}.eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}.tool-hero h1{margin:14px 0 10px;color:#0f172a;font-size:clamp(34px,5vw,52px);line-height:1.1}.tool-hero p{max-width:760px;margin:0 auto;color:#64748b;font-size:17px}.wrap{width:min(calc(100% - 32px),960px);margin:38px auto 72px}.back{display:inline-block;margin-bottom:18px;color:#2563eb;font-weight:750;text-decoration:none}.card{padding:28px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.07)}h2{margin:0 0 8px;color:#0f172a}.section-gap{margin-top:28px}.muted{color:#64748b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{margin-top:16px}label{display:block;margin-bottom:7px;color:#0f172a;font-weight:750}input,select,textarea{width:100%;min-height:48px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a}input:focus,select:focus{outline:3px solid rgba(37,99,235,.14);border-color:#2563eb}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}button{min-height:46px;padding:10px 17px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.result{margin-top:20px;padding:17px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff;overflow-wrap:anywhere}.checklist{display:grid;gap:9px}.item{padding:10px 12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}.small{margin-top:12px;font-size:13px;color:#64748b}@media(max-width:700px){.grid{grid-template-columns:1fr}.card{padding:20px}}
+</style>
+</Layout>

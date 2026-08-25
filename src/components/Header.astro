@@ -4,18 +4,19 @@ const currentPath = Astro.url.pathname;
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Linux", href: "/linux/" },
+  { name: "Windows", href: "/windows/" },
+  { name: "Network", href: "/network/" },
+  { name: "VMware", href: "/vmware/" },
+  { name: "Cloud", href: "/cloud/" },
   { name: "DevOps", href: "/devops/" },
   { name: "Kubernetes", href: "/kubernetes/" },
-  { name: "Network", href: "/network/" },
-  { name: "Cloud", href: "/cloud/" },
   { name: "Database", href: "/database/" },
   { name: "Security", href: "/security/" },
   { name: "AI", href: "/ai/" },
-  { name: "Windows", href: "/windows/" },
   { name: "Guides", href: "/guides/" },
+  { name: "Interview Q&A", href: "/interview-qa/" },
   { name: "Store", href: "/store/" },
   { name: "About", href: "/about/" },
-  { name: "Interview Q&A", href: "/interview-qa/" },
 ];
 
 const normalizePath = (path: string) => {

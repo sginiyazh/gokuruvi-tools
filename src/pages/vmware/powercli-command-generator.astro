@@ -1,0 +1,143 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout title="PowerCLI Command Generator" description="Generate common VMware PowerCLI commands for VM power operations, snapshots, migration, and resource queries.">
+  <section class="tool-hero"><span class="eyebrow">VMware Tool</span><h1>PowerCLI Command Generator</h1><p>Generate common VMware PowerCLI commands for day-to-day vSphere administration — power operations, snapshots, vMotion, and resource queries.</p></section>
+  <div class="wrap">
+    <a class="back" href="/vmware/">← Back to VMware Tools</a>
+    <section class="card">
+      <h2>Build a PowerCLI command</h2>
+      <div class="grid">
+        <div class="field"><label for="pcliAction">Action</label>
+          <select id="pcliAction">
+            <option value="connect">Connect to vCenter</option>
+            <option value="getvm">Get VM details</option>
+            <option value="poweron">Power on VM</option>
+            <option value="poweroff">Power off VM (graceful shutdown)</option>
+            <option value="restart">Restart guest OS</option>
+            <option value="snapshotcreate">Create snapshot</option>
+            <option value="snapshotlist">List snapshots</option>
+            <option value="snapshotremove">Remove all snapshots</option>
+            <option value="vmotion">vMotion (move VM to another host)</option>
+            <option value="svmotion">Storage vMotion (move VM to another datastore)</option>
+            <option value="resize">Resize vCPU / RAM</option>
+            <option value="datastoreinfo">List datastore free space</option>
+            <option value="hostmaintenance">Enter host maintenance mode</option>
+          </select>
+        </div>
+        <div class="field"><label for="pcliVcenter">vCenter server</label><input id="pcliVcenter" value="vcenter.corp.local" /></div>
+        <div class="field"><label for="pcliVm">VM name</label><input id="pcliVm" value="app-server-01" /></div>
+        <div class="field"><label for="pcliTarget" id="pcliTargetLabel">Target host / datastore / snapshot name</label><input id="pcliTarget" value="esxi-host-02.corp.local" /></div>
+        <div class="field"><label for="pcliCpu">vCPU count (resize only)</label><input id="pcliCpu" type="number" min="1" value="4" /></div>
+        <div class="field"><label for="pcliRam">RAM in GB (resize only)</label><input id="pcliRam" type="number" min="1" value="16" /></div>
+      </div>
+      <div class="actions"><button id="pcliGenerate">Generate Command</button><button class="secondary" id="pcliCopy" type="button">Copy</button></div>
+      <div class="result"><pre id="pcliOut">—</pre><p class="small">Review the target host, datastore, and VM name carefully — power, snapshot, and migration operations affect production workloads immediately.</p></div>
+    </section>
+  </div>
+  <script>
+    const pcliActionSelect = document.querySelector<HTMLSelectElement>("#pcliAction");
+    const pcliOut = document.querySelector<HTMLElement>("#pcliOut");
+    const pcliGenerateBtn = document.querySelector<HTMLButtonElement>("#pcliGenerate");
+    const pcliCopyBtn = document.querySelector<HTMLButtonElement>("#pcliCopy");
+    const pcliTargetInput = document.querySelector<HTMLInputElement>("#pcliTarget");
+    const pcliTargetLabel = document.querySelector<HTMLElement>("#pcliTargetLabel");
+
+    const targetFieldByAction: Record<string, { label: string; placeholder: string }> = {
+      connect: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      getvm: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      poweron: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      poweroff: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      restart: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      snapshotcreate: { label: "Snapshot name", placeholder: "pre-patch-2026-08" },
+      snapshotlist: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      snapshotremove: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      vmotion: { label: "Destination host", placeholder: "esxi-host-02.corp.local" },
+      svmotion: { label: "Destination datastore", placeholder: "datastore02" },
+      resize: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      datastoreinfo: { label: "Target host / datastore / snapshot name", placeholder: "esxi-host-02.corp.local" },
+      hostmaintenance: { label: "Host entering maintenance mode", placeholder: "esxi-host-02.corp.local" },
+    };
+
+    function syncTargetField() {
+      const action = pcliActionSelect?.value ?? "connect";
+      const config = targetFieldByAction[action] ?? targetFieldByAction.connect;
+      if (pcliTargetLabel) pcliTargetLabel.textContent = config.label;
+      if (pcliTargetInput && !pcliTargetInput.dataset.touched) {
+        pcliTargetInput.value = config.placeholder;
+      }
+    }
+
+    pcliTargetInput?.addEventListener("input", () => {
+      if (pcliTargetInput) pcliTargetInput.dataset.touched = "true";
+    });
+    pcliActionSelect?.addEventListener("change", syncTargetField);
+    syncTargetField();
+
+    function pcliVal(id: string): string {
+      return document.querySelector<HTMLInputElement>("#" + id)?.value.trim() ?? "";
+    }
+
+    function buildCommand(): string {
+      const action = pcliActionSelect?.value ?? "connect";
+      const vcenter = pcliVal("pcliVcenter") || "vcenter.corp.local";
+      const vm = pcliVal("pcliVm") || "app-server-01";
+      const target = pcliVal("pcliTarget") || "esxi-host-02.corp.local";
+      const cpu = pcliVal("pcliCpu") || "4";
+      const ram = pcliVal("pcliRam") || "16";
+
+      switch (action) {
+        case "connect":
+          return `Connect-VIServer -Server "${vcenter}"`;
+        case "getvm":
+          return `Get-VM -Name "${vm}" | Select-Object Name, PowerState, NumCpu, MemoryGB, VMHost, UsedSpaceGB`;
+        case "poweron":
+          return `Start-VM -VM "${vm}" -Confirm:$false`;
+        case "poweroff":
+          return `Shutdown-VMGuest -VM "${vm}" -Confirm:$false`;
+        case "restart":
+          return `Restart-VMGuest -VM "${vm}" -Confirm:$false`;
+        case "snapshotcreate":
+          return `New-Snapshot -VM "${vm}" -Name "${target}" -Description "Pre-change snapshot" -Memory:$false -Quiesce:$true`;
+        case "snapshotlist":
+          return `Get-Snapshot -VM "${vm}" | Select-Object Name, Created, SizeGB, Description`;
+        case "snapshotremove":
+          return `Get-Snapshot -VM "${vm}" | Remove-Snapshot -RemoveChildren -Confirm:$false`;
+        case "vmotion":
+          return `Move-VM -VM "${vm}" -Destination (Get-VMHost -Name "${target}") -Confirm:$false`;
+        case "svmotion":
+          return `Move-VM -VM "${vm}" -Datastore (Get-Datastore -Name "${target}") -Confirm:$false`;
+        case "resize":
+          return `Set-VM -VM "${vm}" -NumCpu ${cpu} -MemoryGB ${ram} -Confirm:$false`;
+        case "datastoreinfo":
+          return `Get-Datastore | Select-Object Name, @{N='FreeGB';E={[math]::Round($_.FreeSpaceGB,1)}}, @{N='CapacityGB';E={[math]::Round($_.CapacityGB,1)}} | Sort-Object FreeGB`;
+        case "hostmaintenance":
+          return `Set-VMHost -VMHost "${target}" -State Maintenance -Evacuate -Confirm:$false`;
+        default:
+          return `Connect-VIServer -Server "${vcenter}"`;
+      }
+    }
+
+    pcliGenerateBtn?.addEventListener("click", () => {
+      if (pcliOut) pcliOut.textContent = buildCommand();
+    });
+
+    pcliCopyBtn?.addEventListener("click", async () => {
+      const value = pcliOut?.textContent ?? "";
+      if (!value || value === "—") return;
+      const original = pcliCopyBtn.textContent;
+      try {
+        await navigator.clipboard.writeText(value);
+        pcliCopyBtn.textContent = "Copied!";
+      } catch {
+        pcliCopyBtn.textContent = "Copy failed";
+      }
+      setTimeout(() => { pcliCopyBtn.textContent = original; }, 1500);
+    });
+
+    if (pcliOut) pcliOut.textContent = buildCommand();
+  </script>
+<style>
+.tool-hero{padding:62px 20px 42px;background:linear-gradient(135deg,#eff6ff,#f8fafc);text-align:center}.eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}.tool-hero h1{margin:14px 0 10px;color:#0f172a;font-size:clamp(34px,5vw,52px);line-height:1.1}.tool-hero p{max-width:760px;margin:0 auto;color:#64748b;font-size:17px}.wrap{width:min(calc(100% - 32px),960px);margin:38px auto 72px}.back{display:inline-block;margin-bottom:18px;color:#2563eb;font-weight:750;text-decoration:none}.card{padding:28px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.07)}h2{margin:0 0 8px;color:#0f172a}.muted{color:#64748b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{margin-top:16px}label{display:block;margin-bottom:7px;color:#0f172a;font-weight:750}input,select{width:100%;min-height:48px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a}input:focus,select:focus{outline:3px solid rgba(37,99,235,.14);border-color:#2563eb}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}button{min-height:46px;padding:10px 17px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.secondary{background:#e2e8f0;color:#0f172a}.result{margin-top:20px;padding:17px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff;overflow-wrap:anywhere}.result pre{margin:0;white-space:pre-wrap;word-break:break-word;font:600 .9rem/1.6 ui-monospace,Consolas,monospace;color:#0f172a}.small{margin-top:12px;font-size:13px;color:#64748b}@media(max-width:700px){.grid{grid-template-columns:1fr}.card{padding:20px}}
+</style>
+</Layout>
