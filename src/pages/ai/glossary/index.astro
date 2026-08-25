@@ -1,0 +1,160 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+
+const terms = [
+  { term: "Token", category: "Fundamentals", definition: "The basic unit of text a model reads and writes — roughly three-quarters of a word in English. As a rule of thumb, 1,000 tokens is about 750 words, or around 4 characters per token on average." },
+  { term: "Context Window", category: "Fundamentals", definition: "The maximum amount of text (measured in tokens) a model can consider at once — its working memory. Everything the model needs to reference, including your prompt, chat history, and any pasted documents, must fit inside it." },
+  { term: "Prompt", category: "Fundamentals", definition: "The text input you give a model to produce a response. Includes instructions, questions, context, and examples." },
+  { term: "System Prompt", category: "Fundamentals", definition: "A special instruction set to the model before the conversation begins, defining its role, tone, and constraints — usually invisible to the end user but shapes every response." },
+  { term: "Temperature", category: "Fundamentals", definition: "A setting that controls randomness in a model's output. Low temperature (near 0) gives focused, repeatable answers; high temperature gives more varied, creative ones." },
+  { term: "Inference", category: "Fundamentals", definition: "The process of running a trained model to generate a response to a new input — as opposed to training, which is how the model learned in the first place." },
+  { term: "Latency", category: "Fundamentals", definition: "The time between sending a request to a model and receiving the first token of its response. Distinct from total generation time, which includes streaming the full answer." },
+  { term: "Hallucination", category: "Fundamentals", definition: "When a model generates plausible-sounding but factually incorrect or fabricated information, stated with the same confidence as accurate output." },
+  { term: "Prompt Engineering", category: "Prompting", definition: "The practice of crafting instructions, examples, and context to guide a model toward better output — without changing the model itself." },
+  { term: "Zero-Shot Prompting", category: "Prompting", definition: "Asking a model to perform a task with no examples provided — just a direct instruction, relying entirely on what it learned during training." },
+  { term: "Few-Shot Prompting", category: "Prompting", definition: "Providing a small number of example input-output pairs in the prompt to show the model the pattern you want it to follow." },
+  { term: "Chain of Thought", category: "Prompting", definition: "A prompting technique that asks a model to reason step by step before giving a final answer, often improving accuracy on multi-step problems." },
+  { term: "System vs. User vs. Assistant Roles", category: "Prompting", definition: "The three message roles in a chat-based API: system sets behavior, user provides input, and assistant is the model's own prior responses — used to structure conversation history." },
+  { term: "Prompt Injection", category: "Prompting", definition: "An attack where malicious instructions are hidden inside content a model processes (a document, webpage, or email) to override its original instructions." },
+  { term: "Jailbreak", category: "Prompting", definition: "A prompt specifically crafted to bypass a model's safety guardrails and get it to produce content it was designed to refuse." },
+  { term: "Fine-Tuning", category: "Training & Models", definition: "Further training an already-trained model on a smaller, specific dataset to specialize its behavior for a particular task or domain." },
+  { term: "RLHF (Reinforcement Learning from Human Feedback)", category: "Training & Models", definition: "A training technique where human ratings of model outputs are used to reward or penalize the model, aligning its behavior with human preferences." },
+  { term: "Alignment", category: "Training & Models", definition: "The broader effort to make an AI system's behavior match human intentions and values — being helpful, honest, and avoiding harm." },
+  { term: "Parameters", category: "Training & Models", definition: "The internal numerical values a model learns during training. Model size is often described in parameter count (e.g., billions), though it's not the only factor in capability." },
+  { term: "Mixture of Experts (MoE)", category: "Training & Models", definition: "A model architecture where only a subset of the model's total parameters ('experts') are activated for any given input, improving efficiency without sacrificing total capacity." },
+  { term: "Quantization", category: "Training & Models", definition: "Reducing the numerical precision of a model's parameters (e.g., from 16-bit to 4-bit) to shrink its size and speed up inference, usually with a small accuracy trade-off." },
+  { term: "LoRA (Low-Rank Adaptation)", category: "Training & Models", definition: "An efficient fine-tuning method that trains a small set of additional parameters instead of the full model, dramatically reducing the compute needed to customize a model." },
+  { term: "Distillation", category: "Training & Models", definition: "Training a smaller 'student' model to mimic the outputs of a larger 'teacher' model, producing a faster, cheaper model that retains much of the original's capability." },
+  { term: "Multimodal", category: "Training & Models", definition: "A model capable of processing more than one type of input or output — for example, text and images together, not just text alone." },
+  { term: "Embedding", category: "Retrieval & Memory", definition: "A numerical vector representation of text (or another data type) that captures its meaning, allowing similar concepts to be compared mathematically." },
+  { term: "Vector Database", category: "Retrieval & Memory", definition: "A database optimized for storing and searching embeddings by similarity, commonly used to find the most relevant documents for a given query." },
+  { term: "RAG (Retrieval-Augmented Generation)", category: "Retrieval & Memory", definition: "A technique that retrieves relevant external information before generating a response, reducing hallucination and letting a model reference up-to-date or private data it wasn't trained on." },
+  { term: "Semantic Search", category: "Retrieval & Memory", definition: "Search based on meaning rather than exact keyword matches, typically powered by comparing embeddings instead of matching literal text." },
+  { term: "Grounding", category: "Retrieval & Memory", definition: "Connecting a model's output to a verifiable external source of truth, so its answers can be traced back to real data rather than only its internal training." },
+  { term: "Knowledge Cutoff", category: "Retrieval & Memory", definition: "The date after which a model has no training data, and therefore no built-in knowledge of events or information past that point." },
+  { term: "AI Agent", category: "Agents & Tools", definition: "A system that uses a model to autonomously plan and take a sequence of actions — like calling tools, browsing, or writing files — to accomplish a goal, rather than producing a single response." },
+  { term: "Function Calling / Tool Use", category: "Agents & Tools", definition: "A model's ability to invoke external functions or APIs (like a calculator, search engine, or code executor) as part of generating its response." },
+  { term: "MCP (Model Context Protocol)", category: "Agents & Tools", definition: "An open standard that lets AI applications connect to external tools, data sources, and systems in a consistent way, without custom integration code for each one." },
+  { term: "Orchestration", category: "Agents & Tools", definition: "Coordinating multiple model calls, tools, or sub-agents to complete a complex task — managing the sequence, retries, and handoffs between steps." },
+  { term: "Context Engineering", category: "Agents & Tools", definition: "The broader discipline of structuring prompts, memory, retrieved data, and available tools to reliably guide an AI system's behavior — prompt engineering applied at the system level." },
+  { term: "Guardrails", category: "Safety & Infra", definition: "Rules, filters, or checks placed around a model to prevent unsafe, off-topic, or policy-violating outputs before they reach the user." },
+  { term: "Content Moderation", category: "Safety & Infra", definition: "Automated or human review of model inputs and outputs to catch harmful, policy-violating, or inappropriate content." },
+  { term: "Rate Limit", category: "Safety & Infra", definition: "A cap on how many requests or tokens an API key can process in a given time window, used to manage cost and system load." },
+  { term: "Throughput", category: "Safety & Infra", definition: "The number of tokens or requests a system can process per unit of time — a key performance metric alongside latency, especially at scale." },
+  { term: "Streaming", category: "Safety & Infra", definition: "Receiving a model's response incrementally, token by token, as it's generated — rather than waiting for the entire response to complete." },
+  { term: "Prompt Caching", category: "Safety & Infra", definition: "Reusing the processed representation of a repeated prompt prefix across requests to reduce cost and latency, common when the same system prompt or context is sent repeatedly." },
+];
+
+const categories = [...new Set(terms.map((t) => t.category))];
+---
+
+<Layout
+  title="AI & LLM Glossary"
+  description="A plain-English glossary of AI and LLM terms — tokens, context window, RAG, fine-tuning, prompt engineering, AI agents, and more — for students and developers."
+>
+  <section class="hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/ai/">AI Tools</a><span>›</span><span>Glossary</span></nav>
+      <span class="badge">AI &amp; LLM Glossary</span>
+      <h1>AI &amp; LLM Terms, Explained Simply</h1>
+      <p>{terms.length} plain-English definitions of the AI and LLM terms you'll actually run into — no jargon left unexplained, no assumed prior knowledge.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container">
+      <div class="toolbar" role="search">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="glossary-search" type="search" placeholder="Search terms, e.g. 'token', 'RAG', 'agent'..." autocomplete="off" />
+        </label>
+        <select id="glossary-category" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          {categories.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+      <p class="count-line"><span id="glossary-count">{terms.length}</span> terms shown</p>
+
+      <div class="term-grid" id="glossary-list">
+        {terms.map((t) => (
+          <article class="term-card" data-category={t.category} data-search={`${t.term} ${t.definition} ${t.category}`.toLowerCase()}>
+            <div class="term-top"><h2>{t.term}</h2><span class="tag">{t.category}</span></div>
+            <p>{t.definition}</p>
+          </article>
+        ))}
+      </div>
+      <p id="glossary-empty" class="empty" hidden>No terms match your search. Try a different keyword.</p>
+
+      <aside class="related">
+        <strong>Put these terms into practice:</strong>
+        <a href="/ai/token-counter/">Token Counter</a>
+        <a href="/ai/context-window-calculator/">Context Window Calculator</a>
+        <a href="/ai/model-comparison/">Model Comparison</a>
+        <a href="/ai/prompt-library/">Prompt Library</a>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const glossarySearchInput = document.querySelector<HTMLInputElement>("#glossary-search");
+    const glossaryCategorySelect = document.querySelector<HTMLSelectElement>("#glossary-category");
+    const glossaryCards = [...document.querySelectorAll<HTMLElement>(".term-card")];
+    const glossaryCountEl = document.querySelector<HTMLElement>("#glossary-count");
+    const glossaryEmptyEl = document.querySelector<HTMLElement>("#glossary-empty");
+
+    function applyGlossaryFilters() {
+      const query = (glossarySearchInput?.value ?? "").trim().toLowerCase();
+      const category = glossaryCategorySelect?.value ?? "all";
+      let visible = 0;
+      glossaryCards.forEach((card) => {
+        const matchesText = !query || (card.dataset.search ?? "").includes(query);
+        const matchesCategory = category === "all" || card.dataset.category === category;
+        const show = matchesText && matchesCategory;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (glossaryCountEl) glossaryCountEl.textContent = String(visible);
+      if (glossaryEmptyEl) glossaryEmptyEl.hidden = visible !== 0;
+    }
+
+    glossarySearchInput?.addEventListener("input", applyGlossaryFilters);
+    glossaryCategorySelect?.addEventListener("change", applyGlossaryFilters);
+  </script>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 1100px); margin-inline: auto; }
+  .hero { padding: 62px 0 46px; text-align: center; background: radial-gradient(circle at 18% 10%, rgba(56, 189, 248, .18), transparent 35%), linear-gradient(145deg, #f8fafc, #eff6ff); }
+  .breadcrumb { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; color: #64748b; font-size: .9rem; }
+  .breadcrumb a { color: #2563eb; text-decoration: none; }
+  .badge { display: inline-flex; padding: 7px 13px; border: 1px solid #bfdbfe; border-radius: 999px; background: #fff; color: #1d4ed8; font-size: 13px; font-weight: 800; }
+  .hero h1 { margin: 16px 0 12px; color: #0f172a; font-size: clamp(32px, 5vw, 50px); line-height: 1.1; }
+  .hero p { max-width: 700px; margin: 0 auto; color: #475569; font-size: 17px; }
+
+  .content { padding: 44px 0 84px; }
+  .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 12px; margin-bottom: 10px; }
+  .search-box { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 15px; border: 1px solid #cbd7e7; border-radius: 12px; background: #fff; }
+  .search-box:focus-within { border-color: #7aa6f8; box-shadow: 0 0 0 4px rgba(37, 99, 235, .09); }
+  .search-box input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 15px; color: #172033; }
+  .toolbar select { min-height: 50px; padding: 0 14px; border: 1px solid #cbd7e7; border-radius: 12px; background: #fff; color: #172033; }
+  .count-line { margin: 0 0 20px; color: #64748b; font-size: .9rem; }
+  .count-line span { font-weight: 800; color: #172033; }
+
+  .term-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .term-card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .04); }
+  .term-card[hidden] { display: none; }
+  .term-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+  .term-card h2 { margin: 0; color: #0f172a; font-size: 1.05rem; }
+  .tag { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; background: #eaf2ff; color: #1d4ed8; font-size: .68rem; font-weight: 800; white-space: nowrap; }
+  .term-card p { margin: 0; color: #475569; font-size: .92rem; line-height: 1.65; }
+  .empty { padding: 28px; border: 1px dashed #b8c7d8; border-radius: 14px; text-align: center; color: #65758a; background: #fff; }
+
+  .related { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 40px; padding: 20px 22px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; color: #334155; font-size: .92rem; }
+  .related a { padding: 8px 13px; border: 1px solid #cbd7e7; border-radius: 9px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .85rem; text-decoration: none; }
+  .related a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 700px) {
+    .toolbar { grid-template-columns: 1fr; }
+    .term-grid { grid-template-columns: 1fr; }
+  }
+</style>

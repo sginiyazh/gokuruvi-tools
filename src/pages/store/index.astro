@@ -3,103 +3,204 @@ import Layout from "../../layouts/Layout.astro";
 
 const products = [
   {
-    title: "Linux Administration eBook",
+    title: "The Complete IT Scenario Interview Prep Bundle",
+    category: "Interview Prep",
+    format: "PDF + printable flashcards",
     description:
-      "A practical guide covering Linux commands, administration, troubleshooting, and best practices.",
-    price: "Coming Soon",
+      "All 200+ scenario interview questions from this site — Linux, DevOps, Cloud, Kubernetes, Network, Security, and Windows — in one offline, printable bundle, with a study tracker and flashcard-format quick review cards.",
+    flagship: true,
+    icon: "🎯",
   },
   {
-    title: "DevOps Interview Guide",
+    title: "Linux Administration & Troubleshooting Handbook",
+    category: "Linux",
+    format: "PDF eBook",
     description:
-      "Frequently asked DevOps interview questions with detailed answers and explanations.",
-    price: "Coming Soon",
+      "An expanded version of the Linux troubleshooting guide with additional real-world scenarios, printable command cheat sheets, and a step-by-step server hardening checklist.",
+    icon: "🐧",
   },
   {
-    title: "Kubernetes Cheat Sheet",
+    title: "CI/CD & DevOps Interview Prep Pack",
+    category: "DevOps",
+    format: "PDF eBook",
     description:
-      "Quick-reference PDF for kubectl commands, YAML examples, and troubleshooting.",
-    price: "Coming Soon",
+      "The full DevOps scenario library restructured as a mock-interview workbook, with STAR-format behavioral question prep and a pipeline design worksheet to practice on.",
+    icon: "🔁",
   },
   {
-    title: "Shell Scripting Guide",
+    title: "Kubernetes Production Readiness Kit",
+    category: "Kubernetes",
+    format: "PDF + manifest templates",
     description:
-      "Learn Bash scripting from beginner to advanced with practical examples.",
-    price: "Coming Soon",
+      "The Kubernetes deployment guide expanded into a full production checklist, with ready-to-adapt manifest templates and troubleshooting flowcharts for the failures that show up most.",
+    icon: "☸️",
   },
   {
-    title: "Terraform & Ansible Guide",
+    title: "Networking & Subnetting Mastery Workbook",
+    category: "Networking",
+    format: "PDF workbook",
     description:
-      "Infrastructure as Code examples and automation best practices.",
-    price: "Coming Soon",
+      "Practice subnetting and CIDR problems with full answer keys — the hands-on repetition that turns 'I understand it when I read it' into 'I can do it in an interview under pressure.'",
+    icon: "🌐",
   },
   {
-    title: "Linux Hardening Guide",
+    title: "Cloud Migration Playbook & Templates",
+    category: "Cloud",
+    format: "PDF + IaC templates",
     description:
-      "CIS hardening, security best practices, audit, logging, and compliance.",
-    price: "Coming Soon",
+      "The cloud migration guide expanded with a reusable account-structure worksheet, a cutover runbook template, and a landing zone checklist you can adapt to AWS, Azure, or GCP.",
+    icon: "☁️",
+  },
+  {
+    title: "Database Administration & Backup Strategy Guide",
+    category: "Database",
+    format: "PDF eBook",
+    description:
+      "SQL quick-reference sheets, backup and restore runbook templates, and a disaster-recovery planning worksheet covering RPO/RTO for common database engines.",
+    icon: "🗄️",
+  },
+  {
+    title: "Linux & Cloud Security Hardening Checklist Bundle",
+    category: "Security",
+    format: "PDF checklists",
+    description:
+      "CIS-benchmark-style, printable hardening checklists for SSH, sudo, the firewall, and auditing — the security guide turned into something you can literally check off, server by server.",
+    icon: "🔒",
+  },
+  {
+    title: "Windows Server & Active Directory Field Guide",
+    category: "Windows",
+    format: "PDF eBook",
+    description:
+      "PowerShell quick-reference sheets and Active Directory troubleshooting flowcharts for the FSMO, replication, Kerberos, and Group Policy issues that eat up the most time.",
+    icon: "🪟",
+  },
+  {
+    title: "AI Prompt Engineering Playbook for IT Professionals",
+    category: "AI",
+    format: "PDF + printable prompt cards",
+    description:
+      "The AI prompt library and glossary in a structured, printable format, with extra prompt patterns for debugging, documentation, and IT operations that don't fit on the free web page.",
+    icon: "🤖",
   },
 ];
+
+const flagship = products.find((p) => p.flagship);
+const rest = products.filter((p) => !p.flagship);
+
+const notifyHref = (title: string) =>
+  `mailto:contact@gokuruvi.com?subject=${encodeURIComponent(
+    `Notify me: ${title}`,
+  )}&body=${encodeURIComponent(
+    `Please let me know when "${title}" is available.`,
+  )}`;
 ---
 
 <Layout
   title="Store"
-  description="Digital products, eBooks, cheat sheets, and learning resources from Gokuruvi Tools."
+  description="Premium study guides, cheat sheets, and interview prep bundles for Linux, DevOps, Kubernetes, Cloud, Networking, Database, Security, Windows, and AI — built from the same content that powers the free tools on this site."
 >
-  <section class="page-section">
+  <section class="hero">
+    <div class="container hero-content">
+      <span class="badge">In development</span>
+      <h1>Premium Study Guides &amp; Resources</h1>
+      <p>
+        Structured, offline, printable versions of the guides and interview
+        prep already on this site — for people who want a study path they
+        can work through start to finish, not just a page to search.
+      </p>
+      <p class="promise">
+        Every free tool on this site stays free, permanently. These are
+        optional resources for people who want to go deeper — and the
+        revenue helps keep everything else free to use, with no
+        registration required.
+      </p>
+    </div>
+  </section>
+
+  <section class="content">
     <div class="container">
-      <header class="page-header">
-        <h1>Store</h1>
+      {flagship && (
+        <article class="flagship-card">
+          <span class="flagship-tag">Flagship bundle</span>
+          <div class="flagship-body">
+            <span class="icon" aria-hidden="true">{flagship.icon}</span>
+            <div>
+              <div class="meta-row"><span class="category">{flagship.category}</span><span class="format">{flagship.format}</span></div>
+              <h2>{flagship.title}</h2>
+              <p>{flagship.description}</p>
+            </div>
+          </div>
+          <a class="notify-btn" href={notifyHref(flagship.title)}>Notify me when it's available</a>
+        </article>
+      )}
 
-        <p>
-          Premium learning resources designed for Linux administrators,
-          DevOps engineers, cloud professionals, and Kubernetes engineers.
-        </p>
-      </header>
-
+      <h2 class="section-title">By technology</h2>
       <div class="card-grid">
-        {
-          products.map((product) => (
-            <article class="card">
-              <span class="badge">{product.price}</span>
-
-              <h2>{product.title}</h2>
-
-              <p>{product.description}</p>
-
-              <button class="button" disabled>
-                Coming Soon
-              </button>
-            </article>
-          ))
-        }
+        {rest.map((product) => (
+          <article class="card">
+            <div class="card-top">
+              <span class="icon" aria-hidden="true">{product.icon}</span>
+              <span class="category">{product.category}</span>
+            </div>
+            <h3>{product.title}</h3>
+            <p class="format">{product.format}</p>
+            <p class="description">{product.description}</p>
+            <a class="notify-link" href={notifyHref(product.title)}>Notify me →</a>
+          </article>
+        ))}
       </div>
+
+      <aside class="note">
+        <strong>Where this stands today:</strong> these guides are planned,
+        not yet published — nothing here is for sale yet. Click "Notify me"
+        on anything you'd want, and we'll email you the moment it's
+        released. No spam, no account required.
+      </aside>
     </div>
   </section>
 </Layout>
 
 <style>
-.badge{
-display:inline-block;
-padding:6px 12px;
-border-radius:999px;
-background:#1d4ed8;
-color:#fff;
-font-size:.8rem;
-font-weight:700;
-margin-bottom:15px;
-}
+  .container { width: min(calc(100% - 32px), 1140px); margin-inline: auto; }
+  .hero { padding: 64px 0 52px; text-align: center; background: radial-gradient(circle at 18% 10%, rgba(56, 189, 248, .18), transparent 35%), linear-gradient(145deg, #f8fafc, #eff6ff); }
+  .hero-content { max-width: 760px; margin: 0 auto; }
+  .badge { display: inline-flex; padding: 7px 13px; border: 1px solid #bfdbfe; border-radius: 999px; background: #fff; color: #1d4ed8; font-size: 13px; font-weight: 800; }
+  .hero h1 { margin: 16px 0 14px; color: #0f172a; font-size: clamp(32px, 5vw, 50px); line-height: 1.1; }
+  .hero p { margin: 0 0 12px; color: #475569; font-size: 17px; line-height: 1.7; }
+  .hero .promise { color: #1d4ed8; font-weight: 700; font-size: .95rem; }
 
-.card{
-transition:.3s;
-}
+  .content { padding: 50px 0 90px; }
 
-.card:hover{
-transform:translateY(-6px);
-box-shadow:0 12px 28px rgba(0,0,0,.2);
-}
+  .flagship-card { display: flex; flex-direction: column; gap: 18px; margin-bottom: 46px; padding: 30px; border: 1px solid #bfdbfe; border-radius: 20px; background: linear-gradient(145deg, #eff6ff, #fff); box-shadow: 0 18px 40px rgba(37, 99, 235, .1); }
+  .flagship-tag { align-self: flex-start; padding: 5px 12px; border-radius: 999px; background: #1d4ed8; color: #fff; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+  .flagship-body { display: flex; gap: 20px; align-items: flex-start; }
+  .flagship-card .icon { flex-shrink: 0; font-size: 2.4rem; }
+  .flagship-card h2 { margin: 6px 0 8px; color: #0f172a; font-size: 1.5rem; }
+  .flagship-card p { margin: 0; color: #475569; line-height: 1.7; }
+  .notify-btn { align-self: flex-start; padding: 12px 20px; border-radius: 10px; background: #2563eb; color: #fff; font-weight: 800; font-size: .92rem; text-decoration: none; }
+  .notify-btn:hover { background: #1d4ed8; }
 
-button:disabled{
-opacity:.8;
-cursor:not-allowed;
-}
+  .meta-row { display: flex; gap: 10px; margin-bottom: 4px; }
+  .category { padding: 3px 9px; border-radius: 999px; background: #eaf2ff; color: #1d4ed8; font-size: .7rem; font-weight: 800; }
+  .format { color: #64748b; font-size: .78rem; font-weight: 700; }
+
+  .section-title { margin: 0 0 20px; color: #0f172a; font-size: 1.3rem; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+  .card { display: flex; flex-direction: column; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; box-shadow: 0 8px 22px rgba(15, 23, 42, .04); transition: transform .2s, box-shadow .2s, border-color .2s; }
+  .card:hover { transform: translateY(-4px); border-color: #93c5fd; box-shadow: 0 16px 34px rgba(15, 23, 42, .08); }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card .icon { font-size: 1.7rem; }
+  .card h3 { margin: 0 0 4px; color: #0f172a; font-size: 1.08rem; line-height: 1.35; }
+  .card .format { margin: 0 0 10px; }
+  .card .description { margin: 0 0 16px; flex-grow: 1; color: #64748b; font-size: .9rem; line-height: 1.6; }
+  .notify-link { align-self: flex-start; color: #2563eb; font-weight: 800; font-size: .88rem; text-decoration: none; }
+  .notify-link:hover { text-decoration: underline; }
+
+  .note { display: block; margin-top: 40px; padding: 18px 20px; border: 1px solid #fde68a; border-radius: 14px; background: #fffbeb; color: #92400e; font-size: .92rem; line-height: 1.65; }
+
+  @media (max-width: 640px) {
+    .flagship-body { flex-direction: column; }
+  }
 </style>

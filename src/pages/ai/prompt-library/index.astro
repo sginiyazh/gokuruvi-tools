@@ -1,0 +1,165 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+
+const prompts = [
+  { title: "Explain this code", category: "Coding", text: "Explain what the following code does, step by step, in plain English. Call out anything unusual, risky, or worth double-checking.\n\n[PASTE CODE HERE]" },
+  { title: "Code review", category: "Coding", text: "Review the following code as a senior engineer would. Point out bugs, edge cases, security issues, and readability problems. For each issue, explain why it matters and suggest a specific fix. Do not rewrite the whole thing unless asked.\n\n[PASTE CODE HERE]" },
+  { title: "Write unit tests", category: "Coding", text: "Write unit tests for the following function using [TESTING FRAMEWORK, e.g. Jest, pytest]. Cover the normal case, edge cases, and at least one failure case. Explain any assumptions you had to make.\n\n[PASTE CODE HERE]" },
+  { title: "Debug an error", category: "Coding", text: "I'm getting this error:\n\n[PASTE ERROR MESSAGE]\n\nHere is the relevant code:\n\n[PASTE CODE]\n\nExplain what's likely causing it, in order of probability, and how to confirm which one it actually is before I change anything." },
+  { title: "Refactor for readability", category: "Coding", text: "Refactor the following code for readability and maintainability without changing its behavior. Explain each change you made and why. Flag anything you're not fully confident is behavior-preserving.\n\n[PASTE CODE HERE]" },
+  { title: "Write a commit message", category: "Coding", text: "Write a concise, conventional-commits-style commit message for this change. Summarize what changed and why, not just what files were touched.\n\n[PASTE DIFF OR DESCRIPTION OF THE CHANGE]" },
+  { title: "Generate a regex", category: "Coding", text: "Write a regular expression that matches [DESCRIBE WHAT IT SHOULD MATCH] and does not match [DESCRIBE WHAT IT SHOULD NOT MATCH]. Explain each part of the pattern, and give me 3 example strings that match and 3 that don't." },
+  { title: "Explain a shell/CLI command", category: "IT & DevOps", text: "Explain exactly what this command does, flag by flag, and what would happen if I ran it right now on my system. Warn me if anything about it is destructive or hard to undo.\n\n[PASTE COMMAND]" },
+  { title: "Write a runbook", category: "IT & DevOps", text: "Write a step-by-step runbook for [DESCRIBE THE TASK OR INCIDENT TYPE]. Include: prerequisites, exact commands to run, what output to expect at each step, and how to roll back if something goes wrong." },
+  { title: "Draft an incident postmortem", category: "IT & DevOps", text: "Help me draft a blameless incident postmortem. Here are the raw notes:\n\n[PASTE TIMELINE / NOTES / LOGS]\n\nStructure it as: summary, timeline, root cause, contributing factors, what went well, and specific action items with owners." },
+  { title: "Explain a config file", category: "IT & DevOps", text: "Explain what this configuration file does, section by section, as if I've never seen this tool before. Point out any settings that look insecure or unusual.\n\n[PASTE CONFIG]" },
+  { title: "Compare two tools/approaches", category: "IT & DevOps", text: "Compare [TOOL/APPROACH A] and [TOOL/APPROACH B] for [YOUR SPECIFIC USE CASE]. Give a clear recommendation, not just a neutral list of pros and cons, and explain the reasoning." },
+  { title: "Summarize a long document", category: "Study & Learning", text: "Summarize the following text in [NUMBER] bullet points, keeping only the information that's actually important to remember. Then list any terms a beginner wouldn't know.\n\n[PASTE TEXT]" },
+  { title: "Explain like I'm new to this", category: "Study & Learning", text: "Explain [TOPIC] to me as if I'm smart but completely new to this specific subject. Use a real-world analogy, then give one concrete example. Avoid jargon, or define it the first time you use it." },
+  { title: "Create a study plan", category: "Study & Learning", text: "I need to learn [TOPIC/SKILL] in [TIMEFRAME]. I currently know [YOUR CURRENT LEVEL]. Create a day-by-day study plan with specific things to practice each day, not just topics to read about." },
+  { title: "Generate practice questions", category: "Study & Learning", text: "Create [NUMBER] practice questions about [TOPIC] at [DIFFICULTY LEVEL]. Include the correct answer and a short explanation for each one, and mix in at least one scenario-based question, not just definitions." },
+  { title: "Check my understanding", category: "Study & Learning", text: "I'm going to explain [TOPIC] back to you in my own words. Tell me what I got right, what I got wrong or oversimplified, and what I'm missing. Here's my explanation:\n\n[YOUR EXPLANATION]" },
+  { title: "Turn notes into flashcards", category: "Study & Learning", text: "Turn the following notes into flashcards in a question-and-answer format, one concept per card. Keep answers short enough to actually memorize.\n\n[PASTE NOTES]" },
+  { title: "Tailor my resume bullet points", category: "Career", text: "Rewrite these resume bullet points to be more specific and results-focused. Where I haven't included a number or outcome, ask me for one instead of inventing it.\n\n[PASTE BULLET POINTS]" },
+  { title: "Prep for a technical interview", category: "Career", text: "I have an interview for a [ROLE] position at a company that uses [TECH STACK / DOMAIN]. Generate 8 likely technical questions ranging from fundamentals to scenario-based, and briefly outline what a strong answer would cover for each." },
+  { title: "Practice a behavioral question", category: "Career", text: "Act as an interviewer. Ask me a behavioral question about [SITUATION TYPE, e.g. conflict with a teammate, a failure, a tight deadline]. After I answer, give me specific feedback using the STAR framework and tell me what to add or cut." },
+  { title: "Write a cover letter draft", category: "Career", text: "Draft a cover letter for a [ROLE] position at [COMPANY/TYPE OF COMPANY]. Use these details about my background, and don't restate my resume — connect my experience to what the role actually needs.\n\n[YOUR BACKGROUND / KEY EXPERIENCE]" },
+  { title: "Negotiate an offer", category: "Career", text: "I received a job offer: [SUMMARIZE THE OFFER]. Help me think through whether and how to negotiate. Suggest specific, professional language I could use, and flag anything about the offer worth clarifying before I respond." },
+  { title: "Write a clear technical email", category: "Writing", text: "Turn these rough notes into a clear, professional email to [AUDIENCE]. Keep it concise, lead with the ask or the key point, and keep the tone [TONE, e.g. friendly but direct].\n\n[PASTE ROUGH NOTES]" },
+  { title: "Simplify technical writing", category: "Writing", text: "Rewrite the following so a non-technical audience can understand it, without losing accuracy. Flag any place where you had to leave out a detail that might matter.\n\n[PASTE TEXT]" },
+  { title: "Draft documentation", category: "Writing", text: "Write documentation for [FEATURE/FUNCTION/API]. Include: what it does, when to use it, a minimal working example, and common pitfalls. Write for a developer who is competent but unfamiliar with this specific thing." },
+];
+
+const categories = [...new Set(prompts.map((p) => p.category))];
+---
+
+<Layout
+  title="AI Prompt Library for Developers & Students"
+  description="A free, copy-paste library of practical AI prompts for coding, debugging, IT & DevOps tasks, studying, career prep, and technical writing."
+>
+  <section class="hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/ai/">AI Tools</a><span>›</span><span>Prompt Library</span></nav>
+      <span class="badge">AI Prompt Library</span>
+      <h1>Prompts for the Work You Actually Do</h1>
+      <p>{prompts.length} ready-to-use prompts for the AI-assisted tasks students, developers, and IT professionals reach for every day — debugging, studying, interview prep, and writing. Copy one, fill in the brackets, go.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container">
+      <div class="toolbar" role="search">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="prompt-search" type="search" placeholder="Search prompts, e.g. 'interview', 'debug', 'resume'..." autocomplete="off" />
+        </label>
+        <select id="prompt-category" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          {categories.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+      <p class="count-line"><span id="prompt-count">{prompts.length}</span> prompts shown</p>
+
+      <div class="prompt-grid" id="prompt-list">
+        {prompts.map((p, i) => (
+          <article class="prompt-card" data-category={p.category} data-search={`${p.title} ${p.text} ${p.category}`.toLowerCase()}>
+            <div class="prompt-top"><h2>{p.title}</h2><span class="tag">{p.category}</span></div>
+            <pre class="prompt-text" id={`prompt-text-${i}`}>{p.text}</pre>
+            <button class="copy-btn" type="button" data-target={`prompt-text-${i}`}>Copy prompt</button>
+          </article>
+        ))}
+      </div>
+      <p id="prompt-empty" class="empty" hidden>No prompts match your search. Try a different keyword.</p>
+
+      <aside class="related">
+        <strong>Check your prompt before you send it:</strong>
+        <a href="/ai/token-counter/">Token Counter</a>
+        <a href="/ai/context-window-calculator/">Context Window Calculator</a>
+        <a href="/ai/model-comparison/">Model Comparison</a>
+        <a href="/ai/glossary/">AI Glossary</a>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const promptSearchInput = document.querySelector<HTMLInputElement>("#prompt-search");
+    const promptCategorySelect = document.querySelector<HTMLSelectElement>("#prompt-category");
+    const promptCardEls = [...document.querySelectorAll<HTMLElement>(".prompt-card")];
+    const promptCountEl = document.querySelector<HTMLElement>("#prompt-count");
+    const promptEmptyEl = document.querySelector<HTMLElement>("#prompt-empty");
+
+    function applyPromptFilters() {
+      const query = (promptSearchInput?.value ?? "").trim().toLowerCase();
+      const category = promptCategorySelect?.value ?? "all";
+      let visible = 0;
+      promptCardEls.forEach((card) => {
+        const matchesText = !query || (card.dataset.search ?? "").includes(query);
+        const matchesCategory = category === "all" || card.dataset.category === category;
+        const show = matchesText && matchesCategory;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (promptCountEl) promptCountEl.textContent = String(visible);
+      if (promptEmptyEl) promptEmptyEl.hidden = visible !== 0;
+    }
+
+    promptSearchInput?.addEventListener("input", applyPromptFilters);
+    promptCategorySelect?.addEventListener("change", applyPromptFilters);
+
+    document.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const targetId = button.dataset.target;
+        const textEl = targetId ? document.getElementById(targetId) : null;
+        const value = textEl?.textContent ?? "";
+        if (!value) return;
+        const originalLabel = button.textContent;
+        try {
+          await navigator.clipboard.writeText(value);
+          button.textContent = "Copied!";
+        } catch {
+          button.textContent = "Copy failed";
+        }
+        setTimeout(() => { button.textContent = originalLabel; }, 1500);
+      });
+    });
+  </script>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 1100px); margin-inline: auto; }
+  .hero { padding: 62px 0 46px; text-align: center; background: radial-gradient(circle at 18% 10%, rgba(56, 189, 248, .18), transparent 35%), linear-gradient(145deg, #f8fafc, #eff6ff); }
+  .breadcrumb { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; color: #64748b; font-size: .9rem; }
+  .breadcrumb a { color: #2563eb; text-decoration: none; }
+  .badge { display: inline-flex; padding: 7px 13px; border: 1px solid #bfdbfe; border-radius: 999px; background: #fff; color: #1d4ed8; font-size: 13px; font-weight: 800; }
+  .hero h1 { margin: 16px 0 12px; color: #0f172a; font-size: clamp(32px, 5vw, 50px); line-height: 1.1; }
+  .hero p { max-width: 720px; margin: 0 auto; color: #475569; font-size: 17px; }
+
+  .content { padding: 44px 0 84px; }
+  .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 12px; margin-bottom: 10px; }
+  .search-box { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 15px; border: 1px solid #cbd7e7; border-radius: 12px; background: #fff; }
+  .search-box:focus-within { border-color: #7aa6f8; box-shadow: 0 0 0 4px rgba(37, 99, 235, .09); }
+  .search-box input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 15px; color: #172033; }
+  .toolbar select { min-height: 50px; padding: 0 14px; border: 1px solid #cbd7e7; border-radius: 12px; background: #fff; color: #172033; }
+  .count-line { margin: 0 0 20px; color: #64748b; font-size: .9rem; }
+  .count-line span { font-weight: 800; color: #172033; }
+
+  .prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .prompt-card { display: flex; flex-direction: column; padding: 20px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .04); }
+  .prompt-card[hidden] { display: none; }
+  .prompt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .prompt-card h2 { margin: 0; color: #0f172a; font-size: 1.02rem; }
+  .tag { flex-shrink: 0; padding: 3px 9px; border-radius: 999px; background: #eaf2ff; color: #1d4ed8; font-size: .68rem; font-weight: 800; white-space: nowrap; }
+  .prompt-text { flex: 1; margin: 0 0 14px; padding: 13px 14px; border-radius: 10px; overflow: auto; max-height: 220px; background: #0d1524; color: #dce8f7; white-space: pre-wrap; font: 500 .82rem/1.6 ui-monospace, Consolas, monospace; }
+  .copy-btn { min-height: 40px; padding: 0 16px; border: 0; border-radius: 9px; background: #2563eb; color: #fff; font-weight: 800; font-size: .85rem; cursor: pointer; align-self: flex-start; }
+  .copy-btn:hover { background: #1d4ed8; }
+  .empty { padding: 28px; border: 1px dashed #b8c7d8; border-radius: 14px; text-align: center; color: #65758a; background: #fff; }
+
+  .related { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 40px; padding: 20px 22px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; color: #334155; font-size: .92rem; }
+  .related a { padding: 8px 13px; border: 1px solid #cbd7e7; border-radius: 9px; background: #fff; color: #1d4ed8; font-weight: 800; font-size: .85rem; text-decoration: none; }
+  .related a:hover { border-color: #2563eb; background: #eff6ff; }
+
+  @media (max-width: 700px) {
+    .toolbar { grid-template-columns: 1fr; }
+    .prompt-grid { grid-template-columns: 1fr; }
+  }
+</style>
