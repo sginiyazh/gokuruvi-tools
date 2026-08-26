@@ -1,0 +1,218 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Claude Certification Study Guide"
+  description="What Anthropic's Claude certifications actually test — Associate, Developer, Architect Foundations, and Architect Professional — explained subject by subject, including Claude's Google Cloud (Vertex AI) integration."
+>
+  <section class="hero">
+    <div class="container hero-content">
+      <a class="back" href="/ai/">← Back to AI Tools</a>
+      <span class="eyebrow">AI · Certification Guide</span>
+      <h1>Claude Certification Study Guide</h1>
+      <p>
+        Anthropic's certification program covers four credentials across
+        three roles. This guide skips the exam logistics and goes straight
+        to what each one actually expects you to know.
+      </p>
+      <div class="meta"><span>Associate</span><span>·</span><span>Developer</span><span>·</span><span>Architect (Foundations)</span><span>·</span><span>Architect (Professional)</span></div>
+    </div>
+  </section>
+
+  <article class="article-wrap">
+    <nav class="toc" aria-label="Table of contents">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#associate">Associate — core subjects</a></li>
+        <li><a href="#developer">Developer — core subjects</a></li>
+        <li><a href="#architect-foundations">Architect (Foundations) — core subjects</a></li>
+        <li><a href="#architect-professional">Architect (Professional) — core subjects</a></li>
+        <li><a href="#platforms">Deployment platforms: direct API, AWS Bedrock, Google Cloud Vertex AI</a></li>
+        <li><a href="#study-path">How to actually study for these</a></li>
+      </ol>
+    </nav>
+
+    <p>
+      The four Claude certifications don't test the same knowledge at
+      increasing difficulty — each one is written for a different job. The
+      Associate exam expects you to use Claude well. The Developer exam
+      expects you to build with it. The two Architect exams expect you to
+      design and govern systems around it. Study the domains for the role
+      you actually do, not the title that sounds most impressive.
+    </p>
+
+    <h2 id="associate">Associate — core subjects</h2>
+    <p>
+      This is the exam for people who use Claude constantly but don't
+      write production code against it — operators, PMs, analysts,
+      support and content teams. It tests judgment about how to use the
+      tool well, not engineering.
+    </p>
+    <h3>What it actually covers</h3>
+    <ul>
+      <li><strong>Core Claude concepts and capabilities.</strong> What a context window is and why it limits a conversation, what a system prompt does versus a regular message, and where Claude's knowledge genuinely ends versus where it can still help by reasoning over what you give it.</li>
+      <li><strong>Prompting fundamentals.</strong> Writing clear, specific instructions; giving Claude the right context instead of assuming it remembers previous sessions; structuring a multi-step request so the output is usable on the first try.</li>
+      <li><strong>Claude apps and workspace features.</strong> Projects, custom instructions, and how conversation history and shared team context actually work — not as trivia, but as decisions that affect output quality.</li>
+      <li><strong>Files, projects, and artifacts.</strong> When to upload a document into context versus paste it, and what happens to large files that don't fit.</li>
+      <li><strong>Safe and responsible use.</strong> Recognizing hallucination risk, not treating Claude's output as verified fact without checking, and understanding what Claude will and won't do by design.</li>
+      <li><strong>Data, privacy, and admin basics.</strong> What happens to data you share with Claude, and the basics of workspace-level admin controls a non-technical user should know exist.</li>
+      <li><strong>Troubleshooting common issues.</strong> Recognizing when a bad result is a prompting problem versus a genuine model limitation, and how to fix the former.</li>
+    </ul>
+
+    <h2 id="developer">Developer — core subjects</h2>
+    <p>
+      This is the exam for people writing code against the Claude API. It
+      assumes you can already program — it's testing whether you know
+      Claude-specific mechanics, not general software engineering.
+    </p>
+    <h3>What it actually covers</h3>
+    <ul>
+      <li><strong>Applications & Integration — by far the largest domain.</strong> Making API calls correctly, handling streaming responses, managing rate limits and errors, and structuring an application so Claude is one reliable component in it, not a fragile dependency.</li>
+      <li><strong>Model selection and optimization.</strong> Choosing between model sizes for a given task's latency, cost, and quality trade-off, and knowing when a smaller, cheaper model is actually the better engineering decision.</li>
+      <li><strong>Agents and workflows.</strong> Designing a sequence of Claude calls and tool invocations that accomplishes a multi-step task reliably, including what happens when one step fails partway through.</li>
+      <li><strong>Tools and MCP (Model Context Protocol).</strong> Defining tools Claude can call, and using MCP as the standard way to connect Claude to external systems and data sources without writing bespoke integration code for each one.</li>
+      <li><strong>Prompt and context engineering.</strong> Structuring system prompts, few-shot examples, and retrieved context so the model performs consistently across many different user inputs, not just the one you tested with.</li>
+      <li><strong>Security and safety.</strong> Guarding against prompt injection from untrusted content the application feeds into Claude, and handling sensitive data passed through the API responsibly.</li>
+      <li><strong>Claude Code.</strong> Using Anthropic's coding agent effectively — a small but real slice of the exam.</li>
+      <li><strong>Evaluation, testing, and debugging.</strong> Knowing how to tell whether a prompt or application change actually improved output quality, instead of relying on a handful of manual spot-checks.</li>
+    </ul>
+
+    <h2 id="architect-foundations">Architect (Foundations) — core subjects</h2>
+    <p>
+      This is the entry point into system design with Claude — for
+      engineers moving from "I can call the API" to "I can design the
+      system around it." Every domain here is tested through scenarios,
+      not definitions.
+    </p>
+    <h3>What it actually covers</h3>
+    <ul>
+      <li><strong>Agentic architecture patterns.</strong> When a single Claude call is enough versus when a task genuinely needs a multi-step agent loop, and the trade-offs of each pattern in terms of cost, latency, and failure modes.</li>
+      <li><strong>Tool use and MCP integration.</strong> Designing the boundary between what Claude can do on its own and what it must call an external tool for, and structuring that handoff so failures are recoverable.</li>
+      <li><strong>Claude Code configuration.</strong> Setting up Claude Code for a team or project context, not just running it individually.</li>
+      <li><strong>Prompt engineering for systems.</strong> The difference between a prompt that works once in a chat window and one that has to perform reliably as part of an automated pipeline processing varied, sometimes messy real-world input.</li>
+      <li><strong>Context management at scale.</strong> Deciding what actually needs to be in context for a given step versus what should be retrieved on demand, as conversations and documents grow beyond what comfortably fits in one window.</li>
+    </ul>
+
+    <h2 id="architect-professional">Architect (Professional) — core subjects</h2>
+    <p>
+      The most senior of the four. This exam assumes you already know the
+      Architect Foundations material and tests whether you can own a
+      Claude system through its full lifecycle — design it, prove it
+      works, govern it, and keep it running.
+    </p>
+    <h3>What it actually covers</h3>
+    <ul>
+      <li><strong>Integration — the largest domain.</strong> Real production integration decisions: which platform to serve the model from, how to handle multi-region deployment, and how Claude fits alongside existing enterprise systems, identity, and data infrastructure.</li>
+      <li><strong>Solution design and architecture.</strong> Choosing an architecture that matches the actual reliability, latency, and cost requirements of the business problem, not the most sophisticated pattern available.</li>
+      <li><strong>Evaluation, testing, and optimization.</strong> Building a real evaluation framework with representative test cases and measurable quality metrics, so you can prove a system works before it reaches production and catch regressions when it changes.</li>
+      <li><strong>Governance, safety, and risk management.</strong> Setting policy for acceptable use, managing the risk of a system that can take autonomous action, and building the audit trail an enterprise actually needs.</li>
+      <li><strong>Stakeholder communication and lifecycle management.</strong> Explaining architectural trade-offs to non-technical stakeholders, and planning for a system's full lifecycle, including model version upgrades and eventual deprecation.</li>
+      <li><strong>Claude models, prompting, and context engineering.</strong> The same core skills as the Foundations exam, but applied to systems with real production constraints and multiple stakeholders depending on consistent behavior.</li>
+      <li><strong>Developer productivity and operational enablement.</strong> Setting up the tooling, guardrails, and internal documentation that let other engineers on the team build on Claude safely and consistently, without funneling every decision through you.</li>
+    </ul>
+
+    <h2 id="platforms">Deployment platforms: direct API, AWS Bedrock, Google Cloud Vertex AI</h2>
+    <p>
+      A recurring theme in the Integration domain on both the Developer
+      and Architect exams is that Claude isn't served from just one
+      place. Where you deploy from is itself an architectural decision,
+      and it's a realistic exam scenario: "given these constraints, which
+      platform should this team use?"
+    </p>
+    <h3>Anthropic's direct API</h3>
+    <p>
+      The most direct path — you call Claude's API straight from
+      Anthropic. It gets new model releases and features first, with the
+      simplest integration surface. The trade-off is that billing,
+      identity, and infrastructure are entirely separate from whatever
+      cloud platform the rest of your systems already run on.
+    </p>
+    <h3>AWS Bedrock</h3>
+    <p>
+      Claude is available as a model inside Amazon Bedrock, which matters
+      for teams already standardized on AWS: billing consolidates into
+      existing AWS accounts, access is governed through IAM instead of a
+      separate API key, and traffic can stay inside a VPC rather than
+      crossing to an external provider.
+    </p>
+    <h3>Google Cloud Vertex AI</h3>
+    <p>
+      Anthropic's models are also available through Vertex AI Model
+      Garden — Google Cloud's catalog of first-party and third-party
+      foundation models in one place to discover, test, and deploy. As of
+      2026, Vertex AI's agent tooling has folded into Google's Gemini
+      Enterprise Agent Platform, where Claude sits alongside Google's own
+      models as a documented partner model. Deploying Claude this way
+      gets you standard GCP integration — IAM, Cloud Billing, Cloud
+      Logging — plus dedicated capacity and prompt caching options for
+      predictable production performance, and the ability to build agents
+      using Google's Agent Development Kit (ADK) with Claude as the
+      reasoning model underneath. For a team already running its data
+      warehouse, identity, and other infrastructure on Google Cloud, this
+      is usually the integration path that avoids standing up a second
+      cloud vendor relationship just for one model provider.
+    </p>
+    <p>
+      The exam-relevant takeaway: this is a genuine "it depends" decision
+      driven by where the rest of the organization's infrastructure
+      already lives, not by which platform is objectively best. Expect
+      Architect-level scenario questions to hand you a company's existing
+      stack and ask which integration path fits it.
+    </p>
+
+    <h2 id="study-path">How to actually study for these</h2>
+    <p>
+      Reading domain lists doesn't build the judgment these exams test —
+      especially the scenario-based Architect exams. The most direct way
+      to prepare is to actually use the concepts:
+    </p>
+    <ul>
+      <li>Practice prompt structure and context management with the <a href="/ai/prompt-library/">AI Prompt Library</a> — real templates across coding, writing, and analysis tasks.</li>
+      <li>Get comfortable with the vocabulary in <a href="/ai/glossary/">AI &amp; LLM Glossary</a> — tokens, context windows, RAG, agents, and the rest of the terms these exams assume you already know.</li>
+      <li>Build real intuition for context window limits with the <a href="/ai/context-window-calculator/">Context Window Calculator</a> before you hit them in a live application.</li>
+      <li>Compare model trade-offs directly with <a href="/ai/model-comparison/">AI Model Comparison</a> — the model-selection judgment tested on the Developer exam.</li>
+      <li>For the Integration domain specifically, read Anthropic's own documentation on <a href="https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai" rel="noopener">Claude on Vertex AI</a> and Bedrock alongside the direct API docs, and be able to explain the trade-off between all three from memory.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>A note on accuracy:</strong> Anthropic's certification program and its Google Cloud integration details are both under 6 months old at the time of writing and can change between exam versions and platform updates. Confirm current domain weightings on Pearson VUE and current deployment options in Anthropic's own documentation before relying on either for exam day.
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .container { width: min(calc(100% - 32px), 820px); margin-inline: auto; }
+  .hero { position: relative; overflow: hidden; padding: 56px 0 46px; background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, .2), transparent 26%), linear-gradient(135deg, #0b1220, #111d33 62%, #162a4f); color: #fff; }
+  .hero:after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 38px 38px; }
+  .hero-content { position: relative; z-index: 1; }
+  .back { display: block; margin-bottom: 18px; color: #9fb2cc; font-weight: 700; text-decoration: none; font-size: .92rem; }
+  .back:hover { color: #fff; }
+  .eyebrow { display: inline-block; color: #66d3ff; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .hero h1 { margin: 12px 0 16px; font-size: clamp(2rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; }
+  .hero p { margin: 0; max-width: 700px; color: #c8d5e7; font-size: 1.05rem; line-height: 1.8; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; color: #9fb2cc; font-size: .87rem; font-weight: 700; }
+
+  .article-wrap { width: min(calc(100% - 32px), 780px); margin: 0 auto; padding: 48px 0 90px; }
+  .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin-bottom: 7px; }
+  .toc a { color: #334155; font-weight: 650; text-decoration: none; }
+  .toc a:hover { color: #2563eb; }
+
+  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.45rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap h3 { margin: 26px 0 10px; color: #172033; font-size: 1.05rem; }
+  .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.01rem; line-height: 1.8; }
+  .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.75; }
+  .article-wrap li { margin-bottom: 10px; }
+  .article-wrap a { color: #2563eb; font-weight: 700; text-decoration: none; }
+  .article-wrap a:hover { text-decoration: underline; }
+
+  .callout { margin: 40px 0 0; padding: 18px 20px; border: 1px solid #fde68a; border-radius: 12px; background: #fffbeb; color: #92400e; font-size: .93rem; line-height: 1.65; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 44px 0 36px; }
+  }
+</style>

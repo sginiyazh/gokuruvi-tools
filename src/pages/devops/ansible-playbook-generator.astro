@@ -1,0 +1,145 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout title="Ansible Playbook Generator" description="Generate a starter Ansible playbook with package install, service management, file copy, and command tasks — ready to adapt for your own automation.">
+  <section class="tool-hero"><span class="eyebrow">DevOps Tool</span><h1>Ansible Playbook Generator</h1><p>Generate a starter Ansible playbook YAML file — pick the tasks you need, fill in the details, and adapt it for your own automation.</p></section>
+  <div class="wrap">
+    <a class="back" href="/devops/">← Back to DevOps Tools</a>
+    <section class="card">
+      <h2>Play settings</h2>
+      <div class="grid">
+        <div class="field"><label for="apName">Play name</label><input id="apName" value="Configure web servers" /></div>
+        <div class="field"><label for="apHosts">Target hosts / group</label><input id="apHosts" value="webservers" /></div>
+        <div class="field checkbox-field"><label><input id="apBecome" type="checkbox" checked /> Become root (privilege escalation)</label></div>
+      </div>
+
+      <h2 class="section-gap">Tasks</h2>
+      <div class="stage-grid">
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="apTaskPackage" type="checkbox" checked /> Install a package</label>
+          <div class="mini-grid">
+            <input id="apPackageManager" value="dnf" />
+            <input id="apPackageName" value="nginx" />
+          </div>
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="apTaskService" type="checkbox" checked /> Start and enable a service</label>
+          <input id="apServiceName" value="nginx" />
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="apTaskCopy" type="checkbox" /> Copy a file</label>
+          <div class="mini-grid">
+            <input id="apCopySrc" value="files/nginx.conf" />
+            <input id="apCopyDest" value="/etc/nginx/nginx.conf" />
+          </div>
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="apTaskCommand" type="checkbox" /> Run a shell command</label>
+          <input id="apCommandText" value="systemctl reload nginx" />
+        </div>
+      </div>
+
+      <div class="actions"><button id="apGenerate">Generate Playbook</button><button class="secondary" id="apCopy" type="button">Copy</button></div>
+      <div class="result"><pre id="apOut">—</pre><p class="small">Review module names, paths, and package names for your actual target OS before running this against production hosts — always test with <code>--check --diff</code> first.</p></div>
+    </section>
+  </div>
+  <script>
+    const apOut = document.querySelector<HTMLElement>("#apOut");
+    const apGenerateBtn = document.querySelector<HTMLButtonElement>("#apGenerate");
+    const apCopyBtn = document.querySelector<HTMLButtonElement>("#apCopy");
+
+    function apVal(id: string): string {
+      return document.querySelector<HTMLInputElement>("#" + id)?.value.trim() ?? "";
+    }
+    function apChecked(id: string): boolean {
+      return document.querySelector<HTMLInputElement>("#" + id)?.checked ?? false;
+    }
+
+    function buildPlaybook(): string {
+      const name = apVal("apName") || "Configure servers";
+      const hosts = apVal("apHosts") || "all";
+      const become = apChecked("apBecome");
+      const pkgManager = apVal("apPackageManager") || "dnf";
+      const pkgName = apVal("apPackageName") || "nginx";
+      const serviceName = apVal("apServiceName") || "nginx";
+      const copySrc = apVal("apCopySrc") || "files/app.conf";
+      const copyDest = apVal("apCopyDest") || "/etc/app/app.conf";
+      const commandText = apVal("apCommandText") || "systemctl reload nginx";
+
+      const tasks: string[] = [];
+
+      if (apChecked("apTaskPackage")) {
+        tasks.push(`    - name: Install ${pkgName}
+      ${pkgManager}:
+        name: ${pkgName}
+        state: present`);
+      }
+      if (apChecked("apTaskService")) {
+        tasks.push(`    - name: Start and enable ${serviceName}
+      service:
+        name: ${serviceName}
+        state: started
+        enabled: true`);
+      }
+      if (apChecked("apTaskCopy")) {
+        tasks.push(`    - name: Copy configuration file
+      copy:
+        src: ${copySrc}
+        dest: ${copyDest}
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload service`);
+      }
+      if (apChecked("apTaskCommand")) {
+        tasks.push(`    - name: Run command
+      command: ${commandText}
+      changed_when: false`);
+      }
+
+      const tasksBlock = tasks.length > 0 ? tasks.join("\n\n") : `    - name: Add at least one task above
+      debug:
+        msg: "No tasks selected"`;
+
+      const needsHandler = apChecked("apTaskCopy");
+      const handlerBlock = needsHandler
+        ? `
+  handlers:
+    - name: Reload service
+      service:
+        name: ${serviceName}
+        state: reloaded`
+        : "";
+
+      return `---
+- name: ${name}
+  hosts: ${hosts}
+  become: ${become ? "true" : "false"}
+
+  tasks:
+${tasksBlock}${handlerBlock}`;
+    }
+
+    apGenerateBtn?.addEventListener("click", () => {
+      if (apOut) apOut.textContent = buildPlaybook();
+    });
+
+    apCopyBtn?.addEventListener("click", async () => {
+      const value = apOut?.textContent ?? "";
+      if (!value || value === "—") return;
+      const original = apCopyBtn.textContent;
+      try {
+        await navigator.clipboard.writeText(value);
+        apCopyBtn.textContent = "Copied!";
+      } catch {
+        apCopyBtn.textContent = "Copy failed";
+      }
+      setTimeout(() => { apCopyBtn.textContent = original; }, 1500);
+    });
+
+    if (apOut) apOut.textContent = buildPlaybook();
+  </script>
+<style>
+.tool-hero{padding:62px 20px 42px;background:linear-gradient(135deg,#eff6ff,#f8fafc);text-align:center}.eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}.tool-hero h1{margin:14px 0 10px;color:#0f172a;font-size:clamp(34px,5vw,52px);line-height:1.1}.tool-hero p{max-width:760px;margin:0 auto;color:#64748b;font-size:17px}.wrap{width:min(calc(100% - 32px),960px);margin:38px auto 72px}.back{display:inline-block;margin-bottom:18px;color:#2563eb;font-weight:750;text-decoration:none}.card{padding:28px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.07)}h2{margin:0 0 8px;color:#0f172a}.section-gap{margin-top:28px}.muted{color:#64748b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{margin-top:16px}label{display:block;margin-bottom:7px;color:#0f172a;font-weight:750}input:not([type="checkbox"]){width:100%;min-height:48px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a}input[type="checkbox"]{width:19px;height:19px;flex-shrink:0;accent-color:#2563eb;cursor:pointer}input:focus{outline:3px solid rgba(37,99,235,.14);border-color:#2563eb}.stage-grid{display:grid;gap:14px;margin-top:16px}.stage-field{padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}.checkbox-field{display:flex;align-items:center;gap:9px;margin-bottom:10px;font-weight:750;color:#0f172a}.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}button{min-height:46px;padding:10px 17px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.secondary{background:#e2e8f0;color:#0f172a}.result{margin-top:20px;padding:17px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff;overflow-wrap:anywhere}.result pre{margin:0;white-space:pre-wrap;word-break:break-word;font:600 .85rem/1.6 ui-monospace,Consolas,monospace;color:#0f172a}.small{margin-top:12px;font-size:13px;color:#64748b}.small code{padding:2px 5px;border-radius:4px;background:#eef2f7;font-size:.9em}@media(max-width:700px){.grid,.mini-grid{grid-template-columns:1fr}.card{padding:20px}}
+</style>
+</Layout>

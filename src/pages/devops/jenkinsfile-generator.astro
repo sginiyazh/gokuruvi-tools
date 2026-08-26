@@ -1,0 +1,146 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout title="Jenkinsfile Generator" description="Generate a declarative Jenkins pipeline (Jenkinsfile) with checkout, build, test, and deploy stages, plus build retention and timeout options.">
+  <section class="tool-hero"><span class="eyebrow">DevOps Tool</span><h1>Jenkinsfile Generator</h1><p>Generate a declarative Jenkins pipeline with the stages most CI/CD jobs need — checkout, build, test, and deploy — plus sane build retention and timeout defaults.</p></section>
+  <div class="wrap">
+    <a class="back" href="/devops/">← Back to DevOps Tools</a>
+    <section class="card">
+      <h2>Pipeline settings</h2>
+      <div class="grid">
+        <div class="field"><label for="jfAgent">Agent</label><input id="jfAgent" value="any" /></div>
+        <div class="field"><label for="jfBranch">Git branch</label><input id="jfBranch" value="main" /></div>
+        <div class="field"><label for="jfRepo">Git repository URL</label><input id="jfRepo" value="https://github.com/org/repo.git" /></div>
+        <div class="field"><label for="jfDiscard">Keep this many recent builds</label><input id="jfDiscard" type="number" min="1" value="10" /></div>
+        <div class="field"><label for="jfTimeout">Overall timeout (minutes)</label><input id="jfTimeout" type="number" min="1" value="30" /></div>
+      </div>
+
+      <h2 class="section-gap">Stages</h2>
+      <div class="stage-grid">
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="jfStageCheckout" type="checkbox" checked /> Checkout</label>
+          <input id="jfCheckoutCmd" value={"git branch: \"main\", url: \"https://github.com/org/repo.git\""} disabled />
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="jfStageBuild" type="checkbox" checked /> Build</label>
+          <input id="jfBuildCmd" value="npm install && npm run build" />
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="jfStageTest" type="checkbox" checked /> Test</label>
+          <input id="jfTestCmd" value="npm test" />
+        </div>
+        <div class="stage-field">
+          <label class="checkbox-field"><input id="jfStageDeploy" type="checkbox" /> Deploy</label>
+          <input id="jfDeployCmd" value="./deploy.sh production" />
+        </div>
+      </div>
+
+      <div class="actions"><button id="jfGenerate">Generate Jenkinsfile</button><button class="secondary" id="jfCopy" type="button">Copy</button></div>
+      <div class="result"><pre id="jfOut">—</pre><p class="small">The Checkout stage always uses the Git repository URL and branch above — edit those fields, not the disabled command box, to change it.</p></div>
+    </section>
+  </div>
+  <script>
+    const jfOut = document.querySelector<HTMLElement>("#jfOut");
+    const jfGenerateBtn = document.querySelector<HTMLButtonElement>("#jfGenerate");
+    const jfCopyBtn = document.querySelector<HTMLButtonElement>("#jfCopy");
+
+    function jfVal(id: string): string {
+      return document.querySelector<HTMLInputElement>("#" + id)?.value.trim() ?? "";
+    }
+    function jfChecked(id: string): boolean {
+      return document.querySelector<HTMLInputElement>("#" + id)?.checked ?? false;
+    }
+
+    function buildJenkinsfile(): string {
+      const agent = jfVal("jfAgent") || "any";
+      const branch = jfVal("jfBranch") || "main";
+      const repo = jfVal("jfRepo") || "https://github.com/org/repo.git";
+      const discard = jfVal("jfDiscard") || "10";
+      const timeout = jfVal("jfTimeout") || "30";
+      const buildCmd = jfVal("jfBuildCmd") || "npm install && npm run build";
+      const testCmd = jfVal("jfTestCmd") || "npm test";
+      const deployCmd = jfVal("jfDeployCmd") || "./deploy.sh production";
+
+      const stages: string[] = [];
+
+      if (jfChecked("jfStageCheckout")) {
+        stages.push(`        stage('Checkout') {
+            steps {
+                git branch: '${branch}', url: '${repo}'
+            }
+        }`);
+      }
+      if (jfChecked("jfStageBuild")) {
+        stages.push(`        stage('Build') {
+            steps {
+                sh '${buildCmd}'
+            }
+        }`);
+      }
+      if (jfChecked("jfStageTest")) {
+        stages.push(`        stage('Test') {
+            steps {
+                sh '${testCmd}'
+            }
+        }`);
+      }
+      if (jfChecked("jfStageDeploy")) {
+        stages.push(`        stage('Deploy') {
+            steps {
+                sh '${deployCmd}'
+            }
+        }`);
+      }
+
+      const stagesBlock = stages.length > 0 ? stages.join("\n") : `        stage('Build') {
+            steps {
+                echo 'Add at least one stage above'
+            }
+        }`;
+
+      return `pipeline {
+    agent ${agent}
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '${discard}'))
+        timeout(time: ${timeout}, unit: 'MINUTES')
+    }
+
+    stages {
+${stagesBlock}
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed — check the stage logs above.'
+        }
+    }
+}`;
+    }
+
+    jfGenerateBtn?.addEventListener("click", () => {
+      if (jfOut) jfOut.textContent = buildJenkinsfile();
+    });
+
+    jfCopyBtn?.addEventListener("click", async () => {
+      const value = jfOut?.textContent ?? "";
+      if (!value || value === "—") return;
+      const original = jfCopyBtn.textContent;
+      try {
+        await navigator.clipboard.writeText(value);
+        jfCopyBtn.textContent = "Copied!";
+      } catch {
+        jfCopyBtn.textContent = "Copy failed";
+      }
+      setTimeout(() => { jfCopyBtn.textContent = original; }, 1500);
+    });
+
+    if (jfOut) jfOut.textContent = buildJenkinsfile();
+  </script>
+<style>
+.tool-hero{padding:62px 20px 42px;background:linear-gradient(135deg,#eff6ff,#f8fafc);text-align:center}.eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}.tool-hero h1{margin:14px 0 10px;color:#0f172a;font-size:clamp(34px,5vw,52px);line-height:1.1}.tool-hero p{max-width:760px;margin:0 auto;color:#64748b;font-size:17px}.wrap{width:min(calc(100% - 32px),960px);margin:38px auto 72px}.back{display:inline-block;margin-bottom:18px;color:#2563eb;font-weight:750;text-decoration:none}.card{padding:28px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.07)}h2{margin:0 0 8px;color:#0f172a}.section-gap{margin-top:28px}.muted{color:#64748b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{margin-top:16px}label{display:block;margin-bottom:7px;color:#0f172a;font-weight:750}input:not([type="checkbox"]){width:100%;min-height:48px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a}input:not([type="checkbox"]):disabled{background:#f1f5f9;color:#64748b}input[type="checkbox"]{width:19px;height:19px;flex-shrink:0;accent-color:#2563eb;cursor:pointer}input:focus{outline:3px solid rgba(37,99,235,.14);border-color:#2563eb}.stage-grid{display:grid;gap:14px;margin-top:16px}.stage-field{padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}.checkbox-field{display:flex;align-items:center;gap:9px;margin-bottom:10px;font-weight:750;color:#0f172a}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}button{min-height:46px;padding:10px 17px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.secondary{background:#e2e8f0;color:#0f172a}.result{margin-top:20px;padding:17px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff;overflow-wrap:anywhere}.result pre{margin:0;white-space:pre-wrap;word-break:break-word;font:600 .85rem/1.6 ui-monospace,Consolas,monospace;color:#0f172a}.small{margin-top:12px;font-size:13px;color:#64748b}@media(max-width:700px){.grid{grid-template-columns:1fr}.card{padding:20px}}
+</style>
+</Layout>

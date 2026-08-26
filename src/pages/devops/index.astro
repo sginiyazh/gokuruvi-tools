@@ -4,87 +4,122 @@ const pageTitle = "DevOps Tools";
 const description =
   "Free browser-based DevOps tools for YAML, JSON, Docker, Base64, JWT, regular expressions and environment configuration.";
 
-const tools = [
+const toolGroups = [
   {
-    icon: "📝",
-    name: "YAML Validator",
-    category: "Validation",
-    description:
-      "Validate YAML syntax, format documents and convert YAML configuration into JSON.",
-    link: "/devops/yaml-validator",
+    id: "cicd",
+    icon: "🔁",
+    title: "CI/CD & Automation",
+    description: "Pipeline and playbook generators for Jenkins, Ansible, and environment configuration.",
+    tools: [
+      {
+        icon: "🔧",
+        name: "Jenkinsfile Generator",
+        description: "Generate a declarative Jenkins pipeline with checkout, build, test and deploy stages.",
+        link: "/devops/jenkinsfile-generator",
+        badge: "New",
+      },
+      {
+        icon: "📗",
+        name: "Ansible Playbook Generator",
+        description: "Generate a starter Ansible playbook with package, service, copy and command tasks.",
+        link: "/devops/ansible-playbook-generator",
+        badge: "New",
+      },
+      {
+        icon: "⚙️",
+        name: "Environment File Generator",
+        description: "Create clean .env configuration files and download them directly.",
+        link: "/devops/env-file-generator",
+      },
+    ],
   },
   {
-    icon: "🧩",
-    name: "JSON Validator",
-    category: "Validation",
-    description:
-      "Validate, format and minify JSON documents directly in your browser.",
-    link: "/devops/json-validator",
-  },
-  {
+    id: "containers",
     icon: "🐳",
-    name: "Docker Run Generator",
-    category: "Docker",
-    description:
-      "Build Docker run commands with ports, volumes, environment variables and restart options.",
-    link: "/devops/docker-run-generator",
+    title: "Containers",
+    description: "Build and validate Docker resources without memorizing every flag.",
+    tools: [
+      {
+        icon: "🐳",
+        name: "Docker Run Generator",
+        description: "Build Docker run commands with ports, volumes, environment variables and restart options.",
+        link: "/devops/docker-run-generator",
+      },
+      {
+        icon: "📦",
+        name: "Docker Compose Validator",
+        description: "Validate Docker Compose YAML syntax and check its basic service structure.",
+        link: "/devops/docker-compose-validator",
+      },
+      {
+        icon: "🏗️",
+        name: "Dockerfile Generator",
+        description: "Generate starter Dockerfiles for Node.js, Python and Nginx applications.",
+        link: "/devops/dockerfile-generator",
+      },
+    ],
   },
   {
-    icon: "📦",
-    name: "Docker Compose Validator",
-    category: "Docker",
-    description:
-      "Validate Docker Compose YAML syntax and check its basic service structure.",
-    link: "/devops/docker-compose-validator",
+    id: "validation",
+    icon: "✅",
+    title: "Validation & Formatting",
+    description: "Catch syntax errors before they reach a pipeline or a running service.",
+    tools: [
+      {
+        icon: "📝",
+        name: "YAML Validator",
+        description: "Validate YAML syntax, format documents and convert YAML configuration into JSON.",
+        link: "/devops/yaml-validator",
+      },
+      {
+        icon: "🧩",
+        name: "JSON Validator",
+        description: "Validate, format and minify JSON documents directly in your browser.",
+        link: "/devops/json-validator",
+      },
+      {
+        icon: "🔎",
+        name: "Regex Tester",
+        description: "Test JavaScript regular expressions and inspect matching values and positions.",
+        link: "/devops/regex-tester",
+      },
+    ],
   },
   {
-    icon: "🏗️",
-    name: "Dockerfile Generator",
-    category: "Docker",
-    description:
-      "Generate starter Dockerfiles for Node.js, Python and Nginx applications.",
-    link: "/devops/dockerfile-generator",
-  },
-  {
+    id: "security",
     icon: "🔐",
-    name: "Base64 Encoder",
-    category: "Encoding",
-    description:
-      "Encode plain text and Unicode content into Base64 format.",
-    link: "/devops/base64-encoder",
+    title: "Security & Encoding",
+    description: "Decode, encode, and inspect the data your pipelines pass around.",
+    tools: [
+      {
+        icon: "🔐",
+        name: "Base64 Encoder",
+        description: "Encode plain text and Unicode content into Base64 format.",
+        link: "/devops/base64-encoder",
+      },
+      {
+        icon: "🔓",
+        name: "Base64 Decoder",
+        description: "Decode Base64 values into readable UTF-8 text.",
+        link: "/devops/base64-decoder",
+      },
+      {
+        icon: "🪪",
+        name: "JWT Decoder",
+        description: "Inspect the header and payload of a JSON Web Token without sending it to a server.",
+        link: "/devops/jwt-decoder",
+      },
+    ],
   },
-  {
-    icon: "🔓",
-    name: "Base64 Decoder",
-    category: "Encoding",
-    description:
-      "Decode Base64 values into readable UTF-8 text.",
-    link: "/devops/base64-decoder",
-  },
-  {
-    icon: "🪪",
-    name: "JWT Decoder",
-    category: "Security",
-    description:
-      "Inspect the header and payload of a JSON Web Token without sending it to a server.",
-    link: "/devops/jwt-decoder",
-  },
-  {
-    icon: "🔎",
-    name: "Regex Tester",
-    category: "Development",
-    description:
-      "Test JavaScript regular expressions and inspect matching values and positions.",
-    link: "/devops/regex-tester",
-  },
-  {
-    icon: "⚙️",
-    name: "Environment File Generator",
-    category: "Configuration",
-    description:
-      "Create clean .env configuration files and download them directly.",
-    link: "/devops/env-file-generator",
-  },
+];
+
+const tools = toolGroups.flatMap((group) => group.tools);
+
+const relatedElsewhere = [
+  { icon: "🏗️", name: "Terraform Provider Generator", link: "/cloud/terraform-provider-generator", category: "Cloud" },
+  { icon: "📦", name: "Terraform Backend Generator", link: "/cloud/terraform-backend-generator", category: "Cloud" },
+  { icon: "📝", name: "Terraform Variables Generator", link: "/cloud/terraform-variables-generator", category: "Cloud" },
+  { icon: "☁️", name: "Cloud-init Generator", link: "/cloud/cloud-init-generator", category: "Cloud" },
 ];
 
 const benefits = [
@@ -807,13 +842,13 @@ import Footer from "../../components/Footer.astro";
         font-size: 29px;
       }
 
-      .tool-category {
+      .tool-badge {
         padding: 5px 10px;
-        border: 1px solid #dbeafe;
+        border: 1px solid #86efac;
         border-radius: 999px;
-        background: #eff6ff;
-        color: var(--primary-dark);
-        font-size: 12px;
+        background: #f0fdf4;
+        color: #15803d;
+        font-size: 11.5px;
         font-weight: 800;
       }
 
@@ -848,6 +883,151 @@ import Footer from "../../components/Footer.astro";
 
       .tool-card:hover .open-tool span {
         transform: translateX(4px);
+      }
+
+      /* Tool groups */
+
+      .group-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 0 0 56px;
+      }
+
+      .group-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 17px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 750;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+      }
+
+      .group-chip:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .group-chip-alt {
+        border-style: dashed;
+        color: var(--muted);
+      }
+
+      .tool-group {
+        margin-bottom: 56px;
+        scroll-margin-top: 100px;
+      }
+
+      .tool-group:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .group-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .group-icon {
+        display: grid;
+        flex-shrink: 0;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border-radius: 13px;
+        background: var(--primary-light);
+        font-size: 22px;
+      }
+
+      .group-heading h3 {
+        margin: 0 0 4px;
+        color: var(--dark);
+        font-size: 21px;
+      }
+
+      .group-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .related-box {
+        margin-top: 12px;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: #f8fafc;
+        scroll-margin-top: 100px;
+      }
+
+      .related-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .related-heading h3 {
+        margin: 0 0 6px;
+        color: var(--dark);
+        font-size: 19px;
+      }
+
+      .related-heading p {
+        margin: 0;
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.65;
+      }
+
+      .related-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .related-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 52px;
+        padding: 0 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #ffffff;
+        color: var(--dark);
+        font-weight: 700;
+        font-size: 14.5px;
+        text-decoration: none;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+
+      .related-link:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .related-tag {
+        margin-left: auto;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: var(--primary-dark);
+        font-size: 11px;
+        font-weight: 800;
       }
 
       /* Benefits */
@@ -1007,7 +1187,8 @@ import Footer from "../../components/Footer.astro";
 
       @media (max-width: 1000px) {
         .tools-grid,
-        .benefits-grid {
+        .benefits-grid,
+        .related-links {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
@@ -1055,8 +1236,14 @@ import Footer from "../../components/Footer.astro";
 
         .tools-grid,
         .benefits-grid,
-        .footer-grid {
+        .footer-grid,
+        .related-links {
           grid-template-columns: 1fr;
+        }
+
+        .group-heading,
+        .related-heading {
+          flex-direction: column;
         }
 
         .tool-card {
@@ -1088,9 +1275,9 @@ import Footer from "../../components/Footer.astro";
             </h1>
 
             <p class="hero-description">
-              Validate configuration files, generate Docker resources, encode
-              data, inspect tokens and simplify common development and
-              operations tasks.
+              Generate Jenkins pipelines and Ansible playbooks, build Docker
+              resources, validate configuration files, and encode or inspect
+              the data your pipelines pass around.
             </p>
 
             <div class="hero-actions">
@@ -1132,31 +1319,79 @@ import Footer from "../../components/Footer.astro";
             <h2>DevOps tools for everyday engineering work</h2>
 
             <p>
-              Choose a tool to validate configuration, create container
-              resources, transform data or debug application values.
+              Grouped by the part of the workflow they belong to — jump
+              straight to pipelines, containers, validation, or security.
             </p>
           </div>
 
-          <div class="tools-grid">
+          <div class="group-nav" role="tablist" aria-label="Jump to a tool group">
             {
-              tools.map((tool) => (
-                <a class="tool-card" href={tool.link}>
-                  <div class="tool-header">
-                    <div class="tool-icon">{tool.icon}</div>
-                    <span class="tool-category">{tool.category}</span>
-                  </div>
-
-                  <h3>{tool.name}</h3>
-
-                  <p>{tool.description}</p>
-
-                  <span class="open-tool">
-                    Open tool
-                    <span>→</span>
-                  </span>
+              toolGroups.map((group) => (
+                <a class="group-chip" href={`#${group.id}`}>
+                  <span aria-hidden="true">{group.icon}</span>
+                  {group.title}
                 </a>
               ))
             }
+            <a class="group-chip group-chip-alt" href="#related-elsewhere">
+              <span aria-hidden="true">🏗️</span>
+              Terraform &amp; Cloud-init
+            </a>
+          </div>
+
+          {
+            toolGroups.map((group) => (
+              <div class="tool-group" id={group.id}>
+                <div class="group-heading">
+                  <span class="group-icon" aria-hidden="true">{group.icon}</span>
+                  <div>
+                    <h3>{group.title}</h3>
+                    <p>{group.description}</p>
+                  </div>
+                </div>
+
+                <div class="tools-grid">
+                  {group.tools.map((tool) => (
+                    <a class="tool-card" href={tool.link}>
+                      <div class="tool-header">
+                        <div class="tool-icon">{tool.icon}</div>
+                        {tool.badge && <span class="tool-badge">{tool.badge}</span>}
+                      </div>
+
+                      <h3>{tool.name}</h3>
+
+                      <p>{tool.description}</p>
+
+                      <span class="open-tool">
+                        Open tool
+                        <span>→</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          <div class="related-box" id="related-elsewhere">
+            <div class="related-heading">
+              <span class="group-icon" aria-hidden="true">🏗️</span>
+              <div>
+                <h3>Terraform &amp; infrastructure provisioning</h3>
+                <p>Terraform and cloud-init tools live under Cloud since they're provider-specific — here's a direct link so you don't have to hunt for them.</p>
+              </div>
+            </div>
+            <div class="related-links">
+              {
+                relatedElsewhere.map((tool) => (
+                  <a class="related-link" href={tool.link}>
+                    <span aria-hidden="true">{tool.icon}</span>
+                    {tool.name}
+                    <span class="related-tag">{tool.category}</span>
+                  </a>
+                ))
+              }
+            </div>
           </div>
         </div>
       </section>

@@ -16,7 +16,7 @@ import Layout from "../../../layouts/Layout.astro";
         instead of guessing — with the exact commands to run at each step,
         for the failures that actually take down production servers.
       </p>
-      <div class="meta"><span>14 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
+      <div class="meta"><span>18 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
     </div>
   </section>
 
@@ -31,6 +31,8 @@ import Layout from "../../../layouts/Layout.astro";
         <li><a href="#disk">A filesystem is full</a></li>
         <li><a href="#service">A systemd service won't start</a></li>
         <li><a href="#network">The server has network connectivity problems</a></li>
+        <li><a href="#rootpw">Locked out: a lost or forgotten root password</a></li>
+        <li><a href="#selinux">SELinux troubleshooting: when permissions look right but access is still denied</a></li>
         <li><a href="#habits">Build the habit: capture evidence, not just fixes</a></li>
       </ol>
     </nav>
@@ -246,6 +248,311 @@ ss -lntp</code></pre>
     <pre><code>curl -v http://127.0.0.1:&lt;port&gt;/
 nc -vz &lt;server&gt; &lt;port&gt;</code></pre>
 
+    <h2 id="rootpw">Locked out: a lost or forgotten root password</h2>
+    <p>
+      This isn't a "diagnose the cause" scenario like the ones above — it's
+      a known, repeatable recovery procedure. It requires direct console
+      access to the machine (physical, KVM/iLO/iDRAC, or your hypervisor's
+      console view). <strong>You cannot do this over SSH</strong> — if you
+      could SSH in, you wouldn't need to reset the password. Every version
+      below follows the same shape: interrupt GRUB, drop into a minimal
+      shell before the normal boot finishes, remount root read-write, set
+      the password, flag SELinux for a relabel, then let the boot finish.
+      Click a version below for the exact steps.
+    </p>
+
+    <div class="qa-accordion">
+      <details class="qa-item">
+        <summary>RHEL 8 and RHEL 9: step-by-step recovery</summary>
+        <div class="qa-answer">
+          <p>Reboot the machine and, at the boot menu, use the arrow keys to select the kernel entry, then press <code>e</code> to edit it — this is the exact screen you'll see:</p>
+          <div class="mockup">
+            <div class="mockup-bar">RHEL 8 boot menu</div>
+            <pre class="mockup-body">Red Hat Enterprise Linux (4.18.0-80.11.2.el8_0.x86_64) 8.0 (Ootpa)
+Red Hat Enterprise Linux (4.18.0-80.el8.x86_64) 8.0 (Ootpa)
+Red Hat Enterprise Linux (0-rescue-87b117ed44b6449b9386cbb97b322517) 8.0
+
+Use the &uarr; and &darr; keys to change the selection.
+Press 'e' to edit the selected item, or 'c' for a command prompt.</pre>
+          </div>
+          <p>On the edit screen, find the line beginning with <code>linux</code> (it also carries a <code>kernel=</code>-style path), go to the end of that line, and type <code>rd.break</code>:</p>
+          <div class="mockup">
+            <div class="mockup-bar">append kernel parameter</div>
+            <pre class="mockup-body">linux ($root)/vmlinuz-4.18.0-80.11.2.el8_0.x86_64 root=/dev/mapper/rhel-root ro
+   crashkernel=auto resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel/root rd.lvm.lv=
+   rhel/swap rhgb quiet <mark>rd.break</mark>
+initrd  ($root)/initramfs-4.18.0-80.11.2.el8_0.x86_64.img $tuned_initrd
+
+Press Ctrl-x to start, Ctrl-c for a command prompt or Escape to
+discard edits and return to the menu.</pre>
+          </div>
+          <p>Press <kbd>Ctrl</kbd> + <kbd>X</kbd> to boot with that change. You land in emergency mode at a <code>switch_root:/#</code> prompt, with the real root filesystem mounted read-only under <code>/sysroot</code>. Confirm that, remount it read-write, and confirm again — watch <code>ro</code> become <code>rw</code> in the output:</p>
+          <div class="mockup">
+            <div class="mockup-bar">emergency mode shell</div>
+            <pre class="mockup-body">Entering emergency mode. Exit the shell to continue.
+Type "journalctl" to view system logs.
+
+switch_root:/# mount | grep sysroot
+/dev/mapper/rhel-root on /sysroot type xfs (<mark>ro</mark>,relatime,attr2,inode64,noquota)
+
+switch_root:/# mount -o remount,rw /sysroot/
+switch_root:/# mount | grep sysroot
+/dev/mapper/rhel-root on /sysroot type xfs (<mark>rw</mark>,relatime,attr2,inode64,noquota)</pre>
+          </div>
+          <p><code>chroot</code> into it so the password change applies to the real filesystem, then run <code>passwd</code> — provide the new password and confirm it when prompted:</p>
+          <div class="mockup">
+            <div class="mockup-bar">reset the password</div>
+            <pre class="mockup-body">switch_root:/# chroot /sysroot
+sh-4.4# passwd
+Changing password for user root.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+sh-4.4#</pre>
+          </div>
+          <p>Flag SELinux so it relabels the filesystem on next boot instead of leaving mismatched contexts on the password file, then exit the chroot twice and reboot:</p>
+          <pre><code>touch /.autorelabel
+exit
+exit
+reboot</code></pre>
+          <p>The relabel adds time to this one boot — that's expected. Log in with the new password once it completes.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>RHEL 10: step-by-step recovery</summary>
+        <div class="qa-answer">
+          <p><strong>Method A — try <code>rd.break</code> first</strong>, the same as RHEL 8/9 above. If your minor release still supports it, the same confirm-remount-<code>chroot</code>-<code>passwd</code>-<code>autorelabel</code> sequence applies unchanged.</p>
+          <p><strong>Method B — if <code>rd.break</code> doesn't drop you into a shell</strong>, edit the GRUB boot line again, but this time change <code>ro</code> to <code>rw</code> and append <code>init=/bin/bash</code> instead:</p>
+          <pre><code>... root=/dev/mapper/rhel-root <mark>rw</mark> crashkernel=auto <mark>init=/bin/bash</mark></code></pre>
+          <p>Press <kbd>Ctrl</kbd> + <kbd>X</kbd>. Because <code>init=/bin/bash</code> replaces systemd's init entirely, you land straight in a root shell with the filesystem already mounted read-write — no chroot needed. If it isn't, remount it: <code>mount -o remount,rw /</code>. Then:</p>
+          <pre><code>passwd
+touch /.autorelabel</code></pre>
+          <p>Since you replaced init rather than using a rescue shell, hand off to the real init process instead of forcing a power cycle:</p>
+          <pre><code>exec /sbin/init</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="callout">
+      <strong>RHEL 10 note:</strong> confirm which method your exact minor
+      release expects against Red Hat's own documentation before relying
+      on this in production — public write-ups disagree with each other on
+      this specific point, and recovery procedures are exactly the kind of
+      detail that gets refined between minor releases.
+    </div>
+
+    <h3>Verify it actually worked</h3>
+    <p>Don't consider this done just because <code>passwd</code> reported success. After the reboot completes:</p>
+    <ul>
+      <li>Log in as root with the new password at the normal prompt — confirm it actually authenticates, not just that the command ran.</li>
+      <li>Run <code>getenforce</code> to confirm SELinux came back in the state you expect (usually <code>Enforcing</code>).</li>
+      <li>Check for fresh AVC denials after doing normal work, in case the relabel missed something: <code>ausearch -m AVC -ts recent</code>.</li>
+    </ul>
+
+    <h3>Close the gap: security best practices after a reset</h3>
+    <p>
+      This procedure is also its biggest weakness: anyone who can reach
+      the console can reset root the same way, with no password required
+      to get there. That's by design — it's a recovery path, not a bug —
+      but it means console access to the machine <em>is</em> root access.
+      Once you're back in, close that gap:
+    </p>
+    <pre><code>grub2-setpassword</code></pre>
+    <p>
+      This requires a username and password before anyone can edit boot
+      parameters at the GRUB menu — the exact step this whole procedure
+      depends on. Booting normally still works with no prompt; pressing
+      <code>e</code> or <code>c</code> to edit an entry asks for that
+      password first. Keep it somewhere your team can recover during a
+      real outage, and also <strong>limit console access</strong>
+      (KVM/iLO/iDRAC logins, hypervisor console permissions, cloud
+      serial-console roles) to people who actually need it — treat a
+      console session with the same seriousness as a root shell, because
+      after this procedure that's exactly what it grants.
+    </p>
+
+    <h2 id="selinux">SELinux troubleshooting: when permissions look right but access is still denied</h2>
+    <p>
+      A specific, very common variant of "everything looks fine but the
+      application still gets Permission Denied": <code>chmod 777</code>
+      changes discretionary access control (DAC) — the traditional
+      owner/group/mode permissions — but on RHEL, CentOS, Fedora, and
+      other SELinux-enabled distributions, mandatory access control (MAC)
+      is a second, independent gate. SELinux can still deny an operation
+      that DAC permissions would otherwise allow. Click a question below
+      to jump straight to that scenario.
+    </p>
+
+    <div class="qa-accordion">
+      <details class="qa-item">
+        <summary>1. An application gets "Permission Denied" even after chmod 777. What should you check first?</summary>
+        <div class="qa-answer">
+          <p>Do not assume normal Linux permissions are the only cause. Check SELinux, especially when it is in <strong>Enforcing</strong> mode. SELinux can deny an operation even when owner/group/mode permissions allow it.</p>
+          <pre><code>getenforce
+sestatus</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>2. Why can chmod 777 still result in Permission Denied?</summary>
+        <div class="qa-answer">
+          <p><code>chmod 777</code> changes discretionary access control (DAC) permissions only. SELinux uses mandatory access control (MAC) based on security contexts and policy. If the process type is not allowed to access the target file type, SELinux can still block the request.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>3. How do you check whether disk space is causing the problem?</summary>
+        <div class="qa-answer">
+          <p>Use <code>df -h</code> for filesystem capacity and <code>df -i</code> for inode usage. If both have sufficient free space, continue with permissions, ownership, SELinux, mount options, and application logs.</p>
+          <pre><code>df -h
+df -i</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>4. What is the most useful place to check SELinux denials?</summary>
+        <div class="qa-answer">
+          <p>SELinux denials are normally recorded as AVC messages in the Linux audit log. Review recent AVC events instead of immediately disabling SELinux.</p>
+          <pre><code>ausearch -m AVC -ts recent
+grep -i 'avc:.*denied' /var/log/audit/audit.log</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>5. What does AVC mean in SELinux troubleshooting?</summary>
+        <div class="qa-answer">
+          <p>AVC stands for <strong>Access Vector Cache</strong>. An AVC denial records an SELinux policy decision that denied an attempted action. It can show the source context, target context, object class, requested permission, process, path, and timestamp.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>6. What important fields should you examine in an AVC denial?</summary>
+        <div class="qa-answer">
+          <p>Focus on the denied operation and these fields: <code>scontext</code> (source/process context), <code>tcontext</code> (target context), <code>tclass</code> (object class), the requested permission such as write/create/open, the process name, the target path, and the timestamp.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>7. How can you check the SELinux context of a file or directory?</summary>
+        <div class="qa-answer">
+          <p>Use <code>ls -Z</code>. For a directory and its contents, <code>ls -ldZ</code> and <code>ls -lZ</code> are useful. Compare the context with a known-good directory used by the same application.</p>
+          <pre><code>ls -ldZ /path/to/directory
+ls -lZ /path/to/directory</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>8. What command can restore the expected SELinux context?</summary>
+        <div class="qa-answer">
+          <p>Use <code>restorecon</code> when the correct file-context rule already exists. The recursive verbose form is commonly used for a directory tree.</p>
+          <pre><code>restorecon -Rv /path/to/directory</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>9. Why is restorecon better than chcon for a permanent fix?</summary>
+        <div class="qa-answer">
+          <p><code>restorecon</code> applies the context defined by SELinux file-context policy. A context set only with <code>chcon</code> can be lost after relabeling or a later <code>restorecon</code>. For a custom path, define a persistent mapping with <code>semanage fcontext</code> and then run <code>restorecon</code>.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>10. How do you permanently assign an SELinux type to a custom application directory?</summary>
+        <div class="qa-answer">
+          <p>Create a persistent file-context rule using <code>semanage fcontext</code>, then apply it with <code>restorecon</code>. The exact SELinux type must match the application requirement.</p>
+          <pre><code>semanage fcontext -a -t &lt;required_type&gt; '/custom/path(/.*)?'
+restorecon -Rv /custom/path</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>11. Should you disable SELinux to solve the issue?</summary>
+        <div class="qa-answer">
+          <p>Normally, no. Disabling SELinux removes an important security control and can hide the actual configuration problem. Use audit evidence to correct the label, boolean, policy, or application configuration instead.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>12. Is setenforce 0 a valid troubleshooting test?</summary>
+        <div class="qa-answer">
+          <p>It can be used as a short, controlled diagnostic test where security policy permits it. If the operation works in Permissive mode but fails in Enforcing mode, SELinux is strongly implicated. Re-enable Enforcing immediately and fix the underlying issue.</p>
+          <pre><code>setenforce 0
+# reproduce the issue
+setenforce 1</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>13. How do you check SELinux booleans that may affect a web application?</summary>
+        <div class="qa-answer">
+          <p>List relevant booleans and inspect those associated with the service. Enable a boolean only when the application genuinely requires that behavior.</p>
+          <pre><code>getsebool -a | grep -i httpd
+setsebool -P &lt;boolean_name&gt; on</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>14. What is a safe production troubleshooting sequence?</summary>
+        <div class="qa-answer">
+          <p>Check application/service logs; verify filesystem space and inodes; verify owner/group/mode and ACLs; check SELinux mode; search recent AVC denials; inspect source and target contexts; validate expected policy; apply the smallest correct fix; reproduce the operation; confirm new AVC denials no longer appear; and document the change.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>15. After applying the SELinux fix, how do you validate it?</summary>
+        <div class="qa-answer">
+          <p>Repeat the exact failed application action, verify that it succeeds, check application logs, and search the audit log again for fresh AVC denials. Confirm that SELinux remains Enforcing.</p>
+          <pre><code>getenforce
+ausearch -m AVC -ts recent</code></pre>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>16. What is the difference between DAC and MAC in this scenario?</summary>
+        <div class="qa-answer">
+          <p>DAC is the traditional Linux permission model controlled through ownership, mode bits, and ACLs. SELinux adds MAC, where policy controls whether a labeled process can access a labeled object. Both checks must allow the operation.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>17. A web server can read a directory but cannot write to it. What would you investigate?</summary>
+        <div class="qa-answer">
+          <p>Check Unix write permissions and ACLs, filesystem read-only status, available space/inodes, and SELinux AVC denials. For SELinux, confirm whether the directory has a type the web-service domain is permitted to write to and whether a relevant boolean is required.</p>
+        </div>
+      </details>
+
+      <details class="qa-item">
+        <summary>18. What should you avoid when creating a custom SELinux policy?</summary>
+        <div class="qa-answer">
+          <p>Do not automatically allow every denial produced by a policy-generation tool. First confirm the action is legitimate and that the problem is not simply an incorrect label or an existing SELinux boolean. Grant only the minimum required access.</p>
+        </div>
+      </details>
+    </div>
+
+    <h3>Quick command reference</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Purpose</th><th>Command</th></tr></thead>
+        <tbody>
+          <tr><td>Check SELinux mode</td><td><code>getenforce</code> / <code>sestatus</code></td></tr>
+          <tr><td>Recent SELinux denials</td><td><code>ausearch -m AVC -ts recent</code></td></tr>
+          <tr><td>Audit log search</td><td><code>grep -i 'avc:.*denied' /var/log/audit/audit.log</code></td></tr>
+          <tr><td>Check SELinux labels</td><td><code>ls -ldZ /path</code></td></tr>
+          <tr><td>Restore expected labels</td><td><code>restorecon -Rv /path</code></td></tr>
+          <tr><td>Persistent custom mapping</td><td><code>semanage fcontext -a -t &lt;type&gt; '/path(/.*)?'</code></td></tr>
+          <tr><td>Filesystem usage</td><td><code>df -h</code></td></tr>
+          <tr><td>Inode usage</td><td><code>df -i</code></td></tr>
+          <tr><td>Relevant booleans</td><td><code>getsebool -a | grep -i httpd</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <strong>Production note:</strong> exact SELinux types and booleans
+      depend on the application and path. Validate AVC evidence before
+      making a persistent policy change.
+    </div>
+
     <h2 id="habits">Build the habit: capture evidence, not just fixes</h2>
     <p>
       The single biggest difference between a team that firefights forever
@@ -267,6 +574,7 @@ nc -vz &lt;server&gt; &lt;port&gt;</code></pre>
         <li><a href="/linux/cron-generator">Cron Expression Generator</a></li>
         <li><a href="/linux/systemd-service-generator">Systemd Service Generator</a></li>
         <li><a href="/linux/permission-converter">Permission Converter</a></li>
+        <li><a href="/network/password-generator/">Password Generator</a></li>
         <li><a href="/interview-qa/#questions">Linux Scenario Interview Q&amp;A</a></li>
       </ul>
     </div>
@@ -295,12 +603,39 @@ nc -vz &lt;server&gt; &lt;port&gt;</code></pre>
 
   .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
   .article-wrap h2:first-of-type { margin-top: 0; }
+  .article-wrap h3 { margin: 34px 0 14px; color: #172033; font-size: 1.1rem; scroll-margin-top: 90px; }
   .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
   .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
   .article-wrap li { margin-bottom: 6px; }
   .article-wrap code { padding: 2px 6px; border-radius: 5px; background: #eef2f7; color: #0f172a; font: 600 .88em ui-monospace, Consolas, monospace; }
   .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
   .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
+  .article-wrap pre code mark { padding: 0 3px; border-radius: 3px; background: #fbbf24; color: #1e1600; font-weight: 700; }
+  .article-wrap kbd { padding: 2px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 #cbd5e1; font: 700 .82em ui-monospace, Consolas, monospace; }
+
+  .mockup { margin: 12px 0 16px; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 10px 26px rgba(15, 23, 42, .12); }
+  .mockup-bar { padding: 8px 14px; background: #1e293b; color: #94a3b8; font: 700 .74rem ui-monospace, Consolas, monospace; letter-spacing: .03em; text-transform: uppercase; }
+  .mockup-body { margin: 0; padding: 16px 18px; background: #05070c; color: #94e2a8; font: 500 .83rem/1.65 ui-monospace, Consolas, monospace; white-space: pre-wrap; }
+  .mockup-body mark { padding: 0 3px; border-radius: 3px; background: #fbbf24; color: #1e1600; font-weight: 700; }
+
+  .qa-accordion { display: grid; gap: 10px; margin: 0 0 8px; }
+  .qa-item { border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; overflow: hidden; }
+  .qa-item summary { padding: 15px 18px; color: #172033; font-weight: 700; font-size: .97rem; line-height: 1.5; cursor: pointer; list-style: none; }
+  .qa-item summary::-webkit-details-marker { display: none; }
+  .qa-item summary::before { content: "+"; display: inline-block; width: 18px; margin-right: 10px; color: #2563eb; font-weight: 800; }
+  .qa-item[open] summary::before { content: "−"; }
+  .qa-item[open] summary { border-bottom: 1px solid #edf2f7; }
+  .qa-answer { padding: 4px 18px 16px 46px; }
+  .qa-answer p { margin: 0 0 12px; font-size: .96rem; }
+  .qa-answer pre { margin: 0; }
+
+  .ref-table-wrap { margin: 0 0 20px; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; }
+  .ref-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  .ref-table th, .ref-table td { padding: 11px 15px; border-bottom: 1px solid #edf2f7; text-align: left; white-space: nowrap; }
+  .ref-table th { background: #f8fafc; color: #334155; font-weight: 800; font-size: .8rem; }
+  .ref-table tr:last-child td { border-bottom: 0; }
+
+  .callout { padding: 15px 18px; border: 1px solid #fde68a; border-radius: 12px; background: #fffbeb; color: #92400e; font-size: .93rem; line-height: 1.65; }
 
   .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
   .related-tools h2 { margin: 0 0 6px; }
