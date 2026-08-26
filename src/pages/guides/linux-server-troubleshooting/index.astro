@@ -16,7 +16,7 @@ import Layout from "../../../layouts/Layout.astro";
         instead of guessing — with the exact commands to run at each step,
         for the failures that actually take down production servers.
       </p>
-      <div class="meta"><span>18 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
+      <div class="meta"><span>39 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
     </div>
   </section>
 
@@ -29,9 +29,16 @@ import Layout from "../../../layouts/Layout.astro";
         <li><a href="#cpu">CPU usage is pinned at 100%</a></li>
         <li><a href="#memory">The server is out of memory or swapping</a></li>
         <li><a href="#disk">A filesystem is full</a></li>
+        <li><a href="#dfhang"><code>df -h</code> hangs but the server isn't frozen</a></li>
+        <li><a href="#hardlink">A hard link fails with "Invalid cross-device link"</a></li>
+        <li><a href="#softlink">Can a soft link cross filesystems?</a></li>
         <li><a href="#service">A systemd service won't start</a></li>
+        <li><a href="#llcommand">A working command like <code>ll</code> suddenly stops working</a></li>
         <li><a href="#network">The server has network connectivity problems</a></li>
+        <li><a href="#sscommand">How Do You Check Whether a Service Port Is Listening?</a></li>
         <li><a href="#rootpw">Locked out: a lost or forgotten root password</a></li>
+        <li><a href="#svcaccount">A service account has interactive login it shouldn't have</a></li>
+        <li><a href="#passwdshadow">Why are /etc/passwd and /etc/shadow separate?</a></li>
         <li><a href="#selinux">SELinux troubleshooting: when permissions look right but access is still denied</a></li>
         <li><a href="#habits">Build the habit: capture evidence, not just fixes</a></li>
       </ol>
@@ -65,8 +72,10 @@ import Layout from "../../../layouts/Layout.astro";
       Systemd drops you into emergency or rescue mode when something it
       considers essential — usually a filesystem mount — failed. The
       temptation is to reboot again and hope it fixes itself. It won't; the
-      same failure will happen again. Instead, read what actually failed.
+      same failure will happen again.
     </p>
+
+    <h3>Read what actually failed</h3>
     <pre><code>systemctl --failed
 journalctl -xb
 lsblk -f
@@ -81,9 +90,8 @@ cat /etc/fstab</code></pre>
       boot is an fstab entry pointing at a UUID or device that no longer
       exists, often after a disk was resized, cloned, or replaced.
     </p>
-    <p>
-      Test a fix without rebooting first:
-    </p>
+
+    <h3>Test the fix without rebooting first</h3>
     <pre><code>mount -a
 systemctl daemon-reload</code></pre>
     <p>
@@ -99,6 +107,8 @@ systemctl daemon-reload</code></pre>
       its time waiting on I/O instead of computing — because
       <code>top</code>'s headline number doesn't tell you which.
     </p>
+
+    <h3>Identify what kind of CPU problem this actually is</h3>
     <pre><code>uptime
 top
 ps -eo pid,ppid,user,%cpu,%mem,stat,etime,cmd --sort=-%cpu | head</code></pre>
@@ -110,6 +120,8 @@ ps -eo pid,ppid,user,%cpu,%mem,stat,etime,cmd --sort=-%cpu | head</code></pre>
       while others are idle, you're likely looking at a single-threaded
       process, not a systemic problem.
     </p>
+
+    <h3>Investigate the process before touching it</h3>
     <p>
       Once you've identified the process, don't kill it yet. Check what it
       was doing and correlate with recent changes:
@@ -135,6 +147,8 @@ journalctl --since '-15 min'</code></pre>
       <code>available</code> column and whether the kernel is actively
       swapping.
     </p>
+
+    <h3>Check whether this is real memory pressure</h3>
     <pre><code>free -h
 vmstat 1
 ps -eo pid,user,%mem,rss,vsz,cmd --sort=-rss | head</code></pre>
@@ -146,6 +160,8 @@ ps -eo pid,user,%mem,rss,vsz,cmd --sort=-rss | head</code></pre>
       are near zero, that swap is just old, inactive data sitting there —
       not an active problem.
     </p>
+
+    <h3>Check whether the kernel already killed something</h3>
     <p>
       If a process was killed, the kernel log tells you exactly which one
       and why:
@@ -162,9 +178,10 @@ ps -eo pid,user,%mem,rss,vsz,cmd --sort=-rss | head</code></pre>
     <p>
       Protect service stability first — a full root filesystem can stop
       logging, break package operations, and crash applications that can't
-      write temp files. Find out which filesystem is actually full, not
-      just that disk usage looks high somewhere:
+      write temp files.
     </p>
+
+    <h3>Find which filesystem is actually full</h3>
     <pre><code>df -hT
 df -i</code></pre>
     <p>
@@ -172,11 +189,17 @@ df -i</code></pre>
       free space while still refusing to create new files because it ran
       out of inodes, usually from a huge number of tiny files.
     </p>
-    <p>
-      Find what's actually consuming the space:
-    </p>
+
+    <h3>Find what's actually consuming the space</h3>
     <pre><code>du -xhd1 / | sort -h
 find / -xdev -type f -size +1G -ls</code></pre>
+    <p>
+      These two commands cover both cases: <code>du</code> finds the
+      largest directories, <code>find</code> finds individual large files
+      that a directory-level summary can hide.
+    </p>
+
+    <h3>Check for a deleted-but-still-open file</h3>
     <p>
       If <code>du</code> and <code>df</code> disagree — <code>df</code>
       says full but <code>du</code> can't account for the space — the
@@ -192,20 +215,436 @@ find / -xdev -type f -size +1G -ls</code></pre>
       applications that support that) releases the space immediately.
     </p>
 
+    <h2 id="dfhang"><code>df -h</code> hangs but the server isn't frozen</h2>
+    <p>
+      You run <code>df -h</code> on a production server and it just sits
+      there. The instinct is to assume the whole server has locked up.
+      Usually it hasn't — a much more common cause is one unresponsive
+      mounted filesystem, especially an NFS mount, blocking the one
+      command that needs to talk to it.
+    </p>
+
+    <h3>Why df -h can hang</h3>
+    <p>
+      <code>df</code> retrieves usage statistics for every mounted
+      filesystem. If a remote mount is unavailable or responding very
+      slowly, that one request can block while the kernel waits or
+      retries — and because <code>df</code> checks filesystems in order,
+      the whole command appears frozen even though every other filesystem
+      on the box is fine.
+    </p>
+    <pre><code>df -h   # command waits / appears hung</code></pre>
+
+    <h3>Don't immediately reboot the server</h3>
+    <p>
+      Open a <em>different</em> SSH or console session and troubleshoot
+      the mounted filesystems from there — the original session may stay
+      blocked, but that doesn't mean the server is unreachable. A reboot
+      can hide the symptom temporarily while creating unnecessary
+      production impact, and it destroys the evidence you'd need to find
+      the actual cause.
+    </p>
+
+    <h3>Identify NFS mounts</h3>
+    <pre><code>findmnt -t nfs,nfs4</code></pre>
+    <p>Alternative checks if <code>findmnt</code> isn't available:</p>
+    <pre><code>mount -t nfs,nfs4
+cat /proc/mounts | grep -E ' nfs| nfs4'</code></pre>
+
+    <h3>Check the NFS server</h3>
+    <p>Assume the client has a mount similar to:</p>
+    <pre><code>192.168.1.190:/data /mnt/data</code></pre>
+    <p>Test basic IP connectivity first:</p>
+    <pre><code>ping -c 4 192.168.1.190</code></pre>
+    <div class="callout">
+      <strong>Important:</strong> a successful ping only proves basic
+      IP/ICMP reachability. It does not prove the NFS service itself is
+      healthy — plenty of hung NFS mounts sit behind a server that
+      answers ping just fine.
+    </div>
+
+    <h3>Test the NFS port</h3>
+    <p>For NFSv4, verify TCP port 2049 is actually reachable:</p>
+    <pre><code>nc -zv -w 3 192.168.1.190 2049</code></pre>
+
+    <h3>Check NFS services on the NFS server</h3>
+    <pre><code>systemctl status nfs-server
+ss -lntp | grep :2049</code></pre>
+    <p>For environments still using NFSv3/RPC services:</p>
+    <pre><code>rpcinfo -p</code></pre>
+    <p>
+      If the NFS service is unexpectedly stopped, investigate why before
+      restarting it. If restarting is appropriate under your change or
+      incident procedure:
+    </p>
+    <pre><code>systemctl start nfs-server
+systemctl status nfs-server</code></pre>
+
+    <h3>Check exports</h3>
+    <p>From the client, where applicable:</p>
+    <pre><code>showmount -e 192.168.1.190</code></pre>
+    <p>On the NFS server itself:</p>
+    <pre><code>exportfs -v</code></pre>
+    <div class="callout">
+      <strong>Technical note:</strong> a failed <code>showmount -e</code>
+      does not always prove <code>nfs-server</code> is stopped.
+      <code>showmount</code> relies on RPC/mountd behavior and is
+      especially relevant to NFSv3 — NFSv4-only configurations can behave
+      differently.
+    </div>
+
+    <h3>Check kernel logs</h3>
+    <pre><code>dmesg -T | tail -100
+journalctl -k --since "30 minutes ago"</code></pre>
+    <p>Typical NFS-related messages to look for:</p>
+    <pre><code>nfs: server 192.168.1.190 not responding
+nfs: server 192.168.1.190 OK</code></pre>
+
+    <h3>Production troubleshooting workflow</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Step</th><th>Check</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Open another session</td><td>Avoid interrupting the blocked <code>df</code> process/session.</td></tr>
+          <tr><td>2</td><td><code>findmnt -t nfs,nfs4</code></td><td>Identify remote NFS mounts.</td></tr>
+          <tr><td>3</td><td>Check kernel logs</td><td>Look for NFS timeout/not-responding messages.</td></tr>
+          <tr><td>4</td><td>Ping the NFS server</td><td>Verify basic network reachability.</td></tr>
+          <tr><td>5</td><td>Test TCP 2049</td><td>Verify NFS service connectivity, especially NFSv4.</td></tr>
+          <tr><td>6</td><td><code>systemctl status nfs-server</code></td><td>Check NFS server-side service state.</td></tr>
+          <tr><td>7</td><td><code>exportfs -v</code> / RPC checks</td><td>Validate exports and relevant RPC services.</td></tr>
+          <tr><td>8</td><td>Fix root cause and retest</td><td>Confirm <code>df -h</code> returns normally.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> Why can <code>df -h</code> hang on Linux,
+      and how would you troubleshoot it?
+      <br /><br />
+      <strong>Answer:</strong> <code>df -h</code> can hang when it tries
+      to retrieve filesystem statistics from an unresponsive mounted
+      filesystem — a common production cause is a stale or unavailable
+      NFS mount. I wouldn't immediately reboot the server. I'd open
+      another session, identify NFS mounts with <code>findmnt</code>,
+      check kernel logs for NFS timeout messages, verify connectivity to
+      the NFS server and TCP port 2049, and check the NFS services and
+      exports on the server. After identifying and fixing the affected
+      remote filesystem, I'd rerun <code>df -h</code> and confirm normal
+      behavior.
+    </div>
+
+    <h3>Quick troubleshooting map</h3>
+    <div class="flow-map">
+      df -h hangs → Check mounted filesystems → Remote / NFS mount? →
+      Check kernel logs → Check NFS server connectivity → Check TCP 2049 /
+      RPC → Check nfs-server + exports → Fix root cause → Retest df -h
+    </div>
+
+    <h3>Key production lesson</h3>
+    <p>
+      A hanging <code>df -h</code> is a symptom, not a diagnosis. NFS is a
+      common cause, but any unresponsive mounted filesystem can create
+      similar behavior. Troubleshoot the mount, the network, the
+      filesystem service, and the kernel messages before considering
+      disruptive actions like a reboot.
+    </p>
+
+    <h2 id="hardlink">A hard link fails with "Invalid cross-device link"</h2>
+    <div class="callout">
+      <strong>Interview question:</strong> can we create a hard link
+      across different partitions or filesystems?
+      <br /><br />
+      <strong>Answer: no.</strong> A hard link can only refer to an inode
+      within the <em>same</em> filesystem. A symbolic (soft) link stores
+      a pathname instead, so it can point to a target on another mounted
+      filesystem — see the next section for that side of it.
+    </div>
+
+    <h3>The production scenario</h3>
+    <p>
+      <code>/data</code> is mounted from one filesystem and
+      <code>/splunklog</code> from another:
+    </p>
+    <pre><code>/dev/sdb1 -&gt; /data
+/dev/sdb2 -&gt; /splunklog</code></pre>
+    <p>You try to hard-link a file from one to the other:</p>
+    <pre><code>ln /data/server.xml /splunklog/server.xml</code></pre>
+    <p>It fails immediately:</p>
+    <pre><code>ln: failed to create hard link '/splunklog/server.xml' =&gt; '/data/server.xml': Invalid cross-device link</code></pre>
+
+    <h3>Why the hard link fails</h3>
+    <p>
+      A hard link is just another directory entry pointing at the same
+      inode as an existing filename — and inode numbers are only
+      meaningful within a single filesystem. A directory entry on a
+      different filesystem has no way to directly reference an inode that
+      belongs to a different one, so the kernel rejects the operation,
+      commonly surfaced as <code>EXDEV</code> / "Invalid cross-device
+      link." This isn't a permissions or ownership problem — no amount of
+      <code>chmod</code> or <code>chown</code> fixes it, because the
+      restriction is structural, not access-based.
+    </p>
+
+    <h3>Prove it with inode numbers</h3>
+    <p>Create a file and a hard link on the <em>same</em> filesystem:</p>
+    <pre><code>echo 'Linux production' &gt; /data/server.xml
+ln /data/server.xml /data/server-hard.xml
+ls -li /data/server.xml /data/server-hard.xml</code></pre>
+    <p>Both names show the same inode number. You can also compare with:</p>
+    <pre><code>stat /data/server.xml
+stat /data/server-hard.xml</code></pre>
+
+    <h3>The soft-link alternative</h3>
+    <p>
+      A symbolic link doesn't reference an inode directly — it stores the
+      target's pathname as text, so it can point anywhere, including
+      across filesystems:
+    </p>
+    <pre><code>ln -s /data/server.xml /splunklog/server-soft.xml
+ls -l /splunklog/server-soft.xml</code></pre>
+    <pre><code>/splunklog/server-soft.xml -&gt; /data/server.xml</code></pre>
+
+    <h3>Hard link vs. soft link</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Feature</th><th>Hard link</th><th>Soft / symbolic link</th></tr></thead>
+        <tbody>
+          <tr><td>What it refers to</td><td>Same underlying inode</td><td>Target pathname</td></tr>
+          <tr><td>Cross filesystem?</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Own inode?</td><td>Directory entry refers to target inode</td><td>Yes — the symlink itself has an inode</td></tr>
+          <tr><td>If original name is deleted</td><td>Data stays accessible through the other hard link</td><td>Symlink becomes dangling if the target path no longer resolves</td></tr>
+          <tr><td>Can normally link directories?</td><td>Generally prohibited for users</td><td>Yes</td></tr>
+          <tr><td>Creation</td><td><code>ln source link</code></td><td><code>ln -s target link</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What happens if the original file is deleted?</h3>
+    <p>
+      <strong>Hard link:</strong> deleting one filename does not delete
+      the file's data while another hard link still references the
+      inode. The data is only removed once the link count reaches zero
+      <em>and</em> no process still has the file open:
+    </p>
+    <pre><code><mark class="danger">rm</mark> /data/server.xml
+cat /data/server-hard.xml   # still works</code></pre>
+    <p>
+      <strong>Soft link:</strong> if the target pathname is removed and
+      nothing replaces it at that path, the symbolic link remains but
+      becomes a dangling/broken link.
+    </p>
+
+    <h3>Check link count and filesystem boundaries</h3>
+    <pre><code>ls -li /data/server.xml
+stat /data/server.xml
+findmnt -T /data/server.xml
+findmnt -T /splunklog
+df -T /data /splunklog</code></pre>
+    <p>
+      <code>findmnt -T</code> is particularly useful here because
+      different mount points don't always mean different filesystems,
+      while different block devices often do. The actual restriction is
+      the filesystem boundary — not the directory name or the partition
+      label.
+    </p>
+
+    <h3>Scenario-based interview questions</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Question</th><th>Short answer</th></tr></thead>
+        <tbody>
+          <tr><td>Can a hard link cross filesystems?</td><td>No — it must reference an inode in the same filesystem.</td></tr>
+          <tr><td>Can a symbolic link cross filesystems?</td><td>Yes — it stores a target pathname.</td></tr>
+          <tr><td>What happens if one hard-link name is deleted?</td><td>The other hard links keep accessing the same inode/data.</td></tr>
+          <tr><td>What happens if a symlink target is deleted?</td><td>The symlink normally becomes dangling.</td></tr>
+          <tr><td>How do you verify two names are hard links to the same file?</td><td>Compare inode numbers with <code>ls -li</code> or <code>stat</code>.</td></tr>
+          <tr><td>What error may appear for a cross-filesystem hard link?</td><td><code>Invalid cross-device link</code> (<code>EXDEV</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> Can we create a hard link across
+      partitions or filesystems?
+      <br /><br />
+      <strong>Answer:</strong> No, not when the source and destination
+      are on different filesystems. A hard link creates another directory
+      entry for the same inode, and an inode belongs to its filesystem —
+      it's not a portable reference. If I try
+      <code>ln /data/server.xml /splunklog/server.xml</code> where the
+      two paths are on different filesystems, Linux returns an "Invalid
+      cross-device link" error. A symbolic link can cross filesystem
+      boundaries because it stores the target path rather than directly
+      referencing the target inode. Also, if one hard-link filename is
+      deleted, the file stays accessible through the other hard-link
+      names until the final link is removed.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      Don't stop at memorizing the feature table. Be ready to explain the
+      inode relationship, demonstrate the cross-filesystem failure,
+      interpret the error, verify inode numbers, and explain what happens
+      when a linked filename or a symlink target gets removed. The
+      hard-link restriction is across <em>filesystems</em>, which is
+      often — but not always — the same thing as across partitions.
+    </p>
+
+    <h2 id="softlink">Can a soft link cross filesystems?</h2>
+    <div class="callout">
+      <strong>Interview question:</strong> can a soft (symbolic) link
+      point to a target on a different filesystem or partition?
+      <br /><br />
+      <strong>Answer: yes.</strong> A symbolic link stores the target's
+      <em>pathname</em>, not its inode — so it can point anywhere that
+      pathname resolves, including across a filesystem boundary. That's
+      the opposite of a hard link, which references an inode directly and
+      therefore cannot cross filesystems (see the previous section).
+    </div>
+
+    <h3>The scenario</h3>
+    <p>
+      Assume the original configuration file is on the root filesystem
+      and <code>/boot</code> is a separate one:
+    </p>
+    <pre><code>/dev/sda3 -&gt; /
+/dev/sda2 -&gt; /boot</code></pre>
+    <p>The original file:</p>
+    <pre><code>/config.conf</code></pre>
+    <p>Create a symbolic link under the separate <code>/boot</code> filesystem:</p>
+    <pre><code>ln -s /config.conf /boot/config.conf</code></pre>
+    <p>Verify it:</p>
+    <pre><code>ls -l /boot/config.conf
+readlink /boot/config.conf
+readlink -f /boot/config.conf</code></pre>
+
+    <h3>Why it works across filesystems</h3>
+    <p>
+      A symbolic link is a special file whose only content is the target
+      pathname. When a process opens the symlink, Linux resolves that
+      pathname to the target at access time. Because pathname resolution
+      can cross mount points, the symlink can point from one filesystem
+      to a completely different one — it never needs to reference the
+      target's inode number directly, which is exactly the restriction
+      that blocks a hard link from doing the same thing.
+    </p>
+
+    <h3>Verify the filesystem boundary</h3>
+    <p>Use <code>findmnt</code> or <code>df</code> to confirm the source and destination really are on different filesystems:</p>
+    <pre><code>findmnt -T /config.conf
+findmnt -T /boot/config.conf
+df -T / /boot</code></pre>
+
+    <h3>Production-style example</h3>
+    <p>
+      A common layout places application software under
+      <code>/opt</code>, application data under <code>/data</code>, and
+      selected configuration entry points under <code>/etc</code>.
+      Symbolic links are useful when software expects a file at one
+      pathname while the maintained file actually lives elsewhere:
+    </p>
+    <pre><code>ln -s /opt/myapp/conf/app.conf /etc/myapp.conf
+ls -l /etc/myapp.conf</code></pre>
+    <div class="callout">
+      <strong>Production caution:</strong> don't create symlinks in
+      system configuration paths without checking application
+      expectations, package-management behavior, permissions, SELinux
+      policy, backup processes, and your change-control requirements —
+      a symlink in the wrong place can quietly redirect a service to the
+      wrong file, or confuse a package manager that expects a real file
+      there.
+    </div>
+
+    <h3>What if the original target is deleted?</h3>
+    <p>
+      If the target file is deleted or moved and nothing exists at the
+      stored target pathname, the symbolic link remains but becomes a
+      dangling (broken) symlink:
+    </p>
+    <pre><code><mark class="danger">rm</mark> /config.conf
+ls -l /boot/config.conf     # the link entry still exists
+cat /boot/config.conf       # but reading it now fails</code></pre>
+    <p>
+      The link itself isn't removed — only access through it fails. If a
+      new file is later created at the same target pathname, the symlink
+      resolves again without needing to be recreated.
+    </p>
+
+    <h3>Soft link vs. hard link — interview comparison</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Feature</th><th>Soft / symbolic link</th><th>Hard link</th></tr></thead>
+        <tbody>
+          <tr><td>Cross filesystem?</td><td>Yes</td><td>No</td></tr>
+          <tr><td>Reference</td><td>Stores target pathname</td><td>Same underlying inode</td></tr>
+          <tr><td>Own inode</td><td>Yes</td><td>Both names refer to the target inode</td></tr>
+          <tr><td>Target deleted</td><td>Usually becomes dangling</td><td>Other hard-link names still access the data</td></tr>
+          <tr><td>Can link directories?</td><td>Yes</td><td>Normally prohibited for ordinary users</td></tr>
+          <tr><td>Create</td><td><code>ln -s target link</code></td><td><code>ln source link</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Scenario-based interview questions</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+        <tbody>
+          <tr><td>Can a soft link cross filesystems?</td><td>Yes — it stores a pathname and can resolve across mount points.</td></tr>
+          <tr><td>Can a hard link cross filesystems?</td><td>No — it must reference the same inode within one filesystem.</td></tr>
+          <tr><td>What happens when a symlink target is deleted?</td><td>The symlink normally becomes dangling/broken.</td></tr>
+          <tr><td>How do you see where a symlink points?</td><td>Use <code>ls -l</code> or <code>readlink</code>.</td></tr>
+          <tr><td>How do you resolve the final target path?</td><td>Use <code>readlink -f</code> when the path can be resolved.</td></tr>
+          <tr><td>How do you prove paths are on different filesystems?</td><td>Use <code>findmnt -T</code> or <code>df -T</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> Can you create a soft link across
+      partitions or filesystems?
+      <br /><br />
+      <strong>Answer:</strong> Yes. A symbolic link can point across
+      filesystem boundaries because it stores the pathname of the target
+      rather than directly referencing the target inode. For example, if
+      the source file is on the root filesystem and <code>/boot</code> is
+      a separate filesystem, I can create
+      <code>ln -s /config.conf /boot/config.conf</code>. I'd verify the
+      filesystems with <code>findmnt -T</code> and the link itself with
+      <code>ls -l</code> or <code>readlink</code>. If the original target
+      is deleted or moved, the symbolic link normally becomes dangling
+      until the target pathname exists again.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      For Linux, AWS, and DevOps interviews, understand the behavior
+      rather than memorizing only the definitions: symbolic links can
+      cross filesystem boundaries, hard links cannot, and a symlink's
+      usefulness depends entirely on its stored target pathname
+      continuing to resolve.
+    </p>
+
     <h2 id="service">A systemd service won't start</h2>
     <p>
-      Read the status and journal before doing anything else — the exit
-      code and the last few log lines almost always point straight at the
-      cause:
+      Work from evidence outward: the log first, then the configuration,
+      then the command itself.
     </p>
+
+    <h3>Read the status and journal first</h3>
+    <p>The exit code and the last few log lines almost always point straight at the cause:</p>
     <pre><code>systemctl status &lt;service&gt; --no-pager -l
 journalctl -u &lt;service&gt; -b --no-pager</code></pre>
-    <p>
-      If the reason isn't obvious from the logs, check exactly how the
-      unit is configured to start, and as which user:
-    </p>
+
+    <h3>Check exactly how the unit is configured</h3>
+    <p>If the reason isn't obvious from the logs, check exactly how the unit is configured to start, and as which user:</p>
     <pre><code>systemctl cat &lt;service&gt;
 systemctl show &lt;service&gt; -p User -p Group -p ExecStart</code></pre>
+
+    <h3>Run the ExecStart command by hand</h3>
     <p>
       A large share of "it just won't start" cases come down to running
       the exact <code>ExecStart</code> command by hand, as the configured
@@ -220,12 +659,134 @@ systemctl show &lt;service&gt; -p User -p Group -p ExecStart</code></pre>
       though the file is correct.
     </p>
 
+    <h2 id="llcommand">A working command like <code>ll</code> suddenly stops working</h2>
+    <p>
+      You're in <code>/data</code>. <code>pwd</code> confirms it. Then you
+      run <code>ll</code> and get a "No such file or directory"-type error
+      — on a command that was working an hour ago, in a directory that
+      definitely exists. The instinct is to assume something is wrong with
+      the directory or the shell itself. It usually isn't.
+    </p>
+
+    <h3>What's really happening</h3>
+    <p>
+      <code>ll</code> is almost never a standalone Linux binary. On most
+      RHEL-family systems it's a shell alias, commonly pointing to
+      <code>ls -l --color=auto</code>. That alias still has to resolve to
+      the real <code>ls</code> executable, normally at
+      <code>/usr/bin/ls</code>. If the shell's <code>PATH</code> variable
+      is empty, corrupted, or missing the standard directories, the shell
+      can no longer <em>find</em> <code>ls</code> to run it — so a command
+      or alias that worked fine a moment ago suddenly appears broken, with
+      an error that looks like a filesystem problem but isn't one.
+    </p>
+
+    <h3>First checks — don't restart the server</h3>
+    <p>Confirm where you are, what <code>ll</code> actually resolves to, and whether <code>PATH</code> looks sane, in that order:</p>
+    <pre><code>pwd
+type ll
+alias ll
+echo "$PATH"</code></pre>
+    <p>
+      If <code>echo "$PATH"</code> comes back blank, or standard
+      directories like <code>/usr/bin</code> and <code>/bin</code> are
+      missing from it, <code>PATH</code> is almost certainly the problem —
+      not the directory, not the alias definition itself.
+    </p>
+
+    <h3>Temporary recovery</h3>
+    <p>Restore a safe, standard <code>PATH</code> for the current shell session:</p>
+    <pre><code>export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</code></pre>
+    <p>Verify it, then retry the command:</p>
+    <pre><code>echo "$PATH"
+command -v ls
+ll</code></pre>
+    <div class="callout">
+      <strong>A common misconception:</strong> just running
+      <code>export PATH</code> on its own does not restore anything if
+      <code>PATH</code> is already empty — <code>export</code> only marks
+      an existing variable for the environment, it doesn't invent a value.
+      You have to explicitly assign the directories, as above, unless a
+      valid value already existed but simply hadn't been exported yet.
+    </div>
+
+    <h3>Bypass PATH to confirm the diagnosis</h3>
+    <p>Before changing anything, call the real executable by its absolute path, bypassing <code>PATH</code> entirely:</p>
+    <pre><code>/usr/bin/ls -l /data</code></pre>
+    <p>
+      If that works while <code>ls</code> or <code>ll</code> doesn't, you've
+      confirmed it's a <code>PATH</code> or shell-configuration problem,
+      not a filesystem problem — you can now fix it with confidence instead
+      of guessing.
+    </p>
+
+    <h3>Find out why PATH changed</h3>
+    <p>
+      Restoring the command isn't the end of the job — a production fix
+      means finding out why it broke. Check shell startup files and the
+      system-wide profile configuration for accidental overwrites:
+    </p>
+    <pre><code>grep -n 'PATH' ~/.bash_profile ~/.bashrc ~/.profile 2&gt;/dev/null
+grep -R "PATH=" /etc/profile /etc/profile.d/ 2&gt;/dev/null</code></pre>
+    <p>
+      Look for a line like <code>PATH=/some/custom/path</code> that
+      overwrites the existing value outright instead of extending it. When
+      a script or profile file needs to add a directory, it should always
+      preserve the current value:
+    </p>
+    <pre><code>export PATH="$PATH:/opt/myapp/bin"</code></pre>
+
+    <h3>Production troubleshooting flow</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Step</th><th>Command / action</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>pwd</code></td><td>Confirm the current directory.</td></tr>
+          <tr><td>2</td><td><code>type ll</code> / <code>alias ll</code></td><td>Determine whether <code>ll</code> is an alias and what it executes.</td></tr>
+          <tr><td>3</td><td><code>echo "$PATH"</code></td><td>Check whether command-search paths are missing.</td></tr>
+          <tr><td>4</td><td><code>/usr/bin/ls -l</code></td><td>Bypass PATH and test the actual executable.</td></tr>
+          <tr><td>5</td><td><code>export PATH=...</code></td><td>Temporarily restore standard command paths.</td></tr>
+          <tr><td>6</td><td><code>command -v ls</code></td><td>Confirm the shell can now locate <code>ls</code>.</td></tr>
+          <tr><td>7</td><td>Check <code>.bashrc</code> / <code>.bash_profile</code> / <code>/etc/profile.d</code></td><td>Identify the root cause and make the correct persistent fix.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-style answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> The <code>ll</code> command suddenly
+      stopped working on a production Linux server. What would you do?
+      <br /><br />
+      <strong>Answer:</strong> I wouldn't restart the server. First I'd
+      check whether <code>ll</code> is an alias with <code>type ll</code>
+      or <code>alias ll</code>, then inspect <code>$PATH</code>. I'd test
+      the underlying command with an absolute path like
+      <code>/usr/bin/ls -l</code> — if that works, it confirms a
+      <code>PATH</code> or shell-configuration issue, not a filesystem
+      one. I'd restore a valid <code>PATH</code>, verify the command
+      works, then check the shell profile files to find out why
+      <code>PATH</code> was overwritten or cleared, so the same fix
+      doesn't have to be repeated by hand next time.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      A reboot can make a shell-environment problem disappear temporarily,
+      but it doesn't tell you why it happened — and the same broken
+      profile file will do it again on the next login or the next server.
+      Checking the alias, <code>PATH</code>, the absolute command path,
+      and the profile files gets you the actual diagnosis and a fix that
+      stays fixed.
+    </p>
+
     <h2 id="network">The server has network connectivity problems</h2>
     <p>
       Separate "can't route to it" from "DNS won't resolve it" from "can
       route and resolve, but nothing is listening" — they have completely
       different fixes, and testing them out of order wastes time.
     </p>
+
+    <h3>Separate routing, DNS, and listening</h3>
     <pre><code>ping -c 3 &lt;gateway&gt;
 ping -c 3 1.1.1.1
 dig example.com
@@ -240,13 +801,159 @@ ss -lntp</code></pre>
       service bound only to <code>127.0.0.1</code> will never accept
       external connections no matter what the firewall allows.
     </p>
+
+    <h3>Isolate the host from the network path</h3>
     <p>
       Once the process is confirmed listening on the right address, test
-      locally first, then from a remote client, to isolate the host from
-      the network path:
+      locally first, then from a remote client:
     </p>
     <pre><code>curl -v http://127.0.0.1:&lt;port&gt;/
 nc -vz &lt;server&gt; &lt;port&gt;</code></pre>
+    <p>
+      If the local <code>curl</code> works but the remote <code>nc</code>
+      doesn't, the service itself is healthy — the problem is between the
+      host and the client: a firewall rule, a security group, or a routing
+      hop in between.
+    </p>
+
+    <h2 id="sscommand">How Do You Check Whether a Service Port Is Listening?</h2>
+    <div class="callout">
+      <strong>Recommended answer:</strong> use <code>ss</code>, for
+      example <code>ss -lntp</code>. The <code>ss</code> utility displays
+      socket information and is the standard modern tool available on
+      most current Linux distributions.
+    </div>
+
+    <h3>Core command</h3>
+    <p>Display listening TCP sockets numerically, with the owning process:</p>
+    <pre><code>sudo ss -lntp</code></pre>
+    <p>Look specifically for SSH/sshd:</p>
+    <pre><code>sudo ss -lntp | grep sshd</code></pre>
+    <p>A more reliable, port-specific check for the standard SSH port:</p>
+    <pre><code>sudo ss -lntp '( sport = :22 )'</code></pre>
+
+    <h3>What do the options mean?</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>-l</code></td><td>Show listening sockets only.</td></tr>
+          <tr><td><code>-n</code></td><td>Show numeric addresses and port numbers; avoid service-name resolution.</td></tr>
+          <tr><td><code>-t</code></td><td>Show TCP sockets.</td></tr>
+          <tr><td><code>-p</code></td><td>Show process information associated with the socket (permissions may require root).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Example SSH output</h3>
+    <pre><code>sudo ss -lntp | grep ':22'</code></pre>
+    <p>Example output:</p>
+    <pre><code>LISTEN 0 128 0.0.0.0:22 0.0.0.0:* users:(("sshd",pid=1120,fd=3))
+LISTEN 0 128 [::]:22 [::]:* users:(("sshd",pid=1120,fd=4))</code></pre>
+    <p>
+      The first line is an IPv4 wildcard listener, the second an IPv6
+      wildcard listener. <code>LISTEN</code> confirms a local TCP socket
+      is in the listening state, and the process field identifies the
+      owner when permissions allow it.
+    </p>
+
+    <div class="callout">
+      <strong>Important production clarification:</strong> a
+      <code>LISTEN</code> socket does not by itself prove that remote
+      clients can reach the port. It only proves a process is listening
+      locally on a particular address/port. Remote access can still be
+      blocked by the bind address, host firewall, cloud security group,
+      network ACL, routing, a load balancer, or another network control.
+      For example, a listener on <code>127.0.0.1:8080</code> is only
+      reachable through the loopback interface, whereas one bound to
+      <code>0.0.0.0:8080</code> is listening on every IPv4 interface,
+      subject to firewall and network policy.
+    </div>
+
+    <h3>Local listening check vs. remote connectivity test</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Question</th><th>Command / method</th><th>What it proves</th></tr></thead>
+        <tbody>
+          <tr><td>Is the service listening locally?</td><td><code>ss -lntp</code></td><td>A local TCP socket is in <code>LISTEN</code> state.</td></tr>
+          <tr><td>Which process owns the port?</td><td><code>sudo ss -lntp</code></td><td>Displays process/PID where permitted.</td></tr>
+          <tr><td>Can another host reach the port?</td><td><code>nc -zv server port</code></td><td>Tests network connectivity to that TCP port.</td></tr>
+          <tr><td>Is the service itself healthy?</td><td>Protocol-specific test</td><td>Requires an application-level check, e.g. <code>curl</code> for HTTP.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Useful production commands</h3>
+    <pre><code># All listening TCP ports
+sudo ss -lntp
+
+# All listening TCP and UDP sockets
+sudo ss -lntup
+
+# Check port 22
+sudo ss -lntp | grep ':22'
+
+# Check port 443
+sudo ss -lntp | grep ':443'
+
+# Show established TCP sessions
+ss -nt state established
+
+# Test a port remotely
+nc -zv -w 3 server.example.com 443</code></pre>
+
+    <h3>What about netstat?</h3>
+    <p>
+      <code>netstat</code> isn't necessarily "wrong" — it belongs to the
+      older <code>net-tools</code> package and isn't installed by default
+      on many modern distributions. For current Linux environments,
+      <code>ss</code> is generally the preferred socket-inspection
+      utility. In an interview, saying that is more accurate than simply
+      calling <code>netstat</code> invalid.
+    </p>
+
+    <h3>Production troubleshooting workflow</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Step</th><th>Check</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Check service state: <code>systemctl status &lt;service&gt;</code></td></tr>
+          <tr><td>2</td><td>Check the listener: <code>sudo ss -lntp</code></td></tr>
+          <tr><td>3</td><td>Confirm the bind address and expected port.</td></tr>
+          <tr><td>4</td><td>Identify the owning process/PID.</td></tr>
+          <tr><td>5</td><td>Check the host firewall/firewalld/nftables if remote access fails.</td></tr>
+          <tr><td>6</td><td>Test from the remote client with <code>nc</code>/<code>curl</code> or the appropriate protocol.</td></tr>
+          <tr><td>7</td><td>Check routing, security groups/ACLs, load balancers, and application logs as applicable.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> How will you check whether a service
+      port is listening on Linux?
+      <br /><br />
+      <strong>Answer:</strong> I normally use <code>ss -lntp</code>.
+      <code>-l</code> shows listening sockets, <code>-n</code> keeps
+      addresses and ports numeric, <code>-t</code> selects TCP, and
+      <code>-p</code> shows the owning process when I have sufficient
+      permissions. For example, I'd use
+      <code>sudo ss -lntp | grep ':22'</code> to check SSH. If I see a
+      TCP socket in <code>LISTEN</code> state, I know a local process is
+      listening on that address and port — but I wouldn't conclude the
+      port is remotely reachable until I also check the bind address,
+      firewall/network controls, and test connectivity from the client
+      side.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      For production troubleshooting, keep three questions separate: is a
+      process listening locally? Can the network reach it? And is the
+      application actually healthy? <code>ss</code> answers the first
+      question extremely well — additional network and application tests
+      answer the other two.
+    </p>
 
     <h2 id="rootpw">Locked out: a lost or forgotten root password</h2>
     <p>
@@ -370,6 +1077,274 @@ touch /.autorelabel</code></pre>
       serial-console roles) to people who actually need it — treat a
       console session with the same seriousness as a root shell, because
       after this procedure that's exactly what it grants.
+    </p>
+
+    <h2 id="svcaccount">A service account has interactive login it shouldn't have</h2>
+    <p>
+      An account used only by an application, automation tool, or service
+      has <code>/bin/bash</code> as its login shell — meaning it can SSH or
+      log in interactively even though nothing about its job requires
+      that. This isn't usually a fresh compromise; it's more often an
+      account created quickly during setup and never revisited. It still
+      matters: service accounts should follow least privilege, and an
+      unnecessary interactive shell widens the attack surface and is a
+      near-guaranteed finding in a security or compliance review.
+    </p>
+
+    <h3>Check the account's configured shell</h3>
+    <p>For a local Linux account, inspect the passwd database:</p>
+    <pre><code>getent passwd ansible_svc</code></pre>
+    <p>Example output — the last field is the login shell:</p>
+    <pre><code>ansible_svc:x:1005:1005::/home/ansible_svc:/bin/bash</code></pre>
+    <p>You can also check the current shell from inside a session:</p>
+    <pre><code>echo "$SHELL"
+whoami</code></pre>
+
+    <h3>Disable interactive login</h3>
+    <p>If the account genuinely doesn't need an interactive shell, assign <code>nologin</code>:</p>
+    <pre><code>sudo usermod -s /sbin/nologin ansible_svc</code></pre>
+    <p>On some distributions the path is <code>/usr/sbin/nologin</code> instead — confirm it first, then verify the change took effect:</p>
+    <pre><code>command -v nologin
+cat /etc/shells
+getent passwd ansible_svc</code></pre>
+
+    <h3>Confirm it worked</h3>
+    <p>A normal interactive shell attempt should now be rejected:</p>
+    <pre><code>su - ansible_svc</code></pre>
+    <p>A typical response:</p>
+    <pre><code>This account is currently not available.</code></pre>
+
+    <h3>nologin vs. false vs. bash</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Shell</th><th>Purpose</th><th>Typical behavior</th></tr></thead>
+        <tbody>
+          <tr><td><code>/sbin/nologin</code></td><td>Preferred for accounts that must not receive an interactive login shell.</td><td>Rejects the login and commonly displays an explanatory message.</td></tr>
+          <tr><td><code>/bin/false</code></td><td>Immediately exits with a failure status.</td><td>No usable interactive shell; generally less descriptive to the user.</td></tr>
+          <tr><td><code>/bin/bash</code></td><td>Normal interactive shell.</td><td>Allows shell access whenever authentication and SSH/PAM policy permit it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>Important AD/SSSD clarification:</strong> for Active
+      Directory users, do not assume <code>usermod</code> is the right
+      fix. An AD identity is normally managed by AD and exposed to Linux
+      through SSSD or another identity provider — its shell may come from
+      an AD attribute, an SSSD override, or SSSD configuration itself.
+      Useful checks:
+      <pre><code>getent passwd 'user@domain.example'
+id 'user@domain.example'
+grep -E '^(shell_fallback|override_shell)' /etc/sssd/sssd.conf 2&gt;/dev/null</code></pre>
+      If SSSD's <code>override_shell</code> is set, it can force a shell
+      for domain users regardless of local changes. If only selected AD
+      accounts need different behavior, use the identity-management
+      method approved for your environment rather than a global change
+      with no impact analysis.
+    </div>
+
+    <h3>Don't break automation</h3>
+    <p>
+      Before changing a service account to <code>nologin</code>, verify
+      how the application actually uses it. Some automation products
+      require SSH command execution or a shell even though no human ever
+      logs in interactively — changing the shell without testing can
+      break jobs, deployments, backups, file transfers, or scheduled
+      automation. Check at least: account purpose, SSH usage, sudo rules,
+      cron/systemd jobs, application ownership, scripts, SFTP
+      requirements, and any dependency on shell startup files.
+    </p>
+
+    <h3>Production hardening workflow</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Step</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Identify whether the account is human, service, application, or automation.</td></tr>
+          <tr><td>2</td><td>Check the effective shell with <code>getent passwd</code>.</td></tr>
+          <tr><td>3</td><td>Confirm whether interactive SSH/shell access is actually required.</td></tr>
+          <tr><td>4</td><td>For local accounts, change to <code>nologin</code> when appropriate.</td></tr>
+          <tr><td>5</td><td>For AD accounts, identify where the shell attribute is controlled before changing it.</td></tr>
+          <tr><td>6</td><td>Test application/automation functionality after the change.</td></tr>
+          <tr><td>7</td><td>Verify SSH/<code>su</code> behavior and document the hardening change.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> How would you disable interactive login
+      for a Linux service account or an AD-backed account?
+      <br /><br />
+      <strong>Answer:</strong> First I'd identify whether the account is
+      local or directory-managed, and confirm whether the application
+      requires shell or SSH execution. For a local service account that
+      doesn't need an interactive shell, I'd set its shell to
+      <code>/sbin/nologin</code> with <code>usermod -s</code>, then verify
+      it with <code>getent passwd</code> and test the application. For an
+      AD user, I'd first determine whether the shell comes from AD
+      attributes, SSSD configuration, or an override, and change it
+      through the appropriate identity-management control rather than
+      treating the AD identity like a local account — then test every
+      dependent automation before closing the change.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      The goal isn't simply to replace <code>/bin/bash</code>. The goal is
+      to enforce least privilege without breaking the workload: determine
+      the account type, understand how it's actually used, apply the
+      correct identity control, test the service, and document the
+      result.
+    </p>
+
+    <h2 id="passwdshadow">Why are /etc/passwd and /etc/shadow separate?</h2>
+    <div class="callout">
+      <strong>Short answer:</strong> Linux keeps general account
+      information in <code>/etc/passwd</code>, which has to stay readable
+      by many programs, while password hashes and password-aging data
+      live in the much more restricted <code>/etc/shadow</code>. The
+      separation limits exposure of the password hashes specifically,
+      without having to lock down account metadata that lots of tools
+      legitimately need to read.
+    </div>
+
+    <h3>What /etc/passwd contains</h3>
+    <p>Basic account information used by the OS and applications. A typical entry:</p>
+    <pre><code>satish:x:1001:1001:Satish:/home/satish:/bin/bash</code></pre>
+    <p>The fields, in order:</p>
+    <pre><code>username : password-placeholder : UID : GID : comment : home-directory : login-shell</code></pre>
+    <p>
+      The <code>x</code> in the password field normally means the actual
+      password hash lives in <code>/etc/shadow</code> instead.
+    </p>
+
+    <h3>Why /etc/passwd is readable</h3>
+    <p>
+      Many system tools and applications need account metadata —
+      usernames, UIDs, GIDs, home directories, login shells — so
+      <code>/etc/passwd</code> is traditionally readable by all local
+      users:
+    </p>
+    <pre><code>ls -l /etc/passwd
+-rw-r--r--. 1 root root ... /etc/passwd</code></pre>
+    <p>World-readable does <strong>not</strong> mean world-writable. Ordinary users can read the file but not modify it.</p>
+
+    <h3>What /etc/shadow contains</h3>
+    <p>Security-sensitive authentication data, including password hashes and password-aging fields. A conceptual entry:</p>
+    <pre><code>satish:$6$...:20000:0:99999:7:::</code></pre>
+    <p>
+      The password field is a <strong>one-way password hash</strong>, not
+      an encrypted password that can simply be decrypted. Modern Linux
+      systems may use algorithms like <code>yescrypt</code> or SHA-512
+      depending on distribution and policy.
+    </p>
+
+    <h3>Why /etc/shadow is restricted</h3>
+    <p>
+      If unprivileged users could read password hashes, they could copy
+      them and run offline password-guessing attacks without ever
+      touching the login service — restricting access significantly cuts
+      that exposure:
+    </p>
+    <pre><code>ls -l /etc/shadow</code></pre>
+    <p>
+      Typical permissions vary by distribution — a root-only mode like
+      <code>000</code> or <code>600</code>, or controlled group access
+      like <code>root:shadow</code> with restrictive permissions. The
+      important point is the same everywhere: ordinary users shouldn't be
+      able to read it.
+    </p>
+
+    <h3>Compare the two files</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Item</th><th>/etc/passwd</th><th>/etc/shadow</th></tr></thead>
+        <tbody>
+          <tr><td>Purpose</td><td>General account metadata</td><td>Password hashes and aging/security data</td></tr>
+          <tr><td>Typical readability</td><td>Readable by ordinary users</td><td>Restricted to privileged access</td></tr>
+          <tr><td>Password hash</td><td>Normally not stored here; <code>x</code> placeholder</td><td>Stored here</td></tr>
+          <tr><td>User/UID/GID</td><td>Yes</td><td>No general UID/GID mapping</td></tr>
+          <tr><td>Home &amp; shell</td><td>Yes</td><td>No</td></tr>
+          <tr><td>Security sensitivity</td><td>Moderate</td><td>High</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What if password hashes were stored in /etc/passwd?</h3>
+    <p>
+      Historically, that's exactly where Unix systems stored them. As
+      password-cracking capability increased, exposing hashes to every
+      local user became a real risk, so shadow-password systems moved the
+      sensitive hash data into a restricted file while keeping broad
+      access to the non-secret account information — letting programs
+      still resolve account info without ordinary users being able to
+      simply read the local password-hash database.
+    </p>
+
+    <h3>Useful verification commands</h3>
+    <pre><code>ls -l /etc/passwd /etc/shadow
+stat /etc/passwd /etc/shadow
+getent passwd
+sudo getent shadow
+sudo pwck -r</code></pre>
+    <p>
+      <code>getent</code> is useful because user information may come
+      from local files or an external identity source like LDAP/SSSD,
+      not only from <code>/etc/passwd</code> directly.
+    </p>
+
+    <div class="callout">
+      <strong>Important security clarification:</strong> it's common to
+      describe the password as being stored in "encrypted format." The
+      more technically accurate wording for an interview:
+      <code>/etc/shadow</code> stores password <strong>hashes</strong>.
+      Password verification hashes the supplied password with the
+      configured scheme and compares the result — the original password
+      is never recovered by "decrypting" the stored value, because a hash
+      isn't reversible the way encryption is.
+    </div>
+
+    <h3>Scenario-based interview questions</h3>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+        <tbody>
+          <tr><td>Why are passwd and shadow separate?</td><td>To keep widely needed account metadata readable while restricting password hashes.</td></tr>
+          <tr><td>Is /etc/passwd world-readable?</td><td>Typically yes, because many programs need account metadata.</td></tr>
+          <tr><td>Does /etc/passwd contain the password hash?</td><td>Normally no — the <code>x</code> field points conceptually to shadow-based storage.</td></tr>
+          <tr><td>What does /etc/shadow store?</td><td>Password hashes plus password-aging/account-expiration fields.</td></tr>
+          <tr><td>Why protect password hashes?</td><td>Exposure enables offline password-guessing attacks.</td></tr>
+          <tr><td>Are shadow permissions identical on every distribution?</td><td>No — exact mode/group varies; ordinary users should never have unrestricted read access.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Interview-ready answer</h3>
+    <div class="callout">
+      <strong>Question:</strong> Why are <code>/etc/passwd</code> and
+      <code>/etc/shadow</code> separate?
+      <br /><br />
+      <strong>Answer:</strong> They're separated so Linux can make
+      general account information available to programs without exposing
+      password hashes to ordinary users. <code>/etc/passwd</code>
+      contains username, UID, GID, home directory, and login shell, and
+      is normally world-readable — its password field usually holds
+      <code>x</code>. The actual password hash and password-aging
+      information live in the restricted <code>/etc/shadow</code> file.
+      If password hashes were readable by every user, an attacker with
+      local access could copy them and run offline password-guessing
+      attacks. So the shadow-password design separates commonly needed
+      identity metadata from sensitive authentication data.
+    </div>
+
+    <h3>Key lesson</h3>
+    <p>
+      A strong answer explains not just that the files are separated
+      "for security," but <em>why</em>: account metadata needs broad read
+      access, password hashes do not. The separation preserves system
+      usability while cutting credential-hash exposure to the accounts
+      that actually need it.
     </p>
 
     <h2 id="selinux">SELinux troubleshooting: when permissions look right but access is still denied</h2>
@@ -595,15 +1570,19 @@ ausearch -m AVC -ts recent</code></pre>
 
   .article-wrap { width: min(calc(100% - 32px), 760px); margin: 0 auto; padding: 48px 0 90px; }
   .toc { margin: 0 0 40px; padding: 22px 24px; border: 1px solid #dbe4f0; border-radius: 14px; background: #f6f9fd; }
+  .flow-map { margin: 0 0 16px; padding: 16px 18px; border: 1px solid #dbe4f0; border-radius: 12px; background: #f6f9fd; color: #1e3a5f; font-weight: 650; font-size: .92rem; line-height: 1.9; }
   .toc h2 { margin: 0 0 12px; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; color: #2563eb; }
-  .toc ol { margin: 0; padding-left: 20px; }
-  .toc li { margin-bottom: 7px; }
+  .toc ol { list-style: none; counter-reset: tocnum; margin: 0; padding: 0; display: grid; gap: 11px; }
+  .toc li { counter-increment: tocnum; margin: 0; display: flex; align-items: center; gap: 12px; }
+  .toc li::before { content: counter(tocnum); flex-shrink: 0; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; font-size: .76rem; font-weight: 800; box-shadow: 0 2px 6px rgba(37, 99, 235, .28); }
   .toc a { color: #334155; font-weight: 650; text-decoration: none; }
   .toc a:hover { color: #2563eb; }
 
-  .article-wrap h2 { margin: 44px 0 14px; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
-  .article-wrap h2:first-of-type { margin-top: 0; }
-  .article-wrap h3 { margin: 34px 0 14px; color: #172033; font-size: 1.1rem; scroll-margin-top: 90px; }
+  .article-wrap { counter-reset: section; }
+  .article-wrap > h2 { display: flex; align-items: center; gap: 14px; margin: 50px 0 16px; padding-top: 34px; border-top: 2px solid #e5eaf2; color: #111827; font-size: 1.5rem; line-height: 1.3; scroll-margin-top: 90px; }
+  .article-wrap > h2:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+  .article-wrap > h2::before { counter-increment: section; content: counter(section); flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; font-size: .95rem; font-weight: 800; box-shadow: 0 4px 10px rgba(37, 99, 235, .28); }
+  .article-wrap h3 { margin: 34px 0 14px; padding-left: 14px; border-left: 3px solid #bfdbfe; color: #172033; font-size: 1.1rem; scroll-margin-top: 90px; }
   .article-wrap p { margin: 0 0 16px; color: #374151; font-size: 1.02rem; line-height: 1.85; }
   .article-wrap ol, .article-wrap ul { margin: 0 0 16px; padding-left: 22px; color: #374151; line-height: 1.8; }
   .article-wrap li { margin-bottom: 6px; }
@@ -611,6 +1590,7 @@ ausearch -m AVC -ts recent</code></pre>
   .article-wrap pre { margin: 0 0 20px; padding: 17px 19px; border-radius: 12px; overflow-x: auto; background: #0d1524; color: #dce8f7; }
   .article-wrap pre code { padding: 0; background: none; color: inherit; font: 500 .87rem/1.7 ui-monospace, Consolas, monospace; }
   .article-wrap pre code mark { padding: 0 3px; border-radius: 3px; background: #fbbf24; color: #1e1600; font-weight: 700; }
+  .article-wrap pre code mark.danger { background: #ef4444; color: #fff; }
   .article-wrap kbd { padding: 2px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 #cbd5e1; font: 700 .82em ui-monospace, Consolas, monospace; }
 
   .mockup { margin: 12px 0 16px; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 10px 26px rgba(15, 23, 42, .12); }
@@ -625,9 +1605,10 @@ ausearch -m AVC -ts recent</code></pre>
   .qa-item summary::before { content: "+"; display: inline-block; width: 18px; margin-right: 10px; color: #2563eb; font-weight: 800; }
   .qa-item[open] summary::before { content: "−"; }
   .qa-item[open] summary { border-bottom: 1px solid #edf2f7; }
-  .qa-answer { padding: 4px 18px 16px 46px; }
-  .qa-answer p { margin: 0 0 12px; font-size: .96rem; }
-  .qa-answer pre { margin: 0; }
+  .qa-answer { margin: 0 18px 16px 46px; padding: 10px 0 10px 16px; border-left: 3px solid #bfdbfe; background: #f8fafc; }
+  .qa-answer p { margin: 0 0 12px; padding-right: 12px; font-size: .96rem; }
+  .qa-answer p:last-child { margin-bottom: 0; }
+  .qa-answer pre { margin: 0 12px 0 0; }
 
   .ref-table-wrap { margin: 0 0 20px; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; }
   .ref-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
@@ -636,6 +1617,8 @@ ausearch -m AVC -ts recent</code></pre>
   .ref-table tr:last-child td { border-bottom: 0; }
 
   .callout { padding: 15px 18px; border: 1px solid #fde68a; border-radius: 12px; background: #fffbeb; color: #92400e; font-size: .93rem; line-height: 1.65; }
+  .callout pre { margin: 10px 0; }
+  .callout pre code { font-size: .82rem; }
 
   .related-tools { margin-top: 54px; padding: 26px; border: 1px solid #dbe4f0; border-radius: 16px; background: #f6f9fd; }
   .related-tools h2 { margin: 0 0 6px; }
