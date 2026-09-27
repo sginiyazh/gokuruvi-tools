@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { vmwareGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="VMware Port Reference" description="Quick reference for commonly used vCenter, ESXi, vMotion, vSAN and VMware Tools network ports.">
@@ -13,7 +15,8 @@ import Layout from "../../layouts/Layout.astro";
         <p class="small">Default ports are conventions, not guarantees — some can be changed during installation. Confirm the actual configuration in your environment and restrict these ports with firewall rules and network segmentation, especially vMotion and vSAN traffic, which should never be exposed outside a dedicated VLAN.</p>
       </div>
     </section>
-  </div>
+  <ToolGuide guide={vmwareGuides["port-reference"]} />
+</div>
   <script>
     const rows: Array<[string, string, string]> = [
       ["vCenter Server HTTPS (Web Client / API)", "443/TCP", "vCenter"],

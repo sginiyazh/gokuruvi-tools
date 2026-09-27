@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { windowsGuides } from "../../data/toolGuides";
 import WindowsToolShell from "../../components/WindowsToolShell.astro";
 ---
 <WindowsToolShell title="PowerShell Command Generator" description="Generate practical PowerShell commands for common Windows administration and troubleshooting tasks." slug="powershell-generator" icon="💻">
@@ -7,6 +9,7 @@ import WindowsToolShell from "../../components/WindowsToolShell.astro";
 <div class="form-grid"><div class="field"><label for="task">Task</label><select id="task"><option value="proc">Find process</option><option value="svc">Get service</option><option value="file">Find large files</option><option value="ip">Network configuration</option><option value="disk">Disk free space</option><option value="restart">Restart computer</option></select></div><div class="field"><label for="value">Name / path / size (GB)</label><input id="value" placeholder="e.g. spooler, C:\\Data, 2" /></div></div>
 <div class="actions"><button class="btn btn-primary" id="generate">Generate command</button><button class="btn btn-secondary" id="clear">Clear</button></div>
 <div class="output-wrap"><div class="output-head"><strong>PowerShell</strong><button class="copy-btn" id="copy">Copy</button></div><pre class="output" id="output">Select a task and click Generate command.</pre></div>
+<ToolGuide guide={windowsGuides["powershell-generator"]} />
 <script>
 
 const task=document.querySelector<HTMLSelectElement>('#task')!, value=document.querySelector<HTMLInputElement>('#value')!, out=document.querySelector<HTMLElement>('#output')!;

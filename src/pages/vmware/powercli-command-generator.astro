@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { vmwareGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="PowerCLI Command Generator" description="Generate common VMware PowerCLI commands for VM power operations, snapshots, migration, and resource queries.">
@@ -34,7 +36,8 @@ import Layout from "../../layouts/Layout.astro";
       <div class="actions"><button id="pcliGenerate">Generate Command</button><button class="secondary" id="pcliCopy" type="button">Copy</button></div>
       <div class="result"><pre id="pcliOut">—</pre><p class="small">Review the target host, datastore, and VM name carefully — power, snapshot, and migration operations affect production workloads immediately.</p></div>
     </section>
-  </div>
+  <ToolGuide guide={vmwareGuides["powercli-command-generator"]} />
+</div>
   <script>
     const pcliActionSelect = document.querySelector<HTMLSelectElement>("#pcliAction");
     const pcliOut = document.querySelector<HTMLElement>("#pcliOut");

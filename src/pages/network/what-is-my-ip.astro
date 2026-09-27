@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 const forwarded = Astro.request.headers.get("cf-connecting-ip") ?? Astro.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
 const ip = forwarded || "Unavailable in local development";
@@ -27,7 +29,8 @@ const isIpv6 = ip.includes(":");
         </div>
       </div>
     </section>
-  </div>
+  <ToolGuide guide={networkGuides["what-is-my-ip"]} />
+</div>
 
   <script>
     async function lookup(url: string): Promise<string | null> {

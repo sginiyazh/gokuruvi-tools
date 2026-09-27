@@ -1,7 +1,10 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { databaseGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
-<Layout title="SQL Formatter" description="Format common SQL statements for easier reading, review and troubleshooting."><section class="tool-hero"><span class="eyebrow">Database Tool</span><h1>SQL Formatter</h1><p>Format common SQL statements for easier reading, review and troubleshooting.</p></section><div class="wrap"><a class="back" href="/database/">← Back to Database Tools</a><section class="card"><h2>Format SQL</h2><div class="field"><label for="sql">SQL statement</label><textarea id="sql" placeholder="select id,name from users where active=1 order by name"></textarea></div><div class="actions"><button id="go">Format SQL</button><button id="copy" class="secondary">Copy</button></div><div class="result"><pre id="out">—</pre></div></section></div><script>
+<Layout title="SQL Formatter" description="Format common SQL statements for easier reading, review and troubleshooting."><section class="tool-hero"><span class="eyebrow">Database Tool</span><h1>SQL Formatter</h1><p>Format common SQL statements for easier reading, review and troubleshooting.</p></section><div class="wrap"><a class="back" href="/database/">← Back to Database Tools</a><section class="card"><h2>Format SQL</h2><div class="field"><label for="sql">SQL statement</label><textarea id="sql" placeholder="select id,name from users where active=1 order by name"></textarea></div><div class="actions"><button id="go">Format SQL</button><button id="copy" class="secondary">Copy</button></div><div class="result"><pre id="out">—</pre></div></section><ToolGuide guide={databaseGuides["sql-formatter"]} />
+</div><script>
   const input = document.querySelector<HTMLTextAreaElement>("#sql");
   const output = document.querySelector<HTMLElement>("#out");
   const formatButton = document.querySelector<HTMLButtonElement>("#go");

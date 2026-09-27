@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { vmwareGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="VMware Snapshot Command Generator" description="Generate PowerCLI and esxcli-safe commands for creating, listing, removing and consolidating VMware VM snapshots.">
@@ -26,7 +28,8 @@ import Layout from "../../layouts/Layout.astro";
       <div class="actions"><button id="snapGenerate">Generate Command</button><button class="secondary" id="snapCopy" type="button">Copy</button></div>
       <div class="result"><pre id="snapOut">—</pre><p class="small">Snapshots are not backups. A snapshot left in place for days can grow large and degrade performance, and consolidating a long-running snapshot chain can itself cause a brief I/O pause — plan a maintenance window for consolidation on busy VMs.</p></div>
     </section>
-  </div>
+  <ToolGuide guide={vmwareGuides["snapshot-command-generator"]} />
+</div>
   <script>
     const snapActionSelect = document.querySelector<HTMLSelectElement>("#snapAction");
     const snapOut = document.querySelector<HTMLElement>("#snapOut");

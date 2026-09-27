@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { vmwareGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="Datastore Capacity Calculator" description="Calculate usable datastore free space, thin-provisioning overcommit and how many more VMs will fit before hitting VMware's recommended usage threshold.">
@@ -23,7 +25,8 @@ import Layout from "../../layouts/Layout.astro";
         <p class="small">Thin-provisioned overcommit lets provisioned space exceed physical capacity, but every VM can still write up to its full provisioned size — monitor actual growth, not just the allocation.</p>
       </div>
     </section>
-  </div>
+  <ToolGuide guide={vmwareGuides["datastore-capacity-calculator"]} />
+</div>
   <script>
     const datastoreButton = document.querySelector<HTMLButtonElement>("#vmwareDatastoreCalc");
     const datastoreResult = document.querySelector<HTMLElement>("#vmwareDatastoreResult");

@@ -1,9 +1,12 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="Internet Speed Test" description="Run a lightweight browser-based internet speed test for latency, download and upload performance.">
   <section class="tool-hero"><span class="eyebrow">Network · Performance</span><h1>Internet Speed Test</h1><p>Measure approximate latency, download and upload throughput between your browser and the Gokuruvi Tools server.</p></section>
-  <div class="tool-wrap"><a class="back" href="/network/">← Back to Network Tools</a><section class="tool-card"><h2>Run speed test</h2><p class="muted">For best results, stop large downloads and VPN traffic before testing.</p><div class="actions"><button id="run">Start Test</button></div><div class="metrics"><div class="metric"><strong id="ping">—</strong>Ping (ms)</div><div class="metric"><strong id="download">—</strong>Download (Mbps)</div><div class="metric"><strong id="upload">—</strong>Upload (Mbps)</div></div><div class="result" id="status">Ready.</div><p class="muted">Results are indicative rather than laboratory measurements and depend on server location, browser load and network conditions.</p></section></div>
+  <div class="tool-wrap"><a class="back" href="/network/">← Back to Network Tools</a><section class="tool-card"><h2>Run speed test</h2><p class="muted">For best results, stop large downloads and VPN traffic before testing.</p><div class="actions"><button id="run">Start Test</button></div><div class="metrics"><div class="metric"><strong id="ping">—</strong>Ping (ms)</div><div class="metric"><strong id="download">—</strong>Download (Mbps)</div><div class="metric"><strong id="upload">—</strong>Upload (Mbps)</div></div><div class="result" id="status">Ready.</div><p class="muted">Results are indicative rather than laboratory measurements and depend on server location, browser load and network conditions.</p></section><ToolGuide guide={networkGuides["internet-speed-test"]} />
+</div>
   <script>
     const ping=document.querySelector('#ping'),down=document.querySelector('#download'),up=document.querySelector('#upload'),status=document.querySelector('#status'),run=document.querySelector('#run');
     const mbps=(bytes,ms)=>(bytes*8/ms/1000).toFixed(2);

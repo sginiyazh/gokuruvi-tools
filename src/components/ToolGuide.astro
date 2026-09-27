@@ -1,0 +1,200 @@
+---
+import type { ToolGuideContent } from "../data/toolGuides/types";
+
+interface Props {
+  guide: ToolGuideContent;
+}
+
+const { guide } = Astro.props;
+
+// Split text on backticks so `code` spans render as <code>; odd indexes are code.
+const parts = (text: string) => text.split("`");
+
+const faqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: guide.faq.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a.replace(/`/g, "") },
+  })),
+});
+---
+
+<section class="tg" aria-labelledby="tg-heading">
+  <h2 id="tg-heading">{guide.heading}</h2>
+  {guide.intro.map((p) => (
+    <p>{parts(p).map((s, i) => (i % 2 ? <code>{s}</code> : s))}</p>
+  ))}
+
+  <h3>Step by step</h3>
+  <ol class="tg-steps">
+    {guide.steps.map((s) => (
+      <li>{parts(s).map((x, i) => (i % 2 ? <code>{x}</code> : x))}</li>
+    ))}
+  </ol>
+
+  {guide.examples && guide.examples.length > 0 && (
+    <>
+      <h3>Examples</h3>
+      {guide.examples.map((ex) => (
+        <div class="tg-example">
+          <h4>{ex.title}</h4>
+          {ex.code && <pre><code>{ex.code}</code></pre>}
+          <p>{parts(ex.text).map((x, i) => (i % 2 ? <code>{x}</code> : x))}</p>
+        </div>
+      ))}
+    </>
+  )}
+
+  {guide.tips && guide.tips.length > 0 && (
+    <>
+      <h3>Common mistakes and tips</h3>
+      <ul class="tg-tips">
+        {guide.tips.map((t) => (
+          <li>
+            <strong>{t.title}.</strong>{" "}
+            {parts(t.text).map((x, i) => (i % 2 ? <code>{x}</code> : x))}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  <h3>Frequently asked questions</h3>
+  <div class="tg-faq">
+    {guide.faq.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{parts(f.a).map((x, i) => (i % 2 ? <code>{x}</code> : x))}</p>
+      </details>
+    ))}
+  </div>
+
+  {guide.related && guide.related.length > 0 && (
+    <>
+      <h3>Related tools</h3>
+      <ul class="tg-related">
+        {guide.related.map((r) => (
+          <li><a href={r.href}>{r.label}</a></li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  <script is:inline type="application/ld+json" set:html={faqSchema} />
+</section>
+
+<style>
+  .tg {
+    margin-top: 28px;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+    color: #334155;
+    font-size: 16px;
+    line-height: 1.7;
+    text-align: left;
+  }
+  .tg h2 {
+    margin: 0 0 12px;
+    color: #0f172a;
+    font-size: 26px;
+    line-height: 1.25;
+  }
+  .tg h3 {
+    margin: 30px 0 10px;
+    color: #0f172a;
+    font-size: 20px;
+  }
+  .tg h4 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 16px;
+  }
+  .tg p {
+    margin: 0 0 12px;
+  }
+  .tg code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font: 0.9em/1.5 Consolas, "Courier New", monospace;
+    overflow-wrap: anywhere;
+  }
+  .tg pre {
+    margin: 0 0 10px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #0f172a;
+    overflow-x: auto;
+  }
+  .tg pre code {
+    padding: 0;
+    background: none;
+    color: #dbeafe;
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+  .tg-steps,
+  .tg-tips {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .tg-steps li,
+  .tg-tips li {
+    margin-bottom: 8px;
+  }
+  .tg-example {
+    margin-bottom: 14px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+  .tg-example p {
+    margin: 0;
+  }
+  .tg-faq details {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 0;
+  }
+  .tg-faq summary {
+    color: #0f172a;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .tg-faq details p {
+    margin: 8px 0 0;
+  }
+  .tg-related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tg-related a {
+    display: inline-block;
+    padding: 8px 13px;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .tg-related a:hover {
+    background: #dbeafe;
+  }
+  @media (max-width: 640px) {
+    .tg {
+      padding: 20px;
+    }
+    .tg h2 {
+      font-size: 22px;
+    }
+  }
+</style>

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { vmwareGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="VM Sizing & Cluster Capacity Calculator" description="Estimate how many virtual machines a vSphere cluster can support based on host specs, overcommit ratios and HA reserve.">
@@ -26,7 +28,8 @@ import Layout from "../../layouts/Layout.astro";
         <p class="small">This is planning-level guidance, not a guarantee. Actual density also depends on NUMA topology, storage IOPS, network throughput and real workload behavior — validate with a pilot before committing a design.</p>
       </div>
     </section>
-  </div>
+  <ToolGuide guide={vmwareGuides["vm-sizing-calculator"]} />
+</div>
   <script>
     const sizingButton = document.querySelector<HTMLButtonElement>("#vmwareSizingCalc");
     const sizingResult = document.querySelector<HTMLElement>("#vmwareSizingResult");
