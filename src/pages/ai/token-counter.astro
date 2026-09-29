@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { aiGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 import "../../styles/ai-tools.css";
 ---
@@ -16,6 +18,7 @@ import "../../styles/ai-tools.css";
     </div>
     <div class="ai-note"><strong>Important:</strong> Prices are planning references and can change. Verify current provider pricing before production budgeting.</div>
     <div class="ai-info"><h2>Privacy-friendly estimate</h2><p>Your text is processed in the browser. This tool does not send the prompt to an AI provider.</p></div>
+    <ToolGuide guide={aiGuides["token-counter"]} />
   </div></section>
 </Layout>
 <script is:inline>

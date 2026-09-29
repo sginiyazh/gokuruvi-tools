@@ -3,9 +3,11 @@ import type { ToolGuideContent } from "../data/toolGuides/types";
 
 interface Props {
   guide: ToolGuideContent;
+  /** Centre the section at page width, for pages without their own content container. */
+  contained?: boolean;
 }
 
-const { guide } = Astro.props;
+const { guide, contained = false } = Astro.props;
 
 // Split text on backticks so `code` spans render as <code>; odd indexes are code.
 const parts = (text: string) => text.split("`");
@@ -21,7 +23,7 @@ const faqSchema = JSON.stringify({
 });
 ---
 
-<section class="tg" aria-labelledby="tg-heading">
+<section class:list={["tg", { "tg-contained": contained }]} aria-labelledby="tg-heading">
   <h2 id="tg-heading">{guide.heading}</h2>
   {guide.intro.map((p) => (
     <p>{parts(p).map((s, i) => (i % 2 ? <code>{s}</code> : s))}</p>
@@ -96,6 +98,10 @@ const faqSchema = JSON.stringify({
     font-size: 16px;
     line-height: 1.7;
     text-align: left;
+  }
+  .tg-contained {
+    width: min(calc(100% - 32px), 1100px);
+    margin: 28px auto 64px;
   }
   .tg h2 {
     margin: 0 0 12px;

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { aiGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 import "../../styles/ai-tools.css";
 ---
@@ -12,6 +14,7 @@ import "../../styles/ai-tools.css";
       <tr data-provider="google" data-search="gemini google multimodal long context"><td><strong>Gemini</strong></td><td><span class="ai-pill">Google</span></td><td>Varies by model</td><td>Verify current pricing</td><td>Verify current pricing</td><td>Multimodal and long-context workloads</td></tr>
     </tbody></table></div>
     <div class="ai-note"><strong>Production note:</strong> Model names, limits and API pricing change frequently. Verify official provider documentation before making architectural or budget decisions.</div>
+    <ToolGuide guide={aiGuides["model-comparison"]} />
   </div></section>
 </Layout>
 <script is:inline>

@@ -219,4 +219,47 @@ export const networkGuides: Record<string, ToolGuideContent> = {
       { href: "/cloud/aws-security-group-generator/", label: "AWS Security Group Generator" },
     ],
   },
+  "dns-checker": {
+    heading: "How to check DNS records and troubleshoot DNS problems",
+    intro: [
+      "DNS turns names like `www.example.com` into IP addresses and tells the world where your email goes. Most website launches, email migrations and certificate renewals involve a DNS change, and most of the resulting \"it works for me but not for them\" problems are DNS problems.",
+      "This checker queries Google Public DNS over HTTPS and shows every answer with its TTL (time to live, in seconds). It supports the record types you need most: A (IPv4), AAAA (IPv6), MX (mail servers), NS (authoritative name servers), TXT (SPF, DKIM, DMARC and domain verification), CNAME (aliases) and SOA (zone serial and timers). Because it checks from Google's public resolvers, it shows what the internet sees, not what your office DNS or hosts file says.",
+    ],
+    steps: [
+      "Enter a domain or hostname, without `https://` or a path.",
+      "Choose the record type.",
+      "Click Check DNS and read the answers. Each line shows the name, the TTL and the value.",
+      "Compare the result with what your DNS provider's control panel says it should be.",
+    ],
+    examples: [
+      {
+        title: "Checking email authentication records",
+        code: "TXT  example.com          -> \"v=spf1 include:_spf.google.com ~all\"\nTXT  _dmarc.example.com   -> \"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com\"\nTXT  google._domainkey.example.com -> \"v=DKIM1; k=rsa; p=MIIBIjANBg...\"\nMX   example.com          -> 1 smtp.google.com.",
+        text: "If mail lands in spam or gets rejected, check these four first. There must be exactly one SPF record per domain.",
+      },
+      {
+        title: "The same lookups from a terminal",
+        code: "# Linux / macOS\ndig +short MX example.com\ndig @8.8.8.8 www.example.com A\n\n# Windows\nResolve-DnsName example.com -Type MX\nnslookup -type=TXT example.com 8.8.8.8",
+        text: "Query a specific server with `@8.8.8.8` (dig) or by adding it at the end (nslookup) to compare public DNS with your internal DNS.",
+      },
+    ],
+    tips: [
+      { title: "Changes take up to the old TTL to spread", text: "Resolvers cache answers for the TTL of the old record. Lower the TTL to 300 seconds a day before a planned migration, then raise it again afterwards." },
+      { title: "A CNAME can't share a name", text: "A name with a CNAME can't have any other records, which is why the bare domain (`example.com`) usually can't be a CNAME. Many DNS providers offer ALIAS or flattened CNAME records instead." },
+      { title: "Check the authoritative servers", text: "If NS records point to an old provider, changes made at the new one are ignored. NS records are set at your domain registrar." },
+      { title: "Split DNS", text: "Company networks often answer differently for internal names. If this tool and your laptop disagree, internal DNS or the hosts file is probably overriding public DNS." },
+    ],
+    faq: [
+      { q: "Why do I see the old IP address after changing DNS?", a: "Resolvers and your computer cache the old answer until its TTL expires. Flush your local cache with `ipconfig /flushdns` (Windows) or wait for the TTL to pass." },
+      { q: "What DNS server does this tool use?", a: "Google Public DNS (8.8.8.8), queried over HTTPS. That shows the public view of your records." },
+      { q: "What is a TTL?", a: "Time to live: how many seconds a resolver may cache the answer before asking again." },
+      { q: "How long does DNS propagation take?", a: "Usually minutes to a few hours, limited by the previous TTL. Changing name servers at the registrar can take up to 48 hours." },
+    ],
+    related: [
+      { href: "/network/what-is-my-ip/", label: "What Is My IP" },
+      { href: "/network/ssl-checker/", label: "SSL Certificate Checker" },
+      { href: "/network/port-checker/", label: "Port Checker" },
+      { href: "/windows/command-generator/", label: "Windows CMD Generator" },
+    ],
+  },
 };

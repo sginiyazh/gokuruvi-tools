@@ -1,9 +1,12 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="DNS Checker" description="Check common DNS records for a domain name.">
   <section class="tool-hero"><span class="eyebrow">Network · DNS</span><h1>DNS Checker</h1><p>Query common DNS record types and review the answers returned by a DNS-over-HTTPS resolver.</p></section>
-  <div class="tool-wrap"><a class="back" href="/network/">← Back to Network Tools</a><section class="tool-card"><h2>DNS lookup</h2><div class="grid"><div class="field"><label for="name">Domain</label><input id="name" placeholder="example.com" /></div><div class="field"><label for="type">Record type</label><select id="type"><option>A</option><option>AAAA</option><option>MX</option><option>NS</option><option>TXT</option><option>CNAME</option><option>SOA</option></select></div></div><div class="actions"><button id="check">Check DNS</button></div><div class="result" id="result" aria-live="polite">Enter a domain to start.</div></section></div>
+  <div class="tool-wrap"><a class="back" href="/network/">← Back to Network Tools</a><section class="tool-card"><h2>DNS lookup</h2><div class="grid"><div class="field"><label for="name">Domain</label><input id="name" placeholder="example.com" /></div><div class="field"><label for="type">Record type</label><select id="type"><option>A</option><option>AAAA</option><option>MX</option><option>NS</option><option>TXT</option><option>CNAME</option><option>SOA</option></select></div></div><div class="actions"><button id="check">Check DNS</button></div><div class="result" id="result" aria-live="polite">Enter a domain to start.</div></section><ToolGuide guide={networkGuides["dns-checker"]} />
+</div>
   <script>
     const result = document.querySelector<HTMLElement>("#result");
     const checkButton = document.querySelector<HTMLButtonElement>("#check");

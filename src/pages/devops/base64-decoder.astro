@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Base64 Decoder";
 const pageDescription =
   "Decode Base64 text into readable Unicode text securely in your browser.";
@@ -480,6 +482,7 @@ import Footer from "../../components/Footer.astro";
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["base64-decoder"]} contained />
     </main>
 
     <Footer />

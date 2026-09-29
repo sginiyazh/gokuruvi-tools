@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="Jenkinsfile Generator" description="Generate a declarative Jenkins pipeline (Jenkinsfile) with checkout, build, test, and deploy stages, plus build retention and timeout options.">
@@ -38,7 +40,8 @@ import Layout from "../../layouts/Layout.astro";
       <div class="actions"><button id="jfGenerate">Generate Jenkinsfile</button><button class="secondary" id="jfCopy" type="button">Copy</button></div>
       <div class="result"><pre id="jfOut">—</pre><p class="small">The Checkout stage always uses the Git repository URL and branch above — edit those fields, not the disabled command box, to change it.</p></div>
     </section>
-  </div>
+  <ToolGuide guide={devopsGuides["jenkinsfile-generator"]} />
+</div>
   <script>
     const jfOut = document.querySelector<HTMLElement>("#jfOut");
     const jfGenerateBtn = document.querySelector<HTMLButtonElement>("#jfGenerate");

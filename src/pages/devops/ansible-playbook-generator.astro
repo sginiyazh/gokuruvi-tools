@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 ---
 <Layout title="Ansible Playbook Generator" description="Generate a starter Ansible playbook with package install, service management, file copy, and command tasks — ready to adapt for your own automation.">
@@ -42,7 +44,8 @@ import Layout from "../../layouts/Layout.astro";
       <div class="actions"><button id="apGenerate">Generate Playbook</button><button class="secondary" id="apCopy" type="button">Copy</button></div>
       <div class="result"><pre id="apOut">—</pre><p class="small">Review module names, paths, and package names for your actual target OS before running this against production hosts — always test with <code>--check --diff</code> first.</p></div>
     </section>
-  </div>
+  <ToolGuide guide={devopsGuides["ansible-playbook-generator"]} />
+</div>
   <script>
     const apOut = document.querySelector<HTMLElement>("#apOut");
     const apGenerateBtn = document.querySelector<HTMLButtonElement>("#apGenerate");

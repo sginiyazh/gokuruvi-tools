@@ -749,4 +749,47 @@ export const windowsGuides: Record<string, ToolGuideContent> = {
       { href: "/windows/powershell-generator/", label: "PowerShell Command Generator" },
     ],
   },
+  "iis-command-generator": {
+    heading: "How to manage IIS websites with PowerShell",
+    intro: [
+      "Internet Information Services (IIS) is the web server built into Windows Server. It hosts ASP.NET applications, internal portals, APIs and reverse proxies. The `WebAdministration` PowerShell module manages sites, application pools and bindings without IIS Manager, which is essential on Server Core and for repeatable deployments.",
+      "This generator builds commands to list websites with their state, path and bindings; start or stop a site; create a new site with a physical path, port and optional host header; recycle an application pool; and add an HTTPS binding. Every command starts with `Import-Module WebAdministration`, so it also works in older PowerShell sessions that don't auto-load the module.",
+    ],
+    steps: [
+      "Choose the action.",
+      "Enter the site or application pool name and, where needed, the physical path, port and host header.",
+      "Generate the command.",
+      "Run it in PowerShell as Administrator on the IIS server, then confirm the result with the List websites action.",
+    ],
+    examples: [
+      {
+        title: "Creating a site with its own application pool",
+        code: "Import-Module WebAdministration\nNew-WebAppPool -Name 'intranet'\nSet-ItemProperty 'IIS:\AppPools\intranet' -Name managedRuntimeVersion -Value ''   # No Managed Code (.NET Core / static)\nNew-Item 'D:\Sites\intranet' -ItemType Directory -Force\nNew-Website -Name 'intranet' -PhysicalPath 'D:\Sites\intranet' -Port 80 -HostHeader 'intranet.corp.local' -ApplicationPool 'intranet'",
+        text: "A separate application pool per site isolates crashes and memory use, and lets you recycle one site without affecting the others.",
+      },
+      {
+        title: "Attaching a certificate to an HTTPS binding",
+        code: "New-WebBinding -Name 'intranet' -Protocol https -Port 443 -HostHeader 'intranet.corp.local' -SslFlags 1\n$cert = Get-ChildItem Cert:\LocalMachine\My | Where-Object Subject -like '*intranet.corp.local*'\n(Get-WebBinding -Name 'intranet' -Protocol https).AddSslCertificate($cert.Thumbprint, 'My')",
+        text: "The generator's HTTPS binding command creates the binding only. The certificate must be attached as a second step. `-SslFlags 1` enables SNI, which is needed when several HTTPS sites share one IP address.",
+      },
+    ],
+    tips: [
+      { title: "Recycle instead of iisreset", text: "`iisreset` restarts every site on the server. `Restart-WebAppPool` restarts only one application and is usually enough after a deployment or config change." },
+      { title: "Check the app pool identity's permissions", text: "Sites run as `IIS AppPool\<pool name>` by default. That identity needs read access to the site folder, and write access only where the app really writes." },
+      { title: "Port conflicts", text: "If a new site won't start, another site or process may already use the same IP, port and host header combination. `netstat -ano | findstr :80` shows what's listening." },
+      { title: "Logs are your friend", text: "IIS logs live in `C:\inetpub\logs\LogFiles\W3SVC<site id>`. The status and substatus codes (such as 500.19 or 401.2) point straight to the cause." },
+    ],
+    faq: [
+      { q: "Should I use WebAdministration or IISAdministration?", a: "Both work. WebAdministration (used here) is the long-standing module with the `IIS:` drive. IISAdministration is newer and faster for large configurations. Microsoft supports both on current Windows Server." },
+      { q: "How do I install IIS with PowerShell?", a: "`Install-WindowsFeature Web-Server -IncludeManagementTools`, plus `Web-Asp-Net45` or other role services for your applications." },
+      { q: "What does HTTP error 503 mean in IIS?", a: "Usually the application pool is stopped, often because it crashed repeatedly and Rapid-Fail Protection disabled it. Check the pool state and the System event log." },
+      { q: "How do I list which ports each site uses?", a: "`Get-WebBinding | Select-Object protocol, bindingInformation, ItemXPath` shows every binding with its IP, port and host header." },
+    ],
+    related: [
+      { href: "/windows/windows-feature-installer/", label: "Windows Feature Installer" },
+      { href: "/windows/firewall-rule-generator/", label: "Firewall Rule Generator" },
+      { href: "/security/security-headers-analyzer/", label: "Security Headers Analyzer" },
+      { href: "/windows/service-command-generator/", label: "Windows Service Generator" },
+    ],
+  },
 };
