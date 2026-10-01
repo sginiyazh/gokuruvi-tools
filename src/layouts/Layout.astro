@@ -16,7 +16,11 @@ const fullTitle = title.includes("Gokuruvi")
   ? title
   : `${title} | Gokuruvi Tools`;
 
-const canonicalURL = new URL(Astro.url.pathname, "https://www.gokuruvi.com").href;
+// Always canonicalise to the trailing-slash form used in the sitemap.
+const canonicalPath = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+const canonicalURL = new URL(canonicalPath, "https://www.gokuruvi.com").href;
 ---
 
 <!doctype html>
