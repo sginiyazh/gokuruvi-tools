@@ -1,0 +1,112 @@
+---
+// Adds a copy button to every <pre> code block on the page.
+// Include once per page: <CodeCopy />
+---
+
+<script>
+  const COPY_ICON =
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const DONE_ICON =
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fallback for browsers or contexts without the async clipboard API.
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok;
+    }
+  }
+
+  function addCopyButtons() {
+    document.querySelectorAll<HTMLPreElement>("main pre").forEach((pre) => {
+      if (pre.parentElement?.classList.contains("code-copy-wrap")) return;
+
+      // Wrap the block so the button stays put when the code scrolls sideways.
+      const wrap = document.createElement("div");
+      wrap.className = "code-copy-wrap";
+      const { marginTop, marginBottom } = getComputedStyle(pre);
+      wrap.style.margin = `${marginTop} 0 ${marginBottom}`;
+      pre.style.margin = "0";
+      pre.before(wrap);
+      wrap.appendChild(pre);
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-copy-btn";
+      button.setAttribute("aria-label", "Copy code");
+      button.title = "Copy";
+      button.innerHTML = COPY_ICON;
+      wrap.appendChild(button);
+
+      let timer: number | undefined;
+      button.addEventListener("click", async () => {
+        const ok = await copyText((pre.innerText || "").replace(/\n$/, ""));
+        button.innerHTML = ok ? `${DONE_ICON}<span>Copied</span>` : "<span>Copy failed</span>";
+        button.classList.toggle("is-copied", ok);
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          button.innerHTML = COPY_ICON;
+          button.classList.remove("is-copied");
+        }, 1600);
+      });
+    });
+  }
+
+  addCopyButtons();
+</script>
+
+<style is:global>
+  .code-copy-wrap {
+    position: relative;
+  }
+  .code-copy-wrap > pre {
+    padding-right: 56px;
+  }
+  .code-copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 9px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 9px;
+    background: rgba(30, 41, 59, 0.85);
+    color: #cbd5e1;
+    font: 600 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+  }
+  .code-copy-wrap:hover .code-copy-btn,
+  .code-copy-btn:focus-visible {
+    opacity: 1;
+  }
+  .code-copy-btn:hover {
+    background: #334155;
+    color: #fff;
+  }
+  .code-copy-btn:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+  }
+  .code-copy-btn.is-copied {
+    border-color: rgba(74, 222, 128, 0.5);
+    color: #4ade80;
+    opacity: 1;
+  }
+</style>

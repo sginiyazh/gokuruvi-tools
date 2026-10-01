@@ -1,10 +1,11 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
+import CodeCopy from "../../../components/CodeCopy.astro";
 ---
 
 <Layout
   title="The Linux Server Troubleshooting Guide"
-  description="A step-by-step method for diagnosing boot failures, high load, full disks, and unresponsive services on any Linux server, with the exact commands to run at each step."
+  description="A step-by-step method for diagnosing boot failures, high load, full disks, SSH login failures and unresponsive services on any Linux server, with the exact commands to run at each step."
 >
   <section class="hero">
     <div class="container hero-content">
@@ -16,7 +17,7 @@ import Layout from "../../../layouts/Layout.astro";
         instead of guessing — with the exact commands to run at each step,
         for the failures that actually take down production servers.
       </p>
-      <div class="meta"><span>39 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
+      <div class="meta"><span>43 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
     </div>
   </section>
 
@@ -40,6 +41,7 @@ import Layout from "../../../layouts/Layout.astro";
         <li><a href="#svcaccount">A service account has interactive login it shouldn't have</a></li>
         <li><a href="#passwdshadow">Why are /etc/passwd and /etc/shadow separate?</a></li>
         <li><a href="#selinux">SELinux troubleshooting: when permissions look right but access is still denied</a></li>
+        <li><a href="#ssh">SSH login fails: "Connection refused", "timed out" or "Permission denied (publickey)"</a></li>
         <li><a href="#habits">Build the habit: capture evidence, not just fixes</a></li>
       </ol>
     </nav>
@@ -1528,6 +1530,91 @@ ausearch -m AVC -ts recent</code></pre>
       making a persistent policy change.
     </div>
 
+    <h2 id="ssh">SSH login fails: "Connection refused", "timed out" or "Permission denied (publickey)"</h2>
+    <p>
+      The exact error message tells you which layer is failing, so read it
+      before changing anything. Each of the three common messages points
+      somewhere different:
+    </p>
+    <ul>
+      <li><strong>Connection timed out</strong>: packets never get an answer. The host is down, unreachable, or a firewall is silently dropping port 22.</li>
+      <li><strong>Connection refused</strong>: the host answered but nothing is listening on that port. sshd is stopped, or listens on another port or address.</li>
+      <li><strong>Permission denied (publickey,…)</strong>: the network and sshd are fine. Authentication failed: wrong key, wrong user, bad permissions on the server, or a policy that blocks the account.</li>
+    </ul>
+
+    <h3>Step 1: get verbose output from the client</h3>
+    <p>
+      <code>-v</code> shows every step of the connection. It's the fastest way
+      to see which keys the client offered and where it stopped:
+    </p>
+    <pre><code>ssh -v user@server01
+# Look for lines like:
+# Connecting to server01 [10.0.5.21] port 22.
+# Offering public key: /home/me/.ssh/id_ed25519 ED25519 SHA256:...
+# Authentications that can continue: publickey,password</code></pre>
+    <p>
+      If you never see "Connection established", the problem is network or
+      sshd (timed out or refused). If you see keys being offered and then
+      "Permission denied", it's authentication.
+    </p>
+
+    <h3>Step 2: "timed out" or "refused": check network and sshd</h3>
+    <p>From the client, confirm the name resolves and the port answers:</p>
+    <pre><code>getent hosts server01
+nc -zv server01 22          # or: timeout 3 bash -c '&lt;/dev/tcp/server01/22' &amp;&amp; echo open</code></pre>
+    <p>On the server (via console, iLO/iDRAC or the hypervisor), check sshd is running, listening and allowed through the firewall:</p>
+    <pre><code>sudo systemctl status sshd --no-pager      # "ssh" on Ubuntu/Debian
+sudo ss -lntp | grep sshd
+sudo firewall-cmd --list-services          # RHEL/Rocky: expect "ssh"
+sudo ufw status                            # Ubuntu
+sudo sshd -t                               # validates sshd_config; prints nothing when OK</code></pre>
+    <p>
+      If <code>sshd -t</code> reports an error, a recent edit to
+      <code>/etc/ssh/sshd_config</code> (or a file in
+      <code>/etc/ssh/sshd_config.d/</code>) is stopping sshd from starting.
+      Fix it, then <code>sudo systemctl restart sshd</code>. If you moved SSH
+      to a custom port on RHEL, SELinux must allow it too:
+      <code>sudo semanage port -a -t ssh_port_t -p tcp 2222</code>.
+    </p>
+
+    <h3>Step 3: "Permission denied (publickey)": check keys and permissions</h3>
+    <p>
+      sshd refuses keys if the user's home directory or
+      <code>.ssh</code> files are writable by anyone else. This is the
+      single most common cause after copying keys around by hand:
+    </p>
+    <pre><code># On the server, as root or the user
+ls -ld ~user ~user/.ssh ~user/.ssh/authorized_keys
+chmod go-w ~user
+chmod 700 ~user/.ssh
+chmod 600 ~user/.ssh/authorized_keys
+chown -R user:user ~user/.ssh
+restorecon -Rv ~user/.ssh                  # RHEL: fixes SELinux labels after copying files</code></pre>
+    <p>Then read the server's own explanation, which is far more specific than the client's:</p>
+    <pre><code>sudo journalctl -u sshd --since "15 min ago" --no-pager   # Ubuntu: -u ssh
+# or: sudo tail -n 50 /var/log/secure   (RHEL)   /var/log/auth.log   (Ubuntu)
+# Typical lines:
+# Authentication refused: bad ownership or modes for directory /home/user
+# User deploy not allowed because not listed in AllowUsers
+# User root from 10.0.5.9 not allowed because not listed in AllowUsers</code></pre>
+
+    <h3>Other causes worth checking</h3>
+    <ul>
+      <li><strong>Wrong key or user</strong>: compare the fingerprint the client offers (<code>ssh-keygen -lf ~/.ssh/id_ed25519.pub</code>) with the lines in <code>authorized_keys</code>. Specify the key explicitly with <code>ssh -i ~/.ssh/key user@host</code>.</li>
+      <li><strong>Policy in sshd_config</strong>: <code>AllowUsers</code>, <code>AllowGroups</code>, <code>DenyUsers</code> and <code>PermitRootLogin no</code> block accounts even with a correct key. <code>sudo sshd -T | grep -iE 'allow|deny|permitroot|passwordauth'</code> shows the effective settings.</li>
+      <li><strong>Locked or expired account</strong>: <code>sudo passwd -S user</code> and <code>sudo chage -l user</code>. A locked or expired account can block login even with a valid key.</li>
+      <li><strong>Old key types</strong>: current OpenSSH versions reject <code>ssh-rsa</code> SHA-1 signatures and DSA keys by default. Generate a modern key with <code>ssh-keygen -t ed25519</code>.</li>
+      <li><strong>Host key changed</strong> ("REMOTE HOST IDENTIFICATION HAS CHANGED"): expected after a rebuild or IP reuse. Confirm the new fingerprint with the server owner, then <code>ssh-keygen -R server01</code>. Never ignore this warning on a server that wasn't rebuilt.</li>
+      <li><strong>fail2ban banned your IP</strong> after earlier failures: <code>sudo fail2ban-client status sshd</code>, then <code>sudo fail2ban-client set sshd unbanip 10.0.5.9</code>.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Production note:</strong> before restarting sshd or changing
+      <code>sshd_config</code> on a remote server, keep your current session
+      open and test the change from a second terminal. If the new
+      configuration locks you out, the open session is your way back in.
+    </div>
+
     <h2 id="habits">Build the habit: capture evidence, not just fixes</h2>
     <p>
       The single biggest difference between a team that firefights forever
@@ -1546,14 +1633,15 @@ ausearch -m AVC -ts recent</code></pre>
       <h2>Related tools on this site</h2>
       <p>Put this guide into practice with these free tools:</p>
       <ul>
-        <li><a href="/linux/cron-generator">Cron Expression Generator</a></li>
-        <li><a href="/linux/systemd-service-generator">Systemd Service Generator</a></li>
-        <li><a href="/linux/permission-converter">Permission Converter</a></li>
+        <li><a href="/linux/cron-generator/">Cron Expression Generator</a></li>
+        <li><a href="/linux/systemd-service-generator/">Systemd Service Generator</a></li>
+        <li><a href="/linux/permission-converter/">Permission Converter</a></li>
         <li><a href="/network/password-generator/">Password Generator</a></li>
         <li><a href="/interview-qa/#questions">Linux Scenario Interview Q&amp;A</a></li>
       </ul>
     </div>
   </article>
+  <CodeCopy />
 </Layout>
 
 <style>
