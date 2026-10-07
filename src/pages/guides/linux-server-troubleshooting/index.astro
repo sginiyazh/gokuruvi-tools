@@ -5,7 +5,7 @@ import CodeCopy from "../../../components/CodeCopy.astro";
 
 <Layout
   title="The Linux Server Troubleshooting Guide"
-  description="A step-by-step method for diagnosing boot failures, high load, full disks, SSH login failures and unresponsive services on any Linux server, with the exact commands to run at each step."
+  description="A step-by-step method for diagnosing boot failures, high load, full disks, SSH login failures, too many open files, read-only filesystems and unresponsive services on any Linux server, with the exact commands to run at each step."
 >
   <section class="hero">
     <div class="container hero-content">
@@ -17,7 +17,7 @@ import CodeCopy from "../../../components/CodeCopy.astro";
         instead of guessing — with the exact commands to run at each step,
         for the failures that actually take down production servers.
       </p>
-      <div class="meta"><span>43 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
+      <div class="meta"><span>52 min read</span><span>·</span><span>Works on RHEL, Ubuntu, and Debian-based systems</span></div>
     </div>
   </section>
 
@@ -42,6 +42,8 @@ import CodeCopy from "../../../components/CodeCopy.astro";
         <li><a href="#passwdshadow">Why are /etc/passwd and /etc/shadow separate?</a></li>
         <li><a href="#selinux">SELinux troubleshooting: when permissions look right but access is still denied</a></li>
         <li><a href="#ssh">SSH login fails: "Connection refused", "timed out" or "Permission denied (publickey)"</a></li>
+        <li><a href="#openfiles">"Too many open files": when a process runs out of file descriptors</a></li>
+        <li><a href="#readonly">"Read-only file system": when a filesystem suddenly stops accepting writes</a></li>
         <li><a href="#habits">Build the habit: capture evidence, not just fixes</a></li>
       </ol>
     </nav>
@@ -1613,6 +1615,217 @@ restorecon -Rv ~user/.ssh                  # RHEL: fixes SELinux labels after co
       <code>sshd_config</code> on a remote server, keep your current session
       open and test the change from a second terminal. If the new
       configuration locks you out, the open session is your way back in.
+    </div>
+
+    <h2 id="openfiles">"Too many open files": when a process runs out of file descriptors</h2>
+    <p>
+      On Linux, almost everything a process uses is a file descriptor: open
+      files, network sockets, pipes and log files. Each process has a limit
+      on how many it can hold at once. When it hits that limit, new
+      connections and file opens fail with <code>Too many open files</code>
+      (error <code>EMFILE</code>). Web servers, databases, message brokers
+      and Java applications under load are the usual victims, and the
+      symptom is often vague: "the app stops accepting connections but the
+      server looks fine".
+    </p>
+    <p>There are two different limits, and the fix depends on which one you hit:</p>
+    <ul>
+      <li><strong>Per-process limit</strong> (by far the most common): set by <code>ulimit -n</code>, <code>limits.conf</code> or the systemd unit. The error is <code>EMFILE</code>, "Too many open files".</li>
+      <li><strong>System-wide limit</strong> (rare on modern kernels): the total for the whole server, <code>fs.file-max</code>. The kernel logs "VFS: file-max limit reached", and the error is <code>ENFILE</code>, "Too many open files in system".</li>
+    </ul>
+
+    <h3>Step 1: confirm the limit of the process that is actually failing</h3>
+    <p>
+      Don't trust <code>ulimit -n</code> in your own shell. It shows
+      <em>your</em> session's limit, not the service's. Check the running
+      process directly:
+    </p>
+    <pre><code>pidof nginx                                   # or: systemctl show -p MainPID --value nginx
+grep 'open files' /proc/&lt;PID&gt;/limits
+# Max open files            1024                 524288               files
+
+ls /proc/&lt;PID&gt;/fd | wc -l                     # descriptors open right now</code></pre>
+    <p>
+      The first number in <code>limits</code> is the soft limit, the one
+      that's enforced; the second is the hard ceiling. If the current count
+      is at or near the soft limit, you've found the cause.
+    </p>
+
+    <h3>Step 2: decide whether it's a real need or a leak</h3>
+    <p>Look at <em>what</em> the descriptors are, and whether the count keeps climbing:</p>
+    <pre><code># Group open descriptors by target: sockets, pipes, files
+sudo ls -l /proc/&lt;PID&gt;/fd | awk '&#123;print $NF&#125;' | sed 's/:\[.*//' | sort | uniq -c | sort -rn | head
+
+# Sample the count every 10 seconds
+watch -n 10 "ls /proc/&lt;PID&gt;/fd | wc -l"</code></pre>
+    <ul>
+      <li><strong>Count rises with traffic and falls back</strong>: a genuine need. Raise the limit (Step 3).</li>
+      <li><strong>Count only ever goes up</strong>, often thousands of <code>socket</code> entries or the same file opened repeatedly: a <strong>leak</strong> in the application, such as connections or files that are never closed. Raising the limit only delays the next outage; the fix belongs in the code or the connection-pool settings.</li>
+    </ul>
+    <p>
+      <code>lsof -p &lt;PID&gt;</code> gives more detail (file names, remote
+      addresses for sockets), but it also lists memory-mapped libraries, so
+      its line count is higher than the real descriptor count.
+    </p>
+
+    <h3>Step 3: raise the limit in the right place</h3>
+    <p>
+      This is where most fixes go wrong. <strong>Services started by systemd
+      ignore <code>/etc/security/limits.conf</code></strong>. That file is
+      applied by PAM to login sessions only. For a service, set the limit
+      in the unit with a drop-in override:
+    </p>
+    <pre><code>sudo systemctl edit nginx
+# In the editor, add:
+[Service]
+LimitNOFILE=65536
+
+sudo systemctl daemon-reload
+sudo systemctl restart nginx
+grep 'open files' /proc/$(systemctl show -p MainPID --value nginx)/limits   # verify</code></pre>
+    <p>For users and processes started from a login shell or cron, use <code>limits.conf</code> (takes effect at the next login):</p>
+    <pre><code># /etc/security/limits.d/90-appuser.conf
+appuser  soft  nofile  65536
+appuser  hard  nofile  65536</code></pre>
+    <p>Containers and some applications have their own setting as well:</p>
+    <pre><code>docker run --ulimit nofile=65536:65536 ...        # Docker
+worker_rlimit_nofile 65536;                       # nginx.conf (main context)</code></pre>
+
+    <h3>Step 4: only if the whole system is out</h3>
+    <pre><code>cat /proc/sys/fs/file-nr          # allocated   unused   maximum
+sysctl fs.file-max
+
+# Raise permanently
+echo 'fs.file-max = 2097152' | sudo tee /etc/sysctl.d/90-file-max.conf
+sudo sysctl --system</code></pre>
+    <p>
+      On current kernels the default maximum is very large, so if you're
+      genuinely near it, something on the server is leaking descriptors at
+      scale. Find the process with the most open descriptors before raising
+      anything:
+    </p>
+    <pre><code>for p in /proc/[0-9]*; do echo "$(ls $p/fd 2&gt;/dev/null | wc -l) $(cat $p/comm 2&gt;/dev/null) $&#123;p#/proc/&#125;"; done | sort -rn | head</code></pre>
+
+    <h3>A related trap: deleted files that still fill the disk</h3>
+    <p>
+      A process that keeps a log file open after it's deleted (for example
+      after an <code>rm</code> instead of a proper log rotation) keeps
+      using the disk space until the process restarts. <code>df</code>
+      shows the disk full while <code>du</code> can't find the files:
+    </p>
+    <pre><code>sudo lsof +L1                     # open files with zero links (deleted)
+# Free the space without a restart by truncating through the descriptor:
+sudo truncate -s 0 /proc/&lt;PID&gt;/fd/&lt;FD&gt;</code></pre>
+
+    <div class="callout">
+      <strong>Production note:</strong> pick a limit based on measured peak
+      usage plus headroom (65536 is a common, safe value for busy
+      services). Setting it to the hard maximum hides leaks until they
+      exhaust memory instead. Always confirm the new value in
+      <code>/proc/&lt;PID&gt;/limits</code> after the restart, because a
+      limit that isn't in that file was never applied.
+    </div>
+
+    <h2 id="readonly">"Read-only file system": when a filesystem suddenly stops accepting writes</h2>
+    <p>
+      Applications start failing all at once: logs stop, databases crash,
+      and even <code>touch</code> fails with
+      <code>Read-only file system</code>. This is one of the most serious
+      warnings a Linux server can give. In most cases nobody changed a
+      setting. The <strong>kernel switched the filesystem to read-only on
+      purpose</strong> because it detected an error and stopped writing to
+      protect your data from further damage.
+    </p>
+    <p>Common causes, from most to least frequent in production:</p>
+    <ul>
+      <li><strong>Storage path problems</strong>: a SAN, iSCSI or multipath path dropped, or on a virtual machine the datastore had a latency spike, an All-Paths-Down event or ran out of space. The guest's disk writes time out, and ext4 remounts itself read-only.</li>
+      <li><strong>Filesystem corruption</strong> found by the kernel, often after an unclean shutdown or one of the storage problems above.</li>
+      <li><strong>A failing disk</strong> returning I/O errors.</li>
+      <li><strong>Configuration</strong>: the filesystem is mounted <code>ro</code> in <code>/etc/fstab</code>, the server booted into emergency mode, or an NFS export is read-only. These are the only cases where simply remounting is the right fix.</li>
+    </ul>
+
+    <h3>Step 1: confirm which filesystem is read-only</h3>
+    <pre><code>findmnt -o TARGET,SOURCE,FSTYPE,OPTIONS /data      # OPTIONS starts with "ro," when read-only
+grep -w ro /proc/mounts                            # every read-only mount (ignore normal ones like /sys/fs/cgroup)
+touch /data/.write-test &amp;&amp; rm /data/.write-test    # quick write test</code></pre>
+
+    <h3>Step 2: find out why. The kernel log tells you.</h3>
+    <pre><code>sudo dmesg -T | grep -iE 'read-only|remount|EXT4-fs error|XFS|I/O error|blk_update_request|timeout|reset'
+sudo journalctl -k -b --no-pager | tail -n 100     # this boot's kernel messages
+sudo journalctl -k -b -1 --no-pager | tail -n 100  # previous boot, if the server has restarted since</code></pre>
+    <p>Typical messages and what they mean:</p>
+    <ul>
+      <li><code>EXT4-fs error (device dm-2): ... Remounting filesystem read-only</code>: ext4 found an error and protected itself.</li>
+      <li><code>XFS (dm-3): Filesystem has been shut down due to log error</code> or <code>xfs_do_force_shutdown</code>: XFS doesn't remount read-only; it shuts the filesystem down, and every access then fails with <code>Input/output error</code>. Treat it the same way.</li>
+      <li><code>blk_update_request: I/O error</code>, <code>sd 2:0:0:0: timing out command</code> or <code>rejecting I/O to offline device</code>: the problem is underneath the filesystem, in the disk, the path or the hypervisor storage. Fix that first.</li>
+    </ul>
+
+    <h3>Step 3: check the storage underneath</h3>
+    <pre><code>sudo smartctl -H /dev/sda                     # physical disks (smartmontools package)
+sudo multipath -ll                            # SAN multipath: look for "failed" or "faulty" paths
+sudo iscsiadm -m session -P 1                 # iSCSI session state
+cat /sys/block/sda/device/timeout             # SCSI command timeout in seconds</code></pre>
+    <p>
+      On VMware virtual machines, also check the vCenter events and
+      datastore latency for the time in the kernel log. VMware Tools
+      (and open-vm-tools) normally raise the guest's SCSI timeout to 180
+      seconds so short storage hiccups don't force a read-only remount.
+      If that file shows 30, the tools' udev rule isn't applied, and
+      brief datastore stalls are far more likely to cause this problem.
+    </p>
+
+    <h3>Step 4: repair it properly, not with a quick remount</h3>
+    <p>
+      It's tempting to run <code>mount -o remount,rw</code> and move on.
+      Don't, when the kernel log shows filesystem or I/O errors: the kernel
+      stopped writing because the on-disk structure may be inconsistent,
+      and writing more can turn a small problem into lost data. Once the
+      storage is healthy again, check and repair the filesystem while it's
+      unmounted.
+    </p>
+    <p><strong>A data filesystem</strong> (for example <code>/data</code>), which you can unmount:</p>
+    <pre><code>sudo systemctl stop &lt;apps using /data&gt;
+sudo fuser -vm /data                          # anything still holding it open?
+sudo umount /data
+
+# ext4
+sudo e2fsck -f /dev/mapper/vg_data-lv_data
+
+# XFS: mount once to replay the journal, unmount, then repair
+sudo mount /data &amp;&amp; sudo umount /data
+sudo xfs_repair /dev/mapper/vg_data-lv_data
+
+sudo mount /data &amp;&amp; findmnt -o TARGET,OPTIONS /data   # confirm "rw"</code></pre>
+    <p>
+      <strong>The root filesystem</strong> can't be checked while it's
+      mounted. Reboot with a forced check by adding
+      <code>fsck.mode=force</code> to the kernel command line at the GRUB
+      menu (press <kbd>e</kbd>, add it to the <code>linux</code> line, then
+      <kbd>Ctrl</kbd> + <kbd>X</kbd>). Or boot rescue media and run
+      <code>e2fsck</code> or <code>xfs_repair</code> against the unmounted
+      root volume.
+    </p>
+
+    <h3>When a remount is the right fix</h3>
+    <p>
+      If the kernel log shows <strong>no</strong> errors, and the cause is
+      configuration (an <code>ro</code> option in <code>/etc/fstab</code>,
+      or a shell where root was mounted read-only for maintenance), a
+      remount is safe:
+    </p>
+    <pre><code>sudo mount -o remount,rw /
+grep -v '^#' /etc/fstab | awk '$4 ~ /(^|,)ro(,|$)/'      # fstab entries mounted read-only
+sudo tune2fs -l /dev/sda2 | grep -i 'errors behavior'   # ext4: what happens on errors</code></pre>
+
+    <div class="callout">
+      <strong>Production note:</strong> never run <code>fsck</code>,
+      <code>e2fsck</code> or <code>xfs_repair</code> on a mounted
+      filesystem; it can corrupt it badly. Take a snapshot or backup first
+      if the data matters, and don't use <code>xfs_repair -L</code> (it
+      discards the journal and can lose recent writes) unless a normal
+      mount and repair have both failed. Afterwards, record the time and
+      kernel messages so the storage team can match them against SAN or
+      vCenter events. Otherwise it will happen again.
     </div>
 
     <h2 id="habits">Build the habit: capture evidence, not just fixes</h2>
