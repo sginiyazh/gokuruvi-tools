@@ -7,5 +7,13 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS"
-  }
+  },
+  // Astro sessions use this KV binding. Pin the existing namespace so deploys
+  // don't try to create "gokuruvi-tools-session" again (Cloudflare error 10014).
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "f2942b35cc744b54a309f9e3ffa6b421"
+    }
+  ]
 }
