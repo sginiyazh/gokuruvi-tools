@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Dockerfile Generator";
 const pageDescription =
   "Generate production-ready Dockerfiles for Node.js, Python, PHP, Java, Nginx, Go, Astro and static websites.";
@@ -631,6 +633,7 @@ import Footer from "../../components/Footer.astro";
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["dockerfile-generator"]} contained />
     </main>
 
     <Footer />

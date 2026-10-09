@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { cloudGuides } from "../../data/toolGuides";
 import Header from "../../components/Header.astro";
 const pageTitle = "Azure NSG Generator | Gokuruvi Tools";
 const description =
@@ -918,6 +920,7 @@ import Footer from "../../components/Footer.astro";
           </table>
         </section>
       </section>
+      <ToolGuide guide={cloudGuides["azure-nsg-generator"]} contained />
     </main>
 
     <Footer />

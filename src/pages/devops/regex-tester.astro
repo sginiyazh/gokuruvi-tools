@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Regex Tester";
 const pageDescription =
   "Test JavaScript regular expressions, highlight matches, inspect capture groups, and generate replacement results securely in your browser.";
@@ -748,6 +750,7 @@ Invalid addresses: user@localhost and example@.</textarea>
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["regex-tester"]} contained />
     </main>
 
     <Footer />

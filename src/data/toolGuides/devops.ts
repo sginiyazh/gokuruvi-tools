@@ -178,4 +178,355 @@ export const devopsGuides: Record<string, ToolGuideContent> = {
       { href: "/devops/json-validator/", label: "JSON Validator" },
     ],
   },
+  "docker-compose-validator": {
+    heading: "Validating Docker Compose files before you deploy",
+    intro: [
+      "A Compose file describes a multi-container application: services, images or builds, ports, volumes, networks, environment and dependencies. One indentation slip or wrong type, and `docker compose up` fails, or worse, starts with settings silently ignored.",
+      "This validator checks the YAML syntax and the Compose structure in your browser: that `services` exists and is a mapping, that each service has an image or build, and that top-level volumes, networks and configs are well formed. It also flags common problems such as `latest` image tags. Below is how to confirm the file with Docker itself and how to fix the errors people hit most.",
+    ],
+    steps: [
+      "Paste your `compose.yaml` (or `docker-compose.yml`), upload it, or load the sample.",
+      "Click Validate and fix any YAML errors at the reported line.",
+      "Review the Compose checks for missing images, invalid sections and warnings.",
+      "Confirm with Docker using the commands below before running it on a server.",
+    ],
+    examples: [
+      {
+        title: "Let Docker render the final configuration",
+        code: "docker compose config            # resolved file with variables substituted\ndocker compose config --quiet    # only report errors\ndocker compose config --services # list service names",
+        text: "`docker compose config` shows exactly what Compose will run after merging override files and substituting `.env` variables. It's the best check for \"why isn't my setting applied?\"",
+      },
+      {
+        title: "Waiting for a database properly",
+        code: "services:\n  db:\n    image: postgres:16\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U postgres\"]\n      interval: 5s\n      retries: 10\n  app:\n    image: acme/app:1.4.2\n    depends_on:\n      db:\n        condition: service_healthy",
+        text: "Plain `depends_on` only waits for the container to start, not for the database to accept connections. A healthcheck plus `service_healthy` fixes start-up race conditions.",
+      },
+    ],
+    tips: [
+      { title: "The version key is obsolete", text: "Modern Docker Compose ignores the top-level `version:` and warns about it. You can delete it." },
+      { title: "Quote port mappings", text: "Write `\"8080:80\"` in quotes. Unquoted values like `22:22` can be read by YAML as a number in base 60." },
+      { title: "Pin image versions", text: "`image: nginx:latest` changes under you without warning. Use a specific tag, such as `nginx:1.27`, for predictable deployments." },
+      { title: "Keep secrets out of the file", text: "Put values in a `.env` file next to the Compose file (excluded from Git) and reference them as `${DB_PASSWORD}`." },
+    ],
+    faq: [
+      { q: "What's the difference between docker-compose and docker compose?", a: "`docker-compose` was the old standalone Python tool. `docker compose` (with a space) is the current plugin built into Docker. Use the plugin." },
+      { q: "Why is my environment variable empty?", a: "Variables in the Compose file are substituted from your shell or the `.env` file next to it. Run `docker compose config` to see the value it actually uses." },
+      { q: "How do containers talk to each other?", a: "Services on the same Compose network reach each other by service name, for example `postgres://db:5432`. Don't use localhost between containers." },
+      { q: "Is my file uploaded anywhere?", a: "No. Validation runs entirely in your browser." },
+    ],
+    related: [
+      { href: "/devops/yaml-validator/", label: "YAML Validator" },
+      { href: "/devops/dockerfile-generator/", label: "Dockerfile Generator" },
+      { href: "/devops/docker-run-generator/", label: "Docker Run Generator" },
+      { href: "/devops/env-file-generator/", label: ".env File Generator" },
+    ],
+  },
+
+  "env-file-generator": {
+    heading: "Managing .env files and configuration safely",
+    intro: [
+      "A `.env` file keeps configuration such as database URLs, API keys, ports and feature flags out of your code, so the same build runs in development, staging and production with different settings. This is the \"config in the environment\" principle from the Twelve-Factor App method.",
+      "The generator above builds `.env` files from templates for Node.js, Astro, Docker and API services, per environment, with comments, quoting, sorting, masked secrets in the preview, and secure random values for secrets. Below is how to use these files without leaking credentials.",
+    ],
+    steps: [
+      "Choose a template and the target environment.",
+      "Add or edit variables. Use Add Random Secret for session keys and tokens.",
+      "Choose quoting, sorting and comments, then generate the file.",
+      "Download it as `.env`, and create a matching `.env.example` with the values removed for your repository.",
+    ],
+    examples: [
+      {
+        title: "Keep the real file out of Git",
+        code: "# .gitignore\n.env\n.env.*\n!.env.example\n\n# check nothing slipped through\ngit ls-files | grep -E '(^|/)\\.env'",
+        text: "Commit `.env.example` with variable names and placeholder values, so new developers know what to set, and never commit the real file.",
+      },
+      {
+        title: "Where each tool reads .env",
+        code: "docker compose up                   # reads .env next to the compose file\ndocker run --env-file .env myimage  # passes every line as a variable\nnode --env-file=.env server.js      # Node.js 20.6+ without extra packages",
+        text: "Python apps usually load it with `python-dotenv`. In production, prefer your platform's secret store over a file on disk.",
+      },
+    ],
+    tips: [
+      { title: "If a secret was committed, rotate it", text: "Deleting the file in a later commit doesn't remove it from Git history. Change the password or key immediately." },
+      { title: "No spaces around =", text: "`PORT = 3000` breaks many parsers. Write `PORT=3000`, and quote values containing spaces or `#`." },
+      { title: "Different values per environment", text: "Never reuse production secrets in development. A leaked laptop shouldn't expose production." },
+      { title: "Frontend variables are public", text: "Variables exposed to browser code (for example `PUBLIC_` or `VITE_` prefixes) end up in the JavaScript bundle. Never put secrets in them." },
+    ],
+    faq: [
+      { q: "Should I commit .env files?", a: "No. Commit `.env.example` with placeholders, and keep real values out of the repository." },
+      { q: "Do I need quotes around values?", a: "Only for values with spaces, `#` or special characters. Quoting rules differ slightly between tools, so keep values simple where possible." },
+      { q: "Are the random secrets generated securely?", a: "Yes. They're created in your browser with the Web Crypto random generator and never sent anywhere." },
+      { q: "What should I use instead of .env in production?", a: "Your platform's secret management: Kubernetes Secrets, AWS Secrets Manager, Azure Key Vault, Vault, or your CI/CD system's protected variables." },
+    ],
+    related: [
+      { href: "/devops/docker-compose-validator/", label: "Docker Compose Validator" },
+      { href: "/kubernetes/secret-generator/", label: "Kubernetes Secret Generator" },
+      { href: "/network/password-generator/", label: "Password Generator" },
+      { href: "/cloud/terraform-variables-generator/", label: "Terraform Variables Generator" },
+    ],
+  },
+
+  "jwt-decoder": {
+    heading: "Debugging JWTs in CI/CD pipelines, Kubernetes and API gateways",
+    intro: [
+      "In DevOps work, JSON Web Tokens show up far beyond user logins: CI/CD systems issue OIDC tokens so pipelines can deploy to cloud accounts without stored keys, Kubernetes gives every pod a service-account token, and API gateways and ingress controllers validate JWTs before traffic reaches your services.",
+      "This decoder shows the header, payload and signature, explains each claim, and checks expiry automatically. Decoding runs in your browser and doesn't verify the signature. Below are the claims that cause most pipeline and gateway failures.",
+    ],
+    steps: [
+      "Paste the token (without the `Bearer ` prefix), or load the sample.",
+      "Read the header for the algorithm and key ID (`kid`).",
+      "Check the claim details: issuer, audience, subject and the expiration check.",
+      "Compare them with what the receiving system expects; a mismatch is usually the cause of the rejection.",
+    ],
+    examples: [
+      {
+        title: "A CI/CD OIDC token deploying to AWS",
+        code: "{\n  \"iss\": \"https://token.actions.githubusercontent.com\",\n  \"aud\": \"sts.amazonaws.com\",\n  \"sub\": \"repo:acme/web:ref:refs/heads/main\",\n  \"exp\": 1790003600\n}",
+        text: "The cloud role's trust policy usually matches `sub`. A deploy that works on `main` but fails on a tag or pull request is often a `sub` value that the trust policy doesn't allow.",
+      },
+      {
+        title: "Inspecting a Kubernetes service-account token",
+        code: "kubectl create token app-sa -n app --duration=10m\n# or, inside a pod:\ncat /var/run/secrets/kubernetes.io/serviceaccount/token",
+        text: "Decode it to see the namespace, service account and audience. Projected tokens are short-lived and rotated automatically, so `exp` is expected to be soon.",
+      },
+    ],
+    tips: [
+      { title: "401 vs 403", text: "401 usually means the token itself was rejected (expired, wrong issuer or audience, bad signature). 403 means it was valid but the identity lacks permission." },
+      { title: "Clock skew", text: "Servers with wrong time reject valid tokens as \"not yet valid\" or expired. Check NTP on the validating system." },
+      { title: "Audience must match exactly", text: "Gateways compare `aud` as an exact string. `api://orders` and `api://orders/` are different values." },
+      { title: "Never log full tokens", text: "Pipeline logs and gateway debug logs are often widely readable. Log only the claims you need, never the whole token." },
+    ],
+    faq: [
+      { q: "Why does my pipeline say 'Not authorized to perform sts:AssumeRoleWithWebIdentity'?", a: "The role's trust policy doesn't match the token's `aud` or `sub` claims. Decode the token from a debug step and compare its claims with the trust policy conditions." },
+      { q: "Does this tool verify the signature?", a: "No. Verification needs the issuer's public keys (from its JWKS endpoint) and should be done by the receiving service." },
+      { q: "What's the difference between this and the Security JWT Decoder?", a: "Both decode tokens. This one adds claim explanations and an automatic expiry check, and this guide focuses on pipeline, Kubernetes and gateway scenarios." },
+      { q: "Is the token sent anywhere?", a: "No. Decoding runs in your browser." },
+    ],
+    related: [
+      { href: "/security/jwt-decoder/", label: "Security JWT Decoder" },
+      { href: "/devops/base64-decoder/", label: "Base64 Decoder" },
+      { href: "/cloud/aws-iam-policy-generator/", label: "AWS IAM Policy Generator" },
+      { href: "/guides/cicd-pipeline-guide/", label: "CI/CD Pipeline Guide" },
+    ],
+  },
+
+  "dockerfile-generator": {
+    heading: "Building small, secure and fast Docker images",
+    intro: [
+      "A Dockerfile is the recipe for your container image. Small changes to it make a big difference: a multi-stage build can shrink an image from over a gigabyte to under a hundred megabytes, running as a non-root user limits the damage of a compromise, and ordering steps for the build cache turns minute-long rebuilds into seconds.",
+      "The generator above writes Dockerfiles for Node.js, Astro, Python, PHP with Apache, Java with Maven, Nginx, Go and static sites, with options for multi-stage builds, a non-root user, health checks, production settings and labels. Below is how to build, check and improve the result.",
+    ],
+    steps: [
+      "Choose the application type. The base image, commands and port fill in automatically.",
+      "Adjust the build and start commands for your project.",
+      "Keep Multi-stage build, Non-root user and Health check turned on.",
+      "Generate the Dockerfile, add a `.dockerignore`, then build and test it with the commands below.",
+    ],
+    examples: [
+      {
+        title: "Build, run and inspect",
+        code: "docker build -t acme/web:1.0.0 .\ndocker run --rm -p 8080:3000 acme/web:1.0.0\ndocker image ls acme/web            # check the size\ndocker history acme/web:1.0.0       # which layers are large?",
+        text: "`docker history` shows which instruction added the most size. It's usually dependencies or build tools that should stay in the build stage.",
+      },
+      {
+        title: "A .dockerignore keeps builds fast and safe",
+        code: "node_modules\n.git\n.env\n*.log\ndist\ncoverage",
+        text: "Without it, Docker sends your whole folder to the build, including `.env` secrets and `.git`, which can end up inside the image.",
+      },
+    ],
+    tips: [
+      { title: "Copy dependency files first", text: "`COPY package*.json ./` then `RUN npm ci`, then `COPY . .`. Dependencies are only reinstalled when the lock file changes." },
+      { title: "Pin base image versions", text: "Use `node:22-alpine` or `python:3.12-slim`, not `latest`, so rebuilds don't change behavior unexpectedly." },
+      { title: "Use exec form for CMD", text: "`CMD [\"node\", \"server.js\"]` lets the app receive stop signals and shut down cleanly. The shell form runs it under `/bin/sh`, which may not pass signals on." },
+      { title: "Scan your images", text: "Tools such as Trivy or Docker Scout list known vulnerabilities in your image's packages. Rebuild regularly to pick up base-image fixes." },
+    ],
+    faq: [
+      { q: "What is a multi-stage build?", a: "One stage has the compilers and build tools, a final stage copies only the built output. The final image is smaller and has fewer vulnerabilities." },
+      { q: "Alpine or slim images?", a: "Alpine is smallest but uses musl libc, which can break some Python wheels and native modules. Debian-based `slim` images are a safer default." },
+      { q: "Why does my container exit immediately?", a: "The main process finished or crashed. Run `docker logs <container>`, and make sure the start command runs in the foreground." },
+      { q: "What's the difference between CMD and ENTRYPOINT?", a: "ENTRYPOINT sets the executable; CMD sets default arguments that are easy to override at `docker run`. Many images use only CMD." },
+    ],
+    related: [
+      { href: "/devops/docker-run-generator/", label: "Docker Run Generator" },
+      { href: "/devops/docker-compose-validator/", label: "Docker Compose Validator" },
+      { href: "/devops/jenkinsfile-generator/", label: "Jenkinsfile Generator" },
+      { href: "/kubernetes/deployment-generator/", label: "Kubernetes Deployment Generator" },
+    ],
+  },
+
+  "regex-tester": {
+    heading: "Regular expressions for logs, configs and validation",
+    intro: [
+      "Regular expressions are everywhere in operations work: searching logs with grep, extracting fields in monitoring rules, validating input, rewriting URLs in web servers and ingress controllers, and editing files with sed. This tester runs JavaScript regular expressions in your browser with live highlighting, capture groups, all the common flags (g, i, m, s, u) and a replacement preview.",
+      "Below are patterns you'll use repeatedly, and the differences between regex flavors that make a pattern work here but fail in grep or sed.",
+    ],
+    steps: [
+      "Enter your pattern without surrounding slashes, and tick the flags you need.",
+      "Paste sample text, ideally real log lines or values.",
+      "Check the highlighted matches and the capture groups in the match details.",
+      "Optionally enter replacement text (using `$1`, `$2` for groups) and preview the result.",
+    ],
+    examples: [
+      {
+        title: "Patterns worth keeping",
+        code: "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b                 IPv4-looking address\n^(\\S+) \\S+ \\S+ \\[([^\\]]+)\\] \"(\\w+) (\\S+)    Apache/Nginx access log: IP, time, method, path\n\\b(ERROR|FATAL|CRITICAL)\\b                 log severity\n^\\s*#|^\\s*$                                comment or blank line in config files",
+        text: "Test each against a few real lines before using it in an alert or script.",
+      },
+      {
+        title: "Using the same pattern on the command line",
+        code: "grep -E 'ERROR|FATAL' /var/log/app.log\ngrep -P '\\d{3}' access.log             # -P enables \\d and lookarounds (GNU grep)\nsed -E 's/(user)=([^ ]+)/\\1=REDACTED/g' app.log",
+        text: "`grep -E` and `sed -E` use POSIX extended regex, which has no `\\d` or lookarounds. Use `[0-9]` instead, or `grep -P` where available.",
+      },
+    ],
+    tips: [
+      { title: "Anchor your validations", text: "`\\d{3}` also matches inside \"12345\". Use `^\\d{3}$` when the whole value must match." },
+      { title: "Prefer lazy or negated classes", text: "`\".*\"` grabs from the first to the last quote on the line. `\"[^\"]*\"` or `\".*?\"` stops at the next quote." },
+      { title: "Escape dots in IPs and domains", text: "`.` matches any character. `example.com` also matches `exampleXcom`; write `example\\.com`." },
+      { title: "Beware catastrophic backtracking", text: "Nested quantifiers such as `(a+)+` can take seconds on some inputs. Keep patterns simple in web servers and gateways, where slow regex is a denial-of-service risk." },
+    ],
+    faq: [
+      { q: "Which regex flavor does this use?", a: "JavaScript (ECMAScript). It's close to PCRE used by many languages, but differs from POSIX grep and sed, so test there too." },
+      { q: "What do the m and s flags do?", a: "`m` makes `^` and `$` match at every line break. `s` lets `.` match newlines too." },
+      { q: "How do I use a capture group in the replacement?", a: "Reference it as `$1`, `$2` here and in JavaScript; in sed use `\\1`, `\\2`." },
+      { q: "Is my text sent anywhere?", a: "No. Matching runs in your browser." },
+    ],
+    related: [
+      { href: "/linux/sed-command-generator/", label: "Sed Command Generator" },
+      { href: "/linux/file-finder-command/", label: "File Finder Command Generator" },
+      { href: "/database/sql-formatter/", label: "SQL Formatter" },
+      { href: "/devops/json-validator/", label: "JSON Validator" },
+    ],
+  },
+
+  "yaml-validator": {
+    heading: "Fixing YAML errors in Kubernetes, Ansible, CI and Compose files",
+    intro: [
+      "YAML is the configuration language of modern infrastructure: Kubernetes manifests, Helm values, Ansible playbooks, Docker Compose files, GitHub Actions and GitLab CI pipelines all use it. Its reliance on indentation and its automatic type guessing make small mistakes easy and hard to spot.",
+      "This validator parses your YAML in the browser, points to the line and column of any error, reformats valid YAML consistently, and converts it to JSON so you can see exactly how it was interpreted. Below are the errors that cause most broken deployments.",
+    ],
+    steps: [
+      "Paste your YAML or load the sample.",
+      "Click Validate. If there's an error, go to the reported line and also check the line above it.",
+      "Click Format to normalize indentation, or Convert to JSON to see the parsed types.",
+      "Copy or download the result, then validate it with the target tool as well.",
+    ],
+    examples: [
+      {
+        title: "The Norway problem and other type surprises",
+        code: "country: NO        # may become boolean false in YAML 1.1 parsers\nversion: 1.10      # becomes the number 1.1\nport: 0755         # may be read as octal 493\nzip: \"01234\"       # quoted, stays a string",
+        text: "Convert to JSON to see how values were read. Quote anything that must stay text: versions, IDs, codes and values like yes/no/on/off.",
+      },
+      {
+        title: "Validate with the tool that will use the file",
+        code: "kubectl apply --dry-run=server -f deploy.yaml\nansible-playbook site.yml --syntax-check\ndocker compose config --quiet\nyamllint .",
+        text: "Valid YAML can still be an invalid manifest or playbook. These commands check the structure the tool expects.",
+      },
+    ],
+    tips: [
+      { title: "Tabs are never allowed", text: "YAML forbids tab characters for indentation. Set your editor to insert spaces and show whitespace." },
+      { title: "Lists under keys", text: "Items must be indented consistently under their key. Mixing two-space and four-space list indentation in one file is a frequent cause of \"bad indentation\" errors." },
+      { title: "Multiple documents", text: "`---` separates documents in one file, which is common in Kubernetes. A stray `---` creates an empty document that some tools reject." },
+      { title: "Multi-line strings", text: "`|` keeps line breaks (good for scripts and certificates), `>` folds lines into one paragraph." },
+    ],
+    faq: [
+      { q: "What does 'mapping values are not allowed here' mean?", a: "Usually a missing space after a colon, or a value at the wrong indentation level. Check the reported line and the one above." },
+      { q: "Is JSON valid YAML?", a: "Yes. YAML 1.2 is a superset of JSON, so JSON files parse as YAML." },
+      { q: "Does this check Kubernetes schemas?", a: "It checks YAML syntax only. Use `kubectl apply --dry-run=server` or a schema validator such as kubeconform for Kubernetes fields." },
+      { q: "Is my YAML uploaded?", a: "No. Everything runs in your browser." },
+    ],
+    related: [
+      { href: "/devops/json-validator/", label: "JSON Validator" },
+      { href: "/kubernetes/helm-values-validator/", label: "Helm Values Validator" },
+      { href: "/devops/docker-compose-validator/", label: "Docker Compose Validator" },
+      { href: "/devops/ansible-playbook-generator/", label: "Ansible Playbook Generator" },
+    ],
+  },
+
+  "json-validator": {
+    heading: "Validating and troubleshooting JSON in APIs and configs",
+    intro: [
+      "JSON is the format of nearly every API, plus many configuration files: IAM policies, package.json, Terraform variables, monitoring dashboards and logging pipelines. Unlike YAML it's strict, so a single trailing comma or wrong quote makes the whole document invalid.",
+      "This validator checks JSON in your browser and shows the error position, formats it for reading, and minifies it for transport. Below are the errors people hit most, and command-line tools for working with JSON on servers.",
+    ],
+    steps: [
+      "Paste JSON or load the sample.",
+      "Click Validate and fix the error at the reported position.",
+      "Use Format to make it readable, or Minify to remove whitespace.",
+      "Copy or download the result.",
+    ],
+    examples: [
+      {
+        title: "The errors behind most invalid JSON",
+        code: "{ 'name': 'web' }          single quotes: JSON needs double quotes\n{ \"a\": 1, }                trailing comma\n{ name: \"web\" }            unquoted key\n{ \"a\": 1 // comment }      comments aren't allowed\n{ \"n\": NaN }               NaN and Infinity aren't valid",
+        text: "Many of these are fine in JavaScript, which is why JSON copied from code often fails to parse.",
+      },
+      {
+        title: "Working with JSON on the command line",
+        code: "jq . response.json                                   # validate and pretty-print\ncurl -s https://api.example.com/health | jq '.status'\njq -r '.items[].metadata.name' pods.json            # extract values\npython3 -m json.tool config.json                     # if jq isn't installed",
+        text: "`jq` is the standard tool for filtering API output and Kubernetes JSON in scripts.",
+      },
+    ],
+    tips: [
+      { title: "Check the content type", text: "If an API returns HTML (such as an error page) instead of JSON, parsing fails at position 0 with \"Unexpected token <\". Look at the raw response first." },
+      { title: "Large numbers lose precision", text: "JavaScript numbers can't represent integers above 2^53 exactly. Long IDs should be sent as strings." },
+      { title: "Watch for a BOM", text: "Files saved by some Windows editors start with a hidden byte-order mark that breaks strict parsers. Save as UTF-8 without BOM." },
+      { title: "Need comments? Use another format", text: "JSON has no comments. For hand-edited config, consider YAML, TOML or JSONC where the tool supports it." },
+    ],
+    faq: [
+      { q: "What does 'Unexpected end of JSON input' mean?", a: "The text is incomplete: a missing closing bracket or brace, or a truncated response." },
+      { q: "Is JSON the same as a JavaScript object?", a: "No. JSON is a stricter text format: double-quoted keys and strings, and no comments, functions or trailing commas." },
+      { q: "Can I convert JSON to YAML?", a: "Valid JSON is already valid YAML. The YAML Validator converts in the other direction, from YAML to JSON." },
+      { q: "Is my JSON sent to a server?", a: "No. Validation runs in your browser." },
+    ],
+    related: [
+      { href: "/devops/yaml-validator/", label: "YAML Validator" },
+      { href: "/cloud/aws-iam-policy-generator/", label: "AWS IAM Policy Generator" },
+      { href: "/devops/jwt-decoder/", label: "JWT Decoder" },
+      { href: "/devops/regex-tester/", label: "Regex Tester" },
+    ],
+  },
+
+  "docker-run-generator": {
+    heading: "Running containers safely with docker run",
+    intro: [
+      "`docker run` has dozens of options, and the defaults aren't always what you want on a server: containers run as root, have no memory limit, and don't restart after a reboot. The generator above builds a complete command with name, restart policy, network, ports, volumes, environment variables, resource limits, user, read-only filesystem and other runtime options.",
+      "Below is what each important option protects you from, and how to inspect and troubleshoot a container once it's running.",
+    ],
+    steps: [
+      "Enter the image with a specific tag, and a container name.",
+      "Add port mappings (`host:container`), volumes for data that must persist, and environment variables.",
+      "Set a restart policy (`unless-stopped` for services), memory and CPU limits, and a non-root user if the image supports it.",
+      "Generate the command, run it, and check the container with the commands below.",
+    ],
+    examples: [
+      {
+        title: "A production-style container",
+        code: "docker run -d --name web --restart unless-stopped \\\n  -p 127.0.0.1:8080:80 \\\n  -v web-data:/usr/share/nginx/html:ro \\\n  --memory 512m --cpus 1 \\\n  --read-only --tmpfs /var/cache/nginx --tmpfs /var/run \\\n  nginx:1.27",
+        text: "Binding the port to 127.0.0.1 keeps it reachable only from the host, for example behind a reverse proxy, instead of from the whole network.",
+      },
+      {
+        title: "Inspecting a running container",
+        code: "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'\ndocker logs --tail 100 -f web\ndocker exec -it web sh\ndocker stats --no-stream\ndocker inspect web --format '{{.State.ExitCode}} {{.State.OOMKilled}}'",
+        text: "If a container keeps restarting, `docker inspect` shows the exit code and whether it was killed for exceeding its memory limit.",
+      },
+    ],
+    tips: [
+      { title: "Published ports bypass the host firewall", text: "Docker writes its own iptables rules, so `-p 8080:80` can be reachable from the network even if firewalld or ufw blocks it. Bind to 127.0.0.1 or a specific IP when you don't want that." },
+      { title: "Avoid --privileged", text: "It gives the container almost full access to the host. Add only the specific capabilities needed with `--cap-add` instead." },
+      { title: "Use volumes for data", text: "Anything written inside the container without a volume is lost when the container is removed. Databases always need a volume." },
+      { title: "Set memory limits", text: "Without one, a leaking container can push the whole host into out-of-memory and get unrelated processes killed." },
+    ],
+    faq: [
+      { q: "What's the difference between always and unless-stopped?", a: "Both restart after crashes and reboots. `unless-stopped` stays stopped after a reboot if you stopped it manually; `always` starts it again." },
+      { q: "Named volume or bind mount?", a: "Named volumes (`-v data:/path`) are managed by Docker and portable. Bind mounts (`-v /srv/data:/path`) map a host folder, which is useful for config files you edit on the host." },
+      { q: "Why can't I reach my container's port?", a: "Check that it's published with `-p`, that the app listens on 0.0.0.0 inside the container (not 127.0.0.1), and any cloud or network firewall." },
+      { q: "When should I use Docker Compose instead?", a: "As soon as you have more than one container, or a long `docker run` you keep re-typing. A Compose file is easier to read, version and reuse." },
+    ],
+    related: [
+      { href: "/devops/dockerfile-generator/", label: "Dockerfile Generator" },
+      { href: "/devops/docker-compose-validator/", label: "Docker Compose Validator" },
+      { href: "/devops/env-file-generator/", label: ".env File Generator" },
+      { href: "/network/port-checker/", label: "Port Checker" },
+    ],
+  },
 };

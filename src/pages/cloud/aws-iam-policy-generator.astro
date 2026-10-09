@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { cloudGuides } from "../../data/toolGuides";
 import Header from "../../components/Header.astro";
 const pageTitle = "AWS IAM Policy Generator | Gokuruvi Tools";
 const description =
@@ -803,6 +805,7 @@ arn:aws:s3:::example-bucket/*</textarea>
           </table>
         </section>
       </section>
+      <ToolGuide guide={cloudGuides["aws-iam-policy-generator"]} contained />
     </main>
 
     <Footer />

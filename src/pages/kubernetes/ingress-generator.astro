@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { kubernetesGuides } from "../../data/toolGuides";
 const pageTitle =
   "Kubernetes Ingress Generator | Gokuruvi Tools";
 
@@ -1424,6 +1426,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </section>
       </section>
+      <ToolGuide guide={kubernetesGuides["ingress-generator"]} contained />
     </main>
 
     <Footer />

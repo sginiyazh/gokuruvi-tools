@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 const pageTitle = "IPv4 CIDR Calculator | Gokuruvi Tools";
 const description =
   "Free IPv4 CIDR calculator to calculate subnet mask, wildcard mask, network address, broadcast address, usable host range, and total IP addresses.";
@@ -814,6 +816,7 @@ import Footer from "../../components/Footer.astro";
           </table>
         </section>
       </section>
+      <ToolGuide guide={networkGuides["cidr-calculator"]} contained />
     </main>
 
     <Footer />

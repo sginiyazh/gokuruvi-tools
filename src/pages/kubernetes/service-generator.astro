@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { kubernetesGuides } from "../../data/toolGuides";
 const pageTitle =
   "Kubernetes Service Generator | Gokuruvi Tools";
 
@@ -1151,6 +1153,7 @@ import Footer from "../../components/Footer.astro";
           </table>
         </section>
       </section>
+      <ToolGuide guide={kubernetesGuides["service-generator"]} contained />
     </main>
 
     <Footer />

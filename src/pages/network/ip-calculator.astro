@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 const pageTitle = "IP Address Calculator | Gokuruvi Tools";
 const description =
   "Free IPv4 address calculator to validate IP addresses, detect IP type and class, and convert IPv4 addresses to binary, decimal, and hexadecimal formats.";
@@ -726,6 +728,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </section>
       </section>
+      <ToolGuide guide={networkGuides["ip-calculator"]} contained />
     </main>
 
     <Footer />

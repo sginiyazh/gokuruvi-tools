@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 const pageTitle = "SSL Certificate Checker | Gokuruvi Tools";
 const description =
@@ -1067,6 +1069,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </section>
       </section>
+      <ToolGuide guide={networkGuides["ssl-checker"]} contained />
     </main>
 
     <Footer />

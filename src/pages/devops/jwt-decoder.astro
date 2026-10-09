@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "JWT Decoder";
 const pageDescription =
   "Decode JSON Web Tokens and inspect JWT headers, payloads, claims and expiration details securely in your browser.";
@@ -622,6 +624,7 @@ import Footer from "../../components/Footer.astro";
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["jwt-decoder"]} contained />
     </main>
 
     <Footer />

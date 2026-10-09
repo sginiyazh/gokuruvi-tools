@@ -88,7 +88,15 @@ const faqSchema = JSON.stringify({
 </section>
 
 <style>
+  .tg,
+  .tg * {
+    box-sizing: border-box;
+  }
   .tg {
+    /* Size to the container, never to the longest code line, so wide
+       examples scroll inside their box instead of widening the page. */
+    contain: inline-size;
+    min-width: 0;
     margin-top: 28px;
     padding: 28px;
     border: 1px solid #e2e8f0;

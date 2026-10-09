@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { kubernetesGuides } from "../../data/toolGuides";
 const pageTitle = "Kubernetes PVC Generator | Gokuruvi Tools";
 const description =
   "Generate Kubernetes PersistentVolumeClaim YAML with access modes, storage class, volume mode, selectors, data source, and optional test Pod.";
@@ -816,6 +818,7 @@ environment=production</textarea>
           </table>
         </section>
       </section>
+      <ToolGuide guide={kubernetesGuides["pvc-generator"]} contained />
     </main>
 
     <Footer />

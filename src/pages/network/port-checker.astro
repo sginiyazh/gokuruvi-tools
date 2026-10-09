@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 const pageTitle = "Port Checker | Gokuruvi Tools";
 const description =
   "Check whether a common TCP port is open or closed on a public hostname or IP address.";
@@ -789,6 +791,7 @@ import Footer from "../../components/Footer.astro";
           </table>
         </section>
       </section>
+      <ToolGuide guide={networkGuides["port-checker"]} contained />
     </main>
 
     <Footer />

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { networkGuides } from "../../data/toolGuides";
 const pageTitle = "IPv4 Subnet Calculator | Gokuruvi Tools";
 const description =
   "Free IPv4 subnet calculator to calculate network address, broadcast address, subnet mask, wildcard mask, host range, and usable hosts.";
@@ -787,6 +789,7 @@ import Footer from "../../components/Footer.astro";
           </table>
         </section>
       </section>
+      <ToolGuide guide={networkGuides["subnet-calculator"]} contained />
     </main>
 
     <Footer />

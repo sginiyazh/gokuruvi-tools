@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { linuxGuides } from "../../data/toolGuides";
 import Header from "../../components/Header.astro";
 const pageTitle = "Tar Command Generator | Gokuruvi Tools";
 const pageDescription =
@@ -1503,6 +1505,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </div>
       </section>
+      <ToolGuide guide={linuxGuides["tar-command-generator"]} contained />
     </main>
 
     <Footer />

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { kubernetesGuides } from "../../data/toolGuides";
 const pageTitle = "Kubernetes Namespace Generator | Gokuruvi Tools";
 const description =
   "Generate Kubernetes Namespace YAML with labels, annotations, resource quotas, limit ranges, and Pod Security Admission settings.";
@@ -855,6 +857,7 @@ team=platform</textarea>
           </table>
         </section>
       </section>
+      <ToolGuide guide={kubernetesGuides["namespace-generator"]} contained />
     </main>
 
     <Footer />

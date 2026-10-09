@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Docker Compose Validator";
 const pageDescription =
   "Validate Docker Compose YAML files, check common configuration issues, and format your Compose configuration.";
@@ -428,6 +430,7 @@ import Footer from "../../components/Footer.astro";
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["docker-compose-validator"]} contained />
     </main>
 
     <Footer />

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { cloudGuides } from "../../data/toolGuides";
 import Header from "../../components/Header.astro";
 const pageTitle = "Cloud-Init Generator | Gokuruvi Tools";
 const description =
@@ -843,6 +845,7 @@ git</textarea>
           </table>
         </section>
       </section>
+      <ToolGuide guide={cloudGuides["cloud-init-generator"]} contained />
     </main>
 
     <Footer />

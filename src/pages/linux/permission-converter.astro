@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { linuxGuides } from "../../data/toolGuides";
 import Header from "../../components/Header.astro";
 const pageTitle = "Linux Permission Converter | Gokuruvi Tools";
 const pageDescription =
@@ -1561,6 +1563,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </div>
       </section>
+      <ToolGuide guide={linuxGuides["permission-converter"]} contained />
     </main>
 
     <Footer />

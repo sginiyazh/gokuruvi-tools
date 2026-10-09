@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Docker Run Command Generator | Gokuruvi Tools";
 
 const pageDescription =
@@ -685,6 +687,7 @@ import Footer from "../../components/Footer.astro";
           </div>
         </div>
       </section>
+      <ToolGuide guide={devopsGuides["docker-run-generator"]} contained />
     </main>
 
     <Footer />

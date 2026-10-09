@@ -6,3 +6,6 @@ export { vmwareGuides } from "./vmware";
 export { windowsGuides } from "./windows";
 export { devopsGuides } from "./devops";
 export { aiGuides } from "./ai";
+export { linuxGuides } from "./linux";
+export { kubernetesGuides } from "./kubernetes";
+export { cloudGuides } from "./cloud";

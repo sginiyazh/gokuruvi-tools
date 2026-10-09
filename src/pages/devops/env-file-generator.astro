@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "Environment File Generator";
 const pageDescription =
   "Generate clean .env files for Node.js, Docker, APIs and application deployments securely in your browser.";
@@ -616,6 +618,7 @@ import Footer from "../../components/Footer.astro";
           </p>
         </article>
       </section>
+      <ToolGuide guide={devopsGuides["env-file-generator"]} contained />
     </main>
 
     <Footer />

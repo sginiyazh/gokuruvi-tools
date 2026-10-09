@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "YAML Validator and Formatter | Gokuruvi Tools";
 const pageDescription =
   "Validate, format and convert YAML documents to JSON directly in your browser using the free Gokuruvi YAML Validator.";
@@ -396,6 +398,7 @@ server:
           </div>
         </div>
       </section>
+      <ToolGuide guide={devopsGuides["yaml-validator"]} contained />
     </main>
 
     <Footer />

@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { kubernetesGuides } from "../../data/toolGuides";
 const pageTitle = "Helm Values Validator | Gokuruvi Tools";
 const description =
   "Validate Helm values.yaml syntax, inspect parsed values, detect duplicate keys, and download corrected YAML.";
@@ -701,6 +703,7 @@ resources:
           </table>
         </section>
       </section>
+      <ToolGuide guide={kubernetesGuides["helm-values-validator"]} contained />
     </main>
 
     <Footer />

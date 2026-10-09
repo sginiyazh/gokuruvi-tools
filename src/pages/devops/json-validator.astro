@@ -1,4 +1,6 @@
 ---
+import ToolGuide from "../../components/ToolGuide.astro";
+import { devopsGuides } from "../../data/toolGuides";
 const pageTitle = "JSON Validator and Formatter | Gokuruvi Tools";
 
 const pageDescription =
@@ -398,6 +400,7 @@ Example:
           </div>
         </div>
       </section>
+      <ToolGuide guide={devopsGuides["json-validator"]} contained />
     </main>
 
     <Footer />
