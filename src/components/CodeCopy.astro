@@ -1,7 +1,15 @@
 ---
-// Adds a copy button to every <pre> code block on the page.
-// Include once per page: <CodeCopy />
+// Adds a copy button to <pre> code blocks matching `selector`.
+// <CodeCopy /> covers every block in <main> (guides); ToolGuide uses
+// <CodeCopy selector=".tg pre" /> so tool output areas, which have their
+// own Copy buttons, are left alone. Safe to include more than once.
+interface Props {
+  selector?: string;
+}
+const { selector = "main pre" } = Astro.props;
 ---
+
+<span data-code-copy={selector} hidden></span>
 
 <script>
   const COPY_ICON =
@@ -29,7 +37,12 @@
   }
 
   function addCopyButtons() {
-    document.querySelectorAll<HTMLPreElement>("main pre").forEach((pre) => {
+    const selectors = [...document.querySelectorAll<HTMLElement>("[data-code-copy]")]
+      .map((marker) => marker.dataset.codeCopy)
+      .filter(Boolean)
+      .join(", ");
+    if (!selectors) return;
+    document.querySelectorAll<HTMLPreElement>(selectors).forEach((pre) => {
       if (pre.parentElement?.classList.contains("code-copy-wrap")) return;
 
       // Wrap the block so the button stays put when the code scrolls sideways.

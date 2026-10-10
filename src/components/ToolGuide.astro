@@ -1,5 +1,6 @@
 ---
 import type { ToolGuideContent } from "../data/toolGuides/types";
+import CodeCopy from "./CodeCopy.astro";
 
 interface Props {
   guide: ToolGuideContent;
@@ -85,6 +86,7 @@ const faqSchema = JSON.stringify({
   )}
 
   <script is:inline type="application/ld+json" set:html={faqSchema} />
+  <CodeCopy selector=".tg pre" />
 </section>
 
 <style>
