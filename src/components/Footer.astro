@@ -41,7 +41,7 @@ const legalLinks = [
   <div class="footer-container">
     <section class="footer-about" aria-labelledby="footer-brand-title">
       <a class="footer-logo" href="/" aria-label="Gokuruvi Tools home">
-        <span class="footer-logo-icon" aria-hidden="true">G</span>
+        <img class="footer-logo-icon" src="/brand/mark.svg" width="40" height="40" alt="" aria-hidden="true" />
 
         <span id="footer-brand-title">
           Gokuruvi Tools
@@ -165,15 +165,11 @@ const legalLinks = [
   }
 
   .footer-logo-icon {
-    display: grid;
+    display: block;
     width: 40px;
     height: 40px;
-    place-items: center;
+    flex-shrink: 0;
     border-radius: 10px;
-    background: linear-gradient(135deg, #2563eb, #38bdf8);
-    color: #ffffff;
-    font-size: 1.15rem;
-    font-weight: 800;
     box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
   }
 

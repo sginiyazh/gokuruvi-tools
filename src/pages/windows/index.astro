@@ -365,7 +365,7 @@ const benefits = [
         <div class="footer-grid">
           <div class="footer-brand">
             <a class="footer-logo" href="/">
-              <span class="footer-logo-icon" aria-hidden="true">G</span>
+              <img class="footer-logo-icon" src="/brand/mark.svg" width="40" height="40" alt="" aria-hidden="true" />
               <span>Gokuruvi Tools</span>
             </a>
 
@@ -851,12 +851,12 @@ const benefits = [
   }
 
   .footer-logo-icon {
-    display: grid;
+    display: block;
     width: 40px;
     height: 40px;
-    place-items: center;
-    border-radius: 11px;
-    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    flex-shrink: 0;
+    border-radius: 10px;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
   }
 
   .footer-brand p {

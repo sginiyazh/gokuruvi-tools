@@ -3,6 +3,10 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { tools, categoryMeta, toolCount } from "../data/tools";
 
+// Rounded down to a multiple of 5, e.g. "100+".
+const toolTotal = `${Math.floor(tools.length / 5) * 5}+`;
+const guideTotal = 6;
+
 const popularToolHrefs = [
   "/linux/chmod-calculator/",
   "/network/subnet-calculator/",
@@ -187,11 +191,15 @@ const pageDescription =
 
     <meta property="og:type" content="website" />
 
+    <meta property="og:image:width" content="1200" />
+
+    <meta property="og:image:height" content="630" />
+
     <meta property="og:url" content={siteUrl} />
 
     <meta
       property="og:image"
-      content="https://www.gokuruvi.com/og-image.png"
+      content="https://www.gokuruvi.com/og-image.jpg"
     />
 
     <meta
@@ -215,10 +223,17 @@ const pageDescription =
 
     <meta
       name="twitter:image"
-      content="https://www.gokuruvi.com/og-image.png"
+      content="https://www.gokuruvi.com/og-image.jpg"
     />
 
     <title>{pageTitle}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap"
+    />
 
     <style>
       :root {
@@ -1324,6 +1339,323 @@ const pageDescription =
           animation-iteration-count: 1 !important;
         }
       }
+
+      /* ===== New hero + bands (glass G design) ===== */
+      .gx-hero {
+        position: relative;
+        z-index: 2; /* search results drop over the next section */
+        background: #0b1220;
+        color: #ffffff;
+      }
+
+      /* Glow, pixels and the spinning G are clipped here, not on .gx-hero,
+         so the search results dropdown can extend below the hero. */
+      .gx-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .gx-pixels {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .gx-orb {
+        position: absolute;
+        right: 3%;
+        top: 50%;
+        width: min(50vw, 600px);
+        aspect-ratio: 1;
+        height: auto;
+        object-fit: cover;
+        transform: translateY(-50%);
+        -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+        mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+      }
+
+      .gx-inner {
+        position: relative;
+        display: grid;
+        align-content: center;
+        gap: 22px;
+        min-height: 620px;
+        padding-top: 56px;
+        padding-bottom: 64px;
+      }
+
+      .gx-eyebrow {
+        margin: 0;
+        color: #9fd8f4;
+        font: 700 13px/1.4 ui-monospace, Consolas, monospace;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .gx-headline {
+        margin: 0;
+        color: #22d3ee;
+        font: 800 clamp(2.7rem, 9vw, 7.4rem) / 0.95 "Unbounded", "Arial Black", system-ui, sans-serif;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+
+      .gx-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.2em;
+      }
+
+      .gx-chips {
+        display: inline-flex;
+      }
+
+      .gx-chip {
+        display: grid;
+        width: 0.62em;
+        height: 0.62em;
+        place-items: center;
+        border: 2px solid #0b1220;
+        border-radius: 50%;
+      }
+
+      .gx-chip + .gx-chip {
+        margin-left: -0.14em;
+      }
+
+      .gx-chip svg {
+        width: 46%;
+        height: 46%;
+      }
+
+      .gx-chip-a {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+
+      .gx-chip-b {
+        background: #cffafe;
+        color: #0e7490;
+      }
+
+      .gx-lead {
+        max-width: 560px;
+        margin: 6px 0 0;
+        color: #a9b8d0;
+        font-size: 1.1rem;
+        line-height: 1.65;
+      }
+
+      .gx-search {
+        width: 100%;
+        max-width: 620px;
+        margin: 4px 0 0;
+      }
+
+      .gx-search .search-hint {
+        color: #8ea2c0;
+        text-align: left;
+      }
+
+      .gx-statement {
+        padding: 64px 0 70px;
+        background: #f3f6fb;
+        text-align: center;
+      }
+
+      .gx-sphere {
+        display: block;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+      }
+
+      .gx-statement-text {
+        max-width: 30ch;
+        margin: 0 auto;
+        color: #0f1a2e;
+        font: 600 clamp(1.3rem, 3vw, 1.9rem) / 1.35 "Unbounded", "Arial Black", system-ui, sans-serif;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+
+      .gx-statement-sub {
+        margin: 14px auto 0;
+        color: #4b5b75;
+      }
+
+      .gx-numbers {
+        padding: 70px 0;
+        background: #0b1220;
+        color: #ffffff;
+      }
+
+      .gx-numbers h2 {
+        margin: 0 0 40px;
+        text-align: center;
+        font: 600 clamp(1.4rem, 3.2vw, 2.2rem) / 1.25 "Unbounded", "Arial Black", system-ui, sans-serif;
+        text-wrap: balance;
+      }
+
+      .gx-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 26px 40px;
+      }
+
+      .gx-stat {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+        padding-top: 14px;
+        border-top: 1px solid #22314f;
+      }
+
+      .gx-stat b {
+        font: 800 clamp(2.8rem, 6vw, 4.4rem) / 1 "Unbounded", "Arial Black", system-ui, sans-serif;
+        letter-spacing: -0.03em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .gx-stat:nth-child(odd) b {
+        color: #3b82f6;
+      }
+
+      .gx-stat:nth-child(even) b {
+        color: #22d3ee;
+      }
+
+      .gx-stat span {
+        color: #dbe6f7;
+        line-height: 1.35;
+      }
+
+      .gx-featured {
+        padding: 64px 0;
+        background: #111d36;
+        color: #ffffff;
+      }
+
+      .gx-feature {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: 32px;
+        align-items: center;
+      }
+
+      .gx-label {
+        color: #22d3ee;
+        font: 700 12px/1.4 ui-monospace, Consolas, monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .gx-feature h2 {
+        margin: 10px 0 14px;
+        color: #ffffff;
+        font: 700 clamp(1.5rem, 3.4vw, 2.4rem) / 1.15 "Unbounded", "Arial Black", system-ui, sans-serif;
+        text-wrap: balance;
+      }
+
+      .gx-feature p {
+        max-width: 52ch;
+        margin: 0 0 20px;
+        color: #a9b8d0;
+      }
+
+      .gx-btn {
+        display: inline-flex;
+        padding: 12px 20px;
+        border-radius: 6px;
+        background: #22d3ee;
+        color: #0b1220;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .gx-btn:hover {
+        background: #67e8f9;
+      }
+
+      .gx-btn:focus-visible,
+      .gx-toc a:focus-visible {
+        outline: 2px solid #22d3ee;
+        outline-offset: 3px;
+      }
+
+      .gx-toc {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 18px 20px;
+        list-style: none;
+        counter-reset: gx;
+        border: 1px solid #22314f;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .gx-toc li {
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+        min-width: 0;
+        counter-increment: gx;
+      }
+
+      .gx-toc li::before {
+        content: counter(gx, decimal-leading-zero);
+        flex-shrink: 0;
+        color: #22d3ee;
+        font: 700 12px/1 ui-monospace, Consolas, monospace;
+      }
+
+      .gx-toc a {
+        color: #dbe6f7;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .gx-toc a:hover {
+        color: #22d3ee;
+      }
+
+      @media (max-width: 760px) {
+        .gx-feature {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 700px) {
+        .gx-inner {
+          min-height: 0;
+          padding-top: 24px;
+          padding-bottom: 44px;
+        }
+
+        .gx-bg {
+          position: relative;
+          inset: auto;
+          height: 300px;
+        }
+
+        .gx-pixels {
+          display: none;
+        }
+
+        .gx-orb {
+          left: 50%;
+          right: auto;
+          width: 320px;
+          transform: translate(-50%, -50%);
+        }
+      }
     </style>
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
   </head>
@@ -1336,74 +1668,59 @@ const pageDescription =
     <Header />
 
     <main id="main-content">
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              Free online tools for IT professionals
-            </div>
-
-            <h1>Free IT Tools for Engineers &amp; Administrators</h1>
-
-            <p class="hero-description">
-              Practical tools for Linux, Windows, Network, VMware, Cloud,
-              DevOps, Kubernetes, Database, Security and AI — built to make
-              everyday IT administration faster.
-            </p>
-
-            <div class="hero-actions">
-              <a
-                class="button button-primary"
-                href="#featured-tools"
-              >
-                Explore Tools
-                <span aria-hidden="true">→</span>
-              </a>
-
-              <a
-                class="button button-secondary"
-                href="#tool-categories"
-              >
-                Browse Categories
-              </a>
-            </div>
-
-            <div class="hero-features">
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Free to use
-              </div>
-
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                No registration
-              </div>
-
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Privacy friendly
-              </div>
-
-              <div class="hero-feature">
-                <span class="check" aria-hidden="true">✓</span>
-                Mobile friendly
-              </div>
-            </div>
-          </div>
+      <section class="gx-hero" aria-labelledby="gx-title">
+        <div class="gx-bg" aria-hidden="true">
+          <canvas class="gx-pixels"></canvas>
+          <video
+            class="gx-orb"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            poster="/brand/g-poster.jpg"
+            width="720"
+            height="720"
+          >
+            <source src="/brand/g-spin.mp4" type="video/mp4" />
+            <source src="/brand/g-spin.webm" type="video/webm" />
+          </video>
         </div>
-      </section>
 
-      <section class="search-section" aria-label="Search tools">
-        <div class="container">
-          <div class="search-wrap">
+        <div class="container gx-inner">
+          <h1 id="gx-title" class="gx-eyebrow">
+            Free IT tools for engineers &amp; administrators
+          </h1>
+
+          <p class="gx-headline" aria-hidden="true">
+            <span class="gx-row">Fix it</span>
+            <span class="gx-row">
+              <span class="gx-chips">
+                <span class="gx-chip gx-chip-a">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5"></path><path d="M12 19h8"></path></svg>
+                </span>
+                <span class="gx-chip gx-chip-b">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"></path></svg>
+                </span>
+              </span>
+              Faster.
+            </span>
+          </p>
+
+          <p class="gx-lead">
+            Practical tools for Linux, Windows, Network, VMware, Cloud, DevOps,
+            Kubernetes, Database, Security and AI. Free, no sign-up, and
+            everything runs in your browser.
+          </p>
+
+          <div class="search-wrap gx-search">
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
 
               <input
                 id="tool-search-input"
                 type="search"
-                placeholder="Search 100+ IT tools..."
+                placeholder={`Search ${toolTotal} IT tools: chmod, subnet, cron, robocopy…`}
                 autocomplete="off"
                 aria-label="Search tools by name, category or keyword"
                 aria-expanded="false"
@@ -1430,6 +1747,38 @@ const pageDescription =
             <p class="search-hint">
               Try "chmod", "subnet", "SSL", "YAML", "VMware", or "PowerShell"
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="gx-statement">
+        <div class="container">
+          <img
+            class="gx-sphere"
+            src="/brand/sphere.jpg"
+            width="120"
+            height="120"
+            alt=""
+            loading="lazy"
+          />
+          <p class="gx-statement-text">
+            Built by an infrastructure admin, for the people who keep servers
+            running.
+          </p>
+          <p class="gx-statement-sub">
+            No sign-up, and most tools run entirely in your browser.
+          </p>
+        </div>
+      </section>
+
+      <section class="gx-numbers" aria-labelledby="gx-numbers-title">
+        <div class="container">
+          <h2 id="gx-numbers-title">One toolbox for everyday operations work</h2>
+          <div class="gx-stats">
+            <div class="gx-stat"><b>{toolTotal}</b><span>free tools and command generators</span></div>
+            <div class="gx-stat"><b>{categoryMeta.length}</b><span>categories, from Linux to Kubernetes and AI</span></div>
+            <div class="gx-stat"><b>{guideTotal}</b><span>in-depth field guides with copy-ready commands</span></div>
+            <div class="gx-stat"><b>0</b><span>sign-ups or accounts needed</span></div>
           </div>
         </div>
       </section>
@@ -1544,6 +1893,27 @@ const pageDescription =
               View all tools →
             </a>
           </div>
+        </div>
+      </section>
+
+      <section class="gx-featured" aria-labelledby="gx-guide-title">
+        <div class="container gx-feature">
+          <div>
+            <span class="gx-label">Featured guide · 21 sections · 56 min read</span>
+            <h2 id="gx-guide-title">The Linux Server Troubleshooting Guide</h2>
+            <p>
+              A repeatable method for finding the real cause of a Linux
+              problem, with the exact commands to run at each step.
+            </p>
+            <a class="gx-btn" href="/guides/linux-server-troubleshooting/">Read the guide</a>
+          </div>
+          <ol class="gx-toc">
+            <li><a href="/guides/linux-server-troubleshooting/#memory">The server is out of memory or swapping</a></li>
+            <li><a href="/guides/linux-server-troubleshooting/#ssh">SSH login fails: refused, timed out or publickey</a></li>
+            <li><a href="/guides/linux-server-troubleshooting/#openfiles">"Too many open files"</a></li>
+            <li><a href="/guides/linux-server-troubleshooting/#readonly">"Read-only file system"</a></li>
+            <li><a href="/guides/linux-server-troubleshooting/#loadavg">High load average but the CPU is idle</a></li>
+          </ol>
         </div>
       </section>
 
@@ -1768,6 +2138,49 @@ const pageDescription =
     </main>
 
     <Footer />
+
+    <script>
+      // Hero: pixel-mosaic glow at the edges, and a still G for reduced-motion visitors.
+      const gxHero = document.querySelector<HTMLElement>(".gx-hero");
+      const gxCanvas = document.querySelector<HTMLCanvasElement>(".gx-pixels");
+      const gxVideo = document.querySelector<HTMLVideoElement>(".gx-orb");
+
+      if (gxVideo && matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gxVideo.removeAttribute("autoplay");
+        gxVideo.pause();
+      }
+
+      function drawGxPixels() {
+        if (!gxHero || !gxCanvas || getComputedStyle(gxCanvas).display === "none") return;
+        const w = gxHero.clientWidth;
+        const h = gxHero.clientHeight;
+        const size = Math.max(28, Math.round(w / 34));
+        gxCanvas.width = w;
+        gxCanvas.height = h;
+        const ctx = gxCanvas.getContext("2d");
+        if (!ctx) return;
+        let seed = 7;
+        const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+        for (let px = 0; px < w; px += size) {
+          for (let py = 0; py < h; py += size) {
+            const edge = Math.max(1 - px / (w * 0.32), 1 - (w - px - size) / (w * 0.22), 0);
+            const fall = Math.max(0, 1 - Math.abs(py / h - 0.45) * 1.6);
+            const a = edge * fall * (0.25 + rnd() * 0.5);
+            if (a < 0.03) continue;
+            ctx.fillStyle = px < w / 2 ? `rgba(34,211,238,${a * 0.55})` : `rgba(59,130,246,${a * 0.6})`;
+            ctx.fillRect(px, py, size - 1, size - 1);
+          }
+        }
+      }
+
+      drawGxPixels();
+      let gxResize = 0;
+      addEventListener("resize", () => {
+        cancelAnimationFrame(gxResize);
+        gxResize = requestAnimationFrame(drawGxPixels);
+      });
+    </script>
+
 
     <script>
       interface SearchTool {
