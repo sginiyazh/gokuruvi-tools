@@ -1,4 +1,6 @@
 ---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 import Layout from "../layouts/Layout.astro";
 const pageTitle = "Contact Gokuruvi Tools";
 const description =
@@ -152,6 +154,8 @@ const description =
   </head>
 
   <body>
+    <Header />
+
 
     <section class="hero">
       <h1>Contact Gokuruvi Tools</h1>
@@ -272,13 +276,7 @@ const description =
 
     </div>
 
-    <footer>
-
-      © {new Date().getFullYear()} Gokuruvi Tools<br>
-
-      Helping Linux, DevOps & Cloud Professionals Every Day
-
-    </footer>
+    <Footer />
 
   </body>
 </html>

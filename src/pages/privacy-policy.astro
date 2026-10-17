@@ -1,4 +1,6 @@
 ---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 const pageTitle = "Privacy Policy | Gokuruvi Tools";
 const description =
   "Privacy Policy for Gokuruvi Tools, including information about cookies, analytics, third-party services, and data entered into online tools.";
@@ -282,22 +284,7 @@ const lastUpdated = "18 September 2026";
   </head>
 
   <body>
-    <header class="site-header">
-      <div class="header-content">
-        <a class="logo" href="/">
-          Gokuruvi Tools
-        </a>
-
-        <nav class="navigation" aria-label="Main navigation">
-          <a href="/">Home</a>
-          <a href="/linux">Linux</a>
-          <a href="/devops">DevOps</a>
-          <a href="/kubernetes">Kubernetes</a>
-          <a href="/cloud">Cloud</a>
-          <a href="/contact">Contact</a>
-        </nav>
-      </div>
-    </header>
+    <Header />
 
     <main>
       <section class="hero">
@@ -513,16 +500,6 @@ const lastUpdated = "18 September 2026";
       </section>
     </main>
 
-    <footer>
-      <p>
-        © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
-        ·
-        <a href="/privacy-policy">Privacy</a>
-        ·
-        <a href="/terms">Terms</a>
-        ·
-        <a href="/contact">Contact</a>
-      </p>
-    </footer>
+    <Footer />
   </body>
 </html>

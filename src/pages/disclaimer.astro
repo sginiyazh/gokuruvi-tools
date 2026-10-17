@@ -1,4 +1,6 @@
 ---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 const pageTitle = "Disclaimer | Gokuruvi Tools";
 const description =
   "Read the disclaimer for Gokuruvi Tools regarding the use of online calculators, generators, scripts, and technical content.";
@@ -217,19 +219,7 @@ const lastUpdated = "30 July 2026";
 
   <body>
 
-    <header>
-      <div class="header">
-        <a class="logo" href="/">Gokuruvi Tools</a>
-
-        <nav>
-          <a href="/">Home</a>
-          <a href="/linux">Linux</a>
-          <a href="/devops">DevOps</a>
-          <a href="/cloud">Cloud</a>
-          <a href="/contact">Contact</a>
-        </nav>
-      </div>
-    </header>
+    <Header />
 
     <section class="hero">
       <h1>Disclaimer</h1>
@@ -317,9 +307,7 @@ const lastUpdated = "30 July 2026";
 
     </main>
 
-    <footer>
-      © {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
-    </footer>
+    <Footer />
 
   </body>
 </html>

@@ -1,4 +1,6 @@
 ---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 const pageTitle = "Terms & Conditions | Gokuruvi Tools";
 const description =
   "Read the Terms and Conditions for using Gokuruvi Tools.";
@@ -175,9 +177,7 @@ const lastUpdated = "30 July 2026";
 
 <body>
 
-<header>
-  <a href="/">Gokuruvi Tools</a>
-</header>
+<Header />
 
 <section class="hero">
 
@@ -306,11 +306,7 @@ Privacy Policy
 
 </main>
 
-<footer>
-
-© {new Date().getFullYear()} Gokuruvi Tools. All Rights Reserved.
-
-</footer>
+<Footer />
 
 </body>
 </html>
