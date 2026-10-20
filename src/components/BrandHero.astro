@@ -1,0 +1,317 @@
+---
+// Dark brand hero used on category pages: pixel glow, a spinning 3D glass object
+// (pre-rendered video with a still poster), a giant two-line headline and actions.
+// The <h1> carries the SEO title; the giant headline is decorative.
+interface Action {
+  label: string;
+  href: string;
+  primary?: boolean;
+}
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;          // SEO heading (h1), shown as the small label
+  line1: string;          // giant headline, first line
+  line2: string;          // giant headline, second line (after the icon chips)
+  lead: string;
+  video?: { mp4: string; webm: string; poster: string }; // optional 3D object
+  mediaLabel?: string;    // describes the 3D object for screen readers
+  actions?: Action[];
+  breadcrumb?: Crumb[];
+}
+const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb = [] } = Astro.props;
+---
+
+<section class:list={["bh", { "bh-no-media": !video }]}>
+  <div class="bh-bg" aria-hidden="true">
+    <canvas class="bh-pixels"></canvas>
+    {video && (
+      <video class="bh-orb" autoplay muted loop playsinline preload="metadata" poster={video.poster} width="720" height="720">
+        <source src={video.mp4} type="video/mp4" />
+        <source src={video.webm} type="video/webm" />
+      </video>
+    )}
+  </div>
+
+  <div class="bh-inner">
+    {breadcrumb.length > 0 && (
+      <nav class="bh-crumbs" aria-label="Breadcrumb">
+        {breadcrumb.map((c, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">/</span>}
+            {c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+          </>
+        ))}
+      </nav>
+    )}
+
+    <h1 class="bh-eyebrow">{title}</h1>
+
+    <p class="bh-headline" aria-hidden="true">
+      <span class="bh-row">{line1}</span>
+      <span class="bh-row">
+        <span class="bh-chips">
+          <span class="bh-chip bh-chip-a">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5"></path><path d="M12 19h8"></path></svg>
+          </span>
+          <span class="bh-chip bh-chip-b">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"></path></svg>
+          </span>
+        </span>
+        {line2}
+      </span>
+    </p>
+    {video && mediaLabel && <span class="bh-sr">{mediaLabel}</span>}
+
+    <p class="bh-lead">{lead}</p>
+
+    {actions.length > 0 && (
+      <div class="bh-actions">
+        {actions.map((a) => (
+          <a class:list={["bh-btn", { "bh-btn-ghost": !a.primary }]} href={a.href}>{a.label}</a>
+        ))}
+      </div>
+    )}
+    <slot />
+  </div>
+</section>
+
+<script>
+  // Pixel-mosaic glow at the hero edges; still image for reduced-motion visitors.
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll<HTMLElement>(".bh").forEach((hero) => {
+    const video = hero.querySelector<HTMLVideoElement>(".bh-orb");
+    if (video && reduce) { video.removeAttribute("autoplay"); video.pause(); }
+
+    const canvas = hero.querySelector<HTMLCanvasElement>(".bh-pixels");
+    const draw = () => {
+      if (!canvas || getComputedStyle(canvas).display === "none") return;
+      const w = hero.clientWidth, h = hero.clientHeight, size = Math.max(28, Math.round(w / 34));
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      let seed = 7;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let px = 0; px < w; px += size) {
+        for (let py = 0; py < h; py += size) {
+          const edge = Math.max(1 - px / (w * 0.32), 1 - (w - px - size) / (w * 0.22), 0);
+          const fall = Math.max(0, 1 - Math.abs(py / h - 0.45) * 1.6);
+          const a = edge * fall * (0.25 + rnd() * 0.5);
+          if (a < 0.03) continue;
+          ctx.fillStyle = px < w / 2 ? `rgba(34,211,238,${a * 0.55})` : `rgba(59,130,246,${a * 0.6})`;
+          ctx.fillRect(px, py, size - 1, size - 1);
+        }
+      }
+    };
+    draw();
+    let frame = 0;
+    addEventListener("resize", () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(draw); });
+  });
+</script>
+
+<style>
+  .bh {
+    position: relative;
+    z-index: 2;
+    background: #0b1220;
+    color: #ffffff;
+  }
+
+  .bh-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bh-pixels {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bh-orb {
+    position: absolute;
+    right: 3%;
+    top: 50%;
+    width: min(48vw, 580px);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transform: translateY(-50%);
+    -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+  }
+
+  .bh-inner {
+    position: relative;
+    display: grid;
+    align-content: center;
+    gap: 20px;
+    width: min(calc(100% - 40px), 1180px);
+    min-height: 600px;
+    margin: 0 auto;
+    padding: 40px 0 64px;
+  }
+
+  .bh-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #8ea2c0;
+    font-size: 0.9rem;
+  }
+
+  .bh-crumbs a {
+    color: #c8d5e7;
+    text-decoration: none;
+  }
+
+  .bh-crumbs a:hover {
+    color: #22d3ee;
+  }
+
+  .bh-eyebrow {
+    margin: 0;
+    color: #9fd8f4;
+    font: 700 13px/1.4 ui-monospace, Consolas, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .bh-headline {
+    margin: 0;
+    color: #22d3ee;
+    font: 800 clamp(2.5rem, 8.4vw, 6.8rem) / 0.95 "Unbounded", "Arial Black", system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .bh-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2em;
+  }
+
+  .bh-chips {
+    display: inline-flex;
+  }
+
+  .bh-chip {
+    display: grid;
+    width: 0.62em;
+    height: 0.62em;
+    place-items: center;
+    border: 2px solid #0b1220;
+    border-radius: 50%;
+  }
+
+  .bh-chip + .bh-chip {
+    margin-left: -0.14em;
+  }
+
+  .bh-chip svg {
+    width: 46%;
+    height: 46%;
+  }
+
+  .bh-chip-a {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .bh-chip-b {
+    background: #cffafe;
+    color: #0e7490;
+  }
+
+  .bh-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .bh-lead {
+    max-width: 560px;
+    margin: 4px 0 0;
+    color: #a9b8d0;
+    font-size: 1.1rem;
+    line-height: 1.65;
+  }
+
+  .bh-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .bh-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 22px;
+    border: 1px solid #22d3ee;
+    border-radius: 6px;
+    background: #22d3ee;
+    color: #0b1220;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .bh-btn:hover {
+    background: #67e8f9;
+    border-color: #67e8f9;
+  }
+
+  .bh-btn-ghost {
+    background: transparent;
+    color: #e6edf8;
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .bh-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .bh-btn:focus-visible,
+  .bh-crumbs a:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 700px) {
+    .bh-inner {
+      min-height: 0;
+      padding: 20px 0 44px;
+    }
+
+    .bh-bg {
+      position: relative;
+      inset: auto;
+      height: 280px;
+    }
+
+    .bh-pixels {
+      display: none;
+    }
+
+    .bh-no-media .bh-bg {
+      display: none;
+    }
+
+    .bh-orb {
+      left: 50%;
+      right: auto;
+      width: 300px;
+      transform: translate(-50%, -50%);
+    }
+  }
+</style>

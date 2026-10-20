@@ -1,5 +1,8 @@
 ---
 import Header from "../../components/Header.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 const linuxTools = [
   {
     title: "Linux chmod Calculator",
@@ -154,7 +157,15 @@ import Footer from "../../components/Footer.astro";
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
 
+    <meta property="og:image" content="https://www.gokuruvi.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image" content="https://www.gokuruvi.com/og-image.jpg" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
   </head>
 
@@ -162,102 +173,27 @@ import Footer from "../../components/Footer.astro";
     <Header />
 
     <main>
-      <section class="hero">
-        <div class="hero-grid-pattern"></div>
+      <BrandHero
+        title="Free Linux Tools and Command Generators"
+        line1="Master the"
+        line2="Terminal."
+        lead="Generate accurate Linux commands, calculate permissions, build service files, configure firewalls, and simplify daily system administration tasks."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Linux Tools" }]}
+        actions={[
+          { label: "Explore Linux tools", href: "#all-tools", primary: true },
+          { label: "Troubleshooting guide", href: "/guides/linux-server-troubleshooting/" },
+        ]}
+      />
 
-        <div class="container hero-container">
-          <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="/">Home</a>
-            <span>/</span>
-            <span>Linux Tools</span>
-          </nav>
-
-          <div class="hero-grid">
-            <div class="hero-content">
-              <span class="eyebrow">Linux administration utilities</span>
-
-              <h1>Free Linux Tools and Command Generators</h1>
-
-              <p>
-                Generate accurate Linux commands, calculate permissions, build
-                service files, configure firewalls, and simplify daily system
-                administration tasks.
-              </p>
-
-              <div class="hero-actions">
-                <a href="#all-tools" class="primary-button">
-                  Explore Linux Tools
-                </a>
-
-                <a href="/" class="secondary-button">
-                  View All Categories
-                </a>
-              </div>
-
-              <div class="hero-stats">
-                <div>
-                  <strong>{linuxTools.length}</strong>
-                  <span>Linux utilities</span>
-                </div>
-
-                <div>
-                  <strong>Free</strong>
-                  <span>No registration</span>
-                </div>
-
-                <div>
-                  <strong>Private</strong>
-                  <span>Browser-based tools</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="terminal-wrapper" aria-hidden="true">
-              <div class="terminal">
-                <div class="terminal-header">
-                  <div class="terminal-buttons">
-                    <span class="terminal-close"></span>
-                    <span class="terminal-minimize"></span>
-                    <span class="terminal-maximize"></span>
-                  </div>
-
-                  <span class="terminal-title">linux@gokuruvi:~</span>
-                </div>
-
-                <div class="terminal-body">
-                  <p>
-                    <span class="prompt">linux@gokuruvi:~$</span>
-                    <span class="command">chmod 755 script.sh</span>
-                  </p>
-
-                  <p>
-                    <span class="prompt">linux@gokuruvi:~$</span>
-                    <span class="command">systemctl status nginx</span>
-                  </p>
-
-                  <p class="output">
-                    ● nginx.service - A high performance web server
-                  </p>
-
-                  <p class="output success">
-                    Active: active (running)
-                  </p>
-
-                  <p>
-                    <span class="prompt">linux@gokuruvi:~$</span>
-                    <span class="command">find /var/log -name "*.log"</span>
-                  </p>
-
-                  <p>
-                    <span class="prompt">linux@gokuruvi:~$</span>
-                    <span class="cursor"></span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <StatBand
+        title="Everything you need for day-to-day Linux administration"
+        stats={[
+          { value: linuxTools.length, label: "Linux tools and command generators" },
+          { value: 21, label: "sections in the Linux troubleshooting guide" },
+          { value: 2, label: "in-depth Linux guides: troubleshooting and hardening" },
+          { value: 0, label: "sign-ups or accounts needed" },
+        ]}
+      />
 
       <section class="benefits-section">
         <div class="container">
@@ -398,6 +334,21 @@ import Footer from "../../components/Footer.astro";
           </p>
         </div>
       </section>
+
+      <GuideBand
+        label="Featured guide · 21 sections · 56 min read"
+        title="The Linux Server Troubleshooting Guide"
+        text="A repeatable method for finding the real cause of a Linux problem, with the exact commands to run at each step."
+        href="/guides/linux-server-troubleshooting/"
+        secondary={{ label: "Linux security hardening guide", href: "/guides/linux-security-hardening/" }}
+        items={[
+          { label: "The server is out of memory or swapping", href: "/guides/linux-server-troubleshooting/#memory" },
+          { label: "SSH login fails: refused, timed out or publickey", href: "/guides/linux-server-troubleshooting/#ssh" },
+          { label: "“Too many open files”", href: "/guides/linux-server-troubleshooting/#openfiles" },
+          { label: "“Read-only file system”", href: "/guides/linux-server-troubleshooting/#readonly" },
+          { label: "High load average but the CPU is idle", href: "/guides/linux-server-troubleshooting/#loadavg" },
+        ]}
+      />
 
       <section class="information-section">
         <div class="container information-grid">

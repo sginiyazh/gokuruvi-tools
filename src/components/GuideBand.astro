@@ -1,0 +1,150 @@
+---
+// Featured guide band: guide pitch on the left, numbered jump links on the right.
+interface Props {
+  label: string;
+  title: string;
+  text: string;
+  href: string;
+  cta?: string;
+  items: Array<{ label: string; href: string }>;
+  secondary?: { label: string; href: string };
+}
+const { label, title, text, href, cta = "Read the guide", items, secondary } = Astro.props;
+---
+
+<section class="gb" aria-label={title}>
+  <div class="gb-inner">
+    <div>
+      <span class="gb-label">{label}</span>
+      <h2>{title}</h2>
+      <p>{text}</p>
+      <div class="gb-actions">
+        <a class="gb-btn" href={href}>{cta}</a>
+        {secondary && <a class="gb-link" href={secondary.href}>{secondary.label} →</a>}
+      </div>
+    </div>
+    <ol class="gb-toc">
+      {items.map((i) => (
+        <li><a href={i.href}>{i.label}</a></li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .gb {
+    padding: 64px 0;
+    background: #111d36;
+    color: #ffffff;
+  }
+
+  .gb-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+    width: min(calc(100% - 40px), 1180px);
+    margin: 0 auto;
+  }
+
+  .gb-label {
+    color: #22d3ee;
+    font: 700 12px/1.4 ui-monospace, Consolas, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .gb h2 {
+    margin: 10px 0 14px;
+    color: #ffffff;
+    font: 700 clamp(1.5rem, 3.4vw, 2.4rem) / 1.15 "Unbounded", "Arial Black", system-ui, sans-serif;
+    text-wrap: balance;
+  }
+
+  .gb p {
+    max-width: 52ch;
+    margin: 0 0 20px;
+    color: #a9b8d0;
+  }
+
+  .gb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .gb-btn {
+    display: inline-flex;
+    padding: 12px 20px;
+    border-radius: 6px;
+    background: #22d3ee;
+    color: #0b1220;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .gb-btn:hover {
+    background: #67e8f9;
+  }
+
+  .gb-link {
+    color: #9fd8f4;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .gb-link:hover {
+    color: #22d3ee;
+  }
+
+  .gb-toc {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 18px 20px;
+    list-style: none;
+    counter-reset: gb;
+    border: 1px solid #22314f;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .gb-toc li {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    min-width: 0;
+    counter-increment: gb;
+  }
+
+  .gb-toc li::before {
+    content: counter(gb, decimal-leading-zero);
+    flex-shrink: 0;
+    color: #22d3ee;
+    font: 700 12px/1 ui-monospace, Consolas, monospace;
+  }
+
+  .gb-toc a {
+    color: #dbe6f7;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .gb-toc a:hover {
+    color: #22d3ee;
+  }
+
+  .gb-btn:focus-visible,
+  .gb-link:focus-visible,
+  .gb-toc a:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 760px) {
+    .gb-inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

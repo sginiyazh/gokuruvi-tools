@@ -1,0 +1,76 @@
+---
+// Dark band of big numbers with short labels (brand style).
+interface Props {
+  title: string;
+  stats: Array<{ value: string | number; label: string }>;
+}
+const { title, stats } = Astro.props;
+---
+
+<section class="sb" aria-label={title}>
+  <div class="sb-inner">
+    <h2>{title}</h2>
+    <div class="sb-stats">
+      {stats.map((s) => (
+        <div class="sb-stat">
+          <b>{s.value}</b>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .sb {
+    padding: 64px 0;
+    background: #0b1220;
+    color: #ffffff;
+  }
+
+  .sb-inner {
+    width: min(calc(100% - 40px), 1180px);
+    margin: 0 auto;
+  }
+
+  .sb h2 {
+    margin: 0 0 36px;
+    text-align: center;
+    font: 600 clamp(1.3rem, 3vw, 2rem) / 1.25 "Unbounded", "Arial Black", system-ui, sans-serif;
+    text-wrap: balance;
+  }
+
+  .sb-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 24px 40px;
+  }
+
+  .sb-stat {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    padding-top: 14px;
+    border-top: 1px solid #22314f;
+  }
+
+  .sb-stat b {
+    font: 800 clamp(2.6rem, 5.6vw, 4.2rem) / 1 "Unbounded", "Arial Black", system-ui, sans-serif;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sb-stat:nth-child(odd) b {
+    color: #3b82f6;
+  }
+
+  .sb-stat:nth-child(even) b {
+    color: #22d3ee;
+  }
+
+  .sb-stat span {
+    color: #dbe6f7;
+    line-height: 1.35;
+  }
+</style>
