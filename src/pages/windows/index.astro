@@ -1,6 +1,9 @@
 ---
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 
 const pageTitle = "Windows Tools";
 
@@ -211,7 +214,16 @@ const benefits = [
       href="https://www.gokuruvi.com/windows/"
     />
 
+    <meta property="og:image" content="https://www.gokuruvi.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.gokuruvi.com/og-image.jpg" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
 
     <title>{pageTitle} | Gokuruvi Tools</title>
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
@@ -221,52 +233,42 @@ const benefits = [
     <Header />
 
     <main>
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              Free tools for Windows professionals
-            </div>
+      <BrandHero
+        title="Free Windows, PowerShell and Windows Server Tools"
+        line1="Master"
+        line2="PowerShell."
+        lead="Use a curated collection of essential PowerShell and CMD generators for Windows administration, troubleshooting, security, Group Policy, file operations, IIS and Hyper-V."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Windows Tools" }]}
+        actions={[
+          { label: "Explore Windows tools", href: "#windows-tools", primary: true },
+          { label: "Browse all categories", href: "/#tool-categories" },
+        ]}
+      />
 
-            <h1>
-              Practical <span>Windows Tools</span>
-            </h1>
+      <StatBand
+        title="Everything you need for day-to-day Windows administration"
+        stats={[
+          { value: tools.length, label: "Windows, PowerShell and CMD tools" },
+          { value: 18, label: "step-by-step tool guides with real examples" },
+          { value: "100%", label: "of commands generated in your browser" },
+          { value: 0, label: "sign-ups or accounts needed" },
+        ]}
+      />
 
-            <p class="hero-description">
-              Use a curated collection of essential PowerShell and CMD generators for Windows administration, troubleshooting, security, Group Policy, file operations, IIS and Hyper-V.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#windows-tools">
-                Explore Windows Tools
-                <span aria-hidden="true">→</span>
-              </a>
-
-              <a class="button button-secondary" href="/#tool-categories">
-                Browse All Categories
-              </a>
-            </div>
-
-            <div class="hero-statistics">
-              <div class="hero-stat">
-                <strong>{tools.length}</strong>
-                <span>Windows utilities</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>PowerShell</strong>
-                <span>Command automation</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>Server</strong>
-                <span>Administration tools</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GuideBand
+        label="Start here · admin favourites"
+        title="Fix the Windows problems admins see every day"
+        text="Remote Desktop that will not connect, corrupted system files, event log hunting, safe file migrations and BitLocker recovery: each tool builds the exact commands and explains them step by step."
+        href="#windows-tools"
+        cta="Browse all Windows tools"
+        items={[
+          { label: "RDP troubleshooter: Remote Desktop will not connect", href: "/windows/rdp-troubleshooter/" },
+          { label: "SFC and DISM: repair corrupted system files", href: "/windows/sfc-dism-generator/" },
+          { label: "Event Log commands: find errors and reboots", href: "/windows/event-log-commands/" },
+          { label: "Robocopy: migrate file servers safely", href: "/windows/robocopy-generator/" },
+          { label: "BitLocker: status, protectors and recovery keys", href: "/windows/bitlocker-command-generator/" },
+        ]}
+      />
 
       <section class="section" id="windows-tools">
         <div class="container">
@@ -360,71 +362,6 @@ const benefits = [
 
     <Footer />
 
-    <footer>
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <a class="footer-logo" href="/">
-              <img class="footer-logo-icon" src="/brand/mark.svg" width="40" height="40" alt="" aria-hidden="true" />
-              <span>Gokuruvi Tools</span>
-            </a>
-
-            <p>
-              Free Linux, DevOps, Kubernetes, network, cloud, Windows and security
-              utilities for administrators, engineers and IT professionals.
-            </p>
-          </div>
-
-          <div>
-            <h3 class="footer-title">Windows Tools</h3>
-
-            <div class="footer-links">
-              <a href="/windows/powershell-generator">PowerShell Generator</a>
-              <a href="/windows/command-generator">Command Generator</a>
-              <a href="/windows/service-command-generator">Service Generator</a>
-              <a href="/windows/tcp-port-tester">Port Checker</a>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="footer-title">Administration</h3>
-
-            <div class="footer-links">
-              <a href="/windows/firewall-rule-generator">Firewall Generator</a>
-              <a href="/windows/user-management-generator">User Management</a>
-              <a href="/windows/event-log-commands">Event Log Commands</a>
-              <a href="/windows/rdp-troubleshooter">RDP Troubleshooter</a>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="footer-title">Categories</h3>
-
-            <div class="footer-links">
-              <a href="/linux/">Linux Tools</a>
-              <a href="/devops/">DevOps Tools</a>
-              <a href="/kubernetes/">Kubernetes Tools</a>
-              <a href="/network/">Network Tools</a>
-              <a href="/cloud/">Cloud Tools</a>
-              <a href="/windows/">Windows Tools</a>
-              <a href="/about/">About</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="footer-bottom">
-          <span>
-            © {new Date().getFullYear()} Gokuruvi Tools. All rights reserved.
-          </span>
-
-          <div class="footer-bottom-links">
-            <a href="/privacy-policy/">Privacy</a>
-            <a href="/terms/">Terms</a>
-            <a href="/disclaimer/">Disclaimer</a>
-          </div>
-        </div>
-      </div>
-    </footer>
   </body>
 </html>
 

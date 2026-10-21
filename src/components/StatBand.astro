@@ -42,12 +42,13 @@ const { title, stats } = Astro.props;
 
   .sb-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 24px 40px;
   }
 
   .sb-stat {
     display: flex;
+    flex-wrap: wrap; /* long values like "100%" push the label below instead of squeezing it */
     align-items: center;
     gap: 16px;
     min-width: 0;
@@ -70,6 +71,8 @@ const { title, stats } = Astro.props;
   }
 
   .sb-stat span {
+    flex: 1 1 140px;
+    min-width: 0;
     color: #dbe6f7;
     line-height: 1.35;
   }
