@@ -1,0 +1,6 @@
+# Security headers for static files (images, video, CSS, JS) served directly by
+# Cloudflare. Pages and API responses get the full set from src/middleware.ts.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
