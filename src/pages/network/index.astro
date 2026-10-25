@@ -1,5 +1,8 @@
 ---
 import Header from "../../components/Header.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 
 const pageTitle = "Network Tools";
 const description =
@@ -139,7 +142,16 @@ import Footer from "../../components/Footer.astro";
       href="https://www.gokuruvi.com/network/"
     />
 
+    <meta property="og:image" content="https://www.gokuruvi.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.gokuruvi.com/og-image.jpg" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
 
     <title>{pageTitle} | Gokuruvi Tools</title>
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
@@ -149,52 +161,42 @@ import Footer from "../../components/Footer.astro";
     <Header />
 
     <main>
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              Essential tools for network professionals
-            </div>
+      <BrandHero
+        title="Free Network Tools: IP, DNS, SSL, Port and Subnet Calculators"
+        line1="Master the"
+        line2="Network."
+        lead="Check your public IP, test internet speed, calculate bandwidth, inspect DNS and SSL, check ports and work with IPv4 addressing from one focused toolkit."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Network Tools" }]}
+        actions={[
+          { label: "Explore network tools", href: "#network-tools", primary: true },
+          { label: "Networking guide", href: "/guides/networking-fundamentals/" },
+        ]}
+      />
 
-            <h1>
-              Practical <span>Network Tools</span>
-            </h1>
+      <StatBand
+        title="Everything you need to check, plan and troubleshoot networks"
+        stats={[
+          { value: tools.length, label: "network tools: IP, DNS, SSL, ports and subnets" },
+          { value: 11, label: "step-by-step tool guides with real examples" },
+          { value: 7, label: "part networking and subnetting guide" },
+          { value: 0, label: "sign-ups or accounts needed" },
+        ]}
+      />
 
-            <p class="hero-description">
-              Check your public IP, test internet speed, calculate bandwidth, inspect DNS and SSL, check ports and work with IPv4 addressing from one focused toolkit.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#network-tools">
-                Explore Network Tools
-                <span aria-hidden="true">→</span>
-              </a>
-
-              <a class="button button-secondary" href="/#tool-categories">
-                Browse All Categories
-              </a>
-            </div>
-
-            <div class="hero-statistics">
-              <div class="hero-stat">
-                <strong>{tools.length}</strong>
-                <span>Free utilities</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>11</strong>
-                <span>Focused network tools</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>IPv4</strong>
-                <span>Addressing calculators</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GuideBand
+        label="Featured guide · 7 sections · 15 min read"
+        title="Networking and Subnetting Fundamentals"
+        text="How IP addresses, subnet masks, routing and NAT really work, and a step-by-step method for troubleshooting connectivity."
+        href="/guides/networking-fundamentals/"
+        secondary={{ label: "Open the subnet calculator", href: "/network/subnet-calculator/" }}
+        items={[
+          { label: "Subnet masks and CIDR notation", href: "/guides/networking-fundamentals/#masks" },
+          { label: "Sizing a subnet for how many hosts you need", href: "/guides/networking-fundamentals/#sizing" },
+          { label: "How routing decides where a packet goes", href: "/guides/networking-fundamentals/#routing" },
+          { label: "Private ranges, NAT, and why they matter", href: "/guides/networking-fundamentals/#private" },
+          { label: "Troubleshooting connectivity step by step", href: "/guides/networking-fundamentals/#troubleshoot" },
+        ]}
+      />
 
       <section class="section" id="network-tools">
         <div class="container">
