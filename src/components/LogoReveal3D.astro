@@ -1,0 +1,385 @@
+---
+// 3D logo reveal: five glossy G pieces tumble in, join into the G, then sit on the
+// brand tile. Plays once when scrolled into view, then keeps a gentle sway and glint.
+// Three.js loads from cdnjs only when this band is on the page.
+// variant "band": its own dark section with the wordmark. "hero": just the logo,
+// placed by the parent (used in the homepage hero instead of the old video).
+interface Props {
+  variant?: "band" | "hero";
+}
+const { variant = "band" } = Astro.props;
+---
+
+{variant === "hero" ? (
+  <div class="lr3-stage lr3-hero" id="lr3-stage" data-variant="hero"></div>
+) : (
+  <section class="lr3" aria-label="Gokuruvi Tools logo">
+    <div class="lr3-stage" id="lr3-stage" data-variant="band">
+      <div class="lr3-word" id="lr3-word">Gokuruvi <span>Tools</span></div>
+    </div>
+  </section>
+)}
+
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script is:inline>
+(function () {
+  const stage = document.getElementById("lr3-stage");
+  const word = document.getElementById("lr3-word");
+  const showWord = (on) => { if (word) word.style.clipPath = on; };
+  if (!stage || !window.THREE) { showWord("none"); return; }
+  const isHero = stage.dataset.variant === "hero"; // hero: no wordmark, logo centred
+
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+  catch (e) { showWord("none"); return; }
+  renderer.setPixelRatio(Math.max(1.5, Math.min(window.devicePixelRatio || 1, 2)));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.95;
+  stage.insertBefore(renderer.domElement, word);  // word is null in the hero, so this appends
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 1, 1000);
+  const camY = isHero ? 0 : 8;
+  camera.position.set(0, camY, 205);
+  camera.lookAt(0, camY, 0);
+
+  // Studio reflections: a dark room with softbox panels, baked into an environment map.
+  (function studio() {
+    const env = new THREE.Scene();
+    env.add(new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshBasicMaterial({ color: 0x05080f, side: THREE.BackSide })));
+    const panel = (w, h, rgb, x, y, z) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+      m.material.color.setRGB(rgb[0], rgb[1], rgb[2]);
+      m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m);
+    };
+    panel(120, 60, [6, 6, 6.4], -40, 90, 60);     // big top-left softbox
+    panel(20, 140, [1.2, 4.2, 5], 95, 0, 30);     // cyan strip, right
+    panel(20, 140, [0.8, 1.6, 5], -95, -10, 20);  // blue strip, left
+    panel(80, 30, [0.35, 0.4, 0.5], 0, -60, 95);  // faint low front fill
+    panel(60, 20, [1.5, 3.5, 4.5], 30, 40, -95);  // back rim
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(env, 0.035).texture;
+    pmrem.dispose();
+  })();
+
+  scene.add(new THREE.HemisphereLight(0xcfe8ff, 0x0b1220, 0.2));
+  const key = new THREE.DirectionalLight(0xffffff, 0.9);
+  key.position.set(-50, 70, 120);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.camera.left = key.shadow.camera.bottom = -50;
+  key.shadow.camera.right = key.shadow.camera.top = 50;
+  key.shadow.camera.near = 10;
+  key.shadow.camera.far = 400;
+  key.shadow.bias = -0.0006;
+  key.shadow.radius = 6;
+  scene.add(key);
+  const sweep = new THREE.PointLight(0xe0f7ff, 0, 140, 2);
+  scene.add(sweep);
+  const rim = new THREE.DirectionalLight(0x67e8f9, 0.6);
+  rim.position.set(90, -40, -60);
+  scene.add(rim);
+  const fill = new THREE.PointLight(0x3b82f6, 0.5, 400);
+  fill.position.set(60, 20, 90);
+  scene.add(fill);
+
+  // G geometry from /brand/mark.svg, centred, y flipped to point up.
+  const R = 17.5, r = 11.3, START = 33.3, END = 322, N = 5, STEP = (END - START) / N;
+  const D = Math.PI / 180;
+  const extrude = { depth: 4, bevelEnabled: true, bevelThickness: 1, bevelSize: 0.6, bevelSegments: 8, curveSegments: 72 };
+
+  function sectorShape(a1, a2) {
+    const s = new THREE.Shape();
+    s.moveTo(R * Math.cos(-a1 * D), R * Math.sin(-a1 * D));
+    s.absarc(0, 0, R, -a1 * D, -a2 * D, true);
+    s.lineTo(r * Math.cos(-a2 * D), r * Math.sin(-a2 * D));
+    s.absarc(0, 0, r, -a2 * D, -a1 * D, false);
+    return s;
+  }
+  function barShape() {
+    const s = new THREE.Shape();
+    s.moveTo(3.333, 0);
+    s.lineTo(17.5, 0);
+    s.absarc(0, 0, R, 0, -START * D, true);
+    s.lineTo(9.447, -6.2);
+    s.lineTo(3.333, -6.2);
+    s.absarc(3.333, -3.1, 3.1, -Math.PI / 2, Math.PI / 2, true);
+    return s;
+  }
+  function fullShape() {
+    const s = new THREE.Shape();
+    s.moveTo(R * Math.cos(38 * D), R * Math.sin(38 * D));
+    s.absarc(0, 0, R, 38 * D, 2 * Math.PI, false);
+    s.lineTo(3.333, 0);
+    s.absarc(3.333, -3.1, 3.1, Math.PI / 2, 1.5 * Math.PI, false);
+    s.lineTo(9.447, -6.2);
+    s.absarc(0, 0, r, -START * D, -END * D, true);
+    return s;
+  }
+  function roundedRect(w, h, rad) {
+    const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+    s.moveTo(x + rad, y);
+    s.lineTo(x + w - rad, y); s.quadraticCurveTo(x + w, y, x + w, y + rad);
+    s.lineTo(x + w, y + h - rad); s.quadraticCurveTo(x + w, y + h, x + w - rad, y + h);
+    s.lineTo(x + rad, y + h); s.quadraticCurveTo(x, y + h, x, y + h - rad);
+    s.lineTo(x, y + rad); s.quadraticCurveTo(x, y, x + rad, y);
+    return s;
+  }
+  function solid(shape, opts, mat) {
+    const g = new THREE.ExtrudeGeometry(shape, opts);
+    g.computeBoundingBox();
+    const c = new THREE.Vector3(); g.boundingBox.getCenter(c);
+    g.translate(-c.x, -c.y, -c.z);
+    const m = new THREE.Mesh(g, mat);
+    m.castShadow = true;
+    m.userData.home = c;
+    return m;
+  }
+  const col = (hex) => new THREE.Color(hex).convertSRGBToLinear();
+  const glossy = (hex) => new THREE.MeshPhysicalMaterial({ color: col(hex), roughness: 0.2, metalness: 0.08, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.25 });
+
+  const mark = new THREE.Group();
+  const spin = new THREE.Group();
+  mark.add(spin);
+  scene.add(mark);
+
+  const CYAN = col(0x22d3ee), BLUE = col(0x3b82f6), WHITE = col(0xf8fbff);
+  const pieces = [];
+  for (let i = 0; i < N; i++) {
+    const a1 = START + i * STEP, a2 = a1 + STEP, mid = (a1 + a2) / 2;
+    const m = solid(sectorShape(a1 - 0.15, a2 + 0.15), extrude, glossy(i % 2 ? 0x3b82f6 : 0x22d3ee));
+    m.userData.mid = -mid * D;
+    m.userData.base = i % 2 ? BLUE : CYAN;
+    spin.add(m);
+    pieces.push(m);
+  }
+  const bar = solid(barShape(), extrude, glossy(0x22d3ee));
+  mark.add(bar);
+  const full = solid(fullShape(), extrude, glossy(0xffffff));
+  full.visible = false;
+  mark.add(full);
+
+  function tileTexture() {
+    const c = document.createElement("canvas"); c.width = c.height = 512;
+    const g = c.getContext("2d");
+    const lin = g.createLinearGradient(0, 0, 512, 512);
+    lin.addColorStop(0, "#4f8ff7"); lin.addColorStop(0.55, "#2563eb"); lin.addColorStop(1, "#1e3a8a");
+    g.fillStyle = lin; g.fillRect(0, 0, 512, 512);
+    const glow = g.createRadialGradient(256, 190, 0, 256, 190, 300);
+    glow.addColorStop(0, "rgba(125,211,252,.45)"); glow.addColorStop(1, "rgba(125,211,252,0)");
+    g.fillStyle = glow; g.fillRect(0, 0, 512, 512);
+    const tex = new THREE.CanvasTexture(c);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    tex.repeat.set(1 / 64, 1 / 64); tex.offset.set(0.5, 0.5);
+    return tex;
+  }
+  const tile = solid(roundedRect(64, 64, 15), { depth: 6, bevelEnabled: true, bevelThickness: 1.8, bevelSize: 1.6, bevelSegments: 10, curveSegments: 48 },
+    new THREE.MeshPhysicalMaterial({ map: tileTexture(), roughness: 0.3, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.1, envMapIntensity: 0.7, transparent: true }));
+  tile.castShadow = false;
+  tile.receiveShadow = true;
+  tile.userData.home.set(0, 0, -5.2);
+  mark.add(tile);
+
+  function glowTexture() {
+    const c = document.createElement("canvas"); c.width = c.height = 256;
+    const g = c.getContext("2d"), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    gr.addColorStop(0, "rgba(59,130,246,.9)"); gr.addColorStop(.4, "rgba(34,211,238,.25)"); gr.addColorStop(1, "rgba(34,211,238,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+    return new THREE.CanvasTexture(c);
+  }
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(150, 150),
+    new THREE.MeshBasicMaterial({ map: glowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }));
+  halo.position.z = -30;
+  scene.add(halo);
+
+  const dust = (function () {
+    const n = 160, pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      pos[i * 3] = (Math.random() - .5) * 180; pos[i * 3 + 1] = (Math.random() - .5) * 180; pos[i * 3 + 2] = -60 + Math.random() * 90;
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const c = document.createElement("canvas"); c.width = c.height = 32;
+    const x = c.getContext("2d"), gr = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = gr; x.fillRect(0, 0, 32, 32);
+    const p = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.4, map: new THREE.CanvasTexture(c), color: 0x9fd8f4, transparent: true, opacity: .45, depthWrite: false }));
+    scene.add(p);
+    return p;
+  })();
+
+  const guideMat = () => new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.7 });
+  function circle(rad) {
+    const pts = [];
+    for (let k = 0; k <= 128; k++) { const a = Math.PI / 2 - k / 128 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * rad, Math.sin(a) * rad, -1)); }
+    return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), guideMat());
+  }
+  function dashed(a, b) {
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]),
+      new THREE.LineDashedMaterial({ color: 0x94a3b8, dashSize: 1.2, gapSize: 1.6, transparent: true, opacity: 0 }));
+    l.computeLineDistances();
+    return l;
+  }
+  const c1 = circle(30), c2 = circle(9);
+  const l1 = dashed(new THREE.Vector3(-42, 0, -1), new THREE.Vector3(42, 0, -1));
+  const l2 = dashed(new THREE.Vector3(0, -42, -1), new THREE.Vector3(0, 42, -1));
+  scene.add(c1, c2, l1, l2);
+
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const prog = (t, a, b) => clamp((t - a) / (b - a));
+  const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+  const easeInOut = (p) => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const back = (p) => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+  const axis = new THREE.Vector3(), tmp = new THREE.Color();
+
+  // t runs on after the build: the logo keeps swaying and a glint crosses it every 6 seconds.
+  function render(t) {
+    const draw = easeOut(prog(t, 150, 1400));
+    c1.geometry.setDrawRange(0, Math.floor(129 * draw));
+    c2.geometry.setDrawRange(0, Math.floor(129 * draw));
+    const gFade = 1 - prog(t, 3900, 4500);
+    c1.material.opacity = c2.material.opacity = 0.7 * gFade;
+    l1.material.opacity = 0.7 * prog(t, 300, 900) * gFade;
+    l2.material.opacity = 0.7 * prog(t, 400, 1000) * gFade;
+
+    const settle = easeOut(prog(t, 900, 3700));
+    spin.rotation.z = (1 - settle) * -3 * Math.PI;
+    spin.rotation.x = (1 - easeInOut(prog(t, 900, 3500))) * -0.95;
+    const spread = 9 * (1 - easeInOut(prog(t, 2700, 3700)));
+    const toWhite = easeInOut(prog(t, 4300, 5000));
+    pieces.forEach((m, i) => {
+      const s = Math.max(back(prog(t, 900 + i * 130, 1500 + i * 130)), 0.001);
+      const h = m.userData.home, a = m.userData.mid;
+      m.position.set(h.x + spread * Math.cos(a), h.y + spread * Math.sin(a), h.z + spread * 0.6 * Math.sin(i * 1.3));
+      m.scale.setScalar(s);
+      axis.set(Math.cos(a), Math.sin(a), 0);
+      m.quaternion.setFromAxisAngle(axis, (1 - easeInOut(prog(t, 1000, 3600))) * Math.PI * 2);
+      m.visible = t < 4600;
+      m.material.color.copy(tmp.copy(m.userData.base).lerp(WHITE, toWhite));
+    });
+
+    const b = easeOut(prog(t, 3600, 4200));
+    bar.position.set(bar.userData.home.x + 22 * (1 - b), bar.userData.home.y, bar.userData.home.z + 10 * (1 - b));
+    bar.rotation.y = (1 - b) * -1.2;
+    bar.scale.setScalar(Math.max(b, 0.001));
+    bar.visible = t < 4600;
+    bar.material.color.copy(tmp.copy(CYAN).lerp(WHITE, toWhite));
+
+    full.visible = t >= 4600;
+    full.position.copy(full.userData.home);
+
+    const tp = back(prog(t, 4300, 5000));
+    tile.visible = t >= 4300;
+    tile.material.opacity = prog(t, 4300, 4600);
+    tile.material.transparent = tile.material.opacity < 1;
+    tile.scale.setScalar(Math.max(0.55 + 0.45 * tp, 0.001));
+    tile.position.copy(tile.userData.home);
+
+    const mk = easeInOut(prog(t, 4600, 5300));
+    mark.scale.setScalar(1 - (isHero ? 0.06 : 0.2) * mk);
+    mark.position.y = (isHero ? 0 : 6) * mk;
+    const sway = easeInOut(prog(t, 5000, 5800));
+    mark.rotation.y = Math.sin((t - 5000) / 650) * 0.42 * sway;
+    mark.rotation.x = Math.sin((t - 5000) / 900) * 0.12 * sway;
+
+    camera.position.z = 228 - 23 * easeInOut(prog(t, 0, 5200));
+    halo.material.opacity = 0.32 * prog(t, 3400, 5000) + 0.08 * prog(t, 900, 2000);
+    const gl = t < 5600 ? 0 : prog((t - 5600) % 6000, 0, 1400);
+    sweep.position.set(-70 + 140 * easeInOut(gl), 30 - 40 * gl, 45);
+    sweep.intensity = 1.6 * Math.sin(Math.PI * gl);
+    dust.rotation.y = t / 30000; dust.rotation.x = t / 60000;
+
+    const w = easeInOut(prog(t, 5200, 6100));
+    showWord("inset(0 " + (100 * (1 - w)).toFixed(2) + "% 0 0)");
+
+    renderer.render(scene, camera);
+  }
+
+  function resize() {
+    const s = stage.clientWidth;
+    renderer.setSize(s, s, false);
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  // Start the build when the band scrolls into view; stop drawing while it is off screen.
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let start = 0, visible = false, raf = 0;
+  function frame(now) {
+    if (!start) start = now;
+    render(reduce ? 7000 : now - start);
+    if (visible && !reduce) raf = requestAnimationFrame(frame);
+  }
+  render(0);
+  new IntersectionObserver((entries) => {
+    visible = entries[0].isIntersecting;
+    cancelAnimationFrame(raf);
+    if (visible) raf = requestAnimationFrame(frame);
+  }, { threshold: 0.35 }).observe(stage);
+})();
+</script>
+
+<style>
+  .lr3 {
+    padding: 56px 0 8px;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(37, 99, 235, 0.18), transparent 55%),
+      #0b1220;
+  }
+
+  .lr3-stage {
+    position: relative;
+    container-type: inline-size;
+    width: min(calc(100% - 32px), 520px);
+    max-width: 100%;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  /* blueprint grid that fades out toward the edges */
+  .lr3-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px) 0 0 / 26px 26px,
+      linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px) 0 0 / 26px 26px;
+    -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  }
+
+  /* hero: no grid, transparent over the hero's own glow and pixels */
+  .lr3-hero::before {
+    display: none;
+  }
+
+  .lr3-stage :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .lr3-word {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8%;
+    color: #e6edf8;
+    text-align: center;
+    white-space: nowrap;
+    font: 800 7.4cqw/1 "Unbounded", "Arial Black", sans-serif;
+    letter-spacing: -0.01em;
+    clip-path: inset(0 100% 0 0);
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+  }
+
+  .lr3-word span {
+    color: #22d3ee;
+  }
+</style>

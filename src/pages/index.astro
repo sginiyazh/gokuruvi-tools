@@ -1,5 +1,6 @@
 ---
 import Header from "../components/Header.astro";
+import LogoReveal3D from "../components/LogoReveal3D.astro";
 import Footer from "../components/Footer.astro";
 import { tools, categoryMeta, toolCount } from "../data/tools";
 
@@ -1364,17 +1365,13 @@ const pageDescription =
         height: 100%;
       }
 
-      .gx-orb {
+      /* 3D logo, lined up with the 1180px content area so it sits beside the headline */
+      .gx-logo3d {
         position: absolute;
-        right: 3%;
-        top: 50%;
-        width: min(50vw, 600px);
-        aspect-ratio: 1;
-        height: auto;
-        object-fit: cover;
+        right: max(3%, calc((100% - 1180px) / 2));
+        top: 54%;
+        width: min(32vw, 420px);
         transform: translateY(-50%);
-        -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
-        mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
       }
 
       .gx-inner {
@@ -1383,7 +1380,7 @@ const pageDescription =
         align-content: center;
         gap: 22px;
         min-height: 620px;
-        padding-top: 56px;
+        padding-top: 140px;
         padding-bottom: 64px;
       }
 
@@ -1649,10 +1646,10 @@ const pageDescription =
           display: none;
         }
 
-        .gx-orb {
+        .gx-logo3d {
           left: 50%;
           right: auto;
-          width: 320px;
+          width: 300px;
           transform: translate(-50%, -50%);
         }
       }
@@ -1671,20 +1668,7 @@ const pageDescription =
       <section class="gx-hero" aria-labelledby="gx-title">
         <div class="gx-bg" aria-hidden="true">
           <canvas class="gx-pixels"></canvas>
-          <video
-            class="gx-orb"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            poster="/brand/g-poster.jpg"
-            width="720"
-            height="720"
-          >
-            <source src="/brand/g-spin.mp4" type="video/mp4" />
-            <source src="/brand/g-spin.webm" type="video/webm" />
-          </video>
+          <div class="gx-logo3d"><LogoReveal3D variant="hero" /></div>
         </div>
 
         <div class="container gx-inner">
@@ -2140,15 +2124,9 @@ const pageDescription =
     <Footer />
 
     <script>
-      // Hero: pixel-mosaic glow at the edges, and a still G for reduced-motion visitors.
+      // Hero: pixel-mosaic glow at the edges (the 3D logo handles reduced motion itself).
       const gxHero = document.querySelector<HTMLElement>(".gx-hero");
       const gxCanvas = document.querySelector<HTMLCanvasElement>(".gx-pixels");
-      const gxVideo = document.querySelector<HTMLVideoElement>(".gx-orb");
-
-      if (gxVideo && matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gxVideo.removeAttribute("autoplay");
-        gxVideo.pause();
-      }
 
       function drawGxPixels() {
         if (!gxHero || !gxCanvas || getComputedStyle(gxCanvas).display === "none") return;
