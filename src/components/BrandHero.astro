@@ -24,6 +24,9 @@ interface Props {
 const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb = [] } = Astro.props;
 ---
 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
+
 <section class:list={["bh", { "bh-no-media": !video }]}>
   <div class="bh-bg" aria-hidden="true">
     <canvas class="bh-pixels"></canvas>

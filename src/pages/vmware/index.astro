@@ -1,11 +1,49 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 const title = "VMware Tools";
 const description = "Free VMware vSphere, ESXi and vCenter utilities: VM sizing and cluster capacity calculator, datastore capacity calculator, PowerCLI command generator, snapshot command generator and a port reference.";
 ---
 <Layout title={title} description={description}>
-<section class="hero"><div class="container"><span class="badge">Virtualization</span><h1>VMware Tools</h1><p>Free utilities for vSphere, ESXi and vCenter administrators — capacity planning, PowerCLI command generation and quick references for the tasks you handle every day.</p><div class="stats"><div class="stat"><strong>5</strong><span>Essential utilities</span></div><div class="stat"><strong>Free</strong><span>Browser-based tools</span></div><div class="stat"><strong>Practical</strong><span>Built for IT operations</span></div></div></div></section>
-<section class="section"><div class="container"><div class="section-head"><span class="label">Essential Utilities</span><h2>Choose a tool</h2><p>Focused utilities for day-to-day vSphere administration, capacity planning and troubleshooting.</p></div><div class="grid">
+<BrandHero
+  title="Free VMware vSphere, ESXi and vCenter Tools"
+  line1="Master"
+  line2="vSphere."
+  lead="Free utilities for vSphere, ESXi and vCenter administrators: capacity planning, PowerCLI command generation and quick references for the tasks you handle every day."
+  breadcrumb={[{ label: "Home", href: "/" }, { label: "VMware Tools" }]}
+  actions={[
+    { label: "Explore VMware tools", href: "#vmware-tools", primary: true },
+    { label: "Browse all categories", href: "/#tool-categories" },
+  ]}
+/>
+
+<StatBand
+  title="Everything you need for day-to-day vSphere administration"
+  stats={[
+    { value: 5, label: "VMware tools for capacity, storage, PowerCLI and snapshots" },
+    { value: 5, label: "step-by-step tool guides with real examples" },
+    { value: 24, label: "vCenter, ESXi, vMotion and vSAN ports in the reference" },
+    { value: 0, label: "sign-ups or accounts needed" },
+  ]}
+/>
+
+<GuideBand
+  label="Start here · admin favourites"
+  title="Plan, protect and automate your vSphere estate"
+  text="Size clusters before you buy hosts, keep datastores below their alarm thresholds, script routine work with PowerCLI and handle snapshots without filling storage."
+  href="#vmware-tools"
+  cta="Browse all VMware tools"
+  items={[
+    { label: "VM sizing: how many VMs will this cluster run?", href: "/vmware/vm-sizing-calculator/" },
+    { label: "Datastore capacity: free space and thin overcommit", href: "/vmware/datastore-capacity-calculator/" },
+    { label: "PowerCLI: power, vMotion, resize and queries", href: "/vmware/powercli-command-generator/" },
+    { label: "Snapshots: create, remove and consolidate safely", href: "/vmware/snapshot-command-generator/" },
+    { label: "Port reference: vCenter, ESXi, vMotion, vSAN", href: "/vmware/port-reference/" },
+  ]}
+/>
+<section class="section" id="vmware-tools"><div class="container"><div class="section-head"><span class="label">Essential Utilities</span><h2>Choose a tool</h2><p>Focused utilities for day-to-day vSphere administration, capacity planning and troubleshooting.</p></div><div class="grid">
 <a class="card" href="/vmware/vm-sizing-calculator/"><div class="icon" aria-hidden="true">🧮</div><span class="tag">Capacity Planning</span><h3>VM Sizing &amp; Cluster Capacity Calculator</h3><p>Estimate how many VMs a cluster can support based on host specs, overcommit ratios and HA reserve.</p><span class="arrow">Open tool →</span></a>
 <a class="card" href="/vmware/datastore-capacity-calculator/"><div class="icon" aria-hidden="true">💽</div><span class="tag">Storage</span><h3>Datastore Capacity Calculator</h3><p>Calculate usable free space, thin-provisioning overcommit and how many more VMs will fit safely.</p><span class="arrow">Open tool →</span></a>
 <a class="card" href="/vmware/powercli-command-generator/"><div class="icon" aria-hidden="true">💻</div><span class="tag">Automation</span><h3>PowerCLI Command Generator</h3><p>Generate PowerCLI commands for power operations, vMotion, resizing and resource queries.</p><span class="arrow">Open tool →</span></a>
