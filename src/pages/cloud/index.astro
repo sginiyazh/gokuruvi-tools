@@ -1,5 +1,8 @@
 ---
 import Header from "../../components/Header.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 
 const cloudTools = [
   {
@@ -76,8 +79,6 @@ const cloudTools = [
   },
 ];
 
-const featuredTools = cloudTools.slice(0, 4);
-
 const pageTitle = "Free Cloud Tools for AWS, Azure and Terraform | Gokuruvi";
 const pageDescription =
   "Free cloud engineering tools for AWS, Microsoft Azure, Terraform and Linux cloud administrators. Generate cloud-init, IAM policies, security rules and Terraform configuration.";
@@ -100,9 +101,14 @@ import Footer from "../../components/Footer.astro";
     <meta property="og:type" content="website" />
     <meta property="og:url" content={siteUrl} />
     <meta property="og:site_name" content="Gokuruvi Tools" />
+    <meta property="og:image" content="https://www.gokuruvi.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <link rel="canonical" href={siteUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
 
     <title>{pageTitle}</title>
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
@@ -112,78 +118,42 @@ import Footer from "../../components/Footer.astro";
     <Header />
 
     <main>
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              Free tools for cloud engineers
-            </div>
+      <BrandHero
+        title="Free Cloud Tools for AWS, Azure and Terraform"
+        line1="Master the"
+        line2="Cloud."
+        lead="Generate cloud-init configurations, Terraform providers, backends and variables, AWS IAM policies and security rules, and parse AWS ARNs and Azure resource IDs, all in your browser."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Cloud Tools" }]}
+        actions={[
+          { label: "Explore cloud tools", href: "#cloud-tools", primary: true },
+          { label: "Cloud migration guide", href: "/guides/cloud-migration-guide/" },
+        ]}
+      />
 
-            <h1>Practical <span>Cloud Tools</span></h1>
+      <StatBand
+        title="Everything you need to build and secure cloud infrastructure"
+        stats={[
+          { value: cloudTools.length, label: "cloud tools for AWS, Azure, Terraform and cloud-init" },
+          { value: 9, label: "step-by-step tool guides with real examples" },
+          { value: 7, label: "part cloud migration guide" },
+          { value: 0, label: "sign-ups or accounts needed" },
+        ]}
+      />
 
-            <p class="hero-description">
-              Generate cloud-init configurations, Terraform templates, AWS IAM
-              policies, security rules, cost estimates and Azure resource
-              information using simple browser-based utilities.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#cloud-tools">
-                Explore Cloud Tools <span aria-hidden="true">→</span>
-              </a>
-
-              <a class="button button-secondary" href="/#tool-categories">
-                Browse All Categories
-              </a>
-            </div>
-
-            <div class="hero-statistics">
-              <div class="hero-stat">
-                <strong>{cloudTools.length}</strong>
-                <span>Free cloud tools</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>AWS</strong>
-                <span>IAM and security tools</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>Azure</strong>
-                <span>NSG and resource tools</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section-white">
-        <div class="container">
-          <div class="section-heading">
-            <span class="section-label">Featured Utilities</span>
-            <h2>Popular tools for everyday cloud administration</h2>
-            <p>
-              Start with commonly used generators for cloud virtual machines,
-              Terraform projects, AWS and Azure.
-            </p>
-          </div>
-
-          <div class="featured-grid">
-            {
-              featuredTools.map((tool) => (
-                <a class="featured-card" href={tool.link}>
-                  <div class="featured-icon" aria-hidden="true">{tool.icon}</div>
-                  <span class="tool-badge">{tool.badge}</span>
-                  <h3>{tool.title}</h3>
-                  <p>{tool.description}</p>
-                  <span class="open-tool">Open tool <span>→</span></span>
-                </a>
-              ))
-            }
-          </div>
-        </div>
-      </section>
+      <GuideBand
+        label="Featured guide · 7 sections · 13 min read"
+        title="Cloud Migration Guide"
+        text="How to plan a move to AWS, Azure or Google Cloud: account structure, network design, choosing a strategy per workload, moving data and cutting over with a real rollback path."
+        href="/guides/cloud-migration-guide/"
+        secondary={{ label: "Open the Terraform provider generator", href: "/cloud/terraform-provider-generator/" }}
+        items={[
+          { label: "Start with account structure, not workloads", href: "/guides/cloud-migration-guide/#landing-zone" },
+          { label: "Design the network before you migrate anything", href: "/guides/cloud-migration-guide/#network" },
+          { label: "Choosing a migration strategy per workload", href: "/guides/cloud-migration-guide/#strategy" },
+          { label: "Plan the cutover with a real rollback path", href: "/guides/cloud-migration-guide/#cutover" },
+          { label: "Common pitfalls that turn into incidents", href: "/guides/cloud-migration-guide/#pitfalls" },
+        ]}
+      />
 
       <section class="section" id="cloud-tools">
         <div class="container">
@@ -286,88 +256,6 @@ import Footer from "../../components/Footer.astro";
     margin-inline: auto;
   }
 
-  .hero {
-    position: relative;
-    overflow: hidden;
-    padding: 105px 0 92px;
-    background:
-      radial-gradient(circle at 15% 15%, rgba(56,189,248,.2), transparent 32%),
-      radial-gradient(circle at 88% 25%, rgba(37,99,235,.2), transparent 34%),
-      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f8fafc 100%);
-  }
-
-  .hero::before {
-    position: absolute;
-    inset: 0;
-    content: "";
-    background-image:
-      linear-gradient(rgba(37,99,235,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(37,99,235,.045) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: linear-gradient(to bottom, black, transparent);
-    pointer-events: none;
-  }
-
-  .hero-content {
-    position: relative;
-    max-width: 900px;
-    margin: auto;
-    text-align: center;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 24px;
-    padding: 8px 16px;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
-    background: rgba(255,255,255,.86);
-    color: #1d4ed8;
-    font-size: 14px;
-    font-weight: 800;
-  }
-
-  .badge-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #16a34a;
-    box-shadow: 0 0 0 5px rgba(22,163,74,.12);
-  }
-
-  .hero h1 {
-    margin: 0 auto 22px;
-    color: #0f172a;
-    font-size: clamp(43px, 7vw, 72px);
-    line-height: 1.06;
-    letter-spacing: -2.5px;
-  }
-
-  .hero h1 span {
-    background: linear-gradient(90deg, #2563eb, #0284c7);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-
-  .hero-description {
-    max-width: 790px;
-    margin: auto;
-    color: #475569;
-    font-size: clamp(18px, 2.5vw, 21px);
-    line-height: 1.8;
-  }
-
-  .hero-actions {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 36px;
-  }
-
   .button {
     display: inline-flex;
     min-height: 50px;
@@ -384,37 +272,6 @@ import Footer from "../../components/Footer.astro";
   }
 
   .button:hover { transform: translateY(-2px); }
-  .button-primary {
-    background: #2563eb;
-    color: white;
-    box-shadow: 0 12px 30px rgba(37,99,235,.26);
-  }
-  .button-secondary {
-    border-color: #cbd5e1;
-    background: white;
-    color: #0f172a;
-  }
-
-  .hero-statistics {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    margin-top: 42px;
-  }
-
-  .hero-stat { min-width: 145px; }
-  .hero-stat strong {
-    display: block;
-    color: #0f172a;
-    font-size: 25px;
-  }
-  .hero-stat span {
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 650;
-  }
-
   .section { padding: 92px 0; }
   .section-white { background: white; }
 
@@ -448,19 +305,12 @@ import Footer from "../../components/Footer.astro";
     line-height: 1.75;
   }
 
-  .featured-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0,1fr));
-    gap: 22px;
-  }
-
   .tools-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
     gap: 24px;
   }
 
-  .featured-card,
   .tool-card {
     position: relative;
     display: flex;
@@ -475,17 +325,14 @@ import Footer from "../../components/Footer.astro";
     transition: .25s ease;
   }
 
-  .featured-card { min-height: 315px; }
   .tool-card { min-height: 310px; }
 
-  .featured-card:hover,
   .tool-card:hover {
     border-color: #93c5fd;
     box-shadow: 0 24px 50px rgba(37,99,235,.14);
     transform: translateY(-8px);
   }
 
-  .featured-icon,
   .tool-icon {
     display: grid;
     width: 58px;
@@ -504,11 +351,6 @@ import Footer from "../../components/Footer.astro";
     margin-bottom: 22px;
   }
 
-  .featured-card .tool-badge {
-    align-self: flex-start;
-    margin: 18px 0 0;
-  }
-
   .tool-badge {
     padding: 5px 10px;
     border: 1px solid #dbeafe;
@@ -520,7 +362,6 @@ import Footer from "../../components/Footer.astro";
     text-transform: uppercase;
   }
 
-  .featured-card h3,
   .tool-card h3 {
     margin: 16px 0 11px;
     color: #0f172a;
@@ -528,7 +369,6 @@ import Footer from "../../components/Footer.astro";
     line-height: 1.3;
   }
 
-  .featured-card p,
   .tool-card p {
     flex: 1;
     margin: 0 0 22px;
@@ -685,7 +525,6 @@ import Footer from "../../components/Footer.astro";
   }
 
   @media (max-width: 1050px) {
-    .featured-grid,
     .tools-grid,
     .benefits-grid {
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -697,25 +536,20 @@ import Footer from "../../components/Footer.astro";
   }
 
   @media (max-width: 760px) {
-    .hero { padding: 78px 0 70px; }
     .section { padding: 72px 0; }
     .footer-bottom { flex-direction: column; }
   }
 
   @media (max-width: 560px) {
     .container { width: min(100% - 28px, 1180px); }
-    .hero h1 { font-size: 41px; letter-spacing: -1.4px; }
-    .hero-actions { flex-direction: column; }
     .button { width: 100%; }
 
-    .featured-grid,
     .tools-grid,
     .benefits-grid,
     .footer-grid {
       grid-template-columns: 1fr;
     }
 
-    .featured-card,
     .tool-card {
       min-height: auto;
       padding: 25px;
