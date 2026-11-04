@@ -36,6 +36,7 @@ export default defineConfig({
   site: "https://www.gokuruvi.com",
   output: "server",
   adapter: cloudflare(),
+  build: { inlineStylesheets: "always" },
   integrations: [
     sitemap({
       filter: (page) => !page.includes("/guides/rhel-reset-root-password/"),

@@ -1,4 +1,5 @@
 ---
+import FontUnbounded from "./FontUnbounded.astro";
 // Dark brand hero used on category pages: pixel glow, a spinning 3D glass object
 // (pre-rendered video with a still poster), a giant two-line headline and actions.
 // The <h1> carries the SEO title; the giant headline is decorative.
@@ -24,8 +25,8 @@ interface Props {
 const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb = [] } = Astro.props;
 ---
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap" />
+<FontUnbounded />
+
 
 <section class:list={["bh", { "bh-no-media": !video }]}>
   <div class="bh-bg" aria-hidden="true">

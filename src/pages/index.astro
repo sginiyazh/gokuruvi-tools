@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
-import LogoReveal3D from "../components/LogoReveal3D.astro";
+import LogoVideo from "../components/LogoVideo.astro";
+import FontUnbounded from "../components/FontUnbounded.astro";
 import Footer from "../components/Footer.astro";
 import { tools, categoryMeta, toolCount } from "../data/tools";
 
@@ -151,6 +152,7 @@ const pageDescription =
 <!doctype html>
 <html lang="en">
   <head>
+    <FontUnbounded />
     <meta charset="UTF-8" />
 
     <meta
@@ -229,12 +231,6 @@ const pageDescription =
 
     <title>{pageTitle}</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap"
-    />
 
     <style>
       :root {
@@ -1668,7 +1664,7 @@ const pageDescription =
       <section class="gx-hero" aria-labelledby="gx-title">
         <div class="gx-bg" aria-hidden="true">
           <canvas class="gx-pixels"></canvas>
-          <div class="gx-logo3d"><LogoReveal3D variant="hero" /></div>
+          <div class="gx-logo3d"><LogoVideo /></div>
         </div>
 
         <div class="container gx-inner">
