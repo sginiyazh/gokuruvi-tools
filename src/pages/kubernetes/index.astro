@@ -1,5 +1,8 @@
 ---
 import Header from "../../components/Header.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 
 const pageTitle = "Kubernetes Tools";
 
@@ -130,6 +133,10 @@ import Footer from "../../components/Footer.astro";
       content="https://www.gokuruvi.com/kubernetes/"
     />
 
+    <meta property="og:image" content="https://www.gokuruvi.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
     <link
       rel="canonical"
       href="https://www.gokuruvi.com/kubernetes/"
@@ -145,54 +152,43 @@ import Footer from "../../components/Footer.astro";
     <Header />
 
     <main>
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              Free tools for Kubernetes professionals
-            </div>
+      <BrandHero
+        title="Free Kubernetes YAML Generators and Helm Values Validator"
+        line1="Master"
+        line2="Kubernetes."
+        longWord
+        lead="Generate workloads, services, ingress rules, configuration, secrets, namespaces and storage manifests, and validate Helm values, all in your browser."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Kubernetes Tools" }]}
+        actions={[
+          { label: "Explore Kubernetes tools", href: "#kubernetes-tools", primary: true },
+          { label: "Deployment guide", href: "/guides/kubernetes-deployment-guide/" },
+        ]}
+      />
 
-            <h1>
-              Practical <span>Kubernetes Tools</span>
-            </h1>
+      <StatBand
+        title="Everything you need to write and check Kubernetes manifests"
+        stats={[
+          { value: tools.length, label: "Kubernetes tools for workloads, networking, config and storage" },
+          { value: 6, label: "step-by-step tool guides with real examples" },
+          { value: 8, label: "part Kubernetes deployment guide" },
+          { value: 0, label: "sign-ups or accounts needed" },
+        ]}
+      />
 
-            <p class="hero-description">
-              Generate workloads, services, ingress rules, configuration,
-              secrets, namespaces, storage manifests and validate Helm values
-              using simple browser-based utilities.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#kubernetes-tools">
-                Explore Kubernetes Tools
-                <span aria-hidden="true">→</span>
-              </a>
-
-              <a class="button button-secondary" href="/#tool-categories">
-                Browse All Categories
-              </a>
-            </div>
-
-            <div class="hero-statistics">
-              <div class="hero-stat">
-                <strong>{tools.length}</strong>
-                <span>Free tools</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>100%</strong>
-                <span>Browser based</span>
-              </div>
-
-              <div class="hero-stat">
-                <strong>0</strong>
-                <span>Registration required</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GuideBand
+        label="Featured guide · 8 sections · 16 min read"
+        title="Kubernetes Deployment Guide: Zero to Production"
+        text="Start from a minimal Deployment, then add health probes, resource limits, a safe rollout strategy and autoscaling, and learn the failure modes to know before they happen."
+        href="/guides/kubernetes-deployment-guide/"
+        secondary={{ label: "Open the Deployment generator", href: "/kubernetes/deployment-generator/" }}
+        items={[
+          { label: "Start with a minimal Deployment", href: "/guides/kubernetes-deployment-guide/#minimal" },
+          { label: "Add health probes before anything else", href: "/guides/kubernetes-deployment-guide/#probes" },
+          { label: "Set resource requests and limits", href: "/guides/kubernetes-deployment-guide/#resources" },
+          { label: "Configure a safe rollout strategy", href: "/guides/kubernetes-deployment-guide/#rollouts" },
+          { label: "The production-readiness checklist", href: "/guides/kubernetes-deployment-guide/#checklist" },
+        ]}
+      />
 
       <section class="section" id="kubernetes-tools">
         <div class="container">
@@ -318,109 +314,6 @@ import Footer from "../../components/Footer.astro";
     margin-inline: auto;
   }
 
-  .hero {
-    position: relative;
-    overflow: hidden;
-    padding: 105px 0 92px;
-    background:
-      radial-gradient(
-        circle at 15% 15%,
-        rgba(56, 189, 248, 0.2),
-        transparent 32%
-      ),
-      radial-gradient(
-        circle at 88% 25%,
-        rgba(37, 99, 235, 0.2),
-        transparent 34%
-      ),
-      linear-gradient(
-        145deg,
-        #f8fafc 0%,
-        #eff6ff 52%,
-        #f8fafc 100%
-      );
-  }
-
-  .hero::before {
-    position: absolute;
-    inset: 0;
-    content: "";
-    background-image:
-      linear-gradient(
-        rgba(37, 99, 235, 0.045) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        rgba(37, 99, 235, 0.045) 1px,
-        transparent 1px
-      );
-    background-size: 42px 42px;
-    mask-image: linear-gradient(to bottom, black, transparent);
-    pointer-events: none;
-  }
-
-  .hero-content {
-    position: relative;
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 24px;
-    padding: 8px 16px;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #1d4ed8;
-    font-size: 14px;
-    font-weight: 800;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
-  }
-
-  .badge-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #16a34a;
-    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
-  }
-
-  .hero h1 {
-    margin: 0 auto 22px;
-    color: #0f172a;
-    font-size: clamp(43px, 7vw, 72px);
-    line-height: 1.06;
-    letter-spacing: -2.5px;
-  }
-
-  .hero h1 span {
-    background: linear-gradient(90deg, #2563eb, #0284c7);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-
-  .hero-description {
-    max-width: 780px;
-    margin: 0 auto;
-    color: #475569;
-    font-size: clamp(18px, 2.5vw, 21px);
-    line-height: 1.8;
-  }
-
-  .hero-actions {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 36px;
-  }
-
   .button {
     display: inline-flex;
     min-height: 50px;
@@ -441,53 +334,6 @@ import Footer from "../../components/Footer.astro";
 
   .button:hover {
     transform: translateY(-2px);
-  }
-
-  .button-primary {
-    background: #2563eb;
-    color: #ffffff;
-    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.26);
-  }
-
-  .button-primary:hover {
-    background: #1d4ed8;
-    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.32);
-  }
-
-  .button-secondary {
-    border-color: #cbd5e1;
-    background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
-  }
-
-  .button-secondary:hover {
-    border-color: #94a3b8;
-    background: #f8fafc;
-  }
-
-  .hero-statistics {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    margin-top: 42px;
-  }
-
-  .hero-stat {
-    min-width: 130px;
-  }
-
-  .hero-stat strong {
-    display: block;
-    color: #0f172a;
-    font-size: 25px;
-  }
-
-  .hero-stat span {
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 650;
   }
 
   .section {
@@ -831,10 +677,6 @@ import Footer from "../../components/Footer.astro";
   }
 
   @media (max-width: 760px) {
-    .hero {
-      padding: 78px 0 70px;
-    }
-
     .section {
       padding: 72px 0;
     }
@@ -850,21 +692,8 @@ import Footer from "../../components/Footer.astro";
       width: min(100% - 28px, 1180px);
     }
 
-    .hero h1 {
-      font-size: 41px;
-      letter-spacing: -1.4px;
-    }
-
-    .hero-actions {
-      flex-direction: column;
-    }
-
     .button {
       width: 100%;
-    }
-
-    .hero-statistics {
-      gap: 20px;
     }
 
     .tools-grid,

@@ -21,14 +21,15 @@ interface Props {
   mediaLabel?: string;    // describes the 3D object for screen readers
   actions?: Action[];
   breadcrumb?: Crumb[];
+  longWord?: boolean;     // headline word too wide for small phones: shrink it to fit
 }
-const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb = [] } = Astro.props;
+const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb = [], longWord = false } = Astro.props;
 ---
 
 <FontUnbounded />
 
 
-<section class:list={["bh", { "bh-no-media": !video }]}>
+<section class:list={["bh", { "bh-no-media": !video, "bh-long": longWord }]}>
   <div class="bh-bg" aria-hidden="true">
     <canvas class="bh-pixels"></canvas>
     {video && (
@@ -310,6 +311,11 @@ const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb =
     /* Decorative icon chips: dropped on phones so long words keep the headline on two lines. */
     .bh-chips {
       display: none;
+    }
+
+    /* "KUBERNETES." is about 8.8em wide: fit it inside the 20px page margins. */
+    .bh-long .bh-headline {
+      font-size: min(calc((100vw - 40px) / 8.9), 4rem);
     }
 
     .bh-no-media .bh-bg {
