@@ -1,5 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
 
 const products = [
   {
@@ -86,6 +89,7 @@ const products = [
 ];
 
 const flagship = products.find((p) => p.flagship);
+const technologies = new Set(products.filter((p) => !p.flagship).map((p) => p.category)).size;
 const rest = products.filter((p) => !p.flagship);
 
 const notifyHref = (title: string) =>
@@ -100,25 +104,28 @@ const notifyHref = (title: string) =>
   title="Store"
   description="Premium study guides, cheat sheets, and interview prep bundles for Linux, DevOps, Kubernetes, Cloud, Networking, Database, Security, Windows, and AI — built from the same content that powers the free tools on this site."
 >
-  <section class="hero">
-    <div class="container hero-content">
-      <span class="badge">In development</span>
-      <h1>Premium Study Guides &amp; Resources</h1>
-      <p>
-        Structured, offline, printable versions of the guides and interview
-        prep already on this site — for people who want a study path they
-        can work through start to finish, not just a page to search.
-      </p>
-      <p class="promise">
-        Every free tool on this site stays free, permanently. These are
-        optional resources for people who want to go deeper — and the
-        revenue helps keep everything else free to use, with no
-        registration required.
-      </p>
-    </div>
-  </section>
+  <BrandHero
+    title="Premium Study Guides & Resources"
+    line1="Go"
+    line2="Deeper."
+    lead="Structured, offline, printable versions of the guides and interview prep on this site. These resources are in development and nothing is for sale yet. Every free tool on this site stays free, permanently."
+    breadcrumb={[{ label: "Home", href: "/" }, { label: "Store" }]}
+    actions={[
+      { label: "See what's planned", href: "#planned", primary: true },
+      { label: "Free guides", href: "/guides/" },
+    ]}
+  />
 
-  <section class="content">
+  <StatBand
+    title="Study resources in development"
+    stats={[
+      { value: products.length, label: "planned study guides, bundles and workbooks" },
+      { value: technologies, label: "technologies covered, from Linux to AI" },
+      { value: 0, label: "items for sale yet: click Notify me to hear first" },
+    ]}
+  />
+
+  <section class="content" id="planned">
     <div class="container">
       {flagship && (
         <article class="flagship-card">
@@ -163,12 +170,6 @@ const notifyHref = (title: string) =>
 
 <style>
   .container { width: min(calc(100% - 32px), 1140px); margin-inline: auto; }
-  .hero { padding: 64px 0 52px; text-align: center; background: radial-gradient(circle at 18% 10%, rgba(56, 189, 248, .18), transparent 35%), linear-gradient(145deg, #f8fafc, #eff6ff); }
-  .hero-content { max-width: 760px; margin: 0 auto; }
-  .badge { display: inline-flex; padding: 7px 13px; border: 1px solid #bfdbfe; border-radius: 999px; background: #fff; color: #1d4ed8; font-size: 13px; font-weight: 800; }
-  .hero h1 { margin: 16px 0 14px; color: #0f172a; font-size: clamp(32px, 5vw, 50px); line-height: 1.1; }
-  .hero p { margin: 0 0 12px; color: #475569; font-size: 17px; line-height: 1.7; }
-  .hero .promise { color: #1d4ed8; font-weight: 700; font-size: .95rem; }
 
   .content { padding: 50px 0 90px; }
 

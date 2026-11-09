@@ -124,6 +124,12 @@ const { title, line1, line2, lead, video, mediaLabel, actions = [], breadcrumb =
     color: #ffffff;
   }
 
+  /* Pages without a global border-box rule would otherwise add the padding to min-height. */
+  .bh,
+  .bh * {
+    box-sizing: border-box;
+  }
+
   .bh-bg {
     position: absolute;
     inset: 0;

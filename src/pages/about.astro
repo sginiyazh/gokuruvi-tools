@@ -1,5 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import BrandHero from "../components/BrandHero.astro";
+import StatBand from "../components/StatBand.astro";
+import { tools, categoryMeta } from "../data/tools";
+
+const toolTotal = `${Math.floor(tools.length / 5) * 5}+`;
 
 const features = [
   {
@@ -54,16 +59,27 @@ const audiences = [
   title="About Gokuruvi Tools"
   description="Learn about Gokuruvi Tools, a collection of practical utilities and interview resources for Linux, Windows, DevOps, Kubernetes, cloud, networking, database and security professionals."
 >
-  <section class="hero">
-    <div class="container hero-content">
-      <span class="eyebrow"><span class="status-dot"></span>Built for IT professionals</span>
-      <h1>About <span>Gokuruvi Tools</span></h1>
-      <p>
-        Free, practical and easy-to-use technical utilities designed to simplify
-        everyday administration, troubleshooting, automation and interview preparation.
-      </p>
-    </div>
-  </section>
+  <BrandHero
+    title="About Gokuruvi Tools"
+    line1="About"
+    line2="Gokuruvi."
+    lead="Free, practical and easy-to-use technical utilities designed to simplify everyday administration, troubleshooting, automation and interview preparation."
+    breadcrumb={[{ label: "Home", href: "/" }, { label: "About" }]}
+    actions={[
+      { label: "Explore tools", href: "/#tool-categories", primary: true },
+      { label: "Interview Q&A", href: "/interview-qa/" },
+    ]}
+  />
+
+  <StatBand
+    title="One toolbox for everyday operations work"
+    stats={[
+      { value: toolTotal, label: "free tools and command generators" },
+      { value: categoryMeta.length, label: "categories, from Linux to Kubernetes and AI" },
+      { value: 6, label: "in-depth field guides with copy-ready commands" },
+      { value: 0, label: "sign-ups or accounts needed" },
+    ]}
+  />
 
   <section class="section section-white">
     <div class="container intro-grid">
@@ -194,14 +210,7 @@ const audiences = [
 
 <style>
   .container { width: min(calc(100% - 40px), 1180px); margin-inline: auto; }
-  .hero { position: relative; overflow: hidden; padding: 92px 0 86px; background: radial-gradient(circle at 10% 20%, rgba(56,189,248,.18), transparent 31%), radial-gradient(circle at 90% 15%, rgba(37,99,235,.17), transparent 34%), linear-gradient(145deg,#f8fafc,#eff6ff 55%,#f8fafc); }
-  .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(37,99,235,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.045) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(to bottom,#000,transparent); }
-  .hero-content { position:relative; z-index:1; max-width:900px; text-align:center; }
-  .eyebrow { display:inline-flex; align-items:center; gap:9px; padding:8px 15px; border:1px solid #bfdbfe; border-radius:999px; background:rgba(255,255,255,.88); color:#1d4ed8; font-size:14px; font-weight:800; box-shadow:0 8px 25px rgba(37,99,235,.08); }
-  .status-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; box-shadow:0 0 0 5px rgba(22,163,74,.12); }
-  .hero h1 { margin:24px 0 18px; color:#0f172a; font-size:clamp(44px,7vw,68px); line-height:1.06; letter-spacing:-2.5px; }
-  .hero h1 span { background:linear-gradient(90deg,#2563eb,#0284c7); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .hero p { max-width:780px; margin:0 auto; color:#475569; font-size:clamp(18px,2.2vw,21px); line-height:1.75; }
+
   .section { padding:82px 0; }
   .section-white { background:#fff; }
   .section-label { display:inline-block; margin-bottom:10px; color:#2563eb; font-size:12px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; }
@@ -244,5 +253,5 @@ const audiences = [
   .primary-button { background:#2563eb; color:#fff; box-shadow:0 10px 25px rgba(37,99,235,.2); }
   .secondary-button { border:1px solid #cbd5e1; background:#fff; color:#0f172a; }
   @media (max-width:1000px) { .feature-grid{grid-template-columns:repeat(2,1fr)} .intro-grid,.audience-grid{grid-template-columns:1fr;gap:38px} .cta-card{align-items:flex-start;flex-direction:column} }
-  @media (max-width:680px) { .container{width:min(calc(100% - 28px),1180px)} .hero{padding:70px 0 66px} .hero h1{letter-spacing:-1.5px} .section{padding:64px 0} .feature-grid,.category-grid,.audience-list{grid-template-columns:1fr} .creator-card{grid-template-columns:1fr;text-align:center;padding:28px} .creator-avatar{margin:auto} .cta-card{padding:28px} .cta-actions{width:100%;flex-direction:column} .primary-button,.secondary-button{width:100%} }
+  @media (max-width:680px) { .container{width:min(calc(100% - 28px),1180px)} .section{padding:64px 0} .feature-grid,.category-grid,.audience-list{grid-template-columns:1fr} .creator-card{grid-template-columns:1fr;text-align:center;padding:28px} .creator-avatar{margin:auto} .cta-card{padding:28px} .cta-actions{width:100%;flex-direction:column} .primary-button,.secondary-button{width:100%} }
 </style>
