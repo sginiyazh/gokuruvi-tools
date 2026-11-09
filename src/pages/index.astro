@@ -1,6 +1,5 @@
 ---
 import Header from "../components/Header.astro";
-import LogoVideo from "../components/LogoVideo.astro";
 import FontUnbounded from "../components/FontUnbounded.astro";
 import Footer from "../components/Footer.astro";
 import { tools, categoryMeta, toolCount } from "../data/tools";
@@ -1361,15 +1360,6 @@ const pageDescription =
         height: 100%;
       }
 
-      /* 3D logo, lined up with the 1180px content area so it sits beside the headline */
-      .gx-logo3d {
-        position: absolute;
-        right: max(3%, calc((100% - 1180px) / 2));
-        top: 54%;
-        width: min(32vw, 420px);
-        transform: translateY(-50%);
-      }
-
       .gx-inner {
         position: relative;
         display: grid;
@@ -1458,14 +1448,6 @@ const pageDescription =
         padding: 64px 0 70px;
         background: #f3f6fb;
         text-align: center;
-      }
-
-      .gx-sphere {
-        display: block;
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 18px;
-        border-radius: 50%;
       }
 
       .gx-statement-text {
@@ -1632,21 +1614,10 @@ const pageDescription =
           padding-bottom: 44px;
         }
 
-        .gx-bg {
-          position: relative;
-          inset: auto;
-          height: 300px;
-        }
-
+        /* Only the pixel glow lives here, and phones hide it. */
+        .gx-bg,
         .gx-pixels {
           display: none;
-        }
-
-        .gx-logo3d {
-          left: 50%;
-          right: auto;
-          width: 300px;
-          transform: translate(-50%, -50%);
         }
       }
     </style>
@@ -1664,7 +1635,6 @@ const pageDescription =
       <section class="gx-hero" aria-labelledby="gx-title">
         <div class="gx-bg" aria-hidden="true">
           <canvas class="gx-pixels"></canvas>
-          <div class="gx-logo3d"><LogoVideo /></div>
         </div>
 
         <div class="container gx-inner">
@@ -1733,14 +1703,6 @@ const pageDescription =
 
       <section class="gx-statement">
         <div class="container">
-          <img
-            class="gx-sphere"
-            src="/brand/sphere.jpg"
-            width="120"
-            height="120"
-            alt=""
-            loading="lazy"
-          />
           <p class="gx-statement-text">
             Built by an infrastructure admin, for the people who keep servers
             running.
