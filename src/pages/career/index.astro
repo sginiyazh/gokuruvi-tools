@@ -1,0 +1,73 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import GuideBand from "../../components/GuideBand.astro";
+
+const title = "IT Career Tools";
+const description = "Free IT career tools: build an ATS-friendly CV, check it for the keywords recruiters search for, and practise scenario interview questions for Linux, DevOps, cloud, network and security jobs.";
+
+const resources = [
+  { icon: "📄", tag: "CV", title: "IT CV Builder & ATS Checker", text: "Build a clean, ATS-friendly CV, score it against good-practice rules and the keywords for your target role, and save it as PDF.", href: "/career/cv-builder/" },
+  { icon: "🎯", tag: "Interview", title: "IT Scenario Interview Q&A", text: "Practise real production scenarios with answers, useful commands and verification steps across eight technology domains.", href: "/interview-qa/" },
+  { icon: "📋", tag: "Prompts", title: "Career Prompts", text: "Copy-paste prompts for tailoring CV bullet points, preparing for technical and behavioral interviews, and negotiating an offer.", href: "/ai/prompt-library/" },
+  { icon: "📚", tag: "Learn", title: "Technical Guides", text: "In-depth guides on Linux troubleshooting, Kubernetes, CI/CD, networking, cloud and security to back up your interview answers.", href: "/guides/" },
+];
+---
+<Layout title={title} description={description}>
+<BrandHero
+  title="Free IT Career Tools: CV Builder, ATS Checker and Interview Practice"
+  line1="Land the"
+  line2="IT Job."
+  lead="Build an ATS-friendly CV for Linux, DevOps, cloud, network and security roles, check it for the keywords recruiters search for, and practise the scenario questions interviewers really ask."
+  breadcrumb={[{ label: "Home", href: "/" }, { label: "Career" }]}
+  actions={[
+    { label: "Build your CV", href: "/career/cv-builder/", primary: true },
+    { label: "Interview Q&A", href: "/interview-qa/" },
+  ]}
+/>
+
+<StatBand
+  title="From CV to interview, in one place"
+  stats={[
+    { value: 10, label: "IT roles with built-in keyword checks, from Linux to IT support" },
+    { value: 6, label: "in-depth technical guides to back up your answers" },
+    { value: 0, label: "uploads or sign-ups: your CV stays in your browser" },
+  ]}
+/>
+
+<GuideBand
+  label="Start here · job seekers"
+  title="Get shortlisted, then pass the interview"
+  text="Most applications are filtered by software before a recruiter reads them. Build a CV that software reads well, match it to the job advert honestly, then practise explaining how you troubleshoot real incidents."
+  href="/career/cv-builder/"
+  cta="Open the CV builder"
+  items={[
+    { label: "Build an ATS-friendly IT CV and save it as PDF", href: "/career/cv-builder/" },
+    { label: "Check your CV against a pasted job advert", href: "/career/cv-builder/" },
+    { label: "Practise scenario interview questions with answers", href: "/interview-qa/" },
+    { label: "Prompts for tailoring CV bullets and interview prep", href: "/ai/prompt-library/" },
+    { label: "Linux server troubleshooting guide for interview stories", href: "/guides/linux-server-troubleshooting/" },
+  ]}
+/>
+
+<section class="section" id="career-tools"><div class="container">
+  <div class="section-head"><span class="label">Career resources</span><h2>Everything for your next IT job</h2><p>Free tools and practice material for system administrators, DevOps and cloud engineers, network and security professionals, and IT support staff.</p></div>
+  <div class="grid">
+    {resources.map((r) => (
+      <a class="card" href={r.href}><div class="icon" aria-hidden="true">{r.icon}</div><span class="tag">{r.tag}</span><h3>{r.title}</h3><p>{r.text}</p><span class="arrow">Open →</span></a>
+    ))}
+  </div>
+  <div class="note"><strong>Privacy:</strong> the CV builder runs entirely in your browser. Your CV is never uploaded, and you can delete the saved draft at any time with Clear all.</div>
+</div></section>
+
+<style>
+  :global(*){box-sizing:border-box}
+  .container{width:min(calc(100% - 32px),1180px);margin:auto}
+  .section{padding:72px 0}.section-head{max-width:740px;margin:0 auto 34px;text-align:center}.label{color:#2563eb;font-size:13px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.section-head h2{margin:9px 0;color:#0f172a;font-size:clamp(28px,4vw,40px)}.section-head p{margin:0;color:#64748b}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{display:block;padding:24px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;color:inherit;text-decoration:none;box-shadow:0 10px 28px rgba(15,23,42,.05);transition:.2s ease}.card:hover{transform:translateY(-4px);border-color:#93c5fd;box-shadow:0 18px 38px rgba(15,23,42,.09)}
+  .icon{display:grid;width:48px;height:48px;place-items:center;border-radius:13px;background:#eff6ff;font-size:25px}.tag{display:inline-block;margin-top:18px;color:#2563eb;font-size:12px;font-weight:800;text-transform:uppercase}.card h3{margin:7px 0 8px;color:#0f172a;font-size:20px}.card p{margin:0;color:#64748b;font-size:14px}.arrow{display:inline-block;margin-top:16px;color:#2563eb;font-weight:800}
+  .note{margin-top:30px;padding:18px 20px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;color:#475569}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</Layout>
