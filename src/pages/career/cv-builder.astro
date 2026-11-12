@@ -4,23 +4,15 @@ import { careerGuides } from "../../data/toolGuides";
 import Layout from "../../layouts/Layout.astro";
 import "../../styles/ai-tools.css";
 
-// Target roles for the keyword check. Keep each list to the terms recruiters and ATS filters
-// actually search for in that role, not every tool in the field.
-const roles = [
-  ["linux", "Linux / System Administrator"],
-  ["devops", "DevOps Engineer"],
-  ["cloud", "Cloud Engineer (AWS / Azure)"],
-  ["kubernetes", "Kubernetes / Platform Engineer"],
-  ["network", "Network Engineer"],
-  ["windows", "Windows / Active Directory Administrator"],
-  ["vmware", "VMware / Virtualization Engineer"],
-  ["database", "Database Administrator"],
-  ["security", "Security Engineer"],
-  ["support", "IT Support / Service Desk"],
-];
+import { cvRoleGroups, cvRoles, cvCommonSuggestions } from "../../data/cvRoles";
+
+// Role data for the in-page script: keywords for the ATS check, templates for suggested bullets.
+const roleKeywords = Object.fromEntries(cvRoles.map((r) => [r.id, r.keywords]));
+const roleSuggestions = Object.fromEntries(cvRoles.map((r) => [r.id, r.suggestions]));
+const commonSuggestions = cvCommonSuggestions;
 ---
-<Layout title="IT CV Builder & ATS Checker" description="Free IT CV builder and ATS checker for Linux, DevOps, cloud, network and security jobs. Build an ATS-friendly CV, check role keywords and save it as PDF. Runs in your browser.">
-  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">Career Tool</span><h1>IT CV Builder &amp; ATS Checker</h1><p>Build a clean, ATS-friendly CV for Linux, DevOps, cloud, network and security roles, then check it against the keywords recruiters search for. Everything stays in your browser.</p></div></section>
+<Layout title="Free CV Builder & ATS Checker" description="Free CV builder and ATS checker for IT, engineering, construction, finance, sales, HR, healthcare, teaching and more. Import your CV, fix weak bullets, check role keywords and save a professional PDF. Runs in your browser.">
+  <section class="ai-hero"><div class="ai-container"><span class="ai-badge">Career Tool</span><h1>CV Builder &amp; ATS Checker</h1><p>Build a clean, ATS-friendly CV for IT, engineering, construction, finance, sales, HR, healthcare, teaching and more, then check it against the keywords recruiters search for. Everything stays in your browser.</p></div></section>
   <section class="ai-section"><div class="ai-container">
     <div class="ai-note"><strong>Privacy:</strong> your CV is never uploaded. The draft is saved only in this browser so you can come back to it. Use Clear all on a shared computer.</div>
 
@@ -53,7 +45,7 @@ const roles = [
         <fieldset>
           <legend>Target role</legend>
           <div class="ai-field full"><label for="cvRole">Role you are applying for</label>
-            <select id="cvRole">{roles.map(([value, label]) => <option value={value}>{label}</option>)}</select>
+            <select id="cvRole">{cvRoleGroups.map((group) => (<optgroup label={group.label}>{group.roles.map((r) => <option value={r.id}>{r.label}</option>)}</optgroup>))}</select>
             <span class="ai-muted">Used for the keyword check. Paste a job advert below for a closer match.</span>
           </div>
           <div class="ai-field full"><label for="cvJobAd">Job advert (optional)</label><textarea id="cvJobAd" rows="4" placeholder="Paste the job description to find skills it asks for that your CV doesn't mention."></textarea></div>
@@ -96,12 +88,24 @@ const roles = [
         <div class="ai-panel cvb-score-panel" aria-live="polite">
           <div class="cvb-score-head"><span>ATS check</span><strong id="cvScore">0%</strong></div>
           <div class="ai-meter"><span id="cvScoreBar" style="width:0%"></span></div>
+          <div class="cvb-fix">
+            <button class="ai-button" id="cvAutoFix" type="button">Fix common issues automatically</button>
+            <button class="ai-button secondary" id="cvUndoFix" type="button" hidden>Undo</button>
+          </div>
+          <p class="cvb-fix-result" id="cvFixResult" role="status" aria-live="polite"></p>
           <ul class="cvb-checks" id="cvChecks"></ul>
           <div class="cvb-kw">
             <p><strong>Role keywords found</strong></p><div id="cvKwFound" class="cvb-chips"></div>
-            <p><strong>Missing keywords to consider</strong> <span class="ai-muted">(only add skills you really have)</span></p><div id="cvKwMissing" class="cvb-chips"></div>
+            <p><strong>Missing keywords to consider</strong> <span class="ai-muted">(click to add, but only skills you really have)</span></p><div id="cvKwMissing" class="cvb-chips"></div>
             <div id="cvAdBlock" hidden><p><strong>Asked for in the job advert but not in your CV</strong></p><div id="cvAdMissing" class="cvb-chips"></div></div>
           </div>
+          <details class="cvb-suggest" id="cvSuggestBox">
+            <summary>Suggested achievement bullets for this role</summary>
+            <p class="ai-muted">Pick one that matches work you have really done, add it, then replace every [placeholder] with your own facts and numbers.</p>
+            <label class="cvb-suggest-label" for="cvSuggestJob">Add to</label>
+            <select id="cvSuggestJob"></select>
+            <ul class="cvb-suggest-list" id="cvSuggestList"></ul>
+          </details>
         </div>
 
         <div class="cvb-preview-head">
@@ -111,8 +115,21 @@ const roles = [
             <button class="ai-button secondary" id="cvCopy" type="button">Copy as text</button>
           </div>
         </div>
-        <article class="cvb-preview" id="cvPreview"></article>
-        <p class="ai-muted">Save as PDF opens your browser's print window. Choose "Save as PDF" as the printer.</p>
+        <div class="cvb-design" role="group" aria-label="CV design">
+          <label for="cvTemplate">Design</label>
+          <select id="cvTemplate">
+            <option value="modern">Modern</option>
+            <option value="classic">Classic</option>
+            <option value="executive">Executive</option>
+          </select>
+          <div class="cvb-swatches" role="group" aria-label="Accent colour">
+            {[["#1f3a5f", "Navy"], ["#1d4ed8", "Blue"], ["#0f766e", "Teal"], ["#15803d", "Green"], ["#9f1239", "Maroon"], ["#374151", "Charcoal"]].map(([hex, name]) => (
+              <button class="cvb-swatch" type="button" data-accent={hex} aria-label={name} title={name} aria-pressed="false" style={`background:${hex}`}></button>
+            ))}
+          </div>
+        </div>
+        <div class="cvb-paper-wrap" id="cvPaperWrap"><article class="cvb-preview tpl-modern" id="cvPreview"></article></div>
+        <p class="ai-muted cvb-paper-note">This is your CV on an A4 page, exactly as it will print. Dashed lines show roughly where pages break. Save as PDF opens your browser's print window; choose "Save as PDF" as the printer.</p>
       </div>
     </div>
 
@@ -158,28 +175,111 @@ const roles = [
   .cvb-checks .ok span:first-child { color: #15803d; }
   .cvb-checks .warn span:first-child { color: #b45309; }
   .cvb-kw p { margin: 14px 0 6px; font-size: .9rem; color: #0f172a; }
+  .cvb-fix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .cvb-fix .ai-button { flex: 1 1 auto; }
+  .cvb-fix-result { margin: 10px 0 0; font-size: .88rem; line-height: 1.5; }
+  .cvb-fix-result:empty { display: none; }
+  .cvb-fix-result[data-kind="ok"] { padding: 10px 12px; border-radius: 10px; background: #dcfce7; color: #166534; }
+  .cvb-fix-result[data-kind="none"] { padding: 10px 12px; border-radius: 10px; background: #f1f5f9; color: #334155; }
+  button.cvb-chip { border: 0; cursor: pointer; font-family: inherit; }
+  button.cvb-chip.missing:hover, button.cvb-chip.missing:focus-visible { background: #fde68a; outline: 2px solid #f59e0b; outline-offset: 1px; }
+  .cvb-suggest { margin-top: 16px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+  .cvb-suggest summary { color: #1d4ed8; font-weight: 800; cursor: pointer; }
+  .cvb-suggest > p { margin: 8px 0; font-size: .85rem; }
+  .cvb-suggest-label { display: block; margin: 6px 0 4px; font-size: .85rem; font-weight: 700; color: #0f172a; }
+  .cvb-suggest select { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cvb-suggest-list { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .cvb-suggest-list li { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 9px 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: .86rem; line-height: 1.45; color: #334155; }
+  .cvb-suggest-list button { padding: 6px 12px; border: 1px solid #93c5fd; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-weight: 800; cursor: pointer; }
+  .cvb-suggest-list button:disabled { border-color: #bbf7d0; background: #dcfce7; color: #166534; cursor: default; }
   .cvb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .cvb-chip { padding: 3px 9px; border-radius: 999px; font-size: .78rem; font-weight: 700; }
   .cvb-chip.found { background: #dcfce7; color: #166534; }
   .cvb-chip.missing { background: #fef3c7; color: #92400e; }
   .cvb-preview-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
   .cvb-preview-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-  .cvb-preview { min-height: 320px; padding: 32px 34px; border: 1px solid #dbe4f0; border-radius: 6px; background: #fff; box-shadow: 0 10px 30px rgba(15, 23, 42, .07); color: #111827; font: 14px/1.5 Arial, Helvetica, sans-serif; overflow-wrap: anywhere; }
-  .cvb-preview .cv-name { margin: 0; font-size: 24px; font-weight: 700; }
-  .cvb-preview .cv-title { margin: 2px 0 6px; color: #1f2937; font-size: 15px; font-weight: 700; }
-  .cvb-preview .cv-contact { margin: 0; color: #374151; font-size: 13px; }
-  .cvb-preview .cv-section { margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1px solid #9ca3af; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-  .cvb-preview .cv-job-line { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 10px; font-weight: 700; }
-  .cvb-preview .cv-job-sub { margin: 0; color: #374151; font-size: 13px; }
-  .cvb-preview ul { margin: 4px 0 0; padding-left: 18px; }
+
+  /* Design picker */
+  .cvb-design { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+  .cvb-design label { color: #0f172a; font-size: .9rem; font-weight: 800; }
+  .cvb-design select { width: auto; min-width: 130px; }
+  .cvb-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cvb-swatch { width: 26px; height: 26px; padding: 0; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #cbd5e1; cursor: pointer; }
+  .cvb-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px #0f172a; }
+  .cvb-swatch:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+
+  /* CV fonts, served from this site and loaded only when a design uses them (embedded in the PDF). */
+  @font-face { font-family: "CV Inter"; src: url("/fonts/cv/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "CV Lato"; src: url("/fonts/cv/lato-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "CV Lato"; src: url("/fonts/cv/lato-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "CV Garamond"; src: url("/fonts/cv/eb-garamond.woff2") format("woff2"); font-weight: 400 800; font-display: swap; }
+  @font-face { font-family: "CV Garamond"; src: url("/fonts/cv/eb-garamond-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+
+  /* The preview is a real A4 page (794 x 1123 CSS px = 210 x 297 mm) scaled to fit, so it matches the PDF. */
+  .cvb-paper-wrap { position: relative; overflow: hidden; border-radius: 4px; background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, .08), 0 18px 40px rgba(15, 23, 42, .12); }
+  .cvb-paper-wrap .cvb-preview { width: 794px; min-height: 1123px; transform-origin: top left; }
+  .cvb-page-break { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed #94a3b8; pointer-events: none; }
+  .cvb-page-break span { position: absolute; right: 6px; top: -9px; padding: 0 6px; border-radius: 999px; background: #e2e8f0; color: #475569; font: 600 10px/16px system-ui, sans-serif; }
+  .cvb-paper-note { margin: 0; }
+
+  /* CV designs: single column and real text, so ATS software reads every word.
+     Letter-spacing stays at .06em or less; wider spacing makes PDF text read as "S U M M A R Y". */
+  .cvb-preview { --cv-accent: #1f3a5f; --cv-ink: #111827; --cv-muted: #4b5563; box-sizing: border-box; padding: 53px 60px; background: #fff; color: var(--cv-ink); overflow-wrap: anywhere; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cvb-preview p { margin: 0 0 4px; }
-  .cvb-preview .cv-empty { color: #94a3b8; text-align: center; padding: 60px 10px; }
+  .cvb-preview .cv-empty { padding: 120px 20px; color: #94a3b8; font: 16px/1.6 system-ui, sans-serif; text-align: center; }
+  .cvb-preview .cv-name { margin: 0; line-height: 1.12; }
+  .cvb-preview .cv-contact { margin: 0; color: var(--cv-muted); }
+  .cvb-preview .cv-sep { color: #9ca3af; }
+  .cvb-preview .cv-job { margin-top: 13px; }
+  .cvb-preview .cv-job-line { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 14px; }
+  .cvb-preview .cv-job-title { font-weight: 700; }
+  .cvb-preview .cv-dates { color: var(--cv-muted); white-space: nowrap; }
+  .cvb-preview .cv-job-sub { margin: 1px 0 0; color: var(--cv-accent); }
+  .cvb-preview ul { margin: 5px 0 0; padding-left: 17px; }
+  .cvb-preview li { margin: 3px 0; padding-left: 2px; }
+  .cvb-preview li::marker { color: var(--cv-accent); }
+
+  /* Modern: Inter, tinted header band, accent markers and skill tags */
+  .cvb-preview.tpl-modern { font-family: "CV Inter", "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; line-height: 1.55; }
+  .tpl-modern .cv-header { margin: -53px -60px 6px; padding: 42px 60px 22px; border-bottom: 3px solid var(--cv-accent); background: color-mix(in srgb, var(--cv-accent) 7%, #fff); }
+  .tpl-modern .cv-name { color: var(--cv-accent); font-size: 31px; font-weight: 800; letter-spacing: -.02em; }
+  .tpl-modern .cv-title { margin: 5px 0 8px; font-size: 15px; font-weight: 600; }
+  .tpl-modern .cv-contact { font-size: 12.5px; }
+  .tpl-modern .cv-section { display: flex; align-items: center; gap: 10px; margin: 22px 0 9px; color: var(--cv-accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .tpl-modern .cv-section::before { content: ""; width: 14px; height: 3px; border-radius: 2px; background: var(--cv-accent); }
+  .tpl-modern .cv-section::after { content: ""; flex: 1; height: 1px; background: color-mix(in srgb, var(--cv-accent) 25%, #fff); }
+  .tpl-modern .cv-skills { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+  /* Separators stay in the PDF text ("A · B") but are invisible between the tags. */
+  .tpl-modern .cv-skills .cv-sep { margin: 0 -3px; color: rgba(255, 255, 255, .01); font-size: 1px; }
+  .tpl-modern .cv-skill { padding: 2px 10px; border: 1px solid color-mix(in srgb, var(--cv-accent) 18%, #fff); border-radius: 999px; background: color-mix(in srgb, var(--cv-accent) 7%, #fff); color: color-mix(in srgb, var(--cv-accent) 85%, #000); font-size: 12px; font-weight: 500; }
+  .tpl-modern .cv-job-title { font-size: 14px; }
+  .tpl-modern .cv-dates { font-size: 12px; font-weight: 600; }
+  .tpl-modern .cv-job-sub { font-size: 12.5px; font-weight: 600; }
+
+  /* Classic: Lato, accent rules, compact and traditional */
+  .cvb-preview.tpl-classic { font-family: "CV Lato", Calibri, Carlito, Arial, sans-serif; font-size: 13.5px; line-height: 1.5; }
+  .tpl-classic .cv-header { margin-bottom: 4px; }
+  .tpl-classic .cv-name { font-size: 29px; font-weight: 700; letter-spacing: -.01em; }
+  .tpl-classic .cv-title { margin: 4px 0 6px; color: var(--cv-accent); font-size: 13.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+  .tpl-classic .cv-contact { font-size: 12.5px; }
+  .tpl-classic .cv-section { margin: 20px 0 8px; padding-bottom: 4px; border-bottom: 1.5px solid var(--cv-accent); color: var(--cv-accent); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .tpl-classic .cv-job-title { font-size: 14px; }
+  .tpl-classic .cv-dates { font-size: 12.5px; }
+  .tpl-classic .cv-job-sub { font-size: 13px; font-weight: 700; }
+
+  /* Executive: EB Garamond, centred header with a double rule */
+  .cvb-preview.tpl-executive { font-family: "CV Garamond", Georgia, "Times New Roman", serif; font-size: 14.5px; line-height: 1.5; }
+  .tpl-executive .cv-header { margin-bottom: 6px; padding-bottom: 12px; border-bottom: 3px double var(--cv-accent); text-align: center; }
+  .tpl-executive .cv-name { font-size: 32px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+  .tpl-executive .cv-title { margin: 4px 0 6px; color: var(--cv-accent); font-size: 16px; font-style: italic; }
+  .tpl-executive .cv-contact { font-size: 13.5px; }
+  .tpl-executive .cv-section { margin: 20px 0 8px; padding-bottom: 3px; border-bottom: 1px solid var(--cv-accent); color: var(--cv-accent); font-size: 14px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .tpl-executive .cv-job-title { font-size: 15.5px; font-weight: 700; }
+  .tpl-executive .cv-dates { font-style: italic; }
+  .tpl-executive .cv-job-sub { font-style: italic; }
   @media (max-width: 980px) {
     .cvb-layout { grid-template-columns: 1fr; }
     .cvb-side { position: static; }
-  }
-  @media (max-width: 560px) {
-    .cvb-preview { padding: 20px 16px; }
   }
   /* A copy of the CV made just before printing (see preparePrint), so only the CV is printed. */
   #cvPrintArea { display: none; }
@@ -189,27 +289,17 @@ const roles = [
     @page { size: A4; margin: 0; }
     body { margin: 0 !important; background: #fff !important; }
     body > *:not(#cvPrintArea) { display: none !important; }
-    #cvPrintArea { display: block !important; min-height: 0; margin: 0; padding: 14mm 16mm; border: 0; border-radius: 0; box-shadow: none; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    #cvPrintArea { display: block !important; width: auto; min-height: 0; margin: 0; padding: 14mm 16mm; border: 0; border-radius: 0; box-shadow: none; transform: none !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
     #cvPrintArea .cv-section { break-after: avoid; }
-    #cvPrintArea li, #cvPrintArea .cv-job-line { break-inside: avoid; }
+    #cvPrintArea li, #cvPrintArea .cv-job-head { break-inside: avoid; }
+    #cvPrintArea .cv-job-head { break-after: avoid; }
   }
 </style>
 
-<script is:inline>
+<script is:inline define:vars={{ roleKeywords, roleSuggestions, commonSuggestions }}>
 (function () {
-  var ROLE_KEYWORDS = {
-    linux: ["Linux", "RHEL", "Ubuntu", "Bash", "shell scripting", "systemd", "SELinux", "LVM", "Ansible", "Nginx", "Apache", "patching", "backup", "monitoring", "Zabbix", "SSH", "firewall", "troubleshooting", "performance tuning", "cron"],
-    devops: ["CI/CD", "Jenkins", "GitHub Actions", "GitLab", "Docker", "Kubernetes", "Terraform", "Ansible", "Git", "Linux", "Python", "Bash", "AWS", "Azure", "Prometheus", "Grafana", "Helm", "monitoring", "infrastructure as code", "automation"],
-    cloud: ["AWS", "Azure", "GCP", "EC2", "S3", "VPC", "IAM", "Terraform", "CloudFormation", "Kubernetes", "Docker", "Linux", "networking", "security groups", "cost optimization", "high availability", "backup", "migration", "monitoring", "automation"],
-    kubernetes: ["Kubernetes", "Docker", "Helm", "kubectl", "Ingress", "RBAC", "Prometheus", "Grafana", "CI/CD", "Terraform", "Linux", "EKS", "AKS", "GKE", "service mesh", "autoscaling", "GitOps", "Argo CD", "monitoring", "troubleshooting"],
-    network: ["TCP/IP", "routing", "switching", "BGP", "OSPF", "VLAN", "firewall", "VPN", "Cisco", "Fortinet", "Palo Alto", "DNS", "DHCP", "load balancer", "Wireshark", "network security", "SD-WAN", "troubleshooting", "monitoring", "subnetting"],
-    windows: ["Windows Server", "Active Directory", "Group Policy", "PowerShell", "DNS", "DHCP", "Exchange", "Microsoft 365", "Azure AD", "Entra ID", "Hyper-V", "IIS", "WSUS", "SCCM", "Intune", "backup", "patching", "troubleshooting", "file server", "security"],
-    vmware: ["VMware", "vSphere", "ESXi", "vCenter", "vSAN", "NSX", "vMotion", "HA", "DRS", "PowerCLI", "storage", "SAN", "backup", "Veeam", "capacity planning", "Linux", "Windows Server", "patching", "troubleshooting", "disaster recovery"],
-    database: ["SQL", "MySQL", "PostgreSQL", "SQL Server", "Oracle", "backup", "restore", "replication", "high availability", "performance tuning", "indexing", "query optimization", "monitoring", "security", "migration", "Linux", "scripting", "disaster recovery", "patching", "capacity planning"],
-    security: ["SIEM", "SOC", "incident response", "vulnerability management", "firewall", "IAM", "ISO 27001", "NIST", "penetration testing", "endpoint security", "EDR", "threat hunting", "Splunk", "network security", "cloud security", "risk assessment", "compliance", "Linux", "scripting", "hardening"],
-    support: ["help desk", "service desk", "ITIL", "ticketing", "ServiceNow", "Windows", "Microsoft 365", "Active Directory", "troubleshooting", "hardware", "networking", "printers", "remote support", "SLA", "customer service", "documentation", "onboarding", "VPN", "antivirus", "backup"],
-  };
-  var ACTION_VERBS = ["achieved", "administered", "automated", "built", "configured", "consolidated", "cut", "decreased", "delivered", "deployed", "designed", "developed", "diagnosed", "documented", "eliminated", "established", "hardened", "implemented", "improved", "increased", "installed", "integrated", "introduced", "led", "maintained", "managed", "mentored", "migrated", "modernized", "monitored", "optimized", "patched", "planned", "reduced", "resolved", "restored", "saved", "scaled", "secured", "streamlined", "supported", "trained", "troubleshot", "upgraded", "wrote"];
+  var ROLE_KEYWORDS = roleKeywords; // from src/data/cvRoles.ts
+  var ACTION_VERBS = ["achieved", "administered", "applied", "contributed", "coordinated", "created", "executed", "made", "performed", "prepared", "provided", "ran", "set", "used", "automated", "built", "configured", "consolidated", "cut", "decreased", "delivered", "deployed", "designed", "developed", "diagnosed", "documented", "eliminated", "established", "hardened", "implemented", "improved", "increased", "installed", "integrated", "introduced", "led", "maintained", "managed", "mentored", "migrated", "modernized", "monitored", "optimized", "patched", "planned", "reduced", "resolved", "restored", "saved", "scaled", "secured", "streamlined", "supported", "trained", "troubleshot", "upgraded", "wrote"];
   var WEAK_STARTS = [/^responsible for\b/i, /^worked (on|in|with)\b/i, /^helped\b/i, /^involved in\b/i, /^assisted\b/i, /^duties (include|included)\b/i, /^handled\b/i, /^tasked with\b/i];
   var STORE_KEY = "gokuruvi-cv-builder-v1";
   var FIELDS = ["cvRole", "cvJobAd", "cvName", "cvTitle", "cvLocation", "cvEmail", "cvPhone", "cvLinkedin", "cvVisa", "cvNotice", "cvSummary", "cvSkills", "cvCerts", "cvEducation"];
@@ -284,26 +374,43 @@ const roles = [
     preview.innerHTML = "";
     var anything = d.cvName || d.cvSummary || d.cvSkills || d.jobs.some(function (j) { return j.title || j.bullets; });
     if (!anything) { preview.appendChild(el("p", "cv-empty", "Your CV preview appears here as you type. Click Load example to see a finished CV.")); return; }
-    preview.appendChild(el("p", "cv-name", d.cvName || "Your Name"));
-    if (d.cvTitle) preview.appendChild(el("p", "cv-title", d.cvTitle));
-    var contact = [d.cvLocation, d.cvPhone, d.cvEmail, d.cvLinkedin].filter(Boolean).join("  |  ");
-    if (contact) preview.appendChild(el("p", "cv-contact", contact));
-    var extra = [d.cvVisa && "Visa: " + d.cvVisa, d.cvNotice && "Notice period: " + d.cvNotice].filter(Boolean).join("  |  ");
-    if (extra) preview.appendChild(el("p", "cv-contact", extra));
+    // Items joined by separator spans, so templates can style the parts while the text still reads "A | B".
+    function joined(cls, items, sep) {
+      var p = el("p", cls);
+      items.forEach(function (x, i) {
+        if (i) p.appendChild(el("span", "cv-sep", sep));
+        p.appendChild(el("span", cls === "cv-skills" ? "cv-skill" : "", x));
+      });
+      return p;
+    }
+    var head = el("div", "cv-header");
+    head.appendChild(el("p", "cv-name", d.cvName || "Your Name"));
+    if (d.cvTitle) head.appendChild(el("p", "cv-title", d.cvTitle));
+    var contact = [d.cvLocation, d.cvPhone, d.cvEmail, d.cvLinkedin].filter(Boolean);
+    if (contact.length) head.appendChild(joined("cv-contact", contact, "  |  "));
+    var extra = [d.cvVisa && "Visa: " + d.cvVisa, d.cvNotice && "Notice period: " + d.cvNotice].filter(Boolean);
+    if (extra.length) head.appendChild(joined("cv-contact", extra, "  |  "));
+    preview.appendChild(head);
     if (d.cvSummary.trim()) { preview.appendChild(el("p", "cv-section", "Professional Summary")); preview.appendChild(el("p", "", d.cvSummary.trim())); }
     var skills = d.cvSkills.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
-    if (skills.length) { preview.appendChild(el("p", "cv-section", "Technical Skills")); preview.appendChild(el("p", "", skills.join(" · "))); }
+    if (skills.length) { preview.appendChild(el("p", "cv-section", "Technical Skills")); preview.appendChild(joined("cv-skills", skills, " · ")); }
     var jobs = d.jobs.filter(function (j) { return j.title || j.company || j.bullets; });
     if (jobs.length) {
       preview.appendChild(el("p", "cv-section", "Work Experience"));
       jobs.forEach(function (j) {
+        // Title and dates on one line, company and location under it; the two lines stay together across pages.
+        var job = el("div", "cv-job");
+        var headBlock = el("div", "cv-job-head");
         var line = el("div", "cv-job-line");
-        line.appendChild(el("span", "", [j.title, j.company].filter(Boolean).join(", ")));
-        line.appendChild(el("span", "", j.dates || ""));
-        preview.appendChild(line);
-        if (j.location) preview.appendChild(el("p", "cv-job-sub", j.location));
+        line.appendChild(el("span", "cv-job-title", j.title || j.company));
+        if (j.dates) line.appendChild(el("span", "cv-dates", j.dates));
+        headBlock.appendChild(line);
+        var sub = [j.title ? j.company : "", j.location].filter(Boolean);
+        if (sub.length) headBlock.appendChild(joined("cv-job-sub", sub, " · "));
+        job.appendChild(headBlock);
         var b = lines(j.bullets);
-        if (b.length) { var ul = el("ul"); b.forEach(function (x) { ul.appendChild(el("li", "", x)); }); preview.appendChild(ul); }
+        if (b.length) { var ul = el("ul"); b.forEach(function (x) { ul.appendChild(el("li", "", x)); }); job.appendChild(ul); }
+        preview.appendChild(job);
       });
     }
     var certs = lines(d.cvCerts);
@@ -326,25 +433,32 @@ const roles = [
     var sw = words(d.cvSummary);
     add(sw >= 30 && sw <= 110, sw === 0 ? "Add a short professional summary (3–4 sentences)." : sw < 30 ? "Your summary is short (" + sw + " words). Aim for 30–110." : sw > 110 ? "Your summary is long (" + sw + " words). Keep it under about 110." : "Summary length is good (" + sw + " words).", 10);
     var sk = d.cvSkills.split(",").map(function (s) { return s.trim(); }).filter(Boolean).length;
-    add(sk >= 8, sk >= 8 ? sk + " skills listed." : "List at least 8 relevant technical skills (you have " + sk + ").", 10);
+    add(sk >= 8, sk >= 8 ? sk + " skills listed." : "List at least 8 relevant skills (you have " + sk + ").", 10);
     var jobsWithDates = d.jobs.filter(function (j) { return j.title || j.bullets; });
     var dated = jobsWithDates.every(function (j) { return (j.dates || "").trim(); });
     add(jobsWithDates.length > 0 && dated, jobsWithDates.length === 0 ? "Add at least one job." : dated ? "Every job has dates." : "Add dates to every job.", 10);
     if (bullets.length) {
       var weak = bullets.filter(function (b) { return WEAK_STARTS.some(function (r) { return r.test(b); }); });
-      var verb = bullets.filter(function (b) { return ACTION_VERBS.indexOf(b.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, "")) !== -1; });
+      // A strong start is a known action verb or any past-tense verb ("Analyzed", "Participated"); weak openers don't count.
+      var verb = bullets.filter(function (b) {
+        var w = b.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, "");
+        return ACTION_VERBS.indexOf(w) !== -1 || (/^[a-z]{4,}ed$/.test(w) && !/^(handled|helped|assisted|involved|tasked)$/.test(w));
+      });
       var nums = bullets.filter(function (b) { return /\d/.test(b); });
       var len = bullets.filter(function (b) { var n = words(b); return n < 6 || n > 35; });
       add(weak.length === 0, weak.length ? weak.length + " bullet(s) start with weak phrases like “Responsible for”. Start with what you did, e.g. “Automated…”." : "No weak bullet openings.", 10);
       add(verb.length / bullets.length >= 0.6, Math.round(verb.length / bullets.length * 100) + "% of bullets start with a strong action verb (aim for 60% or more).", 10);
-      add(nums.length / bullets.length >= 0.4, Math.round(nums.length / bullets.length * 100) + "% of bullets include a number, such as servers, users, % or time saved (aim for 40% or more).", 15);
+      add(nums.length / bullets.length >= 0.4, Math.round(nums.length / bullets.length * 100) + "% of bullets include a number, such as people, projects, money, % or time saved (aim for 40% or more).", 15);
       add(len.length === 0, len.length ? len.length + " bullet(s) are very short or very long. Keep each to about 6–35 words." : "Bullet lengths are easy to scan.", 5);
     } else {
       add(false, "Add achievement bullets under each job.", 40);
     }
     var firstPerson = /(^|\s)(i|my|me)(\s|$)/i.test([d.cvSummary].concat(bullets).join(" "));
     add(!firstPerson, firstPerson ? "Avoid “I” and “my”. CVs are written without them." : "No first-person words.", 5);
-    add(total >= 250 && total <= 1000, total < 250 ? "Your CV is short (" + total + " words). Most IT CVs are 400–900 words." : total > 1000 ? "Your CV is long (" + total + " words). Aim for 1–2 pages." : "Length looks like 1–2 pages (" + total + " words).", 5);
+    add(total >= 250 && total <= 1000, total < 250 ? "Your CV is short (" + total + " words). Most CVs are 400–900 words." : total > 1000 ? "Your CV is long (" + total + " words). Aim for 1–2 pages." : "Length looks like 1–2 pages (" + total + " words).", 5);
+    // Suggested bullets contain [placeholders]; never let them go out unfilled.
+    var placeholders = ([d.cvSummary, d.cvSkills].concat(bullets).join(" ").match(/\[[^\]\n]{1,40}\]/g) || []).length;
+    if (placeholders) add(false, placeholders + " [placeholder] " + (placeholders === 1 ? "is" : "are") + " still in your CV. Replace each one with your own facts and numbers.", 15);
 
     var max = checks.reduce(function (s, c) { return s + c.w; }, 0);
     var got = checks.reduce(function (s, c) { return s + (c.ok ? c.w : 0); }, 0);
@@ -367,7 +481,15 @@ const roles = [
   function chips(target, list, cls) {
     target.innerHTML = "";
     if (!list.length) { target.appendChild(el("span", "ai-muted", "None")); return; }
-    list.forEach(function (k) { target.appendChild(el("span", "cvb-chip " + cls, k)); });
+    list.forEach(function (k) {
+      if (cls !== "missing") { target.appendChild(el("span", "cvb-chip " + cls, k)); return; }
+      // Missing keywords are buttons: one click adds the skill (see the click handler below).
+      var b = el("button", "cvb-chip missing cvb-add", "+ " + k);
+      b.type = "button";
+      b.dataset.kw = k;
+      b.title = "Add " + k + " to your skills";
+      target.appendChild(b);
+    });
   }
   function showAnalysis(a) {
     $("cvScore").textContent = a.score + "%";
@@ -386,12 +508,167 @@ const roles = [
     chips($("cvAdMissing"), a.adMissing, "missing");
   }
 
+  // ---- automatic fixes: wording rules only, never new facts or numbers ----
+  var IRREGULAR = { troubleshooting: "Troubleshot", running: "Ran", setting: "Set", writing: "Wrote", building: "Built", leading: "Led", making: "Made", doing: "Did", taking: "Took", giving: "Gave", keeping: "Kept", getting: "Got", holding: "Held", meeting: "Met", teaching: "Taught", sending: "Sent", spending: "Spent", bringing: "Brought", putting: "Put", cutting: "Cut", being: "Was" };
+  function pastTense(ing) {
+    var w = ing.toLowerCase();
+    if (IRREGULAR[w]) return IRREGULAR[w];
+    var base = w.slice(0, -3);
+    var past = /[^aeiou]y$/.test(base) ? base.slice(0, -1) + "ied" : base + "ed";
+    return past.charAt(0).toUpperCase() + past.slice(1);
+  }
+  // Words that can start a bullet and turn into a past-tense action verb.
+  var VERB_PAST = { provide: "provided", manage: "managed", install: "installed", configure: "configured", monitor: "monitored", maintain: "maintained", perform: "performed", support: "supported", create: "created", implement: "implemented", coordinate: "coordinated", analyze: "analyzed", analyse: "analysed", prepare: "prepared", ensure: "ensured", deploy: "deployed", upgrade: "upgraded", patch: "patched", resolve: "resolved", troubleshoot: "troubleshot", administer: "administered", automate: "automated", document: "documented", migrate: "migrated", design: "designed", build: "built", write: "wrote", lead: "led", run: "ran", develop: "developed", update: "updated", respond: "responded", review: "reviewed", test: "tested", plan: "planned", train: "trained", mentor: "mentored", participate: "participated", integrate: "integrated", optimize: "optimized", optimise: "optimised", execute: "executed", schedule: "scheduled" };
+  var NOUN_PAST = { installation: "installed", administration: "administered", configuration: "configured", implementation: "implemented", maintenance: "maintained", creation: "created", migration: "migrated", deployment: "deployed", management: "managed", analysis: "analysed", coordination: "coordinated", preparation: "prepared", upgradation: "upgraded", integration: "integrated", automation: "automated", documentation: "documented", optimization: "optimized", optimisation: "optimised", resolution: "resolved", execution: "executed" };
+  var NOT_VERB_ING = /^(during|nothing|something|everything|morning|evening|string|spring|king|thing|ring|ceiling|pricing|training)$/i;
+  function toPastWord(w) {
+    var k = w.toLowerCase();
+    if (VERB_PAST[k]) return VERB_PAST[k];
+    if (NOUN_PAST[k]) return NOUN_PAST[k];
+    if (/ing$/.test(k) && k.length > 4 && !NOT_VERB_ING.test(k)) return pastTense(k).toLowerCase();
+    return null;
+  }
+  // "Installation, Administration and troubleshooting Linux" -> "Installed, administered and troubleshot Linux".
+  function convertLead(b) {
+    var ws = b.split(" "), out = [], i = 0;
+    while (i < ws.length) {
+      var trail = (ws[i].match(/,$/) || [""])[0];
+      var past = toPastWord(ws[i].replace(/,$/, ""));
+      if (!past) break;
+      out.push((out.length ? past : past.charAt(0).toUpperCase() + past.slice(1)) + trail);
+      i++;
+      if (trail) continue;
+      if (ws[i] && /^(and|&)$/i.test(ws[i]) && toPastWord((ws[i + 1] || "").replace(/,$/, ""))) { out.push("and"); i++; continue; }
+      break;
+    }
+    if (!out.length) return null;
+    if (ws[i] && /^of$/i.test(ws[i])) i++; // "Installation of Oracle" -> "Installed Oracle"
+    return out.concat(ws.slice(i)).join(" ");
+  }
+  // "Responsible for managing X" -> "Managed X": the same claim, stated directly.
+  function fixBullet(text, stats) {
+    var b = text.replace(/\s+/g, " ").trim();
+    var before = b;
+    if (/^(i|we)\s+/i.test(b)) { b = b.replace(/^(i|we)\s+/i, ""); stats.pronoun++; }
+    var weak = /^(?:was |were )?(?:responsible for|tasked with|in charge of|duties (?:include|included|were)|worked on)\s+(?:the\s+)?/i;
+    var m = b.match(weak);
+    if (m) {
+      var rest = b.slice(m[0].length);
+      var first = (rest.match(/^\w+/) || [""])[0];
+      if (/ing$/i.test(first) && first.length > 4) b = pastTense(first) + rest.slice(first.length);
+      else if (/^worked on/i.test(m[0])) b = "Contributed to " + rest;
+      else b = "Managed " + rest;
+      stats.weak++;
+    } else if (/^(?:was |were )?involved in\s+/i.test(b)) {
+      b = b.replace(/^(?:was |were )?involved in\s+/i, "Contributed to ");
+      stats.weak++;
+    } else if (/^handled\b/i.test(b)) {
+      b = b.replace(/^handled\b/i, "Managed");
+      stats.weak++;
+    } else if (!/^[A-Z][a-z]*ed\b/.test(b)) {
+      // "Installing…", "Provide…" or "Installation of…" read better as "Installed…".
+      var converted = convertLead(b);
+      if (converted && converted !== b) { b = converted; stats.tense++; }
+    }
+    if (/[a-z]/.test(b.charAt(0))) { b = b.charAt(0).toUpperCase() + b.slice(1); stats.caps++; }
+    if (/[.;,]$/.test(b)) { b = b.replace(/[.;,]+$/, ""); stats.punct++; }
+    if (/^(helped|assisted)\b/i.test(b)) stats.manual++;
+    if (b !== before) stats.changed++;
+    return b;
+  }
+  function autoFix() {
+    var d = collect();
+    var stats = { weak: 0, tense: 0, pronoun: 0, caps: 0, punct: 0, manual: 0, changed: 0, skills: 0, summary: 0 };
+    d.jobs.forEach(function (j) { j.bullets = lines(j.bullets).map(function (b) { return fixBullet(b, stats); }).join("\n"); });
+    var summary = d.cvSummary.replace(/\s+/g, " ").trim().replace(/^(i am|i'm)\s+(an?\s+)?/i, function () { stats.summary++; return ""; });
+    if (summary) d.cvSummary = summary.charAt(0).toUpperCase() + summary.slice(1);
+    var seen = {};
+    var skills = d.cvSkills.split(",").map(function (s) { return s.replace(/\s+/g, " ").trim().replace(/\.+$/, ""); }).filter(function (s) {
+      var k = s.toLowerCase();
+      if (!s) return false;
+      if (seen[k]) { stats.skills++; return false; }
+      seen[k] = true;
+      return true;
+    });
+    d.cvSkills = skills.join(", ");
+    return { d: d, stats: stats };
+  }
+  function fixMessage(s) {
+    var parts = [];
+    if (s.weak) parts.push("rewrote " + s.weak + " weak opening" + (s.weak === 1 ? "" : "s") + " (e.g. “Responsible for”)");
+    if (s.tense) parts.push("changed " + s.tense + " bullet" + (s.tense === 1 ? "" : "s") + " to past tense");
+    if (s.pronoun) parts.push("removed “I” from " + s.pronoun + " bullet" + (s.pronoun === 1 ? "" : "s"));
+    if (s.summary) parts.push("removed “I am” from the summary");
+    if (s.caps) parts.push("capitalised " + s.caps + " bullet" + (s.caps === 1 ? "" : "s"));
+    if (s.punct) parts.push("tidied " + s.punct + " line ending" + (s.punct === 1 ? "" : "s"));
+    if (s.skills) parts.push("removed " + s.skills + " duplicate skill" + (s.skills === 1 ? "" : "s"));
+    var msg = parts.length ? "Done: " + parts.join(", ") + "." : "Nothing to fix automatically.";
+    if (s.manual) msg += " " + s.manual + " bullet" + (s.manual === 1 ? " still starts" : "s still start") + " with “Helped” or “Assisted”. Rewrite " + (s.manual === 1 ? "it" : "them") + " to say what you did yourself.";
+    msg += " Numbers can't be added automatically: add real figures (people, projects, money, % or time saved) where you can.";
+    return { text: msg, changed: parts.length > 0 };
+  }
+
+  // ---- suggested bullets per role: templates with [placeholders] to fill in ----
+  var SUGGESTIONS = Object.assign({ common: commonSuggestions }, roleSuggestions); // from src/data/cvRoles.ts
+  var suggestRole = null, suggestJobsKey = null;
+  function renderSuggestions(d) {
+    var select = $("cvSuggestJob");
+    var titles = d.jobs.map(function (j, i) { return "Job " + (i + 1) + (j.title || j.company ? ": " + (j.title || j.company) : ""); });
+    var key = titles.join("|");
+    if (key !== suggestJobsKey) {
+      var keep = select.value;
+      select.innerHTML = "";
+      titles.forEach(function (t, i) { var o = el("option", "", t); o.value = String(i); select.appendChild(o); });
+      if (keep && Number(keep) < titles.length) select.value = keep;
+      suggestJobsKey = key;
+    }
+    if (d.cvRole === suggestRole) return;
+    suggestRole = d.cvRole;
+    var list = $("cvSuggestList");
+    list.innerHTML = "";
+    (SUGGESTIONS[d.cvRole] || []).concat(SUGGESTIONS.common).forEach(function (s) {
+      var li = el("li");
+      li.appendChild(el("span", "", s));
+      var b = el("button", "", "Add");
+      b.type = "button";
+      b.dataset.bullet = s;
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+  }
+
+  // ---- A4 preview: scale the 794px page to the column and mark roughly where pages break ----
+  var PAGE_W = 794, PAGE_H = 1123, PAD_Y = 53; // 210 x 297 mm, 14 mm top and bottom padding, as printed
+  var paperWrap = $("cvPaperWrap");
+  function fitPaper() {
+    var scale = Math.min(1, paperWrap.clientWidth / PAGE_W);
+    preview.style.transform = "scale(" + scale + ")";
+    var height = preview.offsetHeight;
+    paperWrap.style.height = Math.ceil(height * scale) + "px";
+    [].forEach.call(paperWrap.querySelectorAll(".cvb-page-break"), function (m) { m.remove(); });
+    // Each printed page holds PAGE_H - 2 * PAD_Y of content; breaks fall at those intervals.
+    var per = PAGE_H - 2 * PAD_Y;
+    for (var y = PAD_Y + per, n = 2; y < height - PAD_Y; y += per, n++) {
+      var mark = el("div", "cvb-page-break");
+      mark.style.top = Math.round(y * scale) + "px";
+      mark.appendChild(el("span", "", "Page " + n));
+      paperWrap.appendChild(mark);
+    }
+  }
+  if (window.ResizeObserver) new ResizeObserver(fitPaper).observe(paperWrap);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitPaper);
+    document.fonts.addEventListener("loadingdone", fitPaper); // a design switch loads its font later
+  }
+
   // ---- save, update ----
   var saveTimer;
   function update() {
     var d = collect();
     render(d);
+    fitPaper();
     showAnalysis(analyze(d));
+    renderSuggestions(d);
     clearTimeout(saveTimer);
     // Keep a draft only while there is something in it, so Clear all leaves nothing behind.
     var empty = FIELDS.every(function (id) { return id === "cvRole" || !d[id].trim(); }) && d.jobs.every(function (j) { return !Object.keys(j).some(function (k) { return (j[k] || "").trim(); }); });
@@ -437,16 +714,92 @@ const roles = [
 
   // ---- wire up ----
   $("cvAddJob").addEventListener("click", function () { addJob(); update(); });
+  // CV design: template and accent colour, remembered in this browser separately from the CV.
+  var DESIGN_KEY = "gokuruvi-cv-design-v1";
+  var TEMPLATES = ["modern", "classic", "executive"];
+  var design = { template: "modern", accent: "#1f3a5f" };
+  try {
+    var savedDesign = JSON.parse(localStorage.getItem(DESIGN_KEY) || "{}");
+    if (TEMPLATES.indexOf(savedDesign.template) !== -1) design.template = savedDesign.template;
+    if (/^#[0-9a-f]{6}$/i.test(savedDesign.accent || "")) design.accent = savedDesign.accent;
+  } catch (e) {}
+  function applyDesign() {
+    TEMPLATES.forEach(function (t) { preview.classList.toggle("tpl-" + t, t === design.template); });
+    preview.style.setProperty("--cv-accent", design.accent);
+    $("cvTemplate").value = design.template;
+    [].forEach.call(document.querySelectorAll(".cvb-swatch"), function (s) { s.setAttribute("aria-pressed", String(s.dataset.accent === design.accent)); });
+    try { localStorage.setItem(DESIGN_KEY, JSON.stringify(design)); } catch (e) {}
+    fitPaper();
+  }
+  $("cvTemplate").addEventListener("change", function () { design.template = this.value; applyDesign(); });
+  [].forEach.call(document.querySelectorAll(".cvb-swatch"), function (s) {
+    s.addEventListener("click", function () { design.accent = s.dataset.accent; applyDesign(); });
+  });
+  applyDesign();
+
+  // Fix common issues, with a one-step undo.
+  var beforeFix = null;
+  $("cvAutoFix").addEventListener("click", function () {
+    var snapshot = collect();
+    var result = autoFix();
+    var msg = fixMessage(result.stats);
+    var out = $("cvFixResult");
+    out.textContent = msg.text;
+    out.dataset.kind = msg.changed ? "ok" : "none";
+    if (!msg.changed) return;
+    beforeFix = snapshot;
+    fill(result.d);
+    update();
+    $("cvUndoFix").hidden = false;
+  });
+  $("cvUndoFix").addEventListener("click", function () {
+    if (!beforeFix) return;
+    fill(beforeFix);
+    beforeFix = null;
+    update();
+    this.hidden = true;
+    $("cvFixResult").textContent = "Changes undone.";
+    $("cvFixResult").dataset.kind = "none";
+  });
+  // Typing after a fix makes undo unsafe (it would throw away the new edits), so hide it.
+  $("cvForm").addEventListener("input", function () { beforeFix = null; $("cvUndoFix").hidden = true; });
+
+  // Click a missing keyword to add it to the skills.
+  document.addEventListener("click", function (e) {
+    var chip = e.target.closest && e.target.closest(".cvb-add");
+    if (!chip) return;
+    var skills = $("cvSkills");
+    var current = skills.value.replace(/[,\s]+$/, "");
+    skills.value = current ? current + ", " + chip.dataset.kw : chip.dataset.kw;
+    update();
+  });
+
+  // Add a suggested bullet to the chosen job.
+  $("cvSuggestList").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("button[data-bullet]");
+    if (!b) return;
+    var boxes = jobsEl.querySelectorAll(".cvb-job");
+    var box = boxes[Number($("cvSuggestJob").value) || 0] || boxes[0];
+    var ta = box.querySelector('[data-k="bullets"]');
+    ta.value = ta.value.replace(/\s+$/, "") ? ta.value.replace(/\s+$/, "") + "\n" + b.dataset.bullet : b.dataset.bullet;
+    update();
+    b.textContent = "Added";
+    b.disabled = true;
+    setTimeout(function () { b.textContent = "Add"; b.disabled = false; }, 1500);
+  });
+
   $("cvForm").addEventListener("input", update);
   $("cvForm").addEventListener("change", update);
   $("cvForm").addEventListener("submit", function (e) { e.preventDefault(); });
-  $("cvSample").addEventListener("click", function () { fill(SAMPLE); update(); });
+  function resetFix() { beforeFix = null; $("cvUndoFix").hidden = true; $("cvFixResult").textContent = ""; }
+  $("cvSample").addEventListener("click", function () { fill(SAMPLE); update(); resetFix(); });
   $("cvClear").addEventListener("click", function () {
     if (!confirm("Clear the whole CV and the saved draft in this browser?")) return;
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
     fill({ cvRole: "linux", jobs: [] });
     FIELDS.forEach(function (id) { if (id !== "cvRole") $(id).value = ""; });
     update();
+    resetFix();
     document.dispatchEvent(new CustomEvent("cvb:cleared")); // the import script resets the chosen file
   });
   // Print only a copy of the CV, and name the PDF after the person instead of this page.
@@ -487,6 +840,7 @@ const roles = [
     FIELDS.forEach(function (id) { if (id !== "cvRole" && id !== "cvJobAd") merged[id] = parsed[id] || ""; });
     fill(merged);
     update();
+    resetFix();
   };
 
   var saved = null;

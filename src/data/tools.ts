@@ -44,7 +44,7 @@ export const categoryMeta: Array<{
   { name: "Database", icon: "🗄️", href: "/database/", description: "SQL formatting, connection strings, backup, and capacity tools." },
   { name: "Security", icon: "🛡️", href: "/security/", description: "Hashing, HMAC, JWT, CSP, and file-integrity utilities." },
   { name: "AI", icon: "🤖", href: "/ai/", description: "Prompt library, AI glossary, token counter, and model comparison." },
-  { name: "Career", icon: "💼", href: "/career/", description: "IT CV builder, ATS keyword checker, and interview preparation." },
+  { name: "Career", icon: "💼", href: "/career/", description: "CV builder and ATS checker for every field, plus IT interview preparation." },
 ];
 
 export const tools: Tool[] = [
@@ -167,7 +167,7 @@ export const tools: Tool[] = [
   { title: "AI Model Comparison", description: "Compare context windows, standard API pricing and practical strengths of current models.", href: "/ai/model-comparison/", icon: "⚖️", category: "AI", keywords: ["model"] },
   { title: "Command Explainer", description: "Paste a shell, kubectl, Docker, git or systemd command to get a plain-English breakdown.", href: "/ai/command-explainer/", icon: "🧭", category: "AI", keywords: ["command"] },
   { title: "Claude Certification Study Guide", description: "What CCAO-F, CCDV-F, CCAR-F, and CCAR-P actually test — exam domains, format, pricing, and how to pick the right one.", href: "/ai/claude-certifications/", icon: "🎓", category: "AI", keywords: ["claude", "certification", "ccao", "ccdv", "ccar", "anthropic", "exam"] },
-  { title: "IT CV Builder & ATS Checker", description: "Build an ATS-friendly CV for Linux, DevOps, cloud and security jobs and check it for role keywords. Runs in your browser.", href: "/career/cv-builder/", icon: "📄", category: "Career", keywords: ["cv", "resume", "ats", "job", "career", "uae", "dubai"] },
+  { title: "CV Builder & ATS Checker", description: "Build an ATS-friendly CV for IT, engineering, finance, healthcare and more, and check it for role keywords. Runs in your browser.", href: "/career/cv-builder/", icon: "📄", category: "Career", keywords: ["cv", "resume", "ats", "job", "career", "uae", "dubai", "engineer", "civil", "mechanical", "electrical", "architect", "accountant", "nurse", "teacher"] },
 ];
 
 export function toolCount(category: ToolCategory): number {

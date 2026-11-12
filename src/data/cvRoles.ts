@@ -1,0 +1,118 @@
+// Job roles for the CV builder: keywords recruiters and ATS filters commonly search for,
+// and achievement templates with [placeholders] the user fills in with their own facts.
+// Used by the role menu, the keyword check and the CV import (see lib/cvParse.ts).
+
+export interface CvRole {
+  id: string;
+  label: string;
+  keywords: string[];
+  suggestions: string[];
+}
+
+export interface CvRoleGroup {
+  label: string;
+  roles: CvRole[];
+}
+
+export const cvRoleGroups: CvRoleGroup[] = [
+  {
+    label: "IT & Software",
+    roles: [
+      { id: "linux", label: "Linux / System Administrator", keywords: ["Linux", "RHEL", "Ubuntu", "Bash", "shell scripting", "systemd", "SELinux", "LVM", "Ansible", "Nginx", "Apache", "patching", "backup", "monitoring", "Zabbix", "SSH", "firewall", "troubleshooting", "performance tuning", "cron"],
+        suggestions: ["Patched and hardened [number] RHEL/Ubuntu servers, closing [number] audit findings", "Built monitoring and alerting with [Zabbix/Prometheus] for [number] hosts, cutting time to detect outages by [X]%", "Maintained [99.9]% uptime for [number] production servers supporting [service]", "Wrote [number] Bash/Ansible scripts to automate [backups/user setup/log rotation], saving [X] hours a week"] },
+      { id: "devops", label: "DevOps Engineer", keywords: ["CI/CD", "Jenkins", "GitHub Actions", "GitLab", "Docker", "Kubernetes", "Terraform", "Ansible", "Git", "Linux", "Python", "Bash", "AWS", "Azure", "Prometheus", "Grafana", "Helm", "monitoring", "infrastructure as code", "automation"],
+        suggestions: ["Built CI/CD pipelines in [Jenkins/GitHub Actions] for [number] services, cutting deployment time from [X] to [Y] minutes", "Containerised [number] applications with Docker and deployed them to Kubernetes", "Managed infrastructure as code with Terraform for [number] environments", "Added automated tests and security scans to pipelines, reducing failed releases by [X]%"] },
+      { id: "cloud", label: "Cloud Engineer (AWS / Azure)", keywords: ["AWS", "Azure", "GCP", "EC2", "S3", "VPC", "IAM", "Terraform", "CloudFormation", "Kubernetes", "Docker", "Linux", "networking", "security groups", "cost optimization", "high availability", "backup", "migration", "monitoring", "automation"],
+        suggestions: ["Migrated [number] workloads from on-premises to [AWS/Azure], reducing hosting cost by [X]%", "Designed [VPC/VNet] networking and IAM for [number] accounts or subscriptions", "Set up backups and disaster recovery with an RPO of [X] hours for [number] systems", "Cut monthly cloud spend by [X]% through right-sizing and reserved capacity"] },
+      { id: "kubernetes", label: "Kubernetes / Platform Engineer", keywords: ["Kubernetes", "Docker", "Helm", "kubectl", "Ingress", "RBAC", "Prometheus", "Grafana", "CI/CD", "Terraform", "Linux", "EKS", "AKS", "GKE", "service mesh", "autoscaling", "GitOps", "Argo CD", "monitoring", "troubleshooting"],
+        suggestions: ["Ran [number] Kubernetes clusters hosting [number] services with [99.9]% availability", "Added autoscaling and resource limits, cutting cluster cost by [X]%", "Set up GitOps deployments with [Argo CD/Flux] for [number] teams", "Built Prometheus and Grafana dashboards and alerts for [number] services"] },
+      { id: "network", label: "Network Engineer", keywords: ["TCP/IP", "routing", "switching", "BGP", "OSPF", "VLAN", "firewall", "VPN", "Cisco", "Fortinet", "Palo Alto", "DNS", "DHCP", "load balancer", "Wireshark", "network security", "SD-WAN", "troubleshooting", "monitoring", "subnetting"],
+        suggestions: ["Migrated [number] sites to [SD-WAN/new firewalls], reducing circuit cost by [X]%", "Configured [BGP/OSPF] failover with under [X] seconds of downtime", "Resolved [X]% of network incidents within SLA across [number] sites", "Segmented the network into [number] VLANs and firewall zones to meet [audit/standard]"] },
+      { id: "windows", label: "Windows / Active Directory Administrator", keywords: ["Windows Server", "Active Directory", "Group Policy", "PowerShell", "DNS", "DHCP", "Exchange", "Microsoft 365", "Azure AD", "Entra ID", "Hyper-V", "IIS", "WSUS", "SCCM", "Intune", "backup", "patching", "troubleshooting", "file server", "security"],
+        suggestions: ["Administered Active Directory and Group Policy for [number] users and [number] servers", "Migrated [number] mailboxes to Microsoft 365 with [no/minimal] downtime", "Automated user onboarding with PowerShell, saving [X] hours a week", "Patched [number] Windows servers monthly with [WSUS/SCCM/Intune] at [X]% compliance"] },
+      { id: "vmware", label: "VMware / Virtualization Engineer", keywords: ["VMware", "vSphere", "ESXi", "vCenter", "vSAN", "NSX", "vMotion", "HA", "DRS", "PowerCLI", "storage", "SAN", "backup", "Veeam", "capacity planning", "Linux", "Windows Server", "patching", "troubleshooting", "disaster recovery"],
+        suggestions: ["Managed [number] ESXi hosts and [number] VMs across [number] vCenter clusters", "Upgraded vSphere from [version] to [version] with no unplanned downtime", "Reduced VM sprawl by [X]% through capacity reviews and right-sizing", "Performed vMotion and maintenance for [number] hosts during scheduled windows without service impact"] },
+      { id: "database", label: "Database Administrator", keywords: ["SQL", "MySQL", "PostgreSQL", "SQL Server", "Oracle", "backup", "restore", "replication", "high availability", "performance tuning", "indexing", "query optimization", "monitoring", "security", "migration", "Linux", "scripting", "disaster recovery", "patching", "capacity planning"],
+        suggestions: ["Cut backup time from [X] to [Y] hours with [RMAN/incremental backups]", "Tuned slow queries, improving response time by [X]% for [application]", "Set up [replication/high availability] for [number] critical databases", "Upgraded [number] databases from [version] to [version] with zero data loss"] },
+      { id: "security", label: "Security Engineer", keywords: ["SIEM", "SOC", "incident response", "vulnerability management", "firewall", "IAM", "ISO 27001", "NIST", "penetration testing", "endpoint security", "EDR", "threat hunting", "Splunk", "network security", "cloud security", "risk assessment", "compliance", "Linux", "scripting", "hardening"],
+        suggestions: ["Reduced critical vulnerabilities by [X]% across [number] servers in [time]", "Built SIEM use cases in [Splunk/Sentinel] that detected [number] incidents", "Led incident response for [number] security incidents with full root cause analysis", "Rolled out [MFA/EDR] to [number] users and devices"] },
+      { id: "support", label: "IT Support / Service Desk", keywords: ["help desk", "service desk", "ITIL", "ticketing", "ServiceNow", "Windows", "Microsoft 365", "Active Directory", "troubleshooting", "hardware", "networking", "printers", "remote support", "SLA", "customer service", "documentation", "onboarding", "VPN", "antivirus", "backup"],
+        suggestions: ["Resolved [number] tickets a week with [X]% first-contact resolution", "Supported [number] users across [number] sites within SLA", "Wrote [number] knowledge base articles that reduced repeat tickets by [X]%", "Set up laptops, accounts and access for [number] new joiners a month"] },
+      { id: "software", label: "Software Developer", keywords: ["JavaScript", "TypeScript", "Python", "Java", "C#", "React", "Node.js", "SQL", "REST API", "Git", "Docker", "AWS", "unit testing", "CI/CD", "Agile", "microservices", "HTML", "CSS", "debugging", "code review"],
+        suggestions: ["Built [feature/product] in [language/framework] used by [number] users", "Cut page load time by [X]% by [caching/query optimisation/code splitting]", "Raised test coverage from [X]% to [Y]%, reducing production bugs by [X]%", "Designed and shipped [number] REST APIs consumed by [number] client apps"] },
+      { id: "data", label: "Data Analyst / Data Scientist", keywords: ["SQL", "Python", "Excel", "Power BI", "Tableau", "pandas", "statistics", "data visualization", "dashboards", "ETL", "data cleaning", "machine learning", "R", "reporting", "KPI", "A/B testing", "data modeling", "BigQuery", "Snowflake", "storytelling"],
+        suggestions: ["Built [number] Power BI/Tableau dashboards used by [team/management] for [decision]", "Automated a [weekly/monthly] report with SQL and Python, saving [X] hours a month", "Analysed [dataset] to find [insight], leading to [result, e.g. X% more sales]", "Built a [model type] model that predicted [outcome] with [X]% accuracy"] },
+    ],
+  },
+  {
+    label: "Engineering & Construction",
+    roles: [
+      { id: "architect", label: "Architect", keywords: ["AutoCAD", "Revit", "BIM", "SketchUp", "3ds Max", "Rhino", "Adobe Photoshop", "concept design", "schematic design", "design development", "construction drawings", "building codes", "Dubai Municipality", "master planning", "sustainable design", "LEED", "site supervision", "client presentations", "space planning", "interior design"],
+        suggestions: ["Led design of [number] [residential/commercial] projects from concept to construction drawings", "Produced BIM models in Revit for a [X] sq m [building type], cutting design clashes by [X]%", "Obtained [Dubai Municipality/authority] approvals for [number] projects on first submission", "Presented design options to [client/stakeholders], winning [number] projects worth [value]"] },
+      { id: "civil", label: "Civil / Structural Engineer", keywords: ["AutoCAD", "Civil 3D", "STAAD Pro", "ETABS", "SAP2000", "Primavera P6", "MS Project", "structural design", "site supervision", "quantity take-off", "BOQ", "method statement", "QA/QC", "concrete", "steel structures", "infrastructure", "roads", "drainage", "HSE", "project management"],
+        suggestions: ["Supervised construction of a [X]-storey [building/structure] worth [value], delivered [on time/X weeks early]", "Designed [structural elements] in [ETABS/STAAD Pro] for [number] projects", "Prepared BOQs and quantity take-offs for [number] tenders worth [value]", "Cut material wastage by [X]% through [method/planning change]"] },
+      { id: "mechanical", label: "Mechanical Engineer", keywords: ["AutoCAD", "SolidWorks", "CATIA", "ANSYS", "HVAC", "piping", "pumps", "preventive maintenance", "root cause analysis", "ASME", "GD&T", "CAD", "FEA", "manufacturing", "commissioning", "troubleshooting", "Lean", "Six Sigma", "project management", "HSE"],
+        suggestions: ["Designed [component/system] in [SolidWorks/CATIA], reducing weight or cost by [X]%", "Cut equipment downtime by [X]% with a preventive maintenance plan for [number] assets", "Commissioned [number] [HVAC/pumping/production] systems for [project]", "Led root cause analysis on [number] failures, saving [value] a year"] },
+      { id: "electrical", label: "Electrical Engineer", keywords: ["AutoCAD", "ETAP", "DIALux", "power distribution", "LV/MV switchgear", "transformers", "cable sizing", "load calculation", "earthing", "lighting design", "PLC", "SCADA", "testing and commissioning", "preventive maintenance", "IEC standards", "DEWA regulations", "single line diagram", "protection relays", "troubleshooting", "HSE"],
+        suggestions: ["Designed power distribution for a [X] kVA [building/facility], approved by [DEWA/authority]", "Tested and commissioned [number] LV/MV panels and [number] transformers", "Reduced energy use by [X]% through [lighting/power factor] improvements", "Led maintenance for [number] electrical assets with [X]% availability"] },
+      { id: "electronics", label: "Electronics / Instrumentation Engineer", keywords: ["circuit design", "PCB design", "Altium", "embedded systems", "microcontrollers", "C", "PLC", "SCADA", "DCS", "instrumentation", "calibration", "sensors", "oscilloscope", "soldering", "testing", "troubleshooting", "IoT", "signal processing", "MATLAB", "control systems"],
+        suggestions: ["Designed [number] PCBs in [Altium/KiCad] for [product], from prototype to production", "Calibrated [number] field instruments, keeping [X]% within tolerance", "Programmed [PLC/DCS] logic for [process], reducing manual operation by [X]%", "Cut board failure rate from [X]% to [Y]% through [design/testing change]"] },
+      { id: "mep", label: "MEP Engineer", keywords: ["HVAC", "plumbing", "fire fighting", "electrical", "AutoCAD", "Revit MEP", "BIM", "shop drawings", "load calculation", "duct design", "chillers", "BMS", "testing and commissioning", "Dubai Civil Defence", "DEWA", "coordination", "site supervision", "QA/QC", "method statement", "snagging"],
+        suggestions: ["Coordinated MEP services for a [X] sq m [building type] worth [value]", "Reviewed and approved [number] MEP shop drawings, resolving [number] clashes before installation", "Completed testing and commissioning of [systems] and handed over with [zero/X] snags", "Obtained [Civil Defence/DEWA] approvals for [number] projects"] },
+      { id: "qs", label: "Quantity Surveyor", keywords: ["BOQ", "quantity take-off", "cost estimation", "cost control", "tendering", "contract administration", "FIDIC", "variations", "claims", "interim payments", "valuations", "CostX", "AutoCAD", "MS Excel", "subcontractor management", "final account", "cash flow", "procurement", "value engineering", "RICS"],
+        suggestions: ["Prepared BOQs and cost estimates for [number] tenders worth [value], winning [number]", "Managed variations and claims worth [value] under [FIDIC/contract type]", "Saved [value or X]% through value engineering on [project]", "Processed [number] interim payment applications and closed final accounts on time"] },
+      { id: "hse", label: "HSE / Safety Officer", keywords: ["HSE", "ISO 45001", "ISO 14001", "NEBOSH", "IOSH", "risk assessment", "HIRA", "permit to work", "toolbox talks", "incident investigation", "safety audits", "inspections", "PPE", "emergency response", "fire safety", "OSHA", "method statement", "training", "compliance", "first aid"],
+        suggestions: ["Achieved [number] million man-hours without a lost time injury on [project]", "Ran [number] toolbox talks and safety trainings for [number] workers", "Cut incident rate by [X]% through [inspections/permit system/training]", "Led [ISO 45001/audit] certification with [zero/X] major findings"] },
+      { id: "pm", label: "Project Manager", keywords: ["project management", "PMP", "Primavera P6", "MS Project", "scheduling", "budgeting", "cost control", "risk management", "stakeholder management", "scope management", "procurement", "contract management", "quality management", "reporting", "team leadership", "Agile", "Scrum", "change management", "vendor management", "KPI"],
+        suggestions: ["Delivered [number] projects worth [value] on time and within budget", "Managed a team of [number] across [departments/contractors] for [project]", "Recovered a delayed project, cutting the delay from [X] to [Y] weeks", "Reduced project cost by [X]% through [procurement/scope/schedule] changes"] },
+    ],
+  },
+  {
+    label: "Business & Office",
+    roles: [
+      { id: "accounting", label: "Accountant / Finance", keywords: ["accounts payable", "accounts receivable", "general ledger", "bank reconciliation", "financial statements", "month-end close", "VAT", "corporate tax", "IFRS", "budgeting", "forecasting", "auditing", "payroll", "cost accounting", "Tally", "SAP", "Oracle", "QuickBooks", "MS Excel", "financial reporting"],
+        suggestions: ["Closed month-end accounts in [X] days instead of [Y]", "Prepared and filed [VAT/corporate tax] returns for [number] entities with zero penalties", "Reconciled [number] bank accounts monthly, clearing [value] in old differences", "Cut overdue receivables by [X]% through [collection process change]"] },
+      { id: "sales", label: "Sales Executive", keywords: ["B2B sales", "lead generation", "cold calling", "CRM", "Salesforce", "pipeline management", "negotiation", "closing", "account management", "sales targets", "revenue growth", "client relationships", "presentations", "market research", "upselling", "key accounts", "forecasting", "territory management", "customer retention", "HubSpot"],
+        suggestions: ["Achieved [X]% of an annual target of [value] in [year]", "Won [number] new accounts worth [value] in [time]", "Grew revenue in [territory/segment] by [X]% year on year", "Kept [X]% of key accounts through [regular reviews/service plans]"] },
+      { id: "marketing", label: "Marketing / Digital Marketing", keywords: ["digital marketing", "SEO", "SEM", "Google Ads", "Meta Ads", "social media", "content marketing", "email marketing", "Google Analytics", "campaign management", "brand management", "market research", "copywriting", "marketing strategy", "lead generation", "conversion rate", "HubSpot", "Canva", "budgets", "KPI"],
+        suggestions: ["Grew organic website traffic by [X]% in [time] through SEO", "Ran paid campaigns with a budget of [value], achieving [X] leads at [cost] each", "Increased social media followers from [X] to [Y] and engagement by [X]%", "Launched [number] email campaigns with a [X]% open rate"] },
+      { id: "hr", label: "Human Resources", keywords: ["recruitment", "talent acquisition", "onboarding", "employee relations", "performance management", "payroll", "HRIS", "compensation and benefits", "UAE labour law", "WPS", "training and development", "HR policies", "interviewing", "employee engagement", "succession planning", "MOHRE", "visa processing", "Emiratisation", "offboarding", "HR analytics"],
+        suggestions: ["Hired [number] employees a year with an average time to hire of [X] days", "Ran payroll for [number] employees through WPS with [zero/X] errors", "Cut staff turnover by [X]% through [engagement/onboarding programme]", "Wrote and rolled out [number] HR policies in line with UAE labour law"] },
+      { id: "customer", label: "Customer Service", keywords: ["customer service", "customer satisfaction", "complaint handling", "call center", "CRM", "ticketing", "live chat", "email support", "problem solving", "communication", "KPI", "CSAT", "NPS", "SLA", "upselling", "product knowledge", "escalation", "Arabic", "multitasking", "data entry"],
+        suggestions: ["Handled [number] customer calls, chats or emails a day with a [X]% CSAT score", "Resolved [X]% of complaints at first contact", "Met response-time SLAs [X]% of the time for [number] months", "Trained [number] new agents on [products/systems]"] },
+      { id: "admin", label: "Administration / Office Assistant", keywords: ["office administration", "MS Office", "Excel", "data entry", "scheduling", "calendar management", "filing", "documentation", "correspondence", "travel arrangements", "procurement", "petty cash", "reception", "minutes of meeting", "record keeping", "ERP", "typing", "communication", "PRO services", "invoicing"],
+        suggestions: ["Managed calendars and travel for [number] managers", "Set up a filing system for [number] records, cutting search time by [X]%", "Processed [number] invoices and purchase orders a month accurately", "Handled visa and PRO paperwork for [number] employees"] },
+      { id: "procurement", label: "Procurement / Supply Chain / Logistics", keywords: ["procurement", "purchasing", "vendor management", "supplier evaluation", "negotiation", "RFQ", "purchase orders", "inventory management", "warehouse management", "logistics", "supply chain", "SAP", "ERP", "cost savings", "contract management", "demand planning", "shipping", "customs clearance", "Incoterms", "stock control"],
+        suggestions: ["Saved [value or X]% through supplier negotiation on [category]", "Managed [number] suppliers and [number] purchase orders a month", "Cut stock-outs by [X]% with better demand planning", "Reduced delivery lead time from [X] to [Y] days"] },
+    ],
+  },
+  {
+    label: "Healthcare, Education & Hospitality",
+    roles: [
+      { id: "nursing", label: "Nurse / Healthcare", keywords: ["patient care", "nursing assessment", "medication administration", "BLS", "ACLS", "DHA license", "DOH license", "MOH license", "infection control", "IV therapy", "wound care", "vital signs", "patient education", "electronic medical records", "critical care", "emergency care", "care plans", "triage", "documentation", "JCI"],
+        suggestions: ["Cared for [number] patients per shift in a [X]-bed [unit type]", "Kept [X]% compliance in [infection control/medication] audits", "Trained [number] new nurses on [procedures/systems]", "Contributed to [JCI/accreditation] with zero findings in [area]"] },
+      { id: "teacher", label: "Teacher / Educator", keywords: ["lesson planning", "classroom management", "curriculum", "differentiated instruction", "assessment", "British curriculum", "American curriculum", "IB", "CBSE", "KHDA", "ADEK", "student engagement", "special educational needs", "parent communication", "Google Classroom", "Microsoft Teams", "safeguarding", "behaviour management", "STEM", "report writing"],
+        suggestions: ["Taught [subject] to [number] students in [grades], raising average results by [X]%", "[X]% of my students achieved [grade/target] in [exam]", "Introduced [project/approach] that improved [engagement/attendance] by [X]%", "Led [club/department/initiative] for [number] students"] },
+      { id: "hospitality", label: "Hospitality / Hotel", keywords: ["guest relations", "front office", "Opera PMS", "reservations", "check-in", "food and beverage", "housekeeping", "customer service", "upselling", "revenue management", "complaints handling", "banquets", "food safety", "HACCP", "POS", "team leadership", "cost control", "hotel operations", "events", "multilingual"],
+        suggestions: ["Checked in [number] guests a day with a [X]/5 guest satisfaction score", "Raised room upsell revenue by [X]% in [time]", "Managed [number] events for up to [number] guests", "Led a team of [number] staff across [shifts/outlets]"] },
+    ],
+  },
+  {
+    label: "Creative & other",
+    roles: [
+      { id: "design", label: "Graphic Designer", keywords: ["Adobe Photoshop", "Illustrator", "InDesign", "Figma", "After Effects", "Premiere Pro", "branding", "typography", "layout", "UI design", "UX design", "social media design", "print design", "motion graphics", "color theory", "Canva", "packaging", "illustration", "creative direction", "portfolio"],
+        suggestions: ["Designed [number] brand identities for [client types]", "Created social media designs that increased engagement by [X]%", "Produced [number] print and digital assets a month for [number] campaigns", "Redesigned [website/app screens] in Figma, improving [conversion/usability] by [X]%"] },
+      { id: "general", label: "Other / any job", keywords: ["communication", "teamwork", "problem solving", "time management", "customer service", "leadership", "MS Office", "Excel", "organisation", "attention to detail", "reporting", "training", "planning", "negotiation", "presentation", "multitasking", "adaptability", "data entry", "documentation", "Arabic"],
+        suggestions: ["Improved [process] so that [result, e.g. work was done X% faster]", "Handled [number] [tasks/customers/orders] a [day/week] with [X]% accuracy", "Trained [number] new colleagues on [topics]", "Received [award/recognition] for [achievement]"] },
+    ],
+  },
+];
+
+export const cvRoles: CvRole[] = cvRoleGroups.flatMap((g) => g.roles);
+
+/** General achievement templates shown under every role's own suggestions. */
+export const cvCommonSuggestions = [
+  "Reduced [process/turnaround] time by [X]% by [what you changed]",
+  "Documented [number] procedures used by the [team name] team",
+  "Trained or mentored [number] colleagues on [topics]",
+];

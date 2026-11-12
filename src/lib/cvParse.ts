@@ -207,7 +207,30 @@ function mergeProjects(jobs: ParsedJob[], projects: ParsedJob[]): ParsedJob[] {
 
 function guessRole(text: string): string {
   const t = text.toLowerCase();
+  // Role ids match src/data/cvRoles.ts. Specific job titles come before broad IT words.
   const rules: Array<[string, RegExp]> = [
+    ["qs", /quantity surveyor|\bqs\b|cost estimator/],
+    ["mep", /\bmep\b/],
+    ["hse", /\bhse\b|safety officer|safety engineer|\bnebosh\b|health and safety/],
+    ["architect", /architect(?!ure)(?! - cloud)|architectural/],
+    ["civil", /civil engineer|structural engineer|site engineer|civil/],
+    ["mechanical", /mechanical engineer|mechanical/],
+    ["electronics", /electronics|instrumentation|embedded/],
+    ["electrical", /electrical engineer|electrical/],
+    ["accounting", /accountant|accounting|finance|auditor|bookkeep/],
+    ["sales", /sales (executive|manager|representative|engineer)|business development|account manager/],
+    ["marketing", /marketing|\bseo\b|social media/],
+    ["hr", /human resources|\bhr\b|recruiter|talent acquisition/],
+    ["customer", /customer service|call cent(er|re)|customer care|contact cent(er|re)/],
+    ["procurement", /procurement|purchas|supply chain|logistics|storekeeper|warehouse/],
+    ["admin", /administrative|admin assistant|office (assistant|administrator|manager)|receptionist|secretary/],
+    ["nursing", /\bnurse\b|nursing|staff nurse|healthcare/],
+    ["teacher", /teacher|lecturer|tutor|educator/],
+    ["hospitality", /hotel|hospitality|front office|guest relations|\bf&b\b|restaurant/],
+    ["design", /graphic designer|visual designer|ui designer|ux designer/],
+    ["pm", /project manager|project management|\bpmp\b/],
+    ["data", /data analyst|data scientist|business intelligence|\bbi developer\b/],
+    ["software", /software (developer|engineer)|developer|programmer|full ?stack|front ?end|back ?end/],
     ["kubernetes", /kubernetes|platform engineer|\bsre\b/],
     ["devops", /devops|ci\/cd|jenkins/],
     ["cloud", /cloud engineer|cloud architect|\baws\b|\bazure\b|\bgcp\b/],

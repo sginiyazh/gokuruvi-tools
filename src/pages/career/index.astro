@@ -3,12 +3,13 @@ import Layout from "../../layouts/Layout.astro";
 import BrandHero from "../../components/BrandHero.astro";
 import StatBand from "../../components/StatBand.astro";
 import GuideBand from "../../components/GuideBand.astro";
+import { cvRoles } from "../../data/cvRoles";
 
 const title = "IT Career Tools";
 const description = "Free IT career tools: build an ATS-friendly CV, check it for the keywords recruiters search for, and practise scenario interview questions for Linux, DevOps, cloud, network and security jobs.";
 
 const resources = [
-  { icon: "📄", tag: "CV", title: "IT CV Builder & ATS Checker", text: "Build a clean, ATS-friendly CV, score it against good-practice rules and the keywords for your target role, and save it as PDF.", href: "/career/cv-builder/" },
+  { icon: "📄", tag: "CV", title: "CV Builder & ATS Checker", text: "Build a clean, ATS-friendly CV for any field, score it against good-practice rules and the keywords for your target role, and save it as PDF.", href: "/career/cv-builder/" },
   { icon: "🎯", tag: "Interview", title: "IT Scenario Interview Q&A", text: "Practise real production scenarios with answers, useful commands and verification steps across eight technology domains.", href: "/interview-qa/" },
   { icon: "📋", tag: "Prompts", title: "Career Prompts", text: "Copy-paste prompts for tailoring CV bullet points, preparing for technical and behavioral interviews, and negotiating an offer.", href: "/ai/prompt-library/" },
   { icon: "📚", tag: "Learn", title: "Technical Guides", text: "In-depth guides on Linux troubleshooting, Kubernetes, CI/CD, networking, cloud and security to back up your interview answers.", href: "/guides/" },
@@ -30,7 +31,7 @@ const resources = [
 <StatBand
   title="From CV to interview, in one place"
   stats={[
-    { value: 10, label: "IT roles with built-in keyword checks, from Linux to IT support" },
+    { value: cvRoles.length, label: "job roles with keyword checks, from IT and engineering to finance and healthcare" },
     { value: 6, label: "in-depth technical guides to back up your answers" },
     { value: 0, label: "uploads or sign-ups: your CV stays in your browser" },
   ]}
@@ -43,7 +44,7 @@ const resources = [
   href="/career/cv-builder/"
   cta="Open the CV builder"
   items={[
-    { label: "Build an ATS-friendly IT CV and save it as PDF", href: "/career/cv-builder/" },
+    { label: "Build an ATS-friendly CV and save it as PDF", href: "/career/cv-builder/" },
     { label: "Check your CV against a pasted job advert", href: "/career/cv-builder/" },
     { label: "Practise scenario interview questions with answers", href: "/interview-qa/" },
     { label: "Prompts for tailoring CV bullets and interview prep", href: "/ai/prompt-library/" },
