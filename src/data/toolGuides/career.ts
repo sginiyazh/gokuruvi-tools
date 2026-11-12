@@ -8,6 +8,7 @@ export const careerGuides: Record<string, ToolGuideContent> = {
       "This tool builds a plain, single-column CV that ATS software reads reliably, and checks it the way a recruiter would: are the contact details complete, do the bullets show results with numbers, and does the CV mention the skills the target role usually asks for? The checks are simple rules, not AI, so the advice is predictable and nothing you type leaves your browser.",
     ],
     steps: [
+      "If you already have a CV, upload it as a PDF, Word (.docx) or text file, or paste its text. The form fills itself in; check every field, because CV layouts vary.",
       "Choose the role you are applying for. If you have the job advert, paste it in so the tool can list skills it asks for that your CV doesn't mention.",
       "Fill in your contact details. In the UAE, recruiters often expect your location, visa status and notice period near the top, so add them if they help your application.",
       "Write a 3–4 sentence summary: years of experience, the platforms you know best, and the kind of result you deliver.",
@@ -35,6 +36,7 @@ export const careerGuides: Record<string, ToolGuideContent> = {
     ],
     faq: [
       { q: "Is my CV uploaded or stored on a server?", a: "No. Everything runs in your browser. Your draft is saved only in this browser's local storage so you can return to it, and Clear all deletes it." },
+      { q: "Can I upload my existing CV?", a: "Yes. Upload a PDF, Word (.docx) or .txt file, or paste the text, and the tool fills in the form. The file is read inside your browser and is never uploaded to a server. Scanned or image-only PDFs have no readable text, and old .doc files need to be saved as .docx first. Always check the imported fields, because every CV is laid out differently." },
       { q: "Does the ATS score guarantee I will get an interview?", a: "No. Every employer's system and recruiter is different. The score shows how well your CV follows common good practice and how many typical role keywords it mentions, which improves your chances but can't guarantee a result." },
       { q: "Is this an AI CV writer?", a: "No. The checks are fixed rules written for IT CVs, so they don't invent experience or change your words. You can use an AI assistant to help rephrase a bullet, but always check that the result is accurate." },
       { q: "How do I save the CV as a PDF?", a: "Click Save as PDF. Your browser's print window opens; choose Save as PDF (or Microsoft Print to PDF) as the printer. Only the CV is printed, not the rest of the page." },

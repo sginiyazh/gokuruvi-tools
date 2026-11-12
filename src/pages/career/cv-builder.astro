@@ -31,6 +31,25 @@ const roles = [
           <button class="ai-button secondary" id="cvClear" type="button">Clear all</button>
         </div>
 
+        <fieldset class="cvb-import">
+          <legend>Start from your existing CV (optional)</legend>
+          <p class="ai-muted">Upload a PDF, Word (.docx) or text file and the form fills itself in. The file is read in your browser and never uploaded. CV layouts vary, so check every field afterwards.</p>
+          <label class="cvb-file-label" for="cvFile">Choose your CV file</label>
+          <input id="cvFile" class="cvb-file" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" />
+          <button class="ai-button cvb-load" id="cvLoadFile" type="button" disabled>Load CV into the form</button>
+          <details class="cvb-paste">
+            <summary>Or paste your CV text instead</summary>
+            <textarea id="cvPasteText" rows="6" placeholder="Copy all the text from your CV and paste it here."></textarea>
+            <button class="ai-button secondary" id="cvPasteRead" type="button">Fill the form from this text</button>
+          </details>
+          <p id="cvImportStatus" class="cvb-import-status" role="status" aria-live="polite"></p>
+          <details class="cvb-readtext" id="cvReadTextBox" hidden>
+            <summary>See the text read from your file</summary>
+            <p class="ai-muted">If something landed in the wrong field, copy it from here. This text stays in your browser.</p>
+            <pre id="cvReadText"></pre>
+          </details>
+        </fieldset>
+
         <fieldset>
           <legend>Target role</legend>
           <div class="ai-field full"><label for="cvRole">Role you are applying for</label>
@@ -108,6 +127,25 @@ const roles = [
   .cvb-form .ai-field { margin-bottom: 12px; }
   .cvb-form input, .cvb-form select, .cvb-form textarea { box-sizing: border-box; width: 100%; max-width: 100%; }
   .cvb-toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .cvb-import { padding: 16px !important; border: 1px dashed #93c5fd !important; border-radius: 12px; background: #f8fbff; }
+  .cvb-import legend { padding: 0 6px; }
+  .cvb-import > p.ai-muted { margin: 0 0 12px; }
+  .cvb-file-label { display: block; margin-bottom: 6px; color: #0f172a; font-weight: 700; }
+  .cvb-file { width: 100%; max-width: 100%; color: #334155; }
+  .cvb-file::file-selector-button { margin-right: 12px; padding: 10px 16px; border: 0; border-radius: 10px; background: #2563eb; color: #fff; font-weight: 800; cursor: pointer; }
+  .cvb-file:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; border-radius: 10px; }
+  .cvb-load { display: block; width: 100%; margin-top: 12px; }
+  .cvb-load:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+  .cvb-readtext { margin-top: 12px; }
+  .cvb-readtext summary { color: #1d4ed8; font-weight: 700; cursor: pointer; }
+  .cvb-readtext pre { max-height: 260px; margin: 8px 0 0; padding: 12px; overflow: auto; border: 1px solid #dbe4f0; border-radius: 10px; background: #fff; color: #334155; font: 12.5px/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .cvb-paste { margin-top: 12px; }
+  .cvb-paste summary { color: #1d4ed8; font-weight: 700; cursor: pointer; }
+  .cvb-paste textarea { margin: 10px 0; }
+  .cvb-import-status { margin: 12px 0 0; font-size: .9rem; line-height: 1.5; }
+  .cvb-import-status:empty { display: none; }
+  .cvb-import-status[data-kind="ok"] { padding: 10px 12px; border-radius: 10px; background: #dcfce7; color: #166534; }
+  .cvb-import-status[data-kind="warn"] { padding: 10px 12px; border-radius: 10px; background: #fef3c7; color: #92400e; }
   .cvb-job { position: relative; margin-bottom: 14px; padding: 16px; border: 1px solid #dbe4f0; border-radius: 12px; background: #f8fafc; }
   .cvb-job-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
   .cvb-remove { padding: 6px 10px; border: 1px solid #fecaca; border-radius: 8px; background: #fff; color: #b91c1c; font-weight: 700; cursor: pointer; }
@@ -143,11 +181,17 @@ const roles = [
   @media (max-width: 560px) {
     .cvb-preview { padding: 20px 16px; }
   }
+  /* A copy of the CV made just before printing (see preparePrint), so only the CV is printed. */
+  #cvPrintArea { display: none; }
   @media print {
-    body * { visibility: hidden !important; }
-    #cvPreview, #cvPreview * { visibility: visible !important; }
-    #cvPreview { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; }
-    @page { margin: 14mm; }
+    /* Zero page margins leave the browser no room for its date, title and URL header and footer;
+       the CV's own padding gives the margins instead, repeated on every page. */
+    @page { size: A4; margin: 0; }
+    body { margin: 0 !important; background: #fff !important; }
+    body > *:not(#cvPrintArea) { display: none !important; }
+    #cvPrintArea { display: block !important; min-height: 0; margin: 0; padding: 14mm 16mm; border: 0; border-radius: 0; box-shadow: none; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    #cvPrintArea .cv-section { break-after: avoid; }
+    #cvPrintArea li, #cvPrintArea .cv-job-line { break-inside: avoid; }
   }
 </style>
 
@@ -403,8 +447,28 @@ const roles = [
     fill({ cvRole: "linux", jobs: [] });
     FIELDS.forEach(function (id) { if (id !== "cvRole") $(id).value = ""; });
     update();
+    document.dispatchEvent(new CustomEvent("cvb:cleared")); // the import script resets the chosen file
   });
-  $("cvPrint").addEventListener("click", function () { window.print(); });
+  // Print only a copy of the CV, and name the PDF after the person instead of this page.
+  var pageTitle = null;
+  function preparePrint() {
+    var old = document.getElementById("cvPrintArea");
+    if (old) old.remove();
+    var area = preview.cloneNode(true);
+    area.id = "cvPrintArea";
+    document.body.appendChild(area);
+    if (pageTitle === null) pageTitle = document.title;
+    var name = $("cvName").value.trim();
+    document.title = name ? name + " CV" : "CV";
+  }
+  function finishPrint() {
+    var area = document.getElementById("cvPrintArea");
+    if (area) area.remove();
+    if (pageTitle !== null) { document.title = pageTitle; pageTitle = null; }
+  }
+  window.addEventListener("beforeprint", preparePrint); // also covers Ctrl+P
+  window.addEventListener("afterprint", finishPrint);
+  $("cvPrint").addEventListener("click", function () { preparePrint(); window.print(); });
   $("cvCopy").addEventListener("click", function () {
     var btn = this, text = plainText(collect());
     var done = function (ok) { btn.textContent = ok ? "Copied" : "Copy failed"; setTimeout(function () { btn.textContent = "Copy as text"; }, 1600); };
@@ -412,9 +476,169 @@ const roles = [
     else done(false);
   });
 
+  // Used by the import script below: replace the form with details read from a CV file.
+  window.cvbHasContent = function () {
+    var d = collect();
+    return FIELDS.some(function (id) { return id !== "cvRole" && id !== "cvJobAd" && d[id].trim(); }) || d.jobs.some(function (j) { return (j.title || j.bullets || "").trim(); });
+  };
+  window.cvbImport = function (parsed) {
+    var current = collect();
+    var merged = { cvRole: parsed.cvRole || current.cvRole, cvJobAd: current.cvJobAd, jobs: parsed.jobs };
+    FIELDS.forEach(function (id) { if (id !== "cvRole" && id !== "cvJobAd") merged[id] = parsed[id] || ""; });
+    fill(merged);
+    update();
+  };
+
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) {}
   fill(saved || { cvRole: "linux", jobs: [] });
   update();
 })();
+</script>
+
+<script>
+  // Reads an uploaded CV in the browser and fills the form. The PDF and Word readers
+  // are loaded only when someone actually imports a file.
+  import { parseCv, type ParsedCv } from "../../lib/cvParse";
+
+  declare global {
+    interface Window {
+      cvbImport?: (parsed: ParsedCv) => void;
+      cvbHasContent?: () => boolean;
+    }
+  }
+
+  const MAX_BYTES = 5 * 1024 * 1024;
+  const fileInput = document.getElementById("cvFile") as HTMLInputElement;
+  const pasteBox = document.getElementById("cvPasteText") as HTMLTextAreaElement;
+  const status = document.getElementById("cvImportStatus") as HTMLElement;
+
+  function say(message: string, kind: "ok" | "warn" | "" = "") {
+    status.textContent = message;
+    status.dataset.kind = kind;
+  }
+
+  async function pdfText(data: ArrayBuffer): Promise<string> {
+    const pdfjs = await import("pdfjs-dist");
+    const { default: workerUrl } = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+    const doc = await pdfjs.getDocument({ data }).promise;
+    const lines: string[] = [];
+    for (let n = 1; n <= doc.numPages; n++) {
+      const content = await (await doc.getPage(n)).getTextContent();
+      let line = "";
+      let lastY: number | null = null;
+      for (const item of content.items) {
+        if (!("str" in item)) continue;
+        const y = item.transform[5];
+        // A change in vertical position means a new line on the page.
+        if (lastY !== null && Math.abs(y - lastY) > 3 && line.trim()) {
+          lines.push(line);
+          line = "";
+        }
+        line += item.str;
+        lastY = y;
+        if (item.hasEOL) {
+          lines.push(line);
+          line = "";
+          lastY = null;
+        }
+      }
+      if (line.trim()) lines.push(line);
+      lines.push("");
+    }
+    return lines.join("\n");
+  }
+
+  async function docxText(data: ArrayBuffer): Promise<string> {
+    // @ts-expect-error mammoth's browser build ships without type declarations
+    const mod = await import("mammoth/mammoth.browser.js");
+    const mammoth = mod.default ?? mod;
+    const { value } = await mammoth.convertToHtml({ arrayBuffer: data });
+    const html = new DOMParser().parseFromString(value, "text/html");
+    const lines: string[] = [];
+    html.body.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6").forEach((el) => {
+      if (el.tagName === "P" && el.closest("li")) return;
+      el.querySelectorAll("br").forEach((br) => br.replaceWith("\n"));
+      const text = (el.textContent || "").trim();
+      if (text) lines.push(el.tagName === "LI" ? `• ${text}` : text);
+    });
+    return lines.join("\n");
+  }
+
+  function importText(text: string, source: string) {
+    if (text.replace(/\s/g, "").length < 80) {
+      say("No readable text was found. This usually means a scanned or image-only PDF. Upload the Word version, or copy the text into the paste box.", "warn");
+      return;
+    }
+    const parsed = parseCv(text);
+    window.cvbImport?.(parsed);
+    const filled = Object.entries(parsed).filter(([key, value]) => key !== "jobs" && key !== "cvRole" && typeof value === "string" && value.trim()).length;
+    const jobs = parsed.jobs.length;
+    say(`Read ${source}: filled ${filled} fields and ${jobs} ${jobs === 1 ? "job" : "jobs"}. Please check every field, because CV layouts vary and some details may be missing or in the wrong place.`, "ok");
+  }
+
+  const okToReplace = () => !window.cvbHasContent?.() || confirm("Replace the CV in the form with the details from your file?");
+  const loadButton = document.getElementById("cvLoadFile") as HTMLButtonElement;
+  const readBox = document.getElementById("cvReadTextBox") as HTMLDetailsElement;
+  const readText = document.getElementById("cvReadText") as HTMLElement;
+
+  function showReadText(text: string) {
+    readText.textContent = text.trim();
+    readBox.hidden = !text.trim();
+  }
+
+  // Step 1: choosing a file only checks it. Step 2: the Load button reads it into the form.
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    loadButton.disabled = true;
+    if (!file) return say("");
+    const name = file.name.toLowerCase();
+    if (file.size > MAX_BYTES) return say("That file is larger than 5 MB. Please upload a smaller PDF or Word file.", "warn");
+    if (name.endsWith(".doc")) return say("Old Word .doc files can't be read here. In Word, choose File → Save As → Word Document (.docx), then upload that file.", "warn");
+    if (!/\.(pdf|docx|txt)$/.test(name)) return say("Please upload a PDF, Word (.docx) or .txt file.", "warn");
+    loadButton.disabled = false;
+    say(`Ready: ${file.name}. Click "Load CV into the form" to fill in the details.`);
+  });
+
+  loadButton.addEventListener("click", async () => {
+    const file = fileInput.files?.[0];
+    if (!file || !okToReplace()) return;
+    const name = file.name.toLowerCase();
+    loadButton.disabled = true;
+    say(`Reading ${file.name}…`);
+    try {
+      const text = name.endsWith(".pdf")
+        ? await pdfText(await file.arrayBuffer())
+        : name.endsWith(".docx")
+          ? await docxText(await file.arrayBuffer())
+          : await file.text();
+      showReadText(text);
+      importText(text, file.name);
+    } catch {
+      showReadText("");
+      say("That file couldn't be read. If it is password-protected or damaged, save it again as PDF or .docx, or paste the text below.", "warn");
+    } finally {
+      loadButton.disabled = false;
+    }
+  });
+
+  // Load example replaces the form, so the last import message no longer applies.
+  document.getElementById("cvSample")?.addEventListener("click", () => { say(""); showReadText(""); });
+
+  // Clear all (once confirmed) also forgets the chosen file and any pasted text.
+  document.addEventListener("cvb:cleared", () => {
+    fileInput.value = "";
+    loadButton.disabled = true;
+    pasteBox.value = "";
+    say("");
+    showReadText("");
+  });
+
+  document.getElementById("cvPasteRead")?.addEventListener("click", () => {
+    if (!pasteBox.value.trim()) return say("Paste your CV text into the box first.", "warn");
+    if (!okToReplace()) return;
+    showReadText("");
+    importText(pasteBox.value, "the pasted text");
+  });
 </script>
