@@ -1,0 +1,59 @@
+---
+// Shown for any address that doesn't exist. Astro serves it with a 404 status,
+// so search engines don't index it; it points visitors back to working pages.
+import Layout from "../layouts/Layout.astro";
+import BrandHero from "../components/BrandHero.astro";
+import { categoryMeta } from "../data/tools";
+
+const popular = [
+  { label: "Linux Server Troubleshooting Guide", href: "/guides/linux-server-troubleshooting/" },
+  { label: "IT Scenario Interview Q&A", href: "/interview-qa/" },
+  { label: "CV Builder & ATS Checker", href: "/career/cv-builder/" },
+  { label: "Subnet Calculator", href: "/network/subnet-calculator/" },
+  { label: "Chmod Calculator", href: "/linux/chmod-calculator/" },
+  { label: "All technical guides", href: "/guides/" },
+];
+---
+<Layout title="Page not found" description="The page you were looking for doesn't exist. Browse free IT tools, guides, interview questions and the CV builder on Gokuruvi Tools.">
+  <BrandHero
+    title="Page not found (404)"
+    line1="Page not"
+    line2="Found."
+    lead="The address may be mistyped, or the page has moved. Everything on Gokuruvi Tools is still free; pick a category below or start from the homepage."
+    breadcrumb={[{ label: "Home", href: "/" }, { label: "Page not found" }]}
+    actions={[
+      { label: "Go to the homepage", href: "/", primary: true },
+      { label: "Browse all guides", href: "/guides/" },
+    ]}
+  />
+
+  <section class="nf"><div class="nf-inner">
+    <h2>Tool categories</h2>
+    <div class="nf-grid">
+      {categoryMeta.map((c) => (
+        <a class="nf-card" href={c.href}><span class="nf-icon" aria-hidden="true">{c.icon}</span><span><strong>{c.name}</strong><small>{c.description}</small></span></a>
+      ))}
+    </div>
+    <h2>Popular pages</h2>
+    <ul class="nf-links">
+      {popular.map((p) => <li><a href={p.href}>{p.label} →</a></li>)}
+    </ul>
+  </div></section>
+</Layout>
+
+<style>
+  .nf { padding: 56px 0 72px; background: #f8fafc; }
+  .nf-inner { width: min(calc(100% - 32px), 1180px); margin: 0 auto; }
+  .nf h2 { margin: 0 0 18px; color: #0f172a; font-size: clamp(22px, 3vw, 28px); }
+  .nf h2:not(:first-child) { margin-top: 40px; }
+  .nf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 14px; }
+  .nf-card { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; color: inherit; text-decoration: none; transition: border-color .2s, transform .2s; }
+  .nf-card:hover { border-color: #93c5fd; transform: translateY(-2px); }
+  .nf-card:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+  .nf-icon { font-size: 24px; line-height: 1; }
+  .nf-card strong { display: block; color: #0f172a; }
+  .nf-card small { display: block; margin-top: 3px; color: #64748b; font-size: 13px; line-height: 1.5; }
+  .nf-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .nf-links a { display: inline-flex; padding: 10px 14px; border: 1px solid #cbd7e7; border-radius: 10px; background: #fff; color: #1d4ed8; font-weight: 700; text-decoration: none; }
+  .nf-links a:hover { border-color: #2563eb; background: #eff6ff; }
+</style>

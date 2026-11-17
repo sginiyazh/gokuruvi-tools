@@ -160,7 +160,7 @@ export const tools: Tool[] = [
   { title: "File Checksum Generator", description: "Calculate SHA-256, SHA-384 or SHA-512 checksums for local files.", href: "/security/file-checksum-generator/", icon: "🧾", category: "Security", keywords: ["checksum"] },
 
   // AI
-  { title: "AI Prompt Library", description: "40+ copy-paste prompts for debugging, code review, studying, interview prep, and writing.", href: "/ai/prompt-library/", icon: "📋", category: "AI", keywords: ["prompt"] },
+  { title: "AI Prompt Library", description: "26 copy-paste prompts for debugging, code review, studying, interview prep, and writing.", href: "/ai/prompt-library/", icon: "📋", category: "AI", keywords: ["prompt"] },
   { title: "AI & LLM Glossary", description: "Plain-English definitions of AI and LLM terms — tokens, context window, RAG, agents, and more.", href: "/ai/glossary/", icon: "📖", category: "AI", keywords: ["glossary", "terms"] },
   { title: "AI Token Counter & Cost Estimator", description: "Estimate token counts and API costs for GPT, Claude and Gemini before you run a prompt.", href: "/ai/token-counter/", icon: "🔢", category: "AI", keywords: ["token", "cost"] },
   { title: "Model Context Window Calculator", description: "Check how much text, code or conversation history fits inside a model's context window.", href: "/ai/context-window-calculator/", icon: "📏", category: "AI", keywords: ["context window"] },

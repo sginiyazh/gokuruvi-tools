@@ -929,6 +929,21 @@ import Footer from "../../components/Footer.astro";
           flex-direction: column;
         }
       }
+
+      /* Phones: a grid column won't shrink below its widest content (a long dropdown option or
+         output line), so let the column's items shrink and keep wide content inside its own box. */
+      .converter-layout > * {
+        min-width: 0;
+      }
+
+      .converter-layout select,
+      .converter-layout pre {
+        max-width: 100%;
+      }
+
+      .converter-layout pre {
+        overflow-x: auto;
+      }
     </style>
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3566244632209805" crossorigin="anonymous"></script>
   </head>
