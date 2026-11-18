@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import AuthForm from "../components/AuthForm.astro";
+
+if (await Astro.session?.get("user")) return Astro.redirect("/bot/");
+Astro.response.headers.set("cache-control", "private, no-store");
+---
+<Layout title="Create a free GokuruviBot AI account" description="Sign up free for GokuruviBot AI, the IT help assistant on Gokuruvi Tools." noindex>
+  <AuthForm mode="signup" />
+</Layout>

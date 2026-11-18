@@ -1,0 +1,235 @@
+---
+// Login / sign-up card for GokuruviBot AI. Posts JSON to /api/auth/*, then goes to /bot/.
+interface Props {
+  mode: "login" | "signup";
+}
+const { mode } = Astro.props;
+const isSignup = mode === "signup";
+---
+
+<section class="auth">
+  <div class="auth-card">
+    <a class="auth-brand" href="/bot/">
+      <span class="auth-spark" aria-hidden="true">✦</span> GokuruviBot AI
+    </a>
+    <h1>{isSignup ? "Create your free account" : "Log in to GokuruviBot"}</h1>
+    <p class="auth-sub">
+      {isSignup
+        ? "Free IT help for Linux, cloud, DevOps, networking and more. 30 questions a day, no card needed."
+        : "Welcome back. Log in to ask GokuruviBot your IT questions."}
+    </p>
+
+    <form class="auth-form" data-mode={mode} novalidate>
+      {isSignup && (
+        <label>
+          <span>Name <em>(optional)</em></span>
+          <input name="name" type="text" maxlength="60" autocomplete="name" />
+        </label>
+      )}
+      <label>
+        <span>Email</span>
+        <input name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" />
+      </label>
+      <label>
+        <span>Password</span>
+        <input
+          name="password"
+          type="password"
+          required
+          minlength="8"
+          maxlength="128"
+          autocomplete={isSignup ? "new-password" : "current-password"}
+        />
+        {isSignup && <small>At least 8 characters. Use one you don't use on other sites.</small>}
+      </label>
+      <p class="auth-error" role="alert" hidden></p>
+      <button type="submit">{isSignup ? "Create account" : "Log in"}</button>
+    </form>
+
+    <p class="auth-switch">
+      {isSignup ? (
+        <>Already have an account? <a href="/login/">Log in</a></>
+      ) : (
+        <>New here? <a href="/signup/">Create a free account</a></>
+      )}
+    </p>
+    <p class="auth-note">
+      We store only your email, name and a securely hashed password. Chats are not saved.
+      See our <a href="/privacy-policy/">privacy policy</a>.
+    </p>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>(".auth-form");
+  const errorBox = form?.querySelector<HTMLElement>(".auth-error");
+  const button = form?.querySelector<HTMLButtonElement>("button[type=submit]");
+
+  const showError = (msg: string) => {
+    if (!errorBox) return;
+    errorBox.textContent = msg;
+    errorBox.hidden = !msg;
+  };
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    showError("");
+    const mode = form.dataset.mode;
+    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((data.email || "").trim())) return showError("Please enter a valid email address.");
+    if (!data.password || (mode === "signup" && data.password.length < 8)) {
+      return showError(mode === "signup" ? "Password must be at least 8 characters." : "Please enter your password.");
+    }
+    if (button) {
+      button.disabled = true;
+      button.textContent = mode === "signup" ? "Creating account…" : "Logging in…";
+    }
+    try {
+      const res = await fetch(`/api/auth/${mode}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (res.ok && out.ok) {
+        location.href = "/bot/";
+        return;
+      }
+      showError(out.error || "Something went wrong. Please try again.");
+    } catch {
+      showError("Network error. Please check your connection and try again.");
+    }
+    if (button) {
+      button.disabled = false;
+      button.textContent = mode === "signup" ? "Create account" : "Log in";
+    }
+  });
+</script>
+
+<style>
+  .auth {
+    display: grid;
+    min-height: calc(100vh - 68px);
+    place-items: center;
+    padding: 48px 16px 64px;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(124, 58, 237, 0.35), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(14, 165, 233, 0.3), transparent 45%),
+      #0b1120;
+  }
+  .auth-card {
+    box-sizing: border-box;
+    width: min(100%, 440px);
+    padding: 32px 28px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.92);
+    color: #e2e8f0;
+    box-shadow: 0 30px 70px rgba(2, 6, 23, 0.55);
+  }
+  .auth-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .auth h1 {
+    margin: 18px 0 8px;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1.2;
+  }
+  .auth-sub {
+    margin: 0 0 22px;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .auth-form {
+    display: grid;
+    gap: 16px;
+  }
+  .auth-form label {
+    display: grid;
+    gap: 6px;
+  }
+  .auth-form label > span {
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .auth-form em {
+    color: #64748b;
+    font-style: normal;
+    font-weight: 500;
+  }
+  .auth-form input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+  }
+  .auth-form input:focus {
+    border-color: #38bdf8;
+    outline: 3px solid rgba(56, 189, 248, 0.25);
+  }
+  .auth-form small {
+    color: #64748b;
+    font-size: 12.5px;
+  }
+  .auth-error {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    border-radius: 10px;
+    background: rgba(127, 29, 29, 0.35);
+    color: #fecaca;
+    font-size: 14px;
+  }
+  .auth-form button {
+    min-height: 48px;
+    border: 0;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 26px rgba(124, 58, 237, 0.35);
+  }
+  .auth-form button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  .auth-switch {
+    margin: 20px 0 0;
+    color: #94a3b8;
+    font-size: 14.5px;
+    text-align: center;
+  }
+  .auth a:not(.auth-brand) {
+    color: #7dd3fc;
+    font-weight: 700;
+  }
+  .auth-note {
+    margin: 18px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+    color: #64748b;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+</style>

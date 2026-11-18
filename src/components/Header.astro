@@ -1,17 +1,29 @@
 ---
 const currentPath = Astro.url.pathname;
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+  children?: { name: string; href: string }[];
+}
+
+const navigation: NavItem[] = [
   { name: "Home", href: "/" },
   { name: "Linux", href: "/linux/" },
   { name: "Windows", href: "/windows/" },
-  { name: "Network", href: "/network/" },
+  {
+    name: "Network & Security",
+    href: "/network/",
+    children: [
+      { name: "Network", href: "/network/" },
+      { name: "Security", href: "/security/" },
+    ],
+  },
   { name: "VMware", href: "/vmware/" },
   { name: "Cloud", href: "/cloud/" },
   { name: "DevOps", href: "/devops/" },
   { name: "Kubernetes", href: "/kubernetes/" },
   { name: "Database", href: "/database/" },
-  { name: "Security", href: "/security/" },
   { name: "AI", href: "/ai/" },
   { name: "Guides", href: "/guides/" },
   { name: "Interview Q&A", href: "/interview-qa/" },
@@ -63,6 +75,10 @@ const isActive = (href: string) => {
         </span>
       </a>
 
+      <a class="gokuruvi-bot-mini" href="/bot/" aria-label="GokuruviBot AI">
+        <span aria-hidden="true">✦</span> Bot AI
+      </a>
+
       <button
         class="gokuruvi-menu-button"
         type="button"
@@ -80,7 +96,37 @@ const isActive = (href: string) => {
         id="gokuruvi-main-navigation"
       >
         {
-          navigation.map((item) => (
+          navigation.map((item) => item.children ? (
+            <div
+              class:list={{
+                "gokuruvi-nav-group": true,
+                active: item.children.some((c) => isActive(c.href)),
+              }}
+            >
+              <a
+                href={item.href}
+                class:list={{
+                  "gokuruvi-nav-link": true,
+                  active: item.children.some((c) => isActive(c.href)),
+                }}
+                aria-haspopup="true"
+              >
+                {item.name}
+                <span class="gokuruvi-caret" aria-hidden="true">▾</span>
+              </a>
+              <div class="gokuruvi-nav-sub">
+                {item.children.map((c) => (
+                  <a
+                    href={c.href}
+                    class:list={{ active: isActive(c.href) }}
+                    aria-current={isActive(c.href) ? "page" : undefined}
+                  >
+                    {c.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : (
             <a
               href={item.href}
               class:list={{
@@ -97,10 +143,12 @@ const isActive = (href: string) => {
         }
 
         <a
-          class="gokuruvi-nav-button"
-          href="/#featured-tools"
+          class:list={{ "gokuruvi-bot-button": true, active: isActive("/bot/") }}
+          href="/bot/"
+          aria-current={isActive("/bot/") ? "page" : undefined}
         >
-          Explore Tools
+          <span class="gokuruvi-bot-spark" aria-hidden="true">✦</span>
+          GokuruviBot AI
         </a>
       </div>
     </nav>
@@ -182,7 +230,7 @@ const isActive = (href: string) => {
   });
 
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 1320) {
+    if (window.innerWidth > 1340) {
       setMenuState(false);
     }
   });
@@ -315,6 +363,112 @@ const isActive = (href: string) => {
     transform: translateY(-1px);
   }
 
+  /* GokuruviBot AI: the highlighted call to action, with a slow animated glow. */
+  .gokuruvi-bot-button {
+    position: relative;
+    display: inline-flex;
+    min-height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    background: linear-gradient(120deg, #7c3aed, #db2777, #f59e0b, #7c3aed);
+    background-size: 300% 100%;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.5), 0 9px 24px rgba(124, 58, 237, 0.4);
+    animation: gokuruvi-bot-shift 6s linear infinite, gokuruvi-bot-glow 2.8s ease-in-out infinite;
+    transition: transform 0.2s ease;
+  }
+
+  .gokuruvi-bot-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .gokuruvi-bot-button.active {
+    outline: 2px solid #f9a8d4;
+    outline-offset: 2px;
+  }
+
+  .gokuruvi-bot-spark {
+    font-size: 15px;
+  }
+
+  @keyframes gokuruvi-bot-shift {
+    to { background-position: 300% 0; }
+  }
+
+  @keyframes gokuruvi-bot-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.45), 0 9px 24px rgba(124, 58, 237, 0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(219, 39, 119, 0), 0 9px 28px rgba(219, 39, 119, 0.45); }
+  }
+
+  /* Network & Security: one menu item, with a dropdown on hover/focus. */
+  .gokuruvi-nav-group {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .gokuruvi-caret {
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  .gokuruvi-nav-sub {
+    position: absolute;
+    top: 100%;
+    left: -12px;
+    display: grid;
+    min-width: 160px;
+    padding: 6px;
+    border: 1px solid #263247;
+    border-radius: 12px;
+    background: #0f172a;
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease,
+      visibility 0.15s ease;
+  }
+
+  .gokuruvi-nav-group:hover .gokuruvi-nav-sub,
+  .gokuruvi-nav-group:focus-within .gokuruvi-nav-sub {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .gokuruvi-nav-sub a {
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #dbe4f0;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .gokuruvi-nav-sub a:hover,
+  .gokuruvi-nav-sub a.active {
+    background: #1e293b;
+    color: #ffffff;
+  }
+
+  .gokuruvi-bot-mini {
+    display: none;
+  }
+
   .gokuruvi-menu-button {
     display: none;
     width: 44px;
@@ -354,6 +508,7 @@ const isActive = (href: string) => {
   .gokuruvi-logo:focus-visible,
   .gokuruvi-nav-link:focus-visible,
   .gokuruvi-nav-button:focus-visible,
+  .gokuruvi-bot-button:focus-visible,
   .gokuruvi-menu-button:focus-visible {
     outline: 3px solid rgba(56, 189, 248, 0.5);
     outline-offset: 3px;
@@ -372,15 +527,37 @@ const isActive = (href: string) => {
       font-size: 12.5px;
     }
 
-    .gokuruvi-nav-button {
-      padding-inline: 15px;
+    .gokuruvi-nav-button,
+    .gokuruvi-bot-button {
+      padding-inline: 13px;
       font-size: 13px;
     }
   }
 
-  @media (max-width: 1320px) {
+  @media (max-width: 1340px) {
     .gokuruvi-menu-button {
       display: block;
+    }
+
+    .gokuruvi-navbar {
+      gap: 10px;
+    }
+
+    .gokuruvi-bot-mini {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      padding: 0 13px;
+      border-radius: 10px;
+      background: linear-gradient(120deg, #7c3aed, #db2777);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 6px 18px rgba(219, 39, 119, 0.35);
     }
 
     .gokuruvi-nav-links {
@@ -395,6 +572,7 @@ const isActive = (href: string) => {
       overflow-y: auto;
       padding: 16px 20px 22px;
       flex-direction: column;
+      justify-content: flex-start;
       align-items: stretch;
       gap: 5px;
       border-top: 1px solid #263247;
@@ -439,7 +617,43 @@ const isActive = (href: string) => {
       display: none;
     }
 
-    .gokuruvi-nav-button {
+    /* The "✦ Bot AI" chip beside the menu icon replaces the big button here. */
+    .gokuruvi-bot-button {
+      display: none;
+    }
+
+    /* Phone menu: show Network and Security as two normal rows. */
+    .gokuruvi-nav-group {
+      display: contents;
+    }
+
+    .gokuruvi-nav-group > .gokuruvi-nav-link {
+      display: none;
+    }
+
+    .gokuruvi-nav-sub {
+      position: static;
+      display: contents;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+    }
+
+    .gokuruvi-nav-sub a {
+      display: flex;
+      min-height: 46px;
+      align-items: center;
+      padding: 0 14px;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+
+    .gokuruvi-nav-sub a.active {
+      box-shadow: inset 3px 0 0 #38bdf8;
+    }
+
+    .gokuruvi-nav-button,
+    .gokuruvi-bot-button {
       width: 100%;
       min-height: 48px;
       margin-top: 7px;
@@ -487,8 +701,13 @@ const isActive = (href: string) => {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .gokuruvi-bot-button {
+      animation: none;
+    }
+
     .gokuruvi-nav-link,
     .gokuruvi-nav-button,
+    .gokuruvi-bot-button,
     .gokuruvi-nav-links,
     .gokuruvi-menu-button span {
       transition: none;

@@ -15,5 +15,21 @@
       "binding": "SESSION",
       "id": "f2942b35cc744b54a309f9e3ffa6b421"
     }
-  ]
+  ],
+  // GokuruviBot AI: user accounts and daily usage counts.
+  // Locally (astro dev) this is a simulated SQLite file in .wrangler/.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gokuruvi-bot",
+      "database_id": "9a482aea-407f-4dfa-a35b-e9f0ed244436",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Workers AI for the chat (free daily allocation; always runs on Cloudflare,
+  // so local testing needs `npx wrangler login`).
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  }
 }

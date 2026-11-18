@@ -1,0 +1,374 @@
+---
+import { env } from "cloudflare:workers";
+import Layout from "../../layouts/Layout.astro";
+import BrandHero from "../../components/BrandHero.astro";
+import StatBand from "../../components/StatBand.astro";
+import { utcDay, type SessionUser } from "../../lib/auth";
+
+const USER_DAILY_LIMIT = 30;
+const user = (await Astro.session?.get("user")) as SessionUser | undefined;
+let remaining = USER_DAILY_LIMIT;
+if (user) {
+  const row = await env.DB.prepare("SELECT count FROM usage WHERE user_id = ? AND day = ?").bind(user.id, utcDay()).first<{ count: number }>();
+  remaining = Math.max(0, USER_DAILY_LIMIT - (row?.count ?? 0));
+}
+// The page differs for logged-in visitors, so never let a cache share it.
+Astro.response.headers.set("cache-control", "private, no-store");
+
+const title = "GokuruviBot AI: Free IT Help Assistant";
+const description = "Ask GokuruviBot AI your Linux, Windows, networking, VMware, cloud, DevOps, Kubernetes, database and security questions. Free account, 30 questions a day, chats not stored.";
+
+const examples = [
+  "My Linux server's disk is 100% full. How do I find what is using the space?",
+  "Write a Kubernetes Deployment with 3 replicas, resource limits and a readiness probe.",
+  "How do I open port 8443 permanently with firewall-cmd on RHEL 9?",
+  "Explain the difference between an AWS security group and a network ACL.",
+  "Give me 5 strong CV bullet points for a Linux system administrator.",
+  "Why does my Windows Server show 'trust relationship failed' and how do I fix it?",
+];
+
+const topics = [
+  { icon: "🐧", title: "Linux & Windows", text: "Troubleshooting, permissions, services, logs, disk and memory issues, PowerShell and Bash scripts." },
+  { icon: "🌐", title: "Networking", text: "Subnetting, DNS, firewalls, routing, VPNs, load balancers and connectivity troubleshooting." },
+  { icon: "☁️", title: "Cloud & VMware", text: "AWS, Azure and GCP services, IAM, Terraform, vSphere sizing, snapshots and datastores." },
+  { icon: "⚙️", title: "DevOps & Kubernetes", text: "CI/CD pipelines, Docker, Kubernetes manifests, Helm, Git and deployment problems." },
+  { icon: "🗄️", title: "Databases & Security", text: "SQL queries, backups, performance, hardening, TLS certificates and security best practice." },
+  { icon: "💼", title: "IT Careers", text: "CV bullet points, interview answers, certifications and how to explain your experience." },
+];
+
+const faqs = [
+  { q: "Is GokuruviBot AI free?", a: "Yes. Create a free account with your email and you can ask 30 questions a day. The limit resets every day at 00:00 UTC. No payment card is needed." },
+  { q: "Why do I need an account?", a: "Answers come from an AI model that costs money to run. A free account lets us give everyone a fair daily allowance and stop automated abuse." },
+  { q: "Are my chats saved?", a: "No. Your questions are sent to the AI model to get an answer and are not stored in our database. The conversation stays in your browser tab and disappears when you close it or start a new chat." },
+  { q: "Which AI model does GokuruviBot use?", a: "GokuruviBot runs on Cloudflare Workers AI with Meta's Llama 3.1 8B Instruct model, guided by instructions that keep it focused on practical IT help." },
+  { q: "Can I trust the answers?", a: "AI can make mistakes. Treat answers as a starting point: read commands before running them, test on a non-production system first, and check the official documentation for anything critical." },
+  { q: "What should I never paste into the chat?", a: "Passwords, private keys, API tokens, customer data or anything confidential. Replace real hostnames, IP addresses and usernames with examples before asking." },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+};
+---
+<Layout title={title} description={description}>
+  {user ? (
+    <section class="chat-wrap">
+      <div class="chat-shell">
+        <div class="chat-top">
+          <div class="chat-id">
+            <span class="chat-spark" aria-hidden="true">✦</span>
+            <div>
+              <h1>GokuruviBot AI</h1>
+              <p>Hi {user.name || user.email}. Ask any IT question.</p>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <span class="chat-left" id="chatLeft">{remaining} of {USER_DAILY_LIMIT} left today</span>
+            <button type="button" class="chat-btn" id="chatNew">New chat</button>
+            <button type="button" class="chat-btn ghost" id="chatLogout">Log out</button>
+          </div>
+        </div>
+
+        <div class="chat-log" id="chatLog" aria-live="polite">
+          <div class="chat-empty" id="chatEmpty">
+            <p class="chat-empty-title">What can I help you with?</p>
+            <div class="chat-chips">
+              {examples.slice(0, 4).map((e) => <button type="button" class="chat-chip">{e}</button>)}
+            </div>
+          </div>
+        </div>
+
+        <form class="chat-form" id="chatForm">
+          <label class="sr-only" for="chatInput">Your question</label>
+          <textarea id="chatInput" rows="2" maxlength="2000" placeholder="Ask an IT question… (Enter to send, Shift+Enter for a new line)" required></textarea>
+          <button type="submit" id="chatSend" aria-label="Send">Send ➤</button>
+        </form>
+        <p class="chat-foot">AI can make mistakes. Check commands before running them. Don't paste passwords, keys or customer data. Chats are not saved.</p>
+      </div>
+    </section>
+  ) : (
+    <>
+      <BrandHero
+        title={title}
+        line1="Ask the"
+        line2="IT Bot."
+        lead="GokuruviBot AI answers your Linux, Windows, networking, VMware, cloud, DevOps, Kubernetes, database and security questions with practical steps and ready-to-copy commands. Free account, 30 questions a day."
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "GokuruviBot AI" }]}
+        actions={[
+          { label: "Create free account", href: "/signup/", primary: true },
+          { label: "Log in", href: "/login/" },
+        ]}
+      />
+
+      <StatBand
+        title="Free IT help, any time"
+        stats={[
+          { value: 30, label: "free questions every day with a free account" },
+          { value: 6, label: "IT areas covered, from Linux servers to IT careers" },
+          { value: 0, label: "chats stored: your conversation stays in your browser" },
+        ]}
+      />
+
+      <section class="bot-sec"><div class="bot-inner">
+        <div class="bot-head"><span class="bot-label">What it knows</span><h2>Built for system administrators and engineers</h2><p>GokuruviBot is tuned for day-to-day infrastructure work, not general chit-chat. It explains the cause, gives the fix step by step and warns you before anything destructive.</p></div>
+        <div class="bot-grid">
+          {topics.map((t) => (
+            <div class="bot-card"><span class="bot-icon" aria-hidden="true">{t.icon}</span><h3>{t.title}</h3><p>{t.text}</p></div>
+          ))}
+        </div>
+      </div></section>
+
+      <section class="bot-sec alt"><div class="bot-inner">
+        <div class="bot-head"><span class="bot-label">Try asking</span><h2>Example questions</h2><p>Be specific: include the operating system, version, the exact error message and what you already tried.</p></div>
+        <ul class="bot-examples">
+          {examples.map((e) => <li>“{e}”</li>)}
+        </ul>
+        <div class="bot-cta"><a class="bot-btn" href="/signup/">Create free account</a><a class="bot-link" href="/login/">I already have an account →</a></div>
+      </div></section>
+
+      <section class="bot-sec"><div class="bot-inner narrow">
+        <div class="bot-head"><span class="bot-label">FAQ</span><h2>GokuruviBot AI questions</h2></div>
+        {faqs.map((f) => (
+          <details class="bot-faq"><summary>{f.q}</summary><p>{f.a}</p></details>
+        ))}
+      </div></section>
+      <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    </>
+  )}
+</Layout>
+
+<script>
+  import { renderMarkdown } from "../../lib/botMarkdown";
+
+  type Msg = { role: "user" | "assistant"; content: string };
+  const STORE = "gokuruviBotChat";
+  const log = document.getElementById("chatLog");
+  const form = document.getElementById("chatForm") as HTMLFormElement | null;
+  const input = document.getElementById("chatInput") as HTMLTextAreaElement | null;
+  const send = document.getElementById("chatSend") as HTMLButtonElement | null;
+  const left = document.getElementById("chatLeft");
+  const empty = document.getElementById("chatEmpty");
+
+  if (log && form && input && send) {
+    let history: Msg[] = [];
+    let busy = false;
+    try { history = JSON.parse(sessionStorage.getItem(STORE) || "[]"); } catch { history = []; }
+    const save = () => { try { sessionStorage.setItem(STORE, JSON.stringify(history.slice(-20))); } catch {} };
+
+    const addBubble = (role: "user" | "assistant" | "error", text: string) => {
+      if (empty) empty.hidden = true;
+      const div = document.createElement("div");
+      div.className = `msg ${role}`;
+      if (role === "assistant") div.innerHTML = renderMarkdown(text);
+      else div.textContent = text;
+      log.appendChild(div);
+      div.querySelectorAll<HTMLElement>("pre").forEach((pre) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "copy";
+        b.textContent = "Copy";
+        b.addEventListener("click", async () => {
+          try { await navigator.clipboard.writeText(pre.querySelector("code")?.textContent || ""); b.textContent = "Copied"; }
+          catch { b.textContent = "Press Ctrl+C"; }
+          setTimeout(() => (b.textContent = "Copy"), 1600);
+        });
+        pre.appendChild(b);
+      });
+      log.scrollTop = log.scrollHeight;
+      return div;
+    };
+
+    history.forEach((m) => addBubble(m.role, m.content));
+
+    const ask = async (question: string) => {
+      question = question.trim();
+      if (!question || busy) return;
+      busy = true;
+      send.disabled = true;
+      history.push({ role: "user", content: question });
+      addBubble("user", question);
+      input.value = "";
+      const thinking = addBubble("assistant", "");
+      thinking.classList.add("thinking");
+      thinking.innerHTML = "<span></span><span></span><span></span>";
+      try {
+        const res = await fetch("/api/bot/chat", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ messages: history.slice(-10) }),
+        });
+        const out = await res.json().catch(() => ({}));
+        thinking.remove();
+        if (res.status === 401) { location.href = "/login/"; return; }
+        if (res.ok && out.answer) {
+          history.push({ role: "assistant", content: out.answer });
+          addBubble("assistant", out.answer);
+        } else {
+          history.pop(); // let the user retry the same question
+          addBubble("error", out.error || "Something went wrong. Please try again.");
+        }
+        if (typeof out.remaining === "number" && left) left.textContent = `${out.remaining} of 30 left today`;
+      } catch {
+        thinking.remove();
+        history.pop();
+        addBubble("error", "Network error. Please check your connection and try again.");
+      }
+      save();
+      busy = false;
+      send.disabled = false;
+      input.focus();
+    };
+
+    form.addEventListener("submit", (e) => { e.preventDefault(); ask(input.value); });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask(input.value); }
+    });
+    document.querySelectorAll<HTMLButtonElement>(".chat-chip").forEach((c) => c.addEventListener("click", () => ask(c.textContent || "")));
+    document.getElementById("chatNew")?.addEventListener("click", () => {
+      history = [];
+      save();
+      log.querySelectorAll(".msg").forEach((m) => m.remove());
+      if (empty) empty.hidden = false;
+      input.focus();
+    });
+    document.getElementById("chatLogout")?.addEventListener("click", async () => {
+      try { sessionStorage.removeItem(STORE); } catch {}
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      location.href = "/bot/";
+    });
+  }
+</script>
+
+<style>
+  :global(*) { box-sizing: border-box; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- chat (logged in) ---------- */
+  .chat-wrap {
+    padding: 24px 16px 40px;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(124, 58, 237, 0.28), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(14, 165, 233, 0.22), transparent 45%),
+      #0b1120;
+  }
+  .chat-shell {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 980px);
+    height: calc(100vh - 68px - 64px);
+    min-height: 520px;
+    margin: 0 auto;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.94);
+    color: #e2e8f0;
+    box-shadow: 0 30px 70px rgba(2, 6, 23, 0.5);
+    overflow: hidden;
+  }
+  .chat-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .chat-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .chat-spark {
+    display: grid; width: 42px; height: 42px; flex-shrink: 0; place-items: center;
+    border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #0ea5e9); color: #fff; font-size: 20px;
+  }
+  .chat-id h1 { margin: 0; color: #fff; font-size: 19px; }
+  .chat-id p { margin: 2px 0 0; color: #94a3b8; font-size: 13.5px; overflow-wrap: anywhere; }
+  .chat-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .chat-left { padding: 6px 10px; border-radius: 999px; background: #1e293b; color: #a5b4fc; font-size: 12.5px; font-weight: 700; }
+  .chat-btn {
+    min-height: 36px; padding: 0 14px; border: 1px solid #334155; border-radius: 9px;
+    background: #1e293b; color: #e2e8f0; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  }
+  .chat-btn:hover { border-color: #64748b; }
+  .chat-btn.ghost { background: transparent; }
+
+  .chat-log { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .chat-empty { margin: auto 0; text-align: center; }
+  .chat-empty-title { margin: 0 0 16px; color: #fff; font-size: 22px; font-weight: 800; }
+  .chat-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 0 auto; }
+  .chat-chip {
+    padding: 12px 14px; border: 1px solid #334155; border-radius: 12px; background: #111a2e;
+    color: #cbd5e1; font: inherit; font-size: 14px; line-height: 1.45; text-align: left; cursor: pointer;
+  }
+  .chat-chip:hover { border-color: #7c3aed; color: #fff; }
+
+  .chat-log :global(.msg) { max-width: 88%; padding: 12px 16px; border-radius: 14px; font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
+  .chat-log :global(.msg.user) { align-self: flex-end; background: linear-gradient(135deg, #6d28d9, #2563eb); color: #fff; white-space: pre-wrap; border-bottom-right-radius: 4px; }
+  .chat-log :global(.msg.assistant) { align-self: flex-start; background: #111a2e; border: 1px solid #1e293b; border-bottom-left-radius: 4px; }
+  .chat-log :global(.msg.error) { align-self: flex-start; background: rgba(127, 29, 29, 0.35); border: 1px solid rgba(248, 113, 113, 0.4); color: #fecaca; }
+  .chat-log :global(.msg p) { margin: 0 0 10px; }
+  .chat-log :global(.msg p:last-child), .chat-log :global(.msg ul:last-child), .chat-log :global(.msg ol:last-child) { margin-bottom: 0; }
+  .chat-log :global(.msg ul), .chat-log :global(.msg ol) { margin: 0 0 10px; padding-left: 22px; }
+  .chat-log :global(.msg h3), .chat-log :global(.msg h4) { margin: 12px 0 6px; color: #fff; font-size: 16px; }
+  .chat-log :global(.msg code) { padding: 1px 6px; border-radius: 5px; background: #1e293b; color: #f9a8d4; font-family: ui-monospace, Consolas, monospace; font-size: 13.5px; }
+  .chat-log :global(.msg pre) { position: relative; margin: 10px 0; padding: 14px 64px 14px 14px; border-radius: 10px; background: #020617; overflow-x: auto; }
+  .chat-log :global(.msg pre code) { padding: 0; background: none; color: #e2e8f0; white-space: pre; }
+  .chat-log :global(.msg pre .copy) {
+    position: absolute; top: 8px; right: 8px; padding: 4px 10px; border: 1px solid #334155; border-radius: 7px;
+    background: #1e293b; color: #cbd5e1; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .chat-log :global(.msg.thinking) { display: flex; gap: 5px; padding: 16px; }
+  .chat-log :global(.msg.thinking span) { width: 8px; height: 8px; border-radius: 50%; background: #a5b4fc; animation: dot 1.2s infinite ease-in-out; }
+  .chat-log :global(.msg.thinking span:nth-child(2)) { animation-delay: 0.15s; }
+  .chat-log :global(.msg.thinking span:nth-child(3)) { animation-delay: 0.3s; }
+  @keyframes dot { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
+
+  .chat-form { display: flex; gap: 10px; padding: 14px 16px 6px; border-top: 1px solid #1e293b; }
+  .chat-form textarea {
+    flex: 1; min-width: 0; max-height: 180px; padding: 12px 14px; border: 1px solid #334155; border-radius: 12px;
+    background: #0f172a; color: #fff; font: inherit; font-size: 15.5px; line-height: 1.5; resize: vertical;
+  }
+  .chat-form textarea:focus { border-color: #7c3aed; outline: 3px solid rgba(124, 58, 237, 0.25); }
+  .chat-form button {
+    flex-shrink: 0; min-width: 92px; border: 0; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff; font: inherit; font-weight: 800; cursor: pointer;
+  }
+  .chat-form button:disabled { opacity: 0.6; cursor: wait; }
+  .chat-foot { margin: 0; padding: 4px 16px 12px; color: #64748b; font-size: 12px; text-align: center; }
+
+  /* ---------- intro (logged out) ---------- */
+  .bot-sec { padding: 64px 0; background: #fff; }
+  .bot-sec.alt { background: #f8fafc; }
+  .bot-inner { width: min(calc(100% - 32px), 1180px); margin: 0 auto; }
+  .bot-inner.narrow { width: min(calc(100% - 32px), 820px); }
+  .bot-head { max-width: 740px; margin: 0 auto 30px; text-align: center; }
+  .bot-label { color: #7c3aed; font-size: 13px; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
+  .bot-head h2 { margin: 9px 0; color: #0f172a; font-size: clamp(26px, 4vw, 38px); }
+  .bot-head p { margin: 0; color: #64748b; }
+  .bot-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .bot-card { padding: 22px; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05); }
+  .bot-icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 12px; background: #f5f3ff; font-size: 24px; }
+  .bot-card h3 { margin: 14px 0 6px; color: #0f172a; font-size: 19px; }
+  .bot-card p { margin: 0; color: #64748b; font-size: 14.5px; line-height: 1.6; }
+  .bot-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+  .bot-examples li { padding: 14px 16px; border: 1px solid #e2e8f0; border-left: 4px solid #7c3aed; border-radius: 12px; background: #fff; color: #334155; line-height: 1.55; }
+  .bot-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px; margin-top: 28px; }
+  .bot-btn { display: inline-flex; min-height: 48px; align-items: center; padding: 0 22px; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #2563eb); color: #fff; font-weight: 800; text-decoration: none; box-shadow: 0 12px 26px rgba(124, 58, 237, 0.3); }
+  .bot-link { color: #4f46e5; font-weight: 800; text-decoration: none; }
+  .bot-faq { margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+  .bot-faq summary { padding: 16px 18px; color: #0f172a; font-weight: 800; cursor: pointer; }
+  .bot-faq p { margin: 0; padding: 0 18px 16px; color: #475569; line-height: 1.65; }
+
+  @media (max-width: 860px) {
+    .bot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .chat-wrap { padding: 0; }
+    .chat-shell { height: calc(100dvh - 64px); min-height: 0; border-radius: 0; border-inline: 0; }
+    .chat-top { padding: 12px 14px; }
+    .chat-log { padding: 14px; }
+    .chat-chips, .bot-grid, .bot-examples { grid-template-columns: 1fr; }
+    .chat-log :global(.msg) { max-width: 100%; }
+    .chat-log :global(.msg pre) { padding: 40px 14px 14px; }
+    .chat-form button { min-width: 64px; }
+  }
+</style>

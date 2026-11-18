@@ -37,9 +37,15 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare(),
   build: { inlineStylesheets: "always" },
+  // GokuruviBot AI login sessions (stored in the SESSION KV namespace).
+  // Secure cookies still work on http://localhost in browsers.
+  session: {
+    cookie: { name: "gk_session", secure: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 7 },
+    ttl: 60 * 60 * 24 * 7,
+  },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes("/guides/rhel-reset-root-password/"),
+      filter: (page) => !page.includes("/guides/rhel-reset-root-password/") && !/\/(login|signup)\/$/.test(page),
       serialize(item) {
         if (useGitDates) {
           const lastmod = pageLastmod(item.url);

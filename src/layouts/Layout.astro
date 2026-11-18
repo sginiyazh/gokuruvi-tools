@@ -5,10 +5,12 @@ import Footer from "../components/Footer.astro";
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean; // keep account pages (login, sign-up) out of search results
 }
 
 const {
   title,
+  noindex = false,
   description = "Free technical tools and practical interview resources for Linux, DevOps, Kubernetes, cloud, networking, database, security, AI and Windows professionals.",
 } = Astro.props;
 
@@ -37,7 +39,7 @@ const canonicalURL = new URL(canonicalPath, "https://www.gokuruvi.com").href;
 
     <meta name="author" content="Gokuruvi Tools" />
 
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
