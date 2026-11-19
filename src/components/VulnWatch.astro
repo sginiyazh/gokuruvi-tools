@@ -1,0 +1,381 @@
+---
+// Homepage "Linux Vulnerability Watch": Red Hat's Critical CVEs (30 days) and
+// Important CVEs with CVSS 8.0+ (7 days), grouped by package.
+// Data comes from src/lib/vulnNews.ts (Red Hat Security Data API).
+import type { VulnNews, VulnGroup } from "../lib/vulnNews";
+
+interface Props {
+  news: VulnNews | null;
+}
+const { news } = Astro.props;
+
+const fmt = (d: string) =>
+  new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+function ago(iso: string) {
+  const mins = Math.max(1, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  if (mins < 60) return `${mins} min ago`;
+  const h = Math.round(mins / 60);
+  if (h < 48) return `${h} hour${h === 1 ? "" : "s"} ago`;
+  return `${Math.round(h / 24)} days ago`;
+}
+
+const cveUrl = (id: string) => `https://access.redhat.com/security/cve/${encodeURIComponent(id)}`;
+const rhsaUrl = (id: string) => `https://access.redhat.com/errata/${encodeURIComponent(id)}`;
+const scoreText = (g: VulnGroup) => (g.score == null ? "–" : g.score.toFixed(1));
+
+const columns = news
+  ? [
+      {
+        key: "critical",
+        icon: "🔥",
+        title: "Critical",
+        count: `${news.criticalTotal} CVEs in the last 30 days`,
+        groups: news.critical,
+        empty: "Red Hat has rated no vulnerabilities Critical in the last 30 days.",
+      },
+      {
+        key: "important",
+        icon: "⚠️",
+        title: "Important, CVSS 8.0+",
+        count: `${news.importantTotal} CVEs in the last 7 days`,
+        groups: news.important,
+        empty: "No Important vulnerabilities scored 8.0+ in the last 7 days.",
+      },
+    ]
+  : [];
+---
+
+<section class="vw" aria-labelledby="vw-title">
+  <div class="vw-inner">
+    <div class="vw-head">
+      <div>
+        <span class="vw-live"><span class="vw-dot" aria-hidden="true"></span> Live · Linux</span>
+        <h2 id="vw-title">Linux Vulnerability Watch</h2>
+        <p>
+          The most serious Linux vulnerabilities from Red Hat's official security data: everything rated
+          Critical, plus Important ones scoring CVSS 8.0 or higher. Grouped by package, with the Red Hat
+          errata (RHSA) to install when a fix is out.
+        </p>
+      </div>
+      {news && (
+        <p class="vw-meta">
+          Updated {ago(news.fetchedAt)}<br />
+          Source:{" "}
+          <a href="https://access.redhat.com/security/security-updates/cve" target="_blank" rel="noopener">Red Hat Product Security</a>
+        </p>
+      )}
+    </div>
+
+    {news ? (
+      <div class="vw-grid">
+        {columns.map((col) => (
+          <div class={`vw-card ${col.key}`}>
+            <div class="vw-card-head">
+              <h3><span aria-hidden="true">{col.icon}</span> {col.title}</h3>
+              <span class="vw-count">{col.count}</span>
+            </div>
+            {col.groups.length ? (
+              <ol class="vw-list">
+                {col.groups.map((g) => (
+                  <li>
+                    <span class={`vw-score ${col.key}`} title={g.score == null ? "No CVSS score yet" : `Highest CVSS ${scoreText(g)}`}>{scoreText(g)}</span>
+                    <div class="vw-body">
+                      <div class="vw-line">
+                        <strong class="vw-pkg">{g.pkg}</strong>
+                        {g.count > 1 && <span class="vw-n">{g.count} CVEs</span>}
+                        <span class="vw-date">{fmt(g.latest)}</span>
+                      </div>
+                      <p class="vw-title">{g.title}</p>
+                      <p class="vw-ids">
+                        {g.ids.map((id, i) => <>{i > 0 && ", "}<a href={cveUrl(id)} target="_blank" rel="noopener">{id}</a></>)}
+                        {g.count > g.ids.length && <> +{g.count - g.ids.length} more</>}
+                      </p>
+                      {g.advisory ? (
+                        <a class="vw-fix ok" href={rhsaUrl(g.advisory)} target="_blank" rel="noopener">
+                          ✓ Patch available: {g.advisory}{g.count > 1 && g.patched < g.count ? ` (${g.patched} of ${g.count} fixed)` : ""}
+                        </a>
+                      ) : (
+                        <span class="vw-fix pending">⏳ Fix pending from Red Hat</span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p class="vw-empty">{col.empty}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="vw-empty standalone">
+        The live feed is refreshing. Meanwhile, see{" "}
+        <a href="https://access.redhat.com/security/security-updates/cve" target="_blank" rel="noopener">Red Hat's CVE database</a>.
+      </p>
+    )}
+
+    <div class="vw-links">
+      <a href="https://access.redhat.com/security/security-updates/cve" target="_blank" rel="noopener">All Red Hat CVEs ↗</a>
+      <a href="https://access.redhat.com/security/updates/classification" target="_blank" rel="noopener">How Red Hat rates severity ↗</a>
+      <a href="/linux/">Linux tools</a>
+      <a class="vw-bot" href="/bot/">✦ Ask GokuruviBot how to patch →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vw {
+    padding: 64px 0 70px;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239, 68, 68, 0.09), transparent 40%),
+      #f3f6fb;
+  }
+  .vw-inner {
+    width: min(calc(100% - 32px), 1180px);
+    margin: 0 auto;
+  }
+  .vw-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 32px;
+    margin-bottom: 26px;
+  }
+  .vw-head > div {
+    max-width: 720px;
+  }
+  .vw-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .vw-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: vw-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes vw-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  }
+  .vw h2 {
+    margin: 12px 0 8px;
+    color: #0f1a2e;
+    font: 700 clamp(1.5rem, 3.4vw, 2.2rem) / 1.2 "Unbounded", "Arial Black", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .vw-head p {
+    margin: 0;
+    color: #4b5b75;
+    line-height: 1.6;
+  }
+  .vw-meta {
+    color: #64748b !important;
+    font-size: 13.5px;
+    text-align: right;
+  }
+  .vw a {
+    color: #1d4ed8;
+    font-weight: 700;
+  }
+  .vw-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .vw-card {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  }
+  .vw-card.critical {
+    border-color: #fecaca;
+    border-top: 4px solid #dc2626;
+  }
+  .vw-card.important {
+    border-color: #fed7aa;
+    border-top: 4px solid #ea580c;
+  }
+  .vw-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 12px;
+    margin-bottom: 8px;
+  }
+  .vw-card h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 19px;
+  }
+  .vw-count {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .vw-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .vw-list li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid #f1f5f9;
+  }
+  .vw-list li:first-child {
+    border-top: 0;
+  }
+  .vw-score {
+    display: grid;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .vw-score.critical {
+    background: linear-gradient(135deg, #dc2626, #9f1239);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+  }
+  .vw-score.important {
+    background: linear-gradient(135deg, #f97316, #c2410c);
+    box-shadow: 0 6px 16px rgba(234, 88, 12, 0.3);
+  }
+  .vw-body {
+    min-width: 0;
+  }
+  .vw-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+  }
+  .vw-pkg {
+    color: #0f172a;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  .vw-n {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 11.5px;
+    font-weight: 800;
+  }
+  .vw-date {
+    color: #64748b;
+    font-size: 13px;
+  }
+  .vw-title {
+    display: -webkit-box;
+    margin: 4px 0;
+    overflow: hidden;
+    color: #334155;
+    font-size: 14.5px;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .vw-ids {
+    margin: 0 0 6px;
+    color: #64748b;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .vw-ids a {
+    font-weight: 600 !important;
+    text-decoration: none;
+  }
+  .vw-ids a:hover {
+    text-decoration: underline;
+  }
+  .vw-fix {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .vw-fix.ok {
+    background: #dcfce7;
+    color: #166534 !important;
+  }
+  .vw-fix.ok:hover {
+    background: #bbf7d0;
+  }
+  .vw-fix.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .vw-empty {
+    margin: 0;
+    color: #64748b;
+  }
+  .vw-empty.standalone {
+    padding: 22px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+    background: #fff;
+  }
+  .vw-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .vw-links a {
+    display: inline-flex;
+    padding: 10px 14px;
+    border: 1px solid #cbd7e7;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .vw-links a:hover {
+    border-color: #2563eb;
+  }
+  .vw-links a.vw-bot {
+    border: 0;
+    background: linear-gradient(120deg, #7c3aed, #db2777);
+    color: #fff;
+  }
+  @media (max-width: 860px) {
+    .vw-grid {
+      grid-template-columns: 1fr;
+    }
+    .vw-meta {
+      text-align: left;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vw-dot {
+      animation: none;
+    }
+  }
+</style>

@@ -3,6 +3,19 @@ import Header from "../components/Header.astro";
 import FontUnbounded from "../components/FontUnbounded.astro";
 import Footer from "../components/Footer.astro";
 import { tools, categoryMeta, toolCount } from "../data/tools";
+import VulnWatch from "../components/VulnWatch.astro";
+import { env } from "cloudflare:workers";
+import { getVulnNews, isFresh, readCached } from "../lib/vulnNews";
+
+// Linux vulnerability panel (Red Hat data): serve the cached copy straight away
+// and refresh it in the background when it is over an hour old. Only the very
+// first load (empty cache) waits for Red Hat, at most 3 seconds.
+let vulnNews = await readCached(env.SESSION);
+if (!isFresh(vulnNews)) {
+  const refresh = getVulnNews(env);
+  Astro.locals.cfContext?.waitUntil(refresh); // finish the refresh even after the page is sent
+  vulnNews ??= await Promise.race([refresh, new Promise<null>((r) => setTimeout(() => r(null), 3000))]);
+}
 
 // Rounded down to a multiple of 5, e.g. "100+".
 const toolTotal = `${Math.floor(tools.length / 5) * 5}+`;
@@ -1444,26 +1457,6 @@ const pageDescription =
         text-align: left;
       }
 
-      .gx-statement {
-        padding: 64px 0 70px;
-        background: #f3f6fb;
-        text-align: center;
-      }
-
-      .gx-statement-text {
-        max-width: 30ch;
-        margin: 0 auto;
-        color: #0f1a2e;
-        font: 600 clamp(1.3rem, 3vw, 1.9rem) / 1.35 "Unbounded", "Arial Black", system-ui, sans-serif;
-        letter-spacing: -0.01em;
-        text-wrap: balance;
-      }
-
-      .gx-statement-sub {
-        margin: 14px auto 0;
-        color: #4b5b75;
-      }
-
       .gx-numbers {
         padding: 70px 0;
         background: #0b1220;
@@ -1701,17 +1694,7 @@ const pageDescription =
         </div>
       </section>
 
-      <section class="gx-statement">
-        <div class="container">
-          <p class="gx-statement-text">
-            Built by an infrastructure admin, for the people who keep servers
-            running.
-          </p>
-          <p class="gx-statement-sub">
-            No sign-up, and most tools run entirely in your browser.
-          </p>
-        </div>
-      </section>
+      <VulnWatch news={vulnNews} />
 
       <section class="gx-numbers" aria-labelledby="gx-numbers-title">
         <div class="container">
