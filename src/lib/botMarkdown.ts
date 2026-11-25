@@ -1,6 +1,6 @@
 // Minimal, safe Markdown for GokuruviBot answers. All text is HTML-escaped first,
 // so nothing the model writes can inject tags; then a small subset is formatted:
-// fenced code blocks, inline code, bold, headings, bullet and numbered lists.
+// fenced code blocks, inline code, bold, headings, lists and tables.
 
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -27,8 +27,22 @@ function blocks(text: string) {
     if (list) out.push(`<${list.type}${list.type === "ol" && list.start > 1 ? ` start="${list.start}"` : ""}>${list.items.map((i) => `<li>${inline(i)}</li>`).join("")}</${list.type}>`);
     list = null;
   };
-  for (const line of text.split("\n")) {
+  const cells = (row: string) => row.trim().replace(/^\||\|$/g, "").split("|").map((c) => inline(c.trim()));
+  const tr = (row: string, tag: "th" | "td") => `<tr>${cells(row).map((c) => `<${tag}>${c}</${tag}>`).join("")}</tr>`;
+  const lines = text.split("\n").map((l) => l.replace(/^\s*&gt;\s?/, "")); // show quotes as plain text
+  for (let n = 0; n < lines.length; n++) {
+    const line = lines[n];
     const t = line.trim();
+    // Table: a "| a | b |" row followed by a "|---|---|" row.
+    if (t.startsWith("|") && /^\|[\s:|-]*-[\s:|-]*$/.test((lines[n + 1] || "").trim())) {
+      flushPara();
+      flushList();
+      let body = "";
+      for (n += 2; n < lines.length && lines[n].trim().startsWith("|"); n++) body += tr(lines[n], "td");
+      n--;
+      out.push(`<div class="tbl"><table><thead>${tr(t, "th")}</thead><tbody>${body}</tbody></table></div>`);
+      continue;
+    }
     const heading = t.match(/^#{1,6}\s+(.*)$/);
     const bullet = t.match(/^[-*•]\s+(.*)$/);
     const num = t.match(/^(\d+)[.)]\s+(.*)$/);

@@ -424,9 +424,11 @@ const lastUpdated = "18 September 2026";
               hashed copy of your password (never the password itself), the
               account creation date and your last login time. We also keep a
               count of how many questions you ask each day to apply the free
-              daily limit, and short-lived records of failed logins and
-              sign-ups to protect accounts from abuse; those are deleted
-              after 24 hours.
+              daily limit. To protect accounts from abuse we record failed
+              logins (with the email address entered and the IP address) and
+              sign-ups (with the IP address). These records are used for at
+              most one hour. They become due for deletion after 24 hours and
+              are removed the next time a failed login or sign-up is recorded.
             </p>
 
             <p>

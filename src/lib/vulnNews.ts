@@ -65,7 +65,7 @@ function split(desc: string | null, id: string) {
 
 async function fetchRh(params: Record<string, string>): Promise<RhCve[]> {
   const res = await fetch(`${API}?${new URLSearchParams({ per_page: "1000", ...params })}`, {
-    headers: { "user-agent": "GokuruviTools/1.0 (+https://www.gokuruvi.com)", accept: "application/json" },
+    headers: { "user-agent": "Mozilla/5.0 (compatible; FeedFetcher/1.0)", accept: "application/json" },
     signal: AbortSignal.timeout(20_000),
   });
   if (!res.ok) throw new Error(`Red Hat API ${res.status}`);

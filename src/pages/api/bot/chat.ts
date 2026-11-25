@@ -2,10 +2,12 @@ import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
 import { json, readJson, sameOrigin, utcDay, type SessionUser } from "../../../lib/auth";
 
-// Small, fast model on the Workers AI free allocation (10,000 Neurons a day).
-const MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
+// Workers AI models on the free allocation (10,000 Neurons a day), tried in order:
+// Cloudflare retires models from time to time (error 5028), so keep a backup.
+// Catalog: npx wrangler ai models list
+const MODELS = ["@cf/openai/gpt-oss-20b", "@cf/mistralai/mistral-small-3.1-24b-instruct"];
 const USER_DAILY_LIMIT = 30;
-const SITE_DAILY_LIMIT = 300; // keeps the whole site inside the free allocation
+const SITE_DAILY_LIMIT = 300; // keeps typical use inside the free allocation
 const MAX_TURNS = 10; // earlier messages the client may send for context
 const MAX_MESSAGE_CHARS = 2000;
 
@@ -18,7 +20,26 @@ Rules:
 - Never ask for or repeat passwords, private keys, tokens or other secrets; tell the user to remove them if they paste any.
 - Refuse to help with attacking systems the user does not own, malware or bypassing security controls.
 - If the question is not about IT, politely say you only help with IT topics.
-- Keep answers focused; use short paragraphs and lists.`;
+- Keep answers focused; use short paragraphs and lists. Don't use tables or blockquotes.`;
+
+async function askModel(model: string, messages: { role: string; content: string }[]): Promise<string> {
+  const result = (await env.AI.run(model as any, {
+    messages,
+    max_tokens: 1500, // gpt-oss spends part of this on reasoning before it answers
+    temperature: 0.3,
+    ...(model.includes("gpt-oss") ? { reasoning_effort: "low" } : {}),
+  })) as any;
+  const answer = String(result?.response ?? result?.choices?.[0]?.message?.content ?? "")
+    // Plain hyphens and spaces, so commands still work when copied.
+    .replace(/[\u2010\u2011]/g, "-")
+    .replace(/[\u00a0\u202f]/g, " ")
+    .trim();
+  if (!answer) throw new Error("empty answer");
+  return answer;
+}
+
+// The account's free daily allocation is used up: a backup model can't help.
+const quotaUsedUp = (message: string) => /^4006:|daily free allocation/i.test(message);
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -62,14 +83,19 @@ export const POST: APIRoute = async ({ request, url, session }) => {
   }
 
   try {
-    const result = (await env.AI.run(MODEL as any, {
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-      max_tokens: 900,
-      temperature: 0.3,
-    })) as any;
-    const answer: string = (result?.response ?? result?.choices?.[0]?.message?.content ?? "").toString().trim();
-    if (!answer) throw new Error("empty answer");
-    return json({ answer, remaining: USER_DAILY_LIMIT - used });
+    const chat = [{ role: "system", content: SYSTEM_PROMPT }, ...messages];
+    let lastError: unknown;
+    for (const model of MODELS) {
+      try {
+        return json({ answer: await askModel(model, chat), remaining: USER_DAILY_LIMIT - used });
+      } catch (err) {
+        lastError = err;
+        const message = String((err as Error)?.message || err);
+        console.error(`GokuruviBot AI error (${model}):`, message);
+        if (quotaUsedUp(message)) break;
+      }
+    }
+    throw lastError;
   } catch (err) {
     // Don't charge the user for a failed answer.
     await db.batch([
@@ -77,10 +103,9 @@ export const POST: APIRoute = async ({ request, url, session }) => {
       db.prepare("UPDATE usage SET count = count - 1 WHERE user_id = 0 AND day = ?").bind(day),
     ]);
     const message = String((err as Error)?.message || err);
-    console.error("GokuruviBot AI error:", message);
     const notLoggedIn = /auth|login|credential|account/i.test(message) && url.hostname === "localhost";
     return json(
-      { error: notLoggedIn ? "Workers AI isn't connected on this local server. Run `npx wrangler login` and restart the dev server." : "GokuruviBot couldn't answer just now. Please try again in a minute." },
+      { error: quotaUsedUp(message) ? "GokuruviBot has reached its free daily limit. Please try again after 00:00 UTC." : notLoggedIn ? "Workers AI isn't connected on this local server. Run `npx wrangler login` and restart the dev server." : "GokuruviBot couldn't answer just now. Please try again in a minute." },
       503,
     );
   }
